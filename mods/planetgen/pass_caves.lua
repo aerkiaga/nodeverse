@@ -1,13 +1,25 @@
+--[[
+This pass adds caves to the planet.
+The basic algorithm is the following: each mapblock and face between mapblocks
+gets a randomly placed 'center' within it. Each face is assigned either an
+'open' or 'closed' status, and for each open face center and block center a
+tunnel is made joining them, by means of radial Perlin noise.
+
+ # INDEX
+    ENTRY POINT
+]]--
+
 function pass_caves_check_block(side_seeds, block_minp, planet)
     local num_openings = 0
     for index=1, 6 do
         if side_seeds[index] ~= nil then num_openings = num_openings + 1 end
     end
-    if num_openings > 1 then minetest.log(tostring(num_openings)) return true end
+    if num_openings > 1 then return true end
     return false
 end
 
 function pass_caves_generate_side_openings(side_seeds)
+    -- Returns side opening shape noise generators
     local Perlin_2d_generic = function (index)
         return PerlinNoise({offset=0, scale=0.5, spread={x=10, y=10}, seed=side_seeds[index], octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
     end
@@ -23,6 +35,7 @@ function pass_caves_generate_side_openings(side_seeds)
 end
 
 function pass_caves_generate_side_opening_positions(generator_1, side_seeds, block_minp, planet)
+    -- Returns side opening relative positions
     local generators = {
         generator_1,
         PcgRandom(planet.seed, block_minp.x/16*65771 + (block_minp.y/16 - 1)*56341 + block_minp.z/16*63427),
@@ -43,6 +56,7 @@ function pass_caves_generate_side_opening_positions(generator_1, side_seeds, blo
 end
 
 function pass_caves_generate_volume_noise(side_seeds)
+    -- Returns tunnel noise generators
     local Perlin_3d_generic = function (index)
         return PerlinNoise({offset=0, scale=0.5, spread={x=10, y=10, z=10}, seed=int_hash(side_seeds[index]), octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
     end
@@ -58,13 +72,15 @@ function pass_caves_generate_volume_noise(side_seeds)
 end
 
 function pass_caves_calculate_side_contribution(side, relp, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
-    -- Calculate contribution by opening
+    -- Decide if a block is part of a tunnel connecting to a face (return > 0)
+    -- First, compute position relative to opening
     opening_pos = {x=relp.x-side_position[side].x,y=relp.y-side_position[side].y}
     if side % 2 == 0 then
         opening_pos.z = relp.z
     else
         opening_pos.z = relp.z - 16
     end
+    -- Then, compute radial noise contribution at opening
     modulo = vec2_modulo({x=opening_pos.x, y=opening_pos.y})
     if modulo == 0 then modulo = 0.00001 end
     unit_pos = {x=opening_pos.x/modulo, y=opening_pos.y/modulo}
@@ -121,15 +137,28 @@ function pass_caves_generate_block(block_minp, minp, maxp, area, A, A2, planet)
         int_hash(block_minp.x/16*65917 + block_minp.y/16*76827 + (block_minp.z/16 - 1)*65823),
     }
 
+    -- Delete a fixed proportion of side openings, depending on planet and depth
+    -- The less openings, the less connected and large the caves will be
+    -- At a certain threshold, cave size tends to infinity:
+    --[[
+    "In the simple cubic lattice, for bond-percolation our Monte Carlo
+    simulation gives a value of p∞ = 0.2492 ± 0.0002, [...]"
+
+    S. Wilke 1983 "Bond percolation threshold in the simple cubic lattice"
+    ]]--
+    caveness = planet.caveness
+    if block_minp.y < -16*4 then caveness = caveness / 4
+    elseif block_minp.y < -16*2 then caveness = caveness ^ (1/4)
+    end
     for key, value in pairs(side_seeds) do
-        if gen_true_with_probability(PcgRandom(planet.seed, value), 3/4) then
+        if gen_true_with_probability(PcgRandom(planet.seed, value), 1 - caveness) then
             side_seeds[key] = nil
         end
     end
 
     if not pass_caves_check_block(side_seeds, block_minp, planet) then return end
 
-    -- Generate side openings
+    -- Generate side opening shape noise generators
     local Perlin_2d_side = pass_caves_generate_side_openings(side_seeds)
 
     -- Generate side opening positions
@@ -137,9 +166,13 @@ function pass_caves_generate_block(block_minp, minp, maxp, area, A, A2, planet)
     local side_position = pass_caves_generate_side_opening_positions(generator_1, side_seeds, block_minp, planet)
 
     -- Generate center position
-    local center_pos = {x=gen_linear(generator_1, 4, 11), y=gen_linear(generator_1, 4, 11), z=gen_linear(generator_1, 4, 11)}
+    local center_pos = {
+        x=gen_linear(generator_1, 4, 11),
+        y=gen_linear(generator_1, 4, 11),
+        z=gen_linear(generator_1, 4, 11)
+    }
 
-    -- Generate volume noise
+    -- Generate volume noise generators
     local Perlin_3d_side = pass_caves_generate_volume_noise(side_seeds)
 
     -- APPLY
@@ -147,53 +180,74 @@ function pass_caves_generate_block(block_minp, minp, maxp, area, A, A2, planet)
         for x=minp.x, maxp.x do
             for y=minp.y, maxp.y do
                 repeat
-                    local value = 0
+                    local truth = false
 
+                    -- Don't touch some nodes
                     local i = area:index(x, y, z)
                     if A[i] ~= planet.node_types.dust and A[i] ~= planet.node_types.gravel and A[i] ~= planet.node_types.stone then
                         do break end
                     end
 
+                    -- Logical OR tunnels from center to all faces
                     -- Side +Y
-                    if side_seeds[1] ~= nil then
-                        value = value + pass_caves_calculate_side_contribution(1, {x=x-block_minp.x, y=z-block_minp.z, z=y-block_minp.y}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                    if side_seeds[1] ~= nil and not truth then
+                        contrib = pass_caves_calculate_side_contribution(1, {x=x-block_minp.x, y=z-block_minp.z, z=y-block_minp.y}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                        truth = truth or (contrib > 0)
                     end
                     -- Side -Y
-                    if side_seeds[2] ~= nil then
-                        value = value + pass_caves_calculate_side_contribution(2, {x=x-block_minp.x, y=z-block_minp.z, z=y-block_minp.y}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                    if side_seeds[2] ~= nil and not truth then
+                        contrib = pass_caves_calculate_side_contribution(2, {x=x-block_minp.x, y=z-block_minp.z, z=y-block_minp.y}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                        truth = truth or (contrib > 0)
                     end
                     -- Side +X
-                    if side_seeds[3] ~= nil then
-                        value = value + pass_caves_calculate_side_contribution(3, {x=y-block_minp.y, y=z-block_minp.z, z=x-block_minp.x}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                    if side_seeds[3] ~= nil and not truth then
+                        contrib = pass_caves_calculate_side_contribution(3, {x=y-block_minp.y, y=z-block_minp.z, z=x-block_minp.x}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                        truth = truth or (contrib > 0)
                     end
                     -- Side -X
-                    if side_seeds[4] ~= nil then
-                        value = value + pass_caves_calculate_side_contribution(4, {x=y-block_minp.y, y=z-block_minp.z, z=x-block_minp.x}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                    if side_seeds[4] ~= nil and not truth then
+                        contrib = pass_caves_calculate_side_contribution(4, {x=y-block_minp.y, y=z-block_minp.z, z=x-block_minp.x}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                        truth = truth or (contrib > 0)
                     end
                     -- Side +Z
-                    if side_seeds[5] ~= nil then
-                        value = value + pass_caves_calculate_side_contribution(5, {x=x-block_minp.x, y=y-block_minp.y, z=z-block_minp.z}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                    if side_seeds[5] ~= nil and not truth then
+                        contrib = pass_caves_calculate_side_contribution(5, {x=x-block_minp.x, y=y-block_minp.y, z=z-block_minp.z}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                        truth = truth or (contrib > 0)
                     end
                     -- Side -Z
-                    if side_seeds[6] ~= nil then
-                        value = value + pass_caves_calculate_side_contribution(6, {x=x-block_minp.x, y=y-block_minp.y, z=z-block_minp.z}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                    if side_seeds[6] ~= nil and not truth then
+                        contrib = pass_caves_calculate_side_contribution(6, {x=x-block_minp.x, y=y-block_minp.y, z=z-block_minp.z}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                        truth = truth or (contrib > 0)
                     end
-
-                    if value > 0 then A[i] = minetest.CONTENT_AIR end
+                    if truth then A[i] = minetest.CONTENT_AIR end
                 until true
             end
         end
     end
 end
 
+--[[
+ # ENTRY POINT
+]]--
+
 function pass_caves(minp, maxp, area, A, A2, planet)
+    -- Start xyz of block to generate
+    -- Can be lower than start xyz of generated area
     block_minp = {x=minp.x-minp.x%16, y=minp.y-minp.y%16, z=minp.z-minp.z%16}
-    -- Start xyz of block with lowest coordinates, usually lower than xyz of generated area
     while block_minp.z <= maxp.z do
         while block_minp.y <= maxp.y do
             while block_minp.x <= maxp.x do
-                common_minp = {x=math.max(minp.x, block_minp.x), y=math.max(minp.y, block_minp.y), z=math.max(minp.z, block_minp.z)}
-                common_maxp = {x=math.min(maxp.x, block_minp.x+15), y=math.min(maxp.y, block_minp.y+15), z=math.min(maxp.z, block_minp.z+15)}
+                -- Bounds of block or block fragment to generate
+                common_minp = {
+                    x=math.max(minp.x, block_minp.x),
+                    y=math.max(minp.y, block_minp.y),
+                    z=math.max(minp.z, block_minp.z)
+                }
+                common_maxp = {
+                    x=math.min(maxp.x, block_minp.x+15),
+                    y=math.min(maxp.y, block_minp.y+15),
+                    z=math.min(maxp.z, block_minp.z+15)
+                }
                 pass_caves_generate_block(block_minp, common_minp, common_maxp, area, A, A2, planet)
                 block_minp.x = block_minp.x+16
             end
@@ -204,10 +258,3 @@ function pass_caves(minp, maxp, area, A, A2, planet)
         block_minp.z = block_minp.z+16
     end
 end
-
---[[
-In the simple cubic lattice, for bond-percolation our Monte Carlo simulation
-gives a value of p∞ = 0.2492 ± 0.0002, [...]
-
-S. Wilke 1983 "Bond percolation threshold in the simple cubic lattice"
-]]--

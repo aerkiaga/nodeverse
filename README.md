@@ -11,13 +11,13 @@ immensely large universe with a never-ending variety of planets to explore.
 For now, 16 different planets' surfaces are generated next to each other. Blocks
 include stone, gravel, dust, sediment and liquid. Planets of different colors,
 rockier, more hilly or flat, and richer in oceans are generated. World
-generation features oceans and caves. Currently working on making caves more
-complex, while keeping them balanced and diverse.
+generation features oceans and caves.
+
+The next step is adding basic climate types and vegetation.
 
 The game is not yet playable, as it does not include any user-interaction code.
 
 ## TODO
- * Finish basic cave generation
  * Add basic vegetation
  * Add minerals and ores
  * Add player mechanics

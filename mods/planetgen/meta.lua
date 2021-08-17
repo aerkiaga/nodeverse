@@ -16,4 +16,7 @@ function generate_planet_metadata(planet)
     -- Values > 5 can form protruding rocks
     planet.rockiness = gen_linear(G, 0, 1.6)
     planet.rockiness = 5*math.abs(planet.rockiness-1) + 8*(planet.rockiness-1) + 3
+    -- CAVENESS
+    -- The tendency to form underground caves
+    planet.caveness = 2^gen_linear(G, -9, -1.5)
 end
