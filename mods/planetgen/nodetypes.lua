@@ -1,6 +1,15 @@
+--[[
+This file must register all custom node types used by a planet, before any of
+those nodes is actually placed in the map, and then unregister them when no
+longer needed.
+
+ # INDEX
+    REGISTRATION
+]]
+
 function register_base_nodes(G, planet, prefix)
     stone_color = string.format("#%.6X", math.abs(G:next()) % 0x1000000)
-    -- DUST
+    -- REGOLITH
     -- Covers a planet's surface
     -- Made of the same material as STONE
     minetest.register_node(prefix .. 'dust', {
@@ -32,8 +41,8 @@ function register_base_nodes(G, planet, prefix)
     })
     random_yrot_nodes[minetest.get_content_id(prefix .. 'sediment')] = 24
     -- GRAVEL
-    -- Lies under a layer of DUST
-    -- Less granular than DUST
+    -- Lies under a layer of REGOLITH
+    -- Less granular than REGOLITH
     minetest.register_node(prefix .. 'gravel', {
         drawtype = "normal",
         visual_scale = 1.0,
@@ -158,6 +167,10 @@ function register_liquid_nodes(G, planet, prefix)
     planet.node_types.flowing_liquid = minetest.get_content_id(prefix .. 'flowing_liquid')
 end
 
+--[[
+ # REGISTRATION
+]]
+
 function register_planet_nodes(planet)
     prefix = string.format('planetgen:p%X_', planet.seed)
     planet.node_types = {}
@@ -168,6 +181,7 @@ end
 
 function unregister_planet_nodes(planet)
     prefix = 'planetgen:p' .. planet.seed .. '_'
+    -- Unregister base nodes and their random rotation info
     random_yrot_nodes[minetest.get_content_id(prefix .. 'dust')] = nil
     random_yrot_nodes[minetest.get_content_id(prefix .. 'sediment')] = nil
     random_yrot_nodes[minetest.get_content_id(prefix .. 'gravel')] = nil
@@ -176,6 +190,7 @@ function unregister_planet_nodes(planet)
     minetest.registered_nodes[prefix .. 'sediment'] = nil
     minetest.registered_nodes[prefix .. 'gravel'] = nil
     minetest.registered_nodes[prefix .. 'stone'] = nil
+    -- Unregister liquid nodes and their random rotation info
     random_yrot_nodes[minetest.get_content_id(prefix .. 'liquid')] = nil
     minetest.registered_nodes[prefix .. 'liquid'] = nil
     minetest.registered_nodes[prefix .. 'flowing_liquid'] = nil

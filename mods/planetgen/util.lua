@@ -1,3 +1,20 @@
+--[[
+Here are defined all distribution generators and math utilities used by other
+parts of the code.
+
+ # INDEX
+    DISTRIBUTIONS
+    VECTOR MATH
+]]
+
+function int_hash(value)
+    return tonumber(minetest.sha1(value):sub(0, 8), 16)
+end
+
+--[[
+ # DISTRIBUTIONS
+]]
+
 function gen_true_with_probability(generator, P)
     return generator:next(0, 65535)/65536 < P
 end
@@ -6,9 +23,9 @@ function gen_linear(generator, min, max)
     return generator:next(0, 65535)/65536 * (max-min) + min
 end
 
-function int_hash(value)
-    return tonumber(minetest.sha1(value):sub(0, 8), 16)
-end
+--[[
+ # VECTOR MATH
+]]
 
 function vec2_modulo(v)
     return math.sqrt(v.x^2 + v.y^2)
