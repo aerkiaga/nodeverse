@@ -1,12 +1,42 @@
+--[[
+This is the main file for the map generator.
+Included files:
+    util.lua            Probability distribution and math functions
+    meta.lua            Generates global characteristics of a planet from a seed
+    nodetypes.lua       Registers custom nodes for a new planet
+    pass_elevation.lua  First pass: terrain elevation and layers, oceans
+    pass_caves.lua      Second pass: caves
+
+Files are tagged with keywords throughout to make jumping to important places
+easier. In order to jump to a tag, simply search '# TAG NAME' in your editor or
+IDE and jump to the one match. At the start of each file there is an INDEX with
+a list of all tags in order.
+
+ # INDEX
+    ENTRY POINT
+    INITIALIZATION
+--]]
+
 dofile(minetest.get_modpath("planetgen") .. "/util.lua")
 dofile(minetest.get_modpath("planetgen") .. "/meta.lua")
 dofile(minetest.get_modpath("planetgen") .. "/nodetypes.lua")
 dofile(minetest.get_modpath("planetgen") .. "/pass_elevation.lua")
 dofile(minetest.get_modpath("planetgen") .. "/pass_caves.lua")
 
+-- Minimum and maximum height for a planet
+-- Should be avoided in favor of storing the vertical bounds of each planet
+-- TODO: store vertical bounds of planets
 PLANET_MINY = -4000
 PLANET_MAXY = 3999
 
+--[[
+Contains a list of all current mappings between chunk coordinate rectangles
+and the same region on a planet with some seed. Entry format is:
+    minchunk    starting x and z chunk coordinates
+    maxchunk    ending x and z chunk coordinates
+    seed        planet seed; each seed represents a unique planet
+TODO: store chunk offset to generate a specific planet chunk anywhere
+]]--
 planet_list = {
 }
 
@@ -16,6 +46,7 @@ function clear_planet_area(planet)
     minetest.delete_area(minp, maxp)
 end
 
+-- API
 function add_planet(planet)
     generate_planet_metadata(planet)
     register_planet_nodes(planet)
@@ -24,6 +55,7 @@ function add_planet(planet)
     return #planet_list
 end
 
+-- API
 function remove_planet(index)
     clear_planet_area(planet_list[index])
     unregister_planet_nodes(planet)
@@ -33,6 +65,7 @@ end
 function generate_planet_chunk(minp, maxp, area, A, A2, planet)
     pass_elevation(minp, maxp, area, A, A2, planet)
     pass_caves(minp, maxp, area, A, A2, planet)
+    -- Apply random texture rotation to all supported nodes
     for i in area:iter(minp.x, minp.y, minp.z, maxp.x, maxp.y, maxp.z) do
         pos = area:position(i)
 
@@ -50,6 +83,10 @@ function generate_planet_chunk(minp, maxp, area, A, A2, planet)
     end
 end
 
+--[[
+# ENTRY POINT
+]]--
+
 function mapgen_callback(minp, maxp, blockseed)
     local VM, emin, emax = minetest.get_mapgen_object("voxelmanip")
     local area = VoxelArea:new{MinEdge=emin, MaxEdge=emax}
@@ -59,6 +96,7 @@ function mapgen_callback(minp, maxp, blockseed)
     local minchunk = {x=math.floor(minp.x/80), z=math.floor(minp.z/80)}
     local maxchunk = {x=math.floor(maxp.x/80), z=math.floor(maxp.z/80)}
 
+    -- Find planet(s) for the generated region
     for key, planet in pairs(planet_list) do
         commonmin = {x=math.max(minp.x, planet.minchunk.x*80), y=minp.y, z=math.max(minp.z, planet.minchunk.z*80)}
         commonmax = {x=math.min(maxp.x, planet.maxchunk.x*80+79), y=maxp.y, z=math.min(maxp.z, planet.maxchunk.z*80+79)}
@@ -72,7 +110,13 @@ function mapgen_callback(minp, maxp, blockseed)
     VM:write_to_map()
 end
 
+--[[
+# INITIALIZATION
+]]--
+
 minetest.register_on_generated(mapgen_callback)
+
+-- Nodes defined only to avoid errors from mapgens
 
 minetest.register_node('planetgen:stone', {
     drawtype = "normal",
@@ -96,9 +140,26 @@ minetest.register_node('planetgen:water_source', {
 })
 minetest.register_alias('mapgen_water_source', 'planetgen:water_source')
 
+--[[
+Dictionary, maps node IDs to random texture rotation modulo.
+See 'generate_planet_chunk' in this file. Sensible values are:
+    nil     No entry, random rotation disabled
+    1       Effectively equivalent to 'nil'
+    2       Rotate some blocks 90 deg around +Y vector
+    4       Rotate all blocks a random multiple of 90 deg around +Y vector
+    24      Rotate all blocks randomly around all axes
+Here, add random texture rotation around Y axis to dummy stone block
+]]--
+
 random_yrot_nodes = {
     [minetest.get_content_id('planetgen:stone')] = 4
 }
+
+--[[
+The following is some test code to try to generate some sample planets. It
+generates 16 planets in a 4x4 pattern around the origin, each planet filling a 1
+chunk wide square.
+]]
 
 add_planet {
     minchunk = {x=0, z=0},

@@ -188,6 +188,7 @@ end
 
 function pass_caves(minp, maxp, area, A, A2, planet)
     block_minp = {x=minp.x-minp.x%16, y=minp.y-minp.y%16, z=minp.z-minp.z%16}
+    -- Start xyz of block with lowest coordinates, usually lower than xyz of generated area
     while block_minp.z <= maxp.z do
         while block_minp.y <= maxp.y do
             while block_minp.x <= maxp.x do
@@ -203,3 +204,10 @@ function pass_caves(minp, maxp, area, A, A2, planet)
         block_minp.z = block_minp.z+16
     end
 end
+
+--[[
+In the simple cubic lattice, for bond-percolation our Monte Carlo simulation
+gives a value of p∞ = 0.2492 ± 0.0002, [...]
+
+S. Wilke 1983 "Bond percolation threshold in the simple cubic lattice"
+]]--
