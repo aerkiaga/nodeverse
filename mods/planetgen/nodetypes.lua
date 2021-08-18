@@ -8,8 +8,8 @@ longer needed.
 ]]
 
 function register_base_nodes(G, planet, prefix)
-    stone_color = string.format("#%.6X", math.abs(G:next()) % 0x1000000)
-    -- REGOLITH
+    stone_color = planet.stone_color
+    -- DUST
     -- Covers a planet's surface
     -- Made of the same material as STONE
     minetest.register_node(prefix .. 'dust', {
@@ -41,8 +41,8 @@ function register_base_nodes(G, planet, prefix)
     })
     random_yrot_nodes[minetest.get_content_id(prefix .. 'sediment')] = 24
     -- GRAVEL
-    -- Lies under a layer of REGOLITH
-    -- Less granular than REGOLITH
+    -- Lies under a layer of DUST
+    -- Less granular than DUST
     minetest.register_node(prefix .. 'gravel', {
         drawtype = "normal",
         visual_scale = 1.0,
@@ -78,11 +78,7 @@ function register_base_nodes(G, planet, prefix)
 end
 
 function register_liquid_nodes(G, planet, prefix)
-    if gen_true_with_probability(G, 1/8) then
-        liquid_color = string.format("#%.6X", math.abs(G:next()) % 0x1000000)
-    else
-        liquid_color = string.format("#%.2X%.2XFF", math.abs(G:next()) % 0x40, math.abs(G:next()) % 0x80)
-    end
+    liquid_color = planet.liquid_color
 
     -- LIQUID
     -- The liquid that fills a planet's oceans
