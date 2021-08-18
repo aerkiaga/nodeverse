@@ -23,6 +23,20 @@ function gen_linear(generator, min, max)
     return generator:next(0, 65535)/65536 * (max-min) + min
 end
 
+function gen_weighted(generator, options)
+    total_weight = 0
+    for i, v in pairs(options) do
+        total_weight = total_weight + v
+    end
+    value = gen_linear(generator, 0, total_weight)
+    for i, v in pairs(options) do
+        value = value - v
+        if value <= 0 then
+            return i
+        end
+    end
+end
+
 --[[
  # VECTOR MATH
 ]]

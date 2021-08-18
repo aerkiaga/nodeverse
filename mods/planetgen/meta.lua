@@ -34,4 +34,46 @@ function generate_planet_metadata(planet)
         color_g = math.abs(G:next()) % 0x80
         planet.liquid_color = string.format("#%.2X%.2XFF", color_r, color_g)
     end
+    -- ATMOSPHERE
+    -- vacuum       No liquids, no oxygen, extreme cold; can't sustain life
+    -- freezing     Liquid hydrocarbon lakes, extreme cold; can't sustain life
+    -- cold         Frozen water, cold
+    -- normal       Mild climate; can be lush
+    -- hot          Intense heat
+    -- scorching    Molten metal lakes, extreme heat; can't sustain life
+    -- reducing     Raw metals, no oxygen; silicon-based life, can be lush
+    planet.atmosphere = gen_weighted(G, {
+        vacuum = 1,
+        freezing = 1,
+        cold = 2,
+        normal = 4,
+        hot = 2,
+        scorching = 1,
+        reducing = 1
+    })
+    -- LIFE
+    -- lush         Full of life, with thriving flora and fauna everywhere
+    -- normal       More scattered flora and fauna
+    -- dead         No living organisms
+    lush_weight = 0
+    normal_weight = 2
+    dead_weight = 1
+    if planet.atmosphere == "vacuum"
+    or planet.atmosphere == "freezing"
+    or planet.atmosphere == "scorching" then
+        normal_weight = 0
+    elseif planet.atmosphere == "normal" then
+        lush_weight = 2
+        dead_weight = 0
+    elseif planet.atmosphere == "reducing" then
+        lush_weight = 1
+        dead_weight = 4
+    end
+    planet.life = gen_weighted(G, {
+        lush = lush_weight,
+        normal = normal_weight,
+        dead = dead_weight
+    })
+    minetest.log(planet.atmosphere) --D
+    minetest.log(planet.life) --D
 end
