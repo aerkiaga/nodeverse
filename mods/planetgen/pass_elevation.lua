@@ -7,6 +7,32 @@ rocky areas.
     ENTRY POINT
 ]]
 
+function pass_elevation_compute_craters(x, z, planet)
+    chunk_x = math.floor(x/80)
+    chunk_z = math.floor(z/80)
+    hash = chunk_x + chunk_z*0x1000
+    hash = int_hash(hash)
+    G = PcgRandom(planet.seed, hash)
+    num_craters = math.floor(gen_linear_sum(G, 0, 2, 3))
+
+    r = 0
+    for n=1, num_craters do
+        crater_r = gen_linear(G, 3, 15)
+        crater_x = gen_linear(G, crater_r, 80 - crater_r)
+        crater_z = gen_linear(G, crater_r, 80 - crater_r)
+        rel_x = (x % 80) - crater_x
+        rel_z = (z % 80) - crater_z
+        radius = (rel_x^2 + rel_z^2)^(1/2)
+        if radius < crater_r then
+            new_r = -(math.max(0, crater_r^2 - radius^2)^(1/2))
+            flatness = 1 + crater_r / 15
+            new_r = new_r / flatness
+            r = math.min(r, new_r)
+        end
+    end
+    return r
+end
+
 --[[
  # ENTRY POINT
 ]]--
@@ -32,6 +58,10 @@ function pass_elevation(minp, maxp, area, A, A2, planet)
             -- Add terrain roughness for high-frequency details
             local terrain_roughness = Perlin_2d_terrain_roughness:get_2d({x=x, y=z})
             ground = ground + terrain_roughness * 2
+
+            if planet.atmosphere == "vacuum" then
+                ground = ground + pass_elevation_compute_craters(x, z, planet)
+            end
 
             hash = x + z*0x100
             hash = int_hash(hash)

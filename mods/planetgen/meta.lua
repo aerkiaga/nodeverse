@@ -51,6 +51,9 @@ function generate_planet_metadata(planet)
         scorching = 1,
         reducing = 1
     })
+    if planet.atmosphere == "vacuum" then
+        planet.has_oceans = false
+    end
     if planet.atmosphere == "scorching" then
         -- We don't want large, useless lava oceans
         planet.terrestriality = math.abs(planet.terrestriality)

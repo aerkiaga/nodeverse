@@ -23,6 +23,14 @@ function gen_linear(generator, min, max)
     return generator:next(0, 65535)/65536 * (max-min) + min
 end
 
+function gen_linear_sum(generator, min, max, sum)
+    r = 0
+    for n=1, sum do
+        r = r + gen_linear(generator, min, max)
+    end
+    return r
+end
+
 function gen_weighted(generator, options)
     total_weight = 0
     for i, v in pairs(options) do

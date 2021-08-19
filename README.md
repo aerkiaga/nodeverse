@@ -9,10 +9,11 @@ immensely large universe with a never-ending variety of planets to explore.
 
 ## Status
 For now, 16 different planets' surfaces are generated next to each other. Blocks
-include stone, gravel, dust, sediment, liquid, grass soil, grass, dry grass,
-tall grass, snow and lava. Planets of different colors, rockier, more hilly or
-flat, richer in oceans, arid, frozen, volcanic, and with or without living
-organisms are generated. World generation features oceans, caves and deserts.
+include stone, gravel, dust, sediment, liquid (water, lava), grass soil, grass,
+dry grass, tall grass and snow. Planets of different colors, rockier, more hilly
+or flat, richer in oceans, arid, frozen, volcanic, and with or without living
+organisms are generated. World generation features oceans, caves, deserts and
+craters.
 
 The next step is finishing basic climate types.
 
