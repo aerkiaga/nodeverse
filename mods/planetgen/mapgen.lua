@@ -62,13 +62,20 @@ function remove_planet(index)
     table.remove(planet_list, index)
 end
 
-function generate_planet_chunk(minp, maxp, area, A, A2, planet)
+function generate_planet_chunk(minp, maxp, area, A, A1, A2, planet)
     pass_elevation(minp, maxp, area, A, A2, planet)
     pass_caves(minp, maxp, area, A, A2, planet)
-    -- Apply random texture rotation to all supported nodes
     for i in area:iter(minp.x, minp.y, minp.z, maxp.x, maxp.y, maxp.z) do
         pos = area:position(i)
 
+        -- Apply lighting
+        if A[i] == planet.node_types.liquid and planet.atmosphere == "scorching" then
+            A1[i] = 128
+        else
+            A1[i] = 0
+        end
+
+        -- Apply random texture rotation to all supported nodes
         rot = random_yrot_nodes[A[i]]
         if rot ~= nil then
             hash = pos.x + pos.y*0x10 + pos.z*0x100
@@ -91,6 +98,7 @@ function mapgen_callback(minp, maxp, blockseed)
     local VM, emin, emax = minetest.get_mapgen_object("voxelmanip")
     local area = VoxelArea:new{MinEdge=emin, MaxEdge=emax}
     local A = VM:get_data()
+    local A1 = VM:get_light_data()
     local A2 = VM:get_param2_data()
 
     local minchunk = {x=math.floor(minp.x/80), z=math.floor(minp.z/80)}
@@ -101,10 +109,11 @@ function mapgen_callback(minp, maxp, blockseed)
         commonmin = {x=math.max(minp.x, planet.minchunk.x*80), y=minp.y, z=math.max(minp.z, planet.minchunk.z*80)}
         commonmax = {x=math.min(maxp.x, planet.maxchunk.x*80+79), y=maxp.y, z=math.min(maxp.z, planet.maxchunk.z*80+79)}
         if commonmax.x >= commonmin.x and commonmax.z >= commonmin.z then
-            generate_planet_chunk(commonmin, commonmax, area, A, A2, planet)
+            generate_planet_chunk(commonmin, commonmax, area, A, A1, A2, planet)
         end
     end
     VM:set_data(A)
+    VM:set_light_data(A1)
     VM:set_param2_data(A2)
     VM:calc_lighting()
     VM:write_to_map()
@@ -133,7 +142,7 @@ minetest.register_node('planetgen:water_source', {
     drawtype = "liquid",
     visual_scale = 1.0,
     tiles = {
-        "liquid.png"
+        "water.png"
     },
     paramtype2 = "facedir",
     place_param2 = 8,

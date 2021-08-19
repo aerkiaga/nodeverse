@@ -79,6 +79,14 @@ end
 
 function register_liquid_nodes(G, planet, prefix)
     liquid_color = planet.liquid_color
+    liquid_type = "water"
+    liquid_style = "^[colorize:" .. liquid_color .. ":128)^[opacity:160"
+    liquid_animation_length = 2.0
+    if planet.atmosphere == "scorching" then
+        liquid_type = "lava"
+        liquid_style = ")"
+        liquid_animation_length = 8.0
+    end
 
     -- LIQUID
     -- The liquid that fills a planet's oceans
@@ -88,23 +96,23 @@ function register_liquid_nodes(G, planet, prefix)
         visual_scale = 1.0,
         tiles = {
             {
-                name = "(liquid_animation.png^[colorize:" .. liquid_color .. ":128)^[opacity:160",
+                name = "(" .. liquid_type .. "_animation.png" .. liquid_style,
                 backface_culling = false,
                 animation = {
                     type = "vertical_frames",
                     aspect_w = 16,
                     aspect_h = 16,
-                    length = 2.0
+                    length = liquid_animation_length
                 }
             },
             {
-                name = "(liquid_animation.png^[colorize:" .. liquid_color .. ":128)^[opacity:160",
+                name = "(" .. liquid_type .. "_animation.png" .. liquid_style,
                 backface_culling = true,
                 animation = {
                     type = "vertical_frames",
                     aspect_w = 16,
                     aspect_h = 16,
-                    length = 2.0
+                    length = liquid_animation_length
                 }
             }
         },
@@ -124,26 +132,26 @@ function register_liquid_nodes(G, planet, prefix)
     minetest.register_node(prefix .. 'flowing_liquid', {
         drawtype = "flowingliquid",
         visual_scale = 1.0,
-        tiles = {"liquid.png"},
+        tiles = {liquid_type .. ".png"},
         special_tiles = {
             {
-                name = "(liquid_animation.png^[colorize:" .. liquid_color .. ":128)^[opacity:160",
+                name = "(" .. liquid_type .. "_animation.png" .. liquid_style,
                 backface_culling = false,
                 animation = {
                     type = "vertical_frames",
                     aspect_w = 16,
                     aspect_h = 16,
-                    length = 2.0
+                    length = liquid_animation_length
                 }
             },
             {
-                name = "(liquid_animation.png^[colorize:" .. liquid_color .. ":128)^[opacity:160",
+                name = "(" .. liquid_type .. "_animation.png" .. liquid_style,
                 backface_culling = true,
                 animation = {
                     type = "vertical_frames",
                     aspect_w = 16,
                     aspect_h = 16,
-                    length = 2.0
+                    length = liquid_animation_length
                 }
             }
         },
