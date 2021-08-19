@@ -82,7 +82,11 @@ function register_liquid_nodes(G, planet, prefix)
     liquid_type = "water"
     liquid_style = "^[colorize:" .. liquid_color .. ":128)^[opacity:160"
     liquid_animation_length = 2.0
-    if planet.atmosphere == "scorching" then
+    if planet.atmosphere == "freezing" then
+        liquid_type = "hydrocarbon"
+        liquid_style = ")^[opacity:160"
+        liquid_animation_length = 4.0
+    elseif planet.atmosphere == "scorching" then
         liquid_type = "lava"
         liquid_style = ")"
         liquid_animation_length = 8.0
@@ -90,7 +94,10 @@ function register_liquid_nodes(G, planet, prefix)
 
     -- LIQUID
     -- The liquid that fills a planet's oceans
-    -- Might be water, or something else
+    -- Might be water, or something else:
+    -- water        Most common; essential for life
+    -- hydrocarbon  Extremely cold, liquid short-chain hydrocarbon mix
+    -- lava         Molten mix of rocks at high temperature
     minetest.register_node(prefix .. 'liquid', {
         drawtype = "liquid",
         visual_scale = 1.0,

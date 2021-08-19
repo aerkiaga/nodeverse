@@ -54,9 +54,9 @@ function generate_planet_metadata(planet)
     if planet.atmosphere == "vacuum" then
         planet.has_oceans = false
     end
-    if planet.atmosphere == "scorching" then
-        -- We don't want large, useless lava oceans
-        planet.terrestriality = math.abs(planet.terrestriality)
+    if planet.atmosphere == "freezing" or planet.atmosphere == "scorching" then
+        -- We don't want large, useless hydrocarbon/lava oceans
+        planet.terrestriality = math.max(0.3, math.abs(planet.terrestriality))
     end
     -- LIFE
     -- lush         Full of life, with thriving flora and fauna everywhere
