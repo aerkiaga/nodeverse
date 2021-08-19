@@ -45,7 +45,11 @@ function pass_elevation(minp, maxp, area, A, A2, planet)
                     A[i] = planet.node_types.gravel -- Intermediate layer
                 elseif y == math.floor(ground) then
                     if planet.has_oceans and (ocean_elevation + mountain_elevation + mountain_roughness + y/20 < -0.4 or y < -1) then
-                        A[i] = planet.node_types.sediment -- Beach/ocean floor
+                        if planet.atmosphere ~= "scorching" then
+                            A[i] = planet.node_types.sediment --Beach/ocean floor
+                        else
+                            A[i] = planet.node_types.gravel
+                        end
                     else
                         -- Normal land
                         if planet.life == "dead" then
@@ -58,7 +62,7 @@ function pass_elevation(minp, maxp, area, A, A2, planet)
                             if planet.has_oceans and ocean_elevation - terrain_roughness/10 > 0.3 then
                                 A[i] = planet.node_types.dust
                             elseif not planet.has_oceans and ocean_elevation + terrain_roughness/10 < 0 then
-                                A[i] = planet.node_types.sediment
+                                A[i] = planet.node_types.sediment -- Desert
                             else
                                 A[i] = planet.node_types.grass_soil
                             end

@@ -51,6 +51,10 @@ function generate_planet_metadata(planet)
         scorching = 1,
         reducing = 1
     })
+    if planet.atmosphere == "scorching" then
+        -- We don't want large, useless lava oceans
+        planet.terrestriality = math.abs(planet.terrestriality)
+    end
     -- LIFE
     -- lush         Full of life, with thriving flora and fauna everywhere
     -- normal       More scattered flora and fauna
