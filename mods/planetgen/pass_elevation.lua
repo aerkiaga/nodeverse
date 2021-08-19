@@ -43,7 +43,12 @@ function pass_elevation(minp, maxp, area, A, A2, planet)
                     if planet.has_oceans and (ocean_elevation + mountain_elevation + mountain_roughness + y/20 < -0.4 or y < -1) then
                         A[i] = planet.node_types.sediment -- Beach/ocean floor
                     else
-                        A[i] = planet.node_types.dust -- Normal land
+                        -- Normal land
+                        if planet.life ~= "dead" then
+                            A[i] = planet.node_types.grass_soil
+                        else
+                            A[i] = planet.node_types.dust
+                        end
                     end
                 elseif planet.has_oceans and y < 0 then
                     A[i] = planet.node_types.liquid -- Ocean

@@ -17,8 +17,8 @@ function register_base_nodes(G, planet, prefix)
         visual_scale = 1.0,
         tiles = {
             "dust.png^[colorize:" .. stone_color .. ":64",
-            "dust2.png^[colorize:" .. stone_color .. ":64", "dust.png^[colorize:" .. stone_color .. ":64", "dust2.png^[colorize:" .. stone_color .. ":64", "dust2.png^[colorize:" .. stone_color .. ":64",
-            "dust.png^[colorize:" .. stone_color .. ":64"
+            "dust2.png^[colorize:" .. stone_color .. ":64",
+            "dust.png^[colorize:" .. stone_color .. ":64", "dust2.png^[colorize:" .. stone_color .. ":64", "dust2.png^[colorize:" .. stone_color .. ":64", "dust.png^[colorize:" .. stone_color .. ":64"
         },
         paramtype2 = "facedir",
         place_param2 = 8,
@@ -33,8 +33,8 @@ function register_base_nodes(G, planet, prefix)
         visual_scale = 1.0,
         tiles = {
             "sediment.png^[colorize:" .. stone_color .. ":48",
-            "sediment2.png^[colorize:" .. stone_color .. ":48", "sediment.png^[colorize:" .. stone_color .. ":48", "sediment2.png^[colorize:" .. stone_color .. ":48", "sediment2.png^[colorize:" .. stone_color .. ":48",
-            "sediment.png^[colorize:" .. stone_color .. ":48"
+            "sediment2.png^[colorize:" .. stone_color .. ":48",
+            "sediment.png^[colorize:" .. stone_color .. ":48", "sediment2.png^[colorize:" .. stone_color .. ":48", "sediment2.png^[colorize:" .. stone_color .. ":48", "sediment.png^[colorize:" .. stone_color .. ":48"
         },
         paramtype2 = "facedir",
         place_param2 = 8,
@@ -48,8 +48,8 @@ function register_base_nodes(G, planet, prefix)
         visual_scale = 1.0,
         tiles = {
             "gravel.png^[colorize:" .. stone_color .. ":48",
-            "gravel.png^[colorize:" .. stone_color .. ":48", "(gravel.png^[transformR180)^[colorize:" .. stone_color .. ":48", "(gravel.png^[transformR90)^[colorize:" .. stone_color .. ":48","(gravel.png^[transformR270)^[colorize:" .. stone_color .. ":48",
             "gravel.png^[colorize:" .. stone_color .. ":48",
+            "(gravel.png^[transformR180)^[colorize:" .. stone_color .. ":48", "(gravel.png^[transformR90)^[colorize:" .. stone_color .. ":48","(gravel.png^[transformR270)^[colorize:" .. stone_color .. ":48", "gravel.png^[colorize:" .. stone_color .. ":48",
         },
         paramtype2 = "facedir",
         place_param2 = 8,
@@ -63,8 +63,8 @@ function register_base_nodes(G, planet, prefix)
         visual_scale = 1.0,
         tiles = {
             "stone.png^[colorize:" .. stone_color .. ":32",
-            "stone.png^[colorize:" .. stone_color .. ":32", "(stone.png^[transformR180)^[colorize:" .. stone_color .. ":32", "stone.png^[colorize:" .. stone_color .. ":32","(stone.png^[transformR180)^[colorize:" .. stone_color .. ":32",
             "stone.png^[colorize:" .. stone_color .. ":32",
+            "(stone.png^[transformR180)^[colorize:" .. stone_color .. ":32", "stone.png^[colorize:" .. stone_color .. ":32","(stone.png^[transformR180)^[colorize:" .. stone_color .. ":32", "stone.png^[colorize:" .. stone_color .. ":32",
         },
         paramtype2 = "facedir",
         place_param2 = 8,
@@ -163,6 +163,38 @@ function register_liquid_nodes(G, planet, prefix)
     planet.node_types.flowing_liquid = minetest.get_content_id(prefix .. 'flowing_liquid')
 end
 
+function register_base_floral_nodes(G, planet, prefix)
+    grass_color = planet.grass_color
+
+    -- GRASS SOIL
+    -- A surface node for planets supporting life
+    minetest.register_node(prefix .. 'grass_soil', {
+        drawtype = "normal",
+        visual_scale = 1.0,
+        tiles = {
+            {name = "grass_soil_top.png", color = grass_color},
+            "dust.png^[colorize:" .. stone_color .. ":64",
+            "dust2.png^[colorize:" .. stone_color .. ":64",
+            "dust.png^[colorize:" .. stone_color .. ":64",
+            "dust2.png^[colorize:" .. stone_color .. ":64",
+            "dust2.png^[colorize:" .. stone_color .. ":64"
+        },
+        overlay_tiles = {
+            "",
+            "",
+            {name = "grass_soil_side.png", color = grass_color},
+            {name = "grass_soil_side.png^[transformFX", color = grass_color},
+            {name = "grass_soil_side.png^[transformFX", color = grass_color},
+            {name = "grass_soil_side.png", color = grass_color}
+        },
+        paramtype2 = "facedir",
+        place_param2 = 8,
+    })
+    random_yrot_nodes[minetest.get_content_id(prefix .. 'grass_soil')] = 4
+
+    planet.node_types.grass_soil = minetest.get_content_id(prefix .. 'grass_soil')
+end
+
 --[[
  # REGISTRATION
 ]]
@@ -173,6 +205,9 @@ function register_planet_nodes(planet)
     G = PcgRandom(planet.seed, planet.seed)
     register_base_nodes(G, planet, prefix)
     register_liquid_nodes(G, planet, prefix)
+    if planet.life ~= "dead" then
+        register_base_floral_nodes(G, planet, prefix)
+    end
 end
 
 function unregister_planet_nodes(planet)
@@ -190,5 +225,11 @@ function unregister_planet_nodes(planet)
     random_yrot_nodes[minetest.get_content_id(prefix .. 'liquid')] = nil
     minetest.registered_nodes[prefix .. 'liquid'] = nil
     minetest.registered_nodes[prefix .. 'flowing_liquid'] = nil
+
+    if planet.life ~= "dead" then
+        -- Unregister base floral nodes and their random rotation info
+        random_yrot_nodes[minetest.get_content_id(prefix .. 'grass_soil')] = nil
+        minetest.registered_nodes[prefix .. 'grass_soil'] = nil
+    end
     planet.node_types = nil
 end
