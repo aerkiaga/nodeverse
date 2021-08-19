@@ -73,6 +73,7 @@ function pass_elevation(minp, maxp, area, A, A2, planet)
                     grass_weight = 0
                     dry_grass_weight = 0
                     tall_grass_weight = 0
+                    snow_weight = 0
                     if planet.has_oceans and (ocean_elevation + mountain_elevation + mountain_roughness + (y-1)/20 < -0.4 or (y-1) < -1) then
                         --
                     elseif planet.life ~= "dead" then
@@ -87,6 +88,14 @@ function pass_elevation(minp, maxp, area, A, A2, planet)
                                 grass_weight = 8
                                 dry_grass_weight = 4
                             end
+                        elseif planet.atmosphere == "cold" then
+                            if mountain_elevation >= 0 then
+                                snow_weight = 50 + 50*(mountain_elevation^(1/5))
+                            else
+                                snow_weight = 50 - 50*((-mountain_elevation)^(1/5))
+                            end
+                            air_weight = 100 - snow_weight
+                            grass_weight = air_weight / 4
                         elseif planet.life == "lush" then
                             grass_weight = 25
                             tall_grass_weight = 15
@@ -95,7 +104,13 @@ function pass_elevation(minp, maxp, area, A, A2, planet)
                             tall_grass_weight = 2
                         end
                     else
-                        --
+                        if planet.atmosphere == "cold" then
+                            snow_weight = 100
+                            air_weight = 0
+                        elseif planet.atmosphere == "freezing" then
+                            snow_weight = 90
+                            air_weight = 10
+                        end
                     end
                     options = {
                         [minetest.CONTENT_AIR] = air_weight
@@ -108,6 +123,9 @@ function pass_elevation(minp, maxp, area, A, A2, planet)
                     end
                     if planet.node_types.tall_grass ~= nil then
                         options[planet.node_types.tall_grass] = tall_grass_weight
+                    end
+                    if planet.node_types.snow ~= nil then
+                        options[planet.node_types.snow] = snow_weight
                     end
                     A[i] = gen_weighted(G, options)
                 else

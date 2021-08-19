@@ -163,6 +163,34 @@ function register_liquid_nodes(G, planet, prefix)
     planet.node_types.flowing_liquid = minetest.get_content_id(prefix .. 'flowing_liquid')
 end
 
+function register_base_icy_nodes(G, planet, prefix)
+    -- SNOW
+    -- Covers planets with very low temperatures
+    minetest.register_node(prefix .. 'snow', {
+        drawtype = "nodebox",
+        visual_scale = 1.0,
+        tiles = {
+            "snow_top.png",
+            "snow_top.png",
+            "snow_side.png^[transformFX",
+            "snow_side.png^[transformFX",
+            "snow_side.png",
+            "snow_side.png"
+        },
+        paramtype2 = "facedir",
+        place_param2 = 8,
+        walkable = false,
+        leveled = 16,
+        node_box = {
+            type = "leveled",
+            fixed = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}
+        },
+    })
+    random_yrot_nodes[minetest.get_content_id(prefix .. 'snow')] = 4
+
+    planet.node_types.snow = minetest.get_content_id(prefix .. 'snow')
+end
+
 function register_base_floral_nodes(G, planet, prefix)
     grass_color = planet.grass_color
 
@@ -203,6 +231,7 @@ function register_base_floral_nodes(G, planet, prefix)
         paramtype2 = "degrotate",
         place_param2 = 0,
         sunlight_propagates = true,
+        walkable = false,
     })
     random_yrot_nodes[minetest.get_content_id(prefix .. 'grass')] = 20
 
@@ -217,6 +246,7 @@ function register_base_floral_nodes(G, planet, prefix)
         paramtype2 = "degrotate",
         place_param2 = 0,
         sunlight_propagates = true,
+        walkable = false,
     })
     random_yrot_nodes[minetest.get_content_id(prefix .. 'dry_grass')] = 20
 
@@ -235,6 +265,7 @@ function register_base_floral_nodes(G, planet, prefix)
         paramtype2 = "degrotate",
         place_param2 = 0,
         sunlight_propagates = true,
+        walkable = false,
     })
     random_yrot_nodes[minetest.get_content_id(prefix .. 'tall_grass')] = 20
 
@@ -254,6 +285,9 @@ function register_planet_nodes(planet)
     G = PcgRandom(planet.seed, planet.seed)
     register_base_nodes(G, planet, prefix)
     register_liquid_nodes(G, planet, prefix)
+    if planet.atmosphere == "cold" or planet.atmosphere == "freezing" then
+        register_base_icy_nodes(G, planet, prefix)
+    end
     if planet.life ~= "dead" then
         register_base_floral_nodes(G, planet, prefix)
     end
@@ -274,6 +308,11 @@ function unregister_planet_nodes(planet)
     random_yrot_nodes[minetest.get_content_id(prefix .. 'liquid')] = nil
     minetest.registered_nodes[prefix .. 'liquid'] = nil
     minetest.registered_nodes[prefix .. 'flowing_liquid'] = nil
+
+    if planet.atmosphere == "cold" or planet.atmosphere == "freezing" then
+        random_yrot_nodes[minetest.get_content_id(prefix .. 'snow')] = nil
+        minetest.registered_nodes[prefix .. 'snow'] = nil
+    end
 
     if planet.life ~= "dead" then
         -- Unregister base floral nodes and their random rotation info
