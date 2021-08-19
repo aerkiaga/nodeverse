@@ -187,6 +187,10 @@ function pass_caves_generate_block(block_minp, minp, maxp, area, A, A2, planet)
                     if A[i] == minetest.CONTENT_AIR or A[i] == planet.node_types.sediment or A[i] == planet.node_types.liquid then
                         do break end
                     end
+                    if A[i] == planet.node_types.grass or A[i] == planet.node_types.dry_grass or A[i] == planet.node_types.tall_grass then
+                        A[i] = minetest.CONTENT_AIR
+                        do break end
+                    end
 
                     -- Logical OR tunnels from center to all faces
                     -- Side +Y
