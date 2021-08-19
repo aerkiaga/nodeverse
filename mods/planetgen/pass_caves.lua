@@ -184,7 +184,7 @@ function pass_caves_generate_block(block_minp, minp, maxp, area, A, A2, planet)
 
                     -- Don't touch some nodes
                     local i = area:index(x, y, z)
-                    if A[i] ~= planet.node_types.dust and A[i] ~= planet.node_types.gravel and A[i] ~= planet.node_types.stone then
+                    if A[i] == minetest.CONTENT_AIR or A[i] == planet.node_types.sediment or A[i] == planet.node_types.liquid then
                         do break end
                     end
 

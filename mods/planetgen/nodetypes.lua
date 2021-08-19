@@ -192,7 +192,37 @@ function register_base_floral_nodes(G, planet, prefix)
     })
     random_yrot_nodes[minetest.get_content_id(prefix .. 'grass_soil')] = 4
 
+    -- GRASS
+    -- A low grassy plant
+    minetest.register_node(prefix .. 'grass', {
+        drawtype = "plantlike",
+        visual_scale = 1.0,
+        tiles = {
+            {name = "grass.png", color = grass_color},
+        },
+        paramtype2 = "degrotate",
+        place_param2 = 0,
+        sunlight_propagates = true,
+    })
+    random_yrot_nodes[minetest.get_content_id(prefix .. 'grass')] = 20
+
+    -- DRY GRASS
+    -- A dry grassy plant
+    minetest.register_node(prefix .. 'dry_grass', {
+        drawtype = "plantlike",
+        visual_scale = 1.0,
+        tiles = {
+            {name = "grass_dry.png", color = grass_color},
+        },
+        paramtype2 = "degrotate",
+        place_param2 = 0,
+        sunlight_propagates = true,
+    })
+    random_yrot_nodes[minetest.get_content_id(prefix .. 'dry_grass')] = 20
+
     planet.node_types.grass_soil = minetest.get_content_id(prefix .. 'grass_soil')
+    planet.node_types.grass = minetest.get_content_id(prefix .. 'grass')
+    planet.node_types.dry_grass = minetest.get_content_id(prefix .. 'dry_grass')
 end
 
 --[[
@@ -229,7 +259,11 @@ function unregister_planet_nodes(planet)
     if planet.life ~= "dead" then
         -- Unregister base floral nodes and their random rotation info
         random_yrot_nodes[minetest.get_content_id(prefix .. 'grass_soil')] = nil
+        random_yrot_nodes[minetest.get_content_id(prefix .. 'grass')] = nil
+        random_yrot_nodes[minetest.get_content_id(prefix .. 'dry_grass')] = nil
         minetest.registered_nodes[prefix .. 'grass_soil'] = nil
+        minetest.registered_nodes[prefix .. 'grass'] = nil
+        minetest.registered_nodes[prefix .. 'dry_grass'] = nil
     end
     planet.node_types = nil
 end
