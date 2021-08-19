@@ -193,7 +193,7 @@ function register_base_floral_nodes(G, planet, prefix)
     random_yrot_nodes[minetest.get_content_id(prefix .. 'grass_soil')] = 4
 
     -- GRASS
-    -- A low grassy plant
+    -- A short grassy plant
     minetest.register_node(prefix .. 'grass', {
         drawtype = "plantlike",
         visual_scale = 1.0,
@@ -223,6 +223,25 @@ function register_base_floral_nodes(G, planet, prefix)
     planet.node_types.grass_soil = minetest.get_content_id(prefix .. 'grass_soil')
     planet.node_types.grass = minetest.get_content_id(prefix .. 'grass')
     planet.node_types.dry_grass = minetest.get_content_id(prefix .. 'dry_grass')
+
+    -- TALL GRASS
+    -- A tall grassy plant
+    minetest.register_node(prefix .. 'tall_grass', {
+        drawtype = "plantlike",
+        visual_scale = 1.0,
+        tiles = {
+            {name = "grass_tall.png", color = grass_color},
+        },
+        paramtype2 = "degrotate",
+        place_param2 = 0,
+        sunlight_propagates = true,
+    })
+    random_yrot_nodes[minetest.get_content_id(prefix .. 'tall_grass')] = 20
+
+    planet.node_types.grass_soil = minetest.get_content_id(prefix .. 'grass_soil')
+    planet.node_types.grass = minetest.get_content_id(prefix .. 'grass')
+    planet.node_types.dry_grass = minetest.get_content_id(prefix .. 'dry_grass')
+    planet.node_types.tall_grass = minetest.get_content_id(prefix .. 'tall_grass')
 end
 
 --[[

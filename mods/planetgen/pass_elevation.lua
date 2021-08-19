@@ -72,6 +72,7 @@ function pass_elevation(minp, maxp, area, A, A2, planet)
                     air_weight = 100
                     grass_weight = 0
                     dry_grass_weight = 0
+                    tall_grass_weight = 0
                     if planet.has_oceans and (ocean_elevation + mountain_elevation + mountain_roughness + (y-1)/20 < -0.4 or (y-1) < -1) then
                         --
                     elseif planet.life ~= "dead" then
@@ -87,9 +88,11 @@ function pass_elevation(minp, maxp, area, A, A2, planet)
                                 dry_grass_weight = 4
                             end
                         elseif planet.life == "lush" then
-                            grass_weight = 30
+                            grass_weight = 25
+                            tall_grass_weight = 15
                         else
                             grass_weight = 15
+                            tall_grass_weight = 2
                         end
                     else
                         --
@@ -102,6 +105,9 @@ function pass_elevation(minp, maxp, area, A, A2, planet)
                     end
                     if planet.node_types.dry_grass ~= nil then
                         options[planet.node_types.dry_grass] = dry_grass_weight
+                    end
+                    if planet.node_types.tall_grass ~= nil then
+                        options[planet.node_types.tall_grass] = tall_grass_weight
                     end
                     A[i] = gen_weighted(G, options)
                 else
