@@ -181,47 +181,51 @@ function pass_caves_generate_block(block_minp, minp, maxp, area, A, A2, planet)
             for y=minp.y, maxp.y do
                 repeat
                     local truth = false
+                    local rel_x = x-block_minp.x
+                    local rel_y = y-block_minp.y
+                    local rel_z = z-block_minp.z
 
                     -- Don't touch some nodes
                     local i = area:index(x, y, z)
                     if A[i] == minetest.CONTENT_AIR or A[i] == planet.node_types.sediment or A[i] == planet.node_types.liquid then
                         do break end
                     end
-                    if A[i] == planet.node_types.grass or A[i] == planet.node_types.dry_grass or A[i] == planet.node_types.tall_grass then
-                        A[i] = minetest.CONTENT_AIR
-                        do break end
+                    if A[i] == planet.node_types.grass or A[i] == planet.node_types.dry_grass or A[i] == planet.node_types.tall_grass or A[i] == planet.node_types.snow then
+                        rel_y = rel_y - 1
                     end
+
+                    threshold = 0
 
                     -- Logical OR tunnels from center to all faces
                     -- Side +Y
                     if side_seeds[1] ~= nil and not truth then
-                        contrib = pass_caves_calculate_side_contribution(1, {x=x-block_minp.x, y=z-block_minp.z, z=y-block_minp.y}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
-                        truth = truth or (contrib > 0)
+                        contrib = pass_caves_calculate_side_contribution(1, {x=rel_x, y=rel_z, z=rel_y}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                        truth = truth or (contrib > threshold)
                     end
                     -- Side -Y
                     if side_seeds[2] ~= nil and not truth then
-                        contrib = pass_caves_calculate_side_contribution(2, {x=x-block_minp.x, y=z-block_minp.z, z=y-block_minp.y}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
-                        truth = truth or (contrib > 0)
+                        contrib = pass_caves_calculate_side_contribution(2, {x=rel_x, y=rel_z, z=rel_y}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                        truth = truth or (contrib > threshold)
                     end
                     -- Side +X
                     if side_seeds[3] ~= nil and not truth then
-                        contrib = pass_caves_calculate_side_contribution(3, {x=y-block_minp.y, y=z-block_minp.z, z=x-block_minp.x}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
-                        truth = truth or (contrib > 0)
+                        contrib = pass_caves_calculate_side_contribution(3, {x=rel_y, y=rel_z, z=rel_x}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                        truth = truth or (contrib > threshold)
                     end
                     -- Side -X
                     if side_seeds[4] ~= nil and not truth then
-                        contrib = pass_caves_calculate_side_contribution(4, {x=y-block_minp.y, y=z-block_minp.z, z=x-block_minp.x}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
-                        truth = truth or (contrib > 0)
+                        contrib = pass_caves_calculate_side_contribution(4, {x=rel_y, y=rel_z, z=rel_x}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                        truth = truth or (contrib > threshold)
                     end
                     -- Side +Z
                     if side_seeds[5] ~= nil and not truth then
-                        contrib = pass_caves_calculate_side_contribution(5, {x=x-block_minp.x, y=y-block_minp.y, z=z-block_minp.z}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
-                        truth = truth or (contrib > 0)
+                        contrib = pass_caves_calculate_side_contribution(5, {x=rel_x, y=rel_y, z=rel_z}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                        truth = truth or (contrib > threshold)
                     end
                     -- Side -Z
                     if side_seeds[6] ~= nil and not truth then
-                        contrib = pass_caves_calculate_side_contribution(6, {x=x-block_minp.x, y=y-block_minp.y, z=z-block_minp.z}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
-                        truth = truth or (contrib > 0)
+                        contrib = pass_caves_calculate_side_contribution(6, {x=rel_x, y=rel_y, z=rel_z}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                        truth = truth or (contrib > threshold)
                     end
                     if truth then A[i] = minetest.CONTENT_AIR end
                 until true
