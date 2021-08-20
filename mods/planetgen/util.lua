@@ -57,6 +57,14 @@ function vec3_modulo(v)
     return math.sqrt(v.x^2 + v.y^2 + v.z^2)
 end
 
+function vec3_scale(v, a)
+    return {
+        x = a * v.x,
+        y = a * v.y,
+        z = a * v.z
+    }
+end
+
 function vec3_add(v1, v2)
     return {
         x = v1.x + v2.x,
@@ -77,10 +85,32 @@ function vec3_cross_product(v1, v2)
     }
 end
 
-function vec3_scale(v, a)
+function vec3_apply_matrix(v, M)
     return {
-        x = a * v.x,
-        y = a * v.y,
-        z = a * v.z
+        x = M[1][1]*v.x + M[1][2]*v.y + M[1][3]*v.z,
+        y = M[2][1]*v.x + M[2][2]*v.y + M[2][3]*v.z,
+        z = M[3][1]*v.x + M[3][2]*v.y + M[3][3]*v.z
     }
+end
+
+function vec3_rotate(v, theta, axis)
+    -- Uses radians!
+    axis = vec3_scale(axis, 1/vec3_modulo(axis))
+    return vec3_apply_matrix(v, {
+        {
+            math.cos(theta) + axis.x^2*(1 - math.cos(theta)),
+            axis.x*axis.y*(1 - math.cos(theta)) - axis.z*math.sin(theta),
+            axis.x*axis.z*(1 - math.cos(theta)) + axis.y*math.sin(theta)
+        },
+        {
+            axis.y*axis.x*(1 - math.cos(theta)) + axis.z*math.sin(theta),
+            math.cos(theta) + axis.y^2*(1 - math.cos(theta)),
+            axis.y*axis.z*(1 - math.cos(theta)) - axis.x*math.sin(theta)
+        },
+        {
+            axis.z*axis.x*(1 - math.cos(theta)) - axis.y*math.sin(theta),
+            axis.z*axis.y*(1 - math.cos(theta)) - axis.x*math.sin(theta),
+            math.cos(theta) + axis.z^2*(1 - math.cos(theta)),
+        }
+    })
 end

@@ -58,7 +58,7 @@ end
 
 function generate_planet_chunk(minp, maxp, area, A, A1, A2, planet)
     pass_elevation(minp, maxp, area, A, A2, planet)
-    pass_caves(minp, maxp, area, A, A2, planet)
+    --pass_caves(minp, maxp, area, A, A2, planet) --D
     for i in area:iter(minp.x, minp.y, minp.z, maxp.x, maxp.y, maxp.z) do
         pos = area:position(i)
         pos = vec3_add(pos, planet.offset)
@@ -294,107 +294,40 @@ random_yrot_nodes = {
 }
 
 --[[
-The following is some test code to try to generate some sample planets. It
-generates 16 planets in a 4x4 pattern around the origin, each planet filling a 1
-chunk wide square.
+Generate a number of planets following a conic spiral with Archimedean floor
+plan, trying to keep distances even. A Fermat spiral with golden angle step was
+also attempted, but the results were noticeably worse in terms of balance.
 ]]
 
-add_planet {
-    minp = {x=0, y=-640, z=0},
-    maxp = {x=79, y=639, z=79},
-    offset = {x=0, y=0, z=0},
-    seed=56748364,
-}
+num_planets = 100
+planet_size = 80
+function seed_from_n(n)
+    return n
+end
 
-add_planet {
-    minp = {x=-80, y=-640, z=0},
-    maxp = {x=-1, y=639, z=79},
-    offset = {x=0, y=0, z=0},
-    seed=6592659,
-}
-
-add_planet {
-    minp = {x=-80, y=-640, z=-80},
-    maxp = {x=-1, y=639, z=-1},
-    offset = {x=0, y=0, z=0},
-    seed=7603769,
-}
-
-add_planet {
-    minp = {x=0, y=-640, z=-80},
-    maxp = {x=79, y=639, z=-1},
-    offset = {x=0, y=0, z=0},
-    seed=756037595639,
-}
-add_planet {
-    minp = {x=80, y=-640, z=0},
-    maxp = {x=159, y=639, z=79},
-    offset = {x=0, y=0, z=0},
-    seed=65926595629574,
-}
-add_planet {
-    minp = {x=80, y=-640, z=80},
-    maxp = {x=159, y=639, z=159},
-    offset = {x=0, y=0, z=0},
-    seed=6596593619576837,
-}
-add_planet {
-    minp = {x=0, y=-640, z=80},
-    maxp = {x=79, y=639, z=159},
-    offset = {x=0, y=0, z=0},
-    seed=658923648967494674,
-}
-add_planet {
-    minp = {x=-80, y=-640, z=80},
-    maxp = {x=-1, y=639, z=159},
-    offset = {x=0, y=0, z=0},
-    seed=6593265946295,
-}
-add_planet {
-    minp = {x=80, y=-640, z=-80},
-    maxp = {x=159, y=639, z=-1},
-    offset = {x=0, y=0, z=0},
-    seed=7693658956382957582,
-}
-add_planet {
-    minp = {x=80, y=-640, z=-160},
-    maxp = {x=159, y=639, z=-81},
-    offset = {x=0, y=0, z=0},
-    seed=6583658565638,
-}
-add_planet {
-    minp = {x=0, y=-640, z=-160},
-    maxp = {x=79, y=639, z=-81},
-    offset = {x=0, y=0, z=0},
-    seed=65893684523769,
-}
-add_planet {
-    minp = {x=-80, y=-640, z=-160},
-    maxp = {x=-1, y=639, z=-81},
-    offset = {x=0, y=0, z=0},
-    seed=6436786754367,
-}
-add_planet {
-    minp = {x=-160, y=-640, z=-160},
-    maxp = {x=-81, y=639, z=-81},
-    offset = {x=0, y=0, z=0},
-    seed=65746746745367567,
-}
-add_planet {
-    minp = {x=-160, y=-640, z=-80},
-    maxp = {x=-81, y=639, z=-1},
-    offset = {x=0, y=0, z=0},
-    seed=532642675436734,
-}
-add_planet {
-    minp = {x=-160, y=-640, z=0},
-    maxp = {x=-81, y=639, z=79},
-    offset = {x=0, y=0, z=0},
-    seed=5725623757825632,
-}
-add_planet {
-    minp = {x=-160, y=-640, z=80},
-    maxp = {x=-81, y=639, z=159},
-    offset = {x=0, y=0, z=0},
-    seed=4521573274389547,
-}
+current_pos = {x=1, y=-100, z=0}
+elevation_per_turn = planet_size
+separation_per_turn = 2*planet_size
+separation = 2*planet_size
+for n=1, num_planets do
+    current_node = {
+        x=math.floor(current_pos.x),
+        y=math.floor(current_pos.y),
+        z=math.floor(current_pos.z)
+    }
+    r_min = math.floor(planet_size / 2)
+    r_max = math.ceil(planet_size / 2) - 1
+    add_planet {
+        minp = {x=current_node.x-r_min, y=current_node.y-4*r_min, z=current_node.z-r_min},
+        maxp = {x=current_node.x+r_max, y=current_node.y+4*r_max, z=current_node.z+r_max},
+        offset = {x=-current_node.x, y=-current_node.y, z=-current_node.z},
+        seed = seed_from_n(n)
+    }
+    delta_angle = math.sqrt(2*math.pi*separation / (n*separation_per_turn))
+    current_pos = vec3_rotate(current_pos, delta_angle, {x=0, y=1, z=0})
+    outward = {x=current_pos.x, y=0, z=current_pos.z}
+    outward = vec3_scale(outward, 1/vec3_modulo(outward))
+    outward = vec3_scale(outward, separation_per_turn * delta_angle / (2*math.pi))
+    outward.y = elevation_per_turn * delta_angle / (2*math.pi)
+    current_pos = vec3_add(current_pos, outward)
+end
