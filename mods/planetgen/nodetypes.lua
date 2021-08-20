@@ -8,7 +8,7 @@ longer needed.
 ]]
 
 function register_base_nodes(G, planet, prefix)
-    stone_color = planet.stone_color
+    local stone_color = planet.stone_color
     -- DUST
     -- Covers a planet's surface
     -- Made of the same material as STONE
@@ -78,10 +78,10 @@ function register_base_nodes(G, planet, prefix)
 end
 
 function register_liquid_nodes(G, planet, prefix)
-    liquid_color = planet.liquid_color
-    liquid_type = "water"
-    liquid_style = "^[colorize:" .. liquid_color .. ":128)^[opacity:160"
-    liquid_animation_length = 2.0
+    local liquid_color = planet.liquid_color
+    local liquid_type = "water"
+    local liquid_style = "^[colorize:" .. liquid_color .. ":128)^[opacity:160"
+    local liquid_animation_length = 2.0
     if planet.atmosphere == "freezing" then
         liquid_type = "hydrocarbon"
         liquid_style = ")^[opacity:160"
@@ -207,7 +207,8 @@ function register_base_icy_nodes(G, planet, prefix)
 end
 
 function register_base_floral_nodes(G, planet, prefix)
-    grass_color = planet.grass_color
+    local stone_color = planet.stone_color
+    local grass_color = planet.grass_color
 
     -- GRASS SOIL
     -- A surface node for planets supporting life
@@ -298,9 +299,9 @@ end
 ]]
 
 function register_planet_nodes(planet)
-    prefix = string.format('planetgen:p%X_', planet.seed)
+    local prefix = string.format('planetgen:p%X_', planet.seed)
     planet.node_types = {}
-    G = PcgRandom(planet.seed, planet.seed)
+    local G = PcgRandom(planet.seed, planet.seed)
     register_base_nodes(G, planet, prefix)
     register_liquid_nodes(G, planet, prefix)
     if planet.atmosphere == "cold" or planet.atmosphere == "freezing" then

@@ -8,24 +8,24 @@ rocky areas.
 ]]
 
 function pass_elevation_compute_craters(x, z, planet)
-    chunk_x = math.floor(x/80)
-    chunk_z = math.floor(z/80)
-    hash = chunk_x + chunk_z*0x1000
-    hash = int_hash(hash)
-    G = PcgRandom(planet.seed, hash)
-    num_craters = math.floor(gen_linear_sum(G, 0, 2, 3))
+    local chunk_x = math.floor(x/80)
+    local chunk_z = math.floor(z/80)
+    local hash = chunk_x + chunk_z*0x1000
+    local hash = int_hash(hash)
+    local G = PcgRandom(planet.seed, hash)
+    local num_craters = math.floor(gen_linear_sum(G, 0, 2, 3))
 
-    r = 0
+    local r = 0
     for n=1, num_craters do
-        crater_r = gen_linear(G, 3, 15)
-        crater_x = gen_linear(G, crater_r, 80 - crater_r)
-        crater_z = gen_linear(G, crater_r, 80 - crater_r)
-        rel_x = (x % 80) - crater_x
-        rel_z = (z % 80) - crater_z
-        radius = (rel_x^2 + rel_z^2)^(1/2)
+        local crater_r = gen_linear(G, 3, 15)
+        local crater_x = gen_linear(G, crater_r, 80 - crater_r)
+        local crater_z = gen_linear(G, crater_r, 80 - crater_r)
+        local rel_x = (x % 80) - crater_x
+        local rel_z = (z % 80) - crater_z
+        local radius = (rel_x^2 + rel_z^2)^(1/2)
         if radius < crater_r then
-            new_r = -(math.max(0, crater_r^2 - radius^2)^(1/2))
-            flatness = 1 + crater_r / 15
+            local new_r = -(math.max(0, crater_r^2 - radius^2)^(1/2))
+            local flatness = 1 + crater_r / 15
             new_r = new_r / flatness
             r = math.min(r, new_r)
         end
@@ -43,9 +43,9 @@ function pass_elevation(minp, maxp, area, A, A2, planet)
     local Perlin_2d_mountain_elevation = PerlinNoise({offset=0, scale=0.5, spread={x=100, y=100}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
     local Perlin_2d_terrain_roughness = PerlinNoise({offset=0, scale=0.5, spread={x=16, y=16}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
     for z_abs=minp.z, maxp.z do
-        z = z_abs + planet.offset.z
+        local z = z_abs + planet.offset.z
         for x_abs=minp.x, maxp.x do
-            x = x_abs + planet.offset.x
+            local x = x_abs + planet.offset.x
             local ground = 0
 
             -- Use land/ocean elevation as initial ground level
@@ -65,12 +65,12 @@ function pass_elevation(minp, maxp, area, A, A2, planet)
                 ground = ground + pass_elevation_compute_craters(x, z, planet)
             end
 
-            hash = x + z*0x100
+            local hash = x + z*0x100
             hash = int_hash(hash)
-            G = PcgRandom(planet.seed, hash)
+            local G = PcgRandom(planet.seed, hash)
 
             for y_abs=minp.y, maxp.y do
-                y = y_abs + planet.offset.y
+                local y = y_abs + planet.offset.y
                 local i = area:index(x_abs, y_abs, z_abs)
                 if y < math.floor(ground) - 3 - planet.rockiness*terrain_roughness then
                     A[i] = planet.node_types.stone -- Deep layer/rocks
@@ -106,11 +106,11 @@ function pass_elevation(minp, maxp, area, A, A2, planet)
                 elseif planet.has_oceans and y < 0 then
                     A[i] = planet.node_types.liquid -- Ocean
                 elseif y == math.floor(ground) + 1 then
-                    air_weight = 100
-                    grass_weight = 0
-                    dry_grass_weight = 0
-                    tall_grass_weight = 0
-                    snow_weight = 0
+                    local air_weight = 100
+                    local grass_weight = 0
+                    local dry_grass_weight = 0
+                    local tall_grass_weight = 0
+                    local snow_weight = 0
                     if planet.has_oceans and (ocean_elevation + mountain_elevation + mountain_roughness + (y-1)/20 < -0.4 or (y-1) < -1) then
                         --
                     elseif planet.life ~= "dead" then
@@ -149,7 +149,7 @@ function pass_elevation(minp, maxp, area, A, A2, planet)
                             air_weight = 10
                         end
                     end
-                    options = {
+                    local options = {
                         [minetest.CONTENT_AIR] = air_weight
                     }
                     if planet.node_types.grass ~= nil then

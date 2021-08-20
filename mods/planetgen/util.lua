@@ -24,7 +24,7 @@ function gen_linear(generator, min, max)
 end
 
 function gen_linear_sum(generator, min, max, sum)
-    r = 0
+    local r = 0
     for n=1, sum do
         r = r + gen_linear(generator, min, max)
     end
@@ -32,11 +32,11 @@ function gen_linear_sum(generator, min, max, sum)
 end
 
 function gen_weighted(generator, options)
-    total_weight = 0
+    local total_weight = 0
     for i, v in pairs(options) do
         total_weight = total_weight + v
     end
-    value = gen_linear(generator, 0, total_weight)
+    local value = gen_linear(generator, 0, total_weight)
     for i, v in pairs(options) do
         value = value - v
         if value <= 0 then
