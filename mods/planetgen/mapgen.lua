@@ -36,6 +36,7 @@ and the same region on a planet with some seed. Entry format is:
     maxchunk    ending x and z chunk coordinates
     seed        planet seed; each seed represents a unique planet
 TODO: store chunk offset to generate a specific planet chunk anywhere
+TODO: store mapping bounds as node coordinates
 ]]--
 planet_list = {
 }
@@ -90,6 +91,85 @@ function generate_planet_chunk(minp, maxp, area, A, A1, A2, planet)
     end
 end
 
+function split_not_generated_boxes(not_generated_boxes, minp, maxp)
+    --[[
+    Takes a set of boxes and splits as many of them as necessary so that all of
+    the remaining boxes are outside the area specified by 'minp' and 'maxp'.
+    _____________________________
+    |    :     :                |
+    |    :     :                |
+    |...._______................|
+    |    |minp |                |
+    |    |     |                |
+    |....|_maxp|................|
+    |    :     :                |
+    |____:_____:________________|
+    ]]
+
+    r = {}
+    for index, box in ipairs(not_generated_boxes) do
+        commonmin = {
+            x=math.max(minp.x, box.minp.x),
+            z=math.max(minp.z, box.minp.z)
+        }
+        commonmax = {
+            x=math.min(maxp.x, box.maxp.x),
+            z=math.min(maxp.z, box.maxp.z)
+        }
+        if commonmax.x >= commonmin.x and commonmax.z >= commonmin.z then
+            new_boxes = {
+                -- TODO: shorten this code before extending to 3D
+                { -- X- Z-
+                    minp = {x=box.minp.x, z=box.minp.z},
+                    maxp = {x=commonmin.x-1, z=commonmin.z-1}
+                },
+                { -- X0 Z-
+                    minp = {x=commonmin.x, z=box.minp.z},
+                    maxp = {x=commonmax.x, z=commonmin.z-1}
+                },
+                { -- X+ Z-
+                    minp = {x=commonmax.x+1, z=box.minp.z},
+                    maxp = {x=box.maxp.x, z=commonmin.z-1}
+                },
+                { -- X- Z0
+                    minp = {x=box.minp.x, z=commonmin.z},
+                    maxp = {x=commonmin.x-1, z=commonmax.z}
+                },
+                { -- X+ Z0
+                    minp = {x=commonmax.x+1, z=commonmin.z},
+                    maxp = {x=box.maxp.x, z=commonmax.z}
+                },
+                { -- X- Z+
+                    minp = {x=box.minp.x, z=commonmax.z+1},
+                    maxp = {x=commonmin.x-1, z=box.maxp.z}
+                },
+                { -- X0 Z+
+                    minp = {x=commonmin.x, z=commonmax.z+1},
+                    maxp = {x=commonmax.x, z=box.maxp.z}
+                },
+                { -- X+ Z+
+                    minp = {x=commonmax.x+1, z=commonmax.z+1},
+                    maxp = {x=box.maxp.x, z=box.maxp.z}
+                },
+            }
+            for index, box2 in ipairs(new_boxes) do
+                if box2.maxp.x >= box2.minp.x and box2.maxp.z >= box2.minp.z then
+                    table.insert(r, box2)
+                end
+            end
+        else
+            table.insert(r, box)
+        end
+    end
+    return r
+end
+
+on_not_generated_callback = nil
+
+function register_on_not_generated(callback)
+    on_not_generated_callback = callback
+end
+
 --[[
 # ENTRY POINT
 ]]--
@@ -104,12 +184,29 @@ function mapgen_callback(minp, maxp, blockseed)
     local minchunk = {x=math.floor(minp.x/80), z=math.floor(minp.z/80)}
     local maxchunk = {x=math.floor(maxp.x/80), z=math.floor(maxp.z/80)}
 
+    -- A list of areas that are not mapped to a planet (yet)
+    local not_generated_boxes = {{minp = minp, maxp = maxp}}
+
     -- Find planet(s) for the generated region
     for key, planet in pairs(planet_list) do
-        commonmin = {x=math.max(minp.x, planet.minchunk.x*80), y=minp.y, z=math.max(minp.z, planet.minchunk.z*80)}
-        commonmax = {x=math.min(maxp.x, planet.maxchunk.x*80+79), y=maxp.y, z=math.min(maxp.z, planet.maxchunk.z*80+79)}
+        commonmin = {
+            x=math.max(minp.x, planet.minchunk.x*80),
+            y=minp.y,
+            z=math.max(minp.z, planet.minchunk.z*80)
+        }
+        commonmax = {
+            x=math.min(maxp.x, planet.maxchunk.x*80+79),
+            y=maxp.y,
+            z=math.min(maxp.z, planet.maxchunk.z*80+79)
+        }
         if commonmax.x >= commonmin.x and commonmax.z >= commonmin.z then
             generate_planet_chunk(commonmin, commonmax, area, A, A1, A2, planet)
+            not_generated_boxes = split_not_generated_boxes(not_generated_boxes, commonmin, commonmax)
+        end
+    end
+    if on_not_generated_callback ~= nil then
+        for index, box in ipairs(not_generated_boxes) do
+            on_not_generated_callback(box.minp, box.maxp, area, A, A1, A2, planet)
         end
     end
     VM:set_data(A)
@@ -119,11 +216,16 @@ function mapgen_callback(minp, maxp, blockseed)
     VM:write_to_map()
 end
 
+function infinite_ng_callback(minp, maxp, area, A, A1, A2, planet)
+end
+
 --[[
 # INITIALIZATION
 ]]--
 
 minetest.register_on_generated(mapgen_callback)
+
+register_on_not_generated(infinite_ng_callback)
 
 -- Nodes defined only to avoid errors from mapgens
 
