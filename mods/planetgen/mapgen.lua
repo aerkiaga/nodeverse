@@ -67,7 +67,7 @@ function generate_planet_chunk(minp, maxp, area, A, A1, A2, planet)
         if A[i] == planet.node_types.liquid and planet.atmosphere == "scorching" then
             A1[i] = 128
         else
-            A1[i] = 0
+            A1[i] = 15
         end
 
         -- Apply random texture rotation to all supported nodes
