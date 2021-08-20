@@ -8,14 +8,13 @@ immensely large universe with a never-ending variety of planets to explore.
 **NOTE**: choose *singlenode* as mapgen type.
 
 ## Status
-For now, 16 different planets' surfaces are generated next to each other. Blocks
-include stone, gravel, dust, sediment, liquid (water, hydrocarbon, lava), grass
-soil, grass, dry grass, tall grass and snow. Planets of different colors,
-rockier, more hilly or flat, richer in oceans, arid, frozen, volcanic, and with
-or without living organisms are generated. World generation features oceans,
-caves, deserts and craters.
+100 random planets are created floating in space. Blocks include stone, gravel,
+dust, sediment, liquid (water, hydrocarbon, lava), grass soil, grass, dry grass,
+tall grass and snow. Planets of different colors, rockier, more hilly or flat,
+richer in oceans, arid, frozen, volcanic, and with or without living organisms
+are generated. World generation features oceans, caves, deserts and craters.
 
-The next step is adding an infinite (actually 597529) number of planets.
+The next step is adding a rocket ship that can be used to visit other planets.
 
 The game is not yet playable, as it does not include any user-interaction code.
 
