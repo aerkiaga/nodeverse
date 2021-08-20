@@ -35,8 +35,8 @@ planet_list = {
 }
 
 function clear_planet_area(planet)
-    minp = {x=planet.minp.x, y=planet.minp.y, z=planet.minp.z}
-    maxp = {x=planet.maxp.x, y=planet.maxp.y, z=planet.maxp.z}
+    local minp = {x=planet.minp.x, y=planet.minp.y, z=planet.minp.z}
+    local maxp = {x=planet.maxp.x, y=planet.maxp.y, z=planet.maxp.z}
     minetest.delete_area(minp, maxp)
 end
 
@@ -58,9 +58,11 @@ end
 
 function generate_planet_chunk(minp, maxp, area, A, A1, A2, planet)
     pass_elevation(minp, maxp, area, A, A2, planet)
-    pass_caves(minp, maxp, area, A, A2, planet) --D
+    if planet.caveness > 2^(-3) then
+        pass_caves(minp, maxp, area, A, A2, planet)
+    end
     for i in area:iter(minp.x, minp.y, minp.z, maxp.x, maxp.y, maxp.z) do
-        pos = area:position(i)
+        local pos = area:position(i)
         pos = vec3_add(pos, planet.offset)
 
         -- Apply lighting
@@ -71,9 +73,9 @@ function generate_planet_chunk(minp, maxp, area, A, A1, A2, planet)
         end
 
         -- Apply random texture rotation to all supported nodes
-        rot = random_yrot_nodes[A[i]]
+        local rot = random_yrot_nodes[A[i]]
         if rot ~= nil then
-            hash = pos.x + pos.y*0x10 + pos.z*0x100
+            local hash = pos.x + pos.y*0x10 + pos.z*0x100
             hash = int_hash(hash)
             A2[i] = hash % 133757 % rot
             if rot == 2 then
@@ -100,29 +102,29 @@ function split_not_generated_boxes(not_generated_boxes, minp, maxp)
     |____:_____:________________|
     ]]
 
-    r = {}
+    local r = {}
     for index, box in ipairs(not_generated_boxes) do
-        commonmin = {
+        local commonmin = {
             x=math.max(minp.x, box.minp.x),
             y=math.max(minp.y, box.minp.y),
             z=math.max(minp.z, box.minp.z)
         }
-        commonmax = {
+        local commonmax = {
             x=math.min(maxp.x, box.maxp.x),
             y=math.min(maxp.y, box.maxp.y),
             z=math.min(maxp.z, box.maxp.z)
         }
         -- Box defined by 'minp' and 'maxp' intersects 'box'
         if commonmax.x >= commonmin.x and commonmax.z >= commonmin.z then
-            x_stops = {box.minp.x, commonmin.x-1, commonmax.x+1, box.maxp.x}
-            y_stops = {box.minp.y, commonmin.y-1, commonmax.y+1, box.maxp.y}
-            z_stops = {box.minp.z, commonmin.z-1, commonmax.z+1, box.maxp.z}
+            local x_stops = {box.minp.x, commonmin.x-1, commonmax.x+1, box.maxp.x}
+            local y_stops = {box.minp.y, commonmin.y-1, commonmax.y+1, box.maxp.y}
+            local z_stops = {box.minp.z, commonmin.z-1, commonmax.z+1, box.maxp.z}
             for x_index=1, 3 do
                 for y_index=1, 3 do
                     for z_index=1, 3 do
                         -- Avoid center box
                         if x_index ~= 2 or y_index ~= 2 or z_index ~= 2 then
-                            box2 = {
+                            local box2 = {
                                 minp = {x=x_stops[x_index], y=y_stops[y_index], z=z_stops[z_index]},
                                 maxp = {x=x_stops[x_index+1], y=y_stops[y_index+1], z=z_stops[z_index+1]}
                             }
@@ -174,12 +176,12 @@ function mapgen_callback(minp, maxp, blockseed)
 
     -- Find planet(s) for the generated region
     for key, planet in pairs(planet_list) do
-        commonmin = {
+        local commonmin = {
             x=math.max(minp.x, planet.minp.x),
             y=math.max(minp.y, planet.minp.y),
             z=math.max(minp.z, planet.minp.z)
         }
-        commonmax = {
+        local commonmax = {
             x=math.min(maxp.x, planet.maxp.x),
             y=math.min(maxp.y, planet.maxp.y),
             z=math.min(maxp.z, planet.maxp.z)
@@ -191,7 +193,7 @@ function mapgen_callback(minp, maxp, blockseed)
     end
     if on_not_generated_callback ~= nil then
         for index, box in ipairs(not_generated_boxes) do
-            on_not_generated_callback(box.minp, box.maxp, area, A, A1, A2, planet)
+            on_not_generated_callback(box.minp, box.maxp, area, A, A1, A2)
         end
     end
     VM:set_data(A)
@@ -205,11 +207,11 @@ function infinite_ng_callback(minp, maxp, area, A, A1, A2)
     -- This should generate planets on the fly in all directions
     -- However, it can't, due to inability to register node types after startup
     -- TODO: work around this issue
-    new_planets = {}
+    local new_planets = {}
     -- Iterate through overlapping mapchunks
     for z=minp.z - minp.z%80, maxp.z - maxp.z%80 + 79, 80 do
         for x=minp.x - minp.x%80, maxp.x - maxp.x%80 + 79, 80 do
-            found_planet = nil
+            local found_planet = nil
             -- Has it been added in a previous iteration?
             for index, planet in ipairs(new_planets) do
                 if x == planet.minp.x and z == planet.minp.z then
@@ -229,12 +231,12 @@ function infinite_ng_callback(minp, maxp, area, A, A1, A2)
                 --add_planet(found_planet)
             end
             -- And generate the appropriate terrain with the new planet
-            local_minp = {
+            local local_minp = {
                 x=math.max(x, minp.x),
                 y=math.max(-640, minp.y),
                 z=math.max(z, minp.z)
             }
-            local_maxp = {
+            local local_maxp = {
                 x=math.min(x+79, maxp.x),
                 y=math.min(639, maxp.y),
                 z=math.min(z+79, maxp.z)
