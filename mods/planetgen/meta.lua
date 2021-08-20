@@ -18,7 +18,7 @@ function generate_planet_metadata(planet)
     planet.rockiness = 5*math.abs(planet.rockiness-1) + 8*(planet.rockiness-1) + 3
     -- CAVENESS
     -- The tendency to form underground caves
-    planet.caveness = 2^gen_linear(G, -9, -1.5)
+    planet.caveness = 2^gen_linear(G, -9, -1.2)
     -- STONE COLOR
     -- Blended into stone, gravel and dust textures
     local color_r = math.abs(G:next()) % 0x100

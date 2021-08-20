@@ -213,7 +213,7 @@ function pass_caves_generate_block(block_minp_abs, minp, maxp, area, A, A2, nois
                     local rel_z = z-block_minp.z
 
                     -- Don't touch some nodes
-                    local i = area:index(x, y, z)
+                    local i = area:index(x_abs, y_abs, z_abs)
                     if A[i] == minetest.CONTENT_AIR or A[i] == planet.node_types.sediment or A[i] == planet.node_types.liquid then
                         do break end
                     end
