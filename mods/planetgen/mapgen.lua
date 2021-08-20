@@ -116,45 +116,29 @@ function split_not_generated_boxes(not_generated_boxes, minp, maxp)
             x=math.min(maxp.x, box.maxp.x),
             z=math.min(maxp.z, box.maxp.z)
         }
+        -- Box defined by 'minp' and 'maxp' intersects 'box'
         if commonmax.x >= commonmin.x and commonmax.z >= commonmin.z then
-            new_boxes = {
-                -- TODO: shorten this code before extending to 3D
-                { -- X- Z-
-                    minp = {x=box.minp.x, z=box.minp.z},
-                    maxp = {x=commonmin.x-1, z=commonmin.z-1}
-                },
-                { -- X0 Z-
-                    minp = {x=commonmin.x, z=box.minp.z},
-                    maxp = {x=commonmax.x, z=commonmin.z-1}
-                },
-                { -- X+ Z-
-                    minp = {x=commonmax.x+1, z=box.minp.z},
-                    maxp = {x=box.maxp.x, z=commonmin.z-1}
-                },
-                { -- X- Z0
-                    minp = {x=box.minp.x, z=commonmin.z},
-                    maxp = {x=commonmin.x-1, z=commonmax.z}
-                },
-                { -- X+ Z0
-                    minp = {x=commonmax.x+1, z=commonmin.z},
-                    maxp = {x=box.maxp.x, z=commonmax.z}
-                },
-                { -- X- Z+
-                    minp = {x=box.minp.x, z=commonmax.z+1},
-                    maxp = {x=commonmin.x-1, z=box.maxp.z}
-                },
-                { -- X0 Z+
-                    minp = {x=commonmin.x, z=commonmax.z+1},
-                    maxp = {x=commonmax.x, z=box.maxp.z}
-                },
-                { -- X+ Z+
-                    minp = {x=commonmax.x+1, z=commonmax.z+1},
-                    maxp = {x=box.maxp.x, z=box.maxp.z}
-                },
-            }
-            for index, box2 in ipairs(new_boxes) do
-                if box2.maxp.x >= box2.minp.x and box2.maxp.z >= box2.minp.z then
-                    table.insert(r, box2)
+            x_stops = {box.minp.x, commonmin.x-1, commonmax.x+1, box.maxp.x}
+            z_stops = {box.minp.z, commonmin.z-1, commonmax.z+1, box.maxp.z}
+            for x_index=1, 3 do
+                for z_index=1, 3 do
+                    if x_index ~= 2 or z_index ~= 2 then -- Avoid center box
+                        box2 = {
+                            minp = {x=x_stops[x_index], z=z_stops[z_index]},
+                            maxp = {x=x_stops[x_index+1], z=z_stops[z_index+1]}
+                        }
+                        if x_index == 2 then
+                            box2.minp.x = box2.minp.x + 1
+                            box2.maxp.x = box2.maxp.x - 1
+                        end
+                        if z_index == 2 then
+                            box2.minp.z = box2.minp.z + 1
+                            box2.maxp.z = box2.maxp.z - 1
+                        end
+                        if box2.maxp.x >= box2.minp.x and box2.maxp.z >= box2.minp.z then
+                            table.insert(r, box2)
+                        end
+                    end
                 end
             end
         else
