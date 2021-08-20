@@ -23,17 +23,11 @@ dofile(minetest.get_modpath("planetgen") .. "/nodetypes.lua")
 dofile(minetest.get_modpath("planetgen") .. "/pass_elevation.lua")
 dofile(minetest.get_modpath("planetgen") .. "/pass_caves.lua")
 
--- Minimum and maximum height for a planet
--- Should be avoided in favor of storing the vertical bounds of each planet
--- TODO: store vertical bounds of planets
-PLANET_MINY = -4000
-PLANET_MAXY = 3999
-
 --[[
 Contains a list of all current mappings between chunk coordinate rectangles
 and the same region on a planet with some seed. Entry format is:
-    minp        starting x and z node coordinates
-    maxp        ending x and z node coordinates
+    minp        starting x, y and z node coordinates
+    maxp        ending x, y and z node coordinates
     seed        planet seed; each seed represents a unique planet
 TODO: store chunk offset to generate a specific planet chunk anywhere
 ]]--
@@ -41,8 +35,8 @@ planet_list = {
 }
 
 function clear_planet_area(planet)
-    minp = {x=planet.minp.x, y=PLANET_MINY, z=planet.minp.z}
-    maxp = {x=planet.maxp.x, y=PLANET_MAXY, z=planet.maxp.z}
+    minp = {x=planet.minp.x, y=planet.minp.y, z=planet.minp.z}
+    maxp = {x=planet.maxp.x, y=planet.maxp.y, z=planet.maxp.z}
     minetest.delete_area(minp, maxp)
 end
 
@@ -109,33 +103,43 @@ function split_not_generated_boxes(not_generated_boxes, minp, maxp)
     for index, box in ipairs(not_generated_boxes) do
         commonmin = {
             x=math.max(minp.x, box.minp.x),
+            y=math.max(minp.y, box.minp.y),
             z=math.max(minp.z, box.minp.z)
         }
         commonmax = {
             x=math.min(maxp.x, box.maxp.x),
+            y=math.min(maxp.y, box.maxp.y),
             z=math.min(maxp.z, box.maxp.z)
         }
         -- Box defined by 'minp' and 'maxp' intersects 'box'
         if commonmax.x >= commonmin.x and commonmax.z >= commonmin.z then
             x_stops = {box.minp.x, commonmin.x-1, commonmax.x+1, box.maxp.x}
+            y_stops = {box.minp.y, commonmin.y-1, commonmax.y+1, box.maxp.y}
             z_stops = {box.minp.z, commonmin.z-1, commonmax.z+1, box.maxp.z}
             for x_index=1, 3 do
-                for z_index=1, 3 do
-                    if x_index ~= 2 or z_index ~= 2 then -- Avoid center box
-                        box2 = {
-                            minp = {x=x_stops[x_index], z=z_stops[z_index]},
-                            maxp = {x=x_stops[x_index+1], z=z_stops[z_index+1]}
-                        }
-                        if x_index == 2 then
-                            box2.minp.x = box2.minp.x + 1
-                            box2.maxp.x = box2.maxp.x - 1
-                        end
-                        if z_index == 2 then
-                            box2.minp.z = box2.minp.z + 1
-                            box2.maxp.z = box2.maxp.z - 1
-                        end
-                        if box2.maxp.x >= box2.minp.x and box2.maxp.z >= box2.minp.z then
-                            table.insert(r, box2)
+                for y_index=1, 3 do
+                    for z_index=1, 3 do
+                        -- Avoid center box
+                        if x_index ~= 2 or y_index ~= 2 or z_index ~= 2 then
+                            box2 = {
+                                minp = {x=x_stops[x_index], y=y_stops[y_index], z=z_stops[z_index]},
+                                maxp = {x=x_stops[x_index+1], y=y_stops[y_index+1], z=z_stops[z_index+1]}
+                            }
+                            if x_index == 2 then
+                                box2.minp.x = box2.minp.x + 1
+                                box2.maxp.x = box2.maxp.x - 1
+                            end
+                            if y_index == 2 then
+                                box2.minp.y = box2.minp.y + 1
+                                box2.maxp.y = box2.maxp.y - 1
+                            end
+                            if z_index == 2 then
+                                box2.minp.z = box2.minp.z + 1
+                                box2.maxp.z = box2.maxp.z - 1
+                            end
+                            if box2.maxp.x >= box2.minp.x and box2.maxp.y >= box2.minp.y and box2.maxp.z >= box2.minp.z then
+                                table.insert(r, box2)
+                            end
                         end
                     end
                 end
@@ -171,15 +175,15 @@ function mapgen_callback(minp, maxp, blockseed)
     for key, planet in pairs(planet_list) do
         commonmin = {
             x=math.max(minp.x, planet.minp.x),
-            y=minp.y,
+            y=math.max(minp.y, planet.minp.y),
             z=math.max(minp.z, planet.minp.z)
         }
         commonmax = {
             x=math.min(maxp.x, planet.maxp.x),
-            y=maxp.y,
+            y=math.min(maxp.y, planet.maxp.y),
             z=math.min(maxp.z, planet.maxp.z)
         }
-        if commonmax.x >= commonmin.x and commonmax.z >= commonmin.z then
+        if commonmax.x >= commonmin.x and commonmax.y >= commonmin.y and commonmax.z >= commonmin.z then
             generate_planet_chunk(commonmin, commonmax, area, A, A1, A2, planet)
             not_generated_boxes = split_not_generated_boxes(not_generated_boxes, commonmin, commonmax)
         end
@@ -215,8 +219,8 @@ function infinite_ng_callback(minp, maxp, area, A, A1, A2)
             -- Otherwise add it
             if found_planet == nil then
                 found_planet = {
-                    minp = {x=x, z=z},
-                    maxp = {x=x, z=z},
+                    minp = {x=x, y=-640, z=z},
+                    maxp = {x=x, y=639, z=z},
                     seed = 1
                 }
                 table.insert(new_planets, found_planet)
@@ -225,13 +229,17 @@ function infinite_ng_callback(minp, maxp, area, A, A1, A2)
             -- And generate the appropriate terrain with the new planet
             local_minp = {
                 x=math.max(x, minp.x),
+                y=math.max(-640, minp.y),
                 z=math.max(z, minp.z)
             }
             local_maxp = {
                 x=math.min(x+79, maxp.x),
+                y=math.min(639, maxp.y),
                 z=math.min(z+79, maxp.z)
             }
-            --generate_planet_chunk(local_minp, local_maxp, area, A, A1, A2, found_planet)
+            if local_maxp.y > local_minp.y then
+                --generate_planet_chunk(local_minp, local_maxp, area, A, A1, A2, found_planet)
+            end
         end
     end
 end
@@ -290,85 +298,85 @@ chunk wide square.
 ]]
 
 add_planet {
-    minp = {x=0, z=0},
-    maxp = {x=79, z=79},
+    minp = {x=0, y=-640, z=0},
+    maxp = {x=79, y=639, z=79},
     seed=56748364,
 }
 
 add_planet {
-    minp = {x=-80, z=0},
-    maxp = {x=-1, z=79},
+    minp = {x=-80, y=-640, z=0},
+    maxp = {x=-1, y=639, z=79},
     seed=6592659,
 }
 
 add_planet {
-    minp = {x=-80, z=-80},
-    maxp = {x=-1, z=-1},
+    minp = {x=-80, y=-640, z=-80},
+    maxp = {x=-1, y=639, z=-1},
     seed=7603769,
 }
 
 add_planet {
-    minp = {x=0, z=-80},
-    maxp = {x=79, z=-1},
+    minp = {x=0, y=-640, z=-80},
+    maxp = {x=79, y=639, z=-1},
     seed=756037595639,
 }
 add_planet {
-    minp = {x=80, z=0},
-    maxp = {x=159, z=79},
+    minp = {x=80, y=-640, z=0},
+    maxp = {x=159, y=639, z=79},
     seed=65926595629574,
 }
 add_planet {
-    minp = {x=80, z=80},
-    maxp = {x=159, z=159},
+    minp = {x=80, y=-640, z=80},
+    maxp = {x=159, y=639, z=159},
     seed=6596593619576837,
 }
 add_planet {
-    minp = {x=0, z=80},
-    maxp = {x=79, z=159},
+    minp = {x=0, y=-640, z=80},
+    maxp = {x=79, y=639, z=159},
     seed=658923648967494674,
 }
 add_planet {
-    minp = {x=-80, z=80},
-    maxp = {x=-1, z=159},
+    minp = {x=-80, y=-640, z=80},
+    maxp = {x=-1, y=639, z=159},
     seed=6593265946295,
 }
 add_planet {
-    minp = {x=80, z=-80},
-    maxp = {x=159, z=-1},
+    minp = {x=80, y=-640, z=-80},
+    maxp = {x=159, y=639, z=-1},
     seed=7693658956382957582,
 }
 add_planet {
-    minp = {x=80, z=-160},
-    maxp = {x=159, z=-81},
+    minp = {x=80, y=-640, z=-160},
+    maxp = {x=159, y=639, z=-81},
     seed=6583658565638,
 }
 add_planet {
-    minp = {x=0, z=-160},
-    maxp = {x=79, z=-81},
+    minp = {x=0, y=-640, z=-160},
+    maxp = {x=79, y=639, z=-81},
     seed=65893684523769,
 }
 add_planet {
-    minp = {x=-80, z=-160},
-    maxp = {x=-1, z=-81},
+    minp = {x=-80, y=-640, z=-160},
+    maxp = {x=-1, y=639, z=-81},
     seed=6436786754367,
 }
 add_planet {
-    minp = {x=-160, z=-160},
-    maxp = {x=-81, z=-81},
+    minp = {x=-160, y=-640, z=-160},
+    maxp = {x=-81, y=639, z=-81},
     seed=65746746745367567,
 }
 add_planet {
-    minp = {x=-160, z=-80},
-    maxp = {x=-81, z=-1},
+    minp = {x=-160, y=-640, z=-80},
+    maxp = {x=-81, y=639, z=-1},
     seed=532642675436734,
 }
 add_planet {
-    minp = {x=-160, z=0},
-    maxp = {x=-81, z=79},
+    minp = {x=-160, y=-640, z=0},
+    maxp = {x=-81, y=639, z=79},
     seed=5725623757825632,
 }
 add_planet {
-    minp = {x=-160, z=80},
-    maxp = {x=-81, z=159},
+    minp = {x=-160, y=-640, z=80},
+    maxp = {x=-81, y=639, z=159},
     seed=4521573274389547,
 }
