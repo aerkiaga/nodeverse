@@ -252,42 +252,45 @@ function register_base_floral_nodes(G, planet, prefix)
 
     -- DRY GRASS
     -- A dry grassy plant
-    minetest.register_node(prefix .. 'dry_grass', {
-        drawtype = "plantlike",
-        visual_scale = 1.0,
-        tiles = {
-            {name = "grass_dry.png", color = grass_color},
-        },
-        paramtype2 = "degrotate",
-        place_param2 = 0,
-        sunlight_propagates = true,
-        walkable = false,
-    })
-    random_yrot_nodes[minetest.get_content_id(prefix .. 'dry_grass')] = 20
-
-    planet.node_types.grass_soil = minetest.get_content_id(prefix .. 'grass_soil')
-    planet.node_types.grass = minetest.get_content_id(prefix .. 'grass')
-    planet.node_types.dry_grass = minetest.get_content_id(prefix .. 'dry_grass')
+    if planet.atmosphere == "hot" then
+        minetest.register_node(prefix .. 'dry_grass', {
+            drawtype = "plantlike",
+            visual_scale = 1.0,
+            tiles = {
+                {name = "grass_dry.png", color = grass_color},
+            },
+            paramtype2 = "degrotate",
+            place_param2 = 0,
+            sunlight_propagates = true,
+            walkable = false,
+        })
+        random_yrot_nodes[minetest.get_content_id(prefix .. 'dry_grass')] = 20
+    end
 
     -- TALL GRASS
     -- A tall grassy plant
-    minetest.register_node(prefix .. 'tall_grass', {
-        drawtype = "plantlike",
-        visual_scale = 1.0,
-        tiles = {
-            {name = "grass_tall.png", color = grass_color},
-        },
-        paramtype2 = "degrotate",
-        place_param2 = 0,
-        sunlight_propagates = true,
-        walkable = false,
-    })
-    random_yrot_nodes[minetest.get_content_id(prefix .. 'tall_grass')] = 20
+    if planet.atmosphere == "normal" or planet.atmosphere == "reducing" then
+        minetest.register_node(prefix .. 'tall_grass', {
+            drawtype = "plantlike",
+            visual_scale = 1.0,
+            tiles = {
+                {name = "grass_tall.png", color = grass_color},
+            },
+            paramtype2 = "degrotate",
+            place_param2 = 0,
+            sunlight_propagates = true,
+            walkable = false,
+        })
+        random_yrot_nodes[minetest.get_content_id(prefix .. 'tall_grass')] = 20
+    end
 
     planet.node_types.grass_soil = minetest.get_content_id(prefix .. 'grass_soil')
     planet.node_types.grass = minetest.get_content_id(prefix .. 'grass')
-    planet.node_types.dry_grass = minetest.get_content_id(prefix .. 'dry_grass')
-    planet.node_types.tall_grass = minetest.get_content_id(prefix .. 'tall_grass')
+    if planet.atmosphere == "hot" then
+        planet.node_types.dry_grass = minetest.get_content_id(prefix .. 'dry_grass')
+    elseif planet.atmosphere == "normal" or planet.atmosphere == "reducing" then
+        planet.node_types.tall_grass = minetest.get_content_id(prefix .. 'tall_grass')
+    end
 end
 
 --[[
@@ -333,10 +336,15 @@ function unregister_planet_nodes(planet)
         -- Unregister base floral nodes and their random rotation info
         random_yrot_nodes[minetest.get_content_id(prefix .. 'grass_soil')] = nil
         random_yrot_nodes[minetest.get_content_id(prefix .. 'grass')] = nil
-        random_yrot_nodes[minetest.get_content_id(prefix .. 'dry_grass')] = nil
         minetest.registered_nodes[prefix .. 'grass_soil'] = nil
         minetest.registered_nodes[prefix .. 'grass'] = nil
-        minetest.registered_nodes[prefix .. 'dry_grass'] = nil
+        if planet.atmosphere == "hot" then
+            random_yrot_nodes[minetest.get_content_id(prefix .. 'dry_grass')] = nil
+            minetest.registered_nodes[prefix .. 'dry_grass'] = nil
+        elseif planet.atmosphere == "normal" or planet.atmosphere == "reducing" then
+            random_yrot_nodes[minetest.get_content_id(prefix .. 'tall_grass')] = nil
+            minetest.registered_nodes[prefix .. 'tall_grass'] = nil
+        end
     end
     planet.node_types = nil
 end
