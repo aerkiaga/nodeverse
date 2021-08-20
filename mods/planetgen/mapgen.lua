@@ -216,7 +216,44 @@ function mapgen_callback(minp, maxp, blockseed)
     VM:write_to_map()
 end
 
-function infinite_ng_callback(minp, maxp, area, A, A1, A2, planet)
+function infinite_ng_callback(minp, maxp, area, A, A1, A2)
+    -- This should generate planets on the fly in all directions
+    -- However, it can't, due to inability to register node types after startup
+    -- TODO: work around this issue
+    new_planets = {}
+    -- Iterate through overlapping mapchunks
+    for z=minp.z - minp.z%80, maxp.z - maxp.z%80 + 79, 80 do
+        for x=minp.x - minp.x%80, maxp.x - maxp.x%80 + 79, 80 do
+            found_planet = nil
+            -- Has it been added in a previous iteration?
+            for index, planet in ipairs(new_planets) do
+                if x == planet.minchunk.x*80 and z == planet.minchunk.z*80 then
+                    found_planet = planet
+                    break
+                end
+            end
+            -- Otherwise add it
+            if found_planet == nil then
+                found_planet = {
+                    minchunk = {x=x/80, z=z/80},
+                    maxchunk = {x=x/80, z=z/80},
+                    seed = 1
+                }
+                table.insert(new_planets, found_planet)
+                --add_planet(found_planet)
+            end
+            -- And generate the appropriate terrain with the new planet
+            local_minp = {
+                x=math.max(x, minp.x),
+                z=math.max(z, minp.z)
+            }
+            local_maxp = {
+                x=math.min(x+79, maxp.x),
+                z=math.min(z+79, maxp.z)
+            }
+            --generate_planet_chunk(local_minp, local_maxp, area, A, A1, A2, found_planet)
+        end
+    end
 end
 
 --[[
