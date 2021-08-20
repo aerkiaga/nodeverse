@@ -58,7 +58,7 @@ end
 
 function generate_planet_chunk(minp, maxp, area, A, A1, A2, planet)
     pass_elevation(minp, maxp, area, A, A2, planet)
-    --pass_caves(minp, maxp, area, A, A2, planet) --D
+    pass_caves(minp, maxp, area, A, A2, planet) --D
     for i in area:iter(minp.x, minp.y, minp.z, maxp.x, maxp.y, maxp.z) do
         pos = area:position(i)
         pos = vec3_add(pos, planet.offset)

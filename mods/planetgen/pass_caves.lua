@@ -128,7 +128,7 @@ function pass_caves_calculate_side_contribution(side, relp, Perlin_2d_side, side
 end
 
 function pass_caves_generate_block(block_minp_abs, minp, maxp, area, A, A2, planet)
-    block_minp = vec3_add(block_minp_abs, planet.offset)
+    local block_minp = vec3_add(block_minp_abs, planet.offset)
     local side_seeds = {
         int_hash(block_minp.x/16*65771 + block_minp.y/16*56341 + block_minp.z/16*63427),
         int_hash(block_minp.x/16*65771 + (block_minp.y/16 - 1)*56341 + block_minp.z/16*63427),
