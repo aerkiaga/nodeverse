@@ -23,8 +23,8 @@ https://minetest.gitlab.io/minetest/map-terminology-and-coordinates/
 Adds a mapping from a rectangular chunk-aligned region of the world to the same
 region in a "planet" with a certain seed, so that it generates terrain from that
 planet. 'planet' is a table containing:
-    minchunk    starting x and z chunk coordinates
-    maxchunk    ending x and z chunk coordinates
+    minp        starting x and z node coordinates
+    maxp        ending x and z node coordinates
     seed        planet seed; each seed represents a unique planet
 For now, this function is meant to be used exactly once for each unique planet,
 paired with a call to 'planetgen.remove_planet'. It generates all global planet

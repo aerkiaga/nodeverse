@@ -32,18 +32,17 @@ PLANET_MAXY = 3999
 --[[
 Contains a list of all current mappings between chunk coordinate rectangles
 and the same region on a planet with some seed. Entry format is:
-    minchunk    starting x and z chunk coordinates
-    maxchunk    ending x and z chunk coordinates
+    minp        starting x and z node coordinates
+    maxp        ending x and z node coordinates
     seed        planet seed; each seed represents a unique planet
 TODO: store chunk offset to generate a specific planet chunk anywhere
-TODO: store mapping bounds as node coordinates
 ]]--
 planet_list = {
 }
 
 function clear_planet_area(planet)
-    minp = {x=planet.minchunk.x*80, y=PLANET_MINY, z=planet.minchunk.z*80}
-    maxp = {x=planet.maxchunk.x*80+79, y=PLANET_MAXY, z=planet.maxchunk.z*80+79}
+    minp = {x=planet.minp.x, y=PLANET_MINY, z=planet.minp.z}
+    maxp = {x=planet.maxp.x, y=PLANET_MAXY, z=planet.maxp.z}
     minetest.delete_area(minp, maxp)
 end
 
@@ -165,23 +164,20 @@ function mapgen_callback(minp, maxp, blockseed)
     local A1 = VM:get_light_data()
     local A2 = VM:get_param2_data()
 
-    local minchunk = {x=math.floor(minp.x/80), z=math.floor(minp.z/80)}
-    local maxchunk = {x=math.floor(maxp.x/80), z=math.floor(maxp.z/80)}
-
     -- A list of areas that are not mapped to a planet (yet)
     local not_generated_boxes = {{minp = minp, maxp = maxp}}
 
     -- Find planet(s) for the generated region
     for key, planet in pairs(planet_list) do
         commonmin = {
-            x=math.max(minp.x, planet.minchunk.x*80),
+            x=math.max(minp.x, planet.minp.x),
             y=minp.y,
-            z=math.max(minp.z, planet.minchunk.z*80)
+            z=math.max(minp.z, planet.minp.z)
         }
         commonmax = {
-            x=math.min(maxp.x, planet.maxchunk.x*80+79),
+            x=math.min(maxp.x, planet.maxp.x),
             y=maxp.y,
-            z=math.min(maxp.z, planet.maxchunk.z*80+79)
+            z=math.min(maxp.z, planet.maxp.z)
         }
         if commonmax.x >= commonmin.x and commonmax.z >= commonmin.z then
             generate_planet_chunk(commonmin, commonmax, area, A, A1, A2, planet)
@@ -211,7 +207,7 @@ function infinite_ng_callback(minp, maxp, area, A, A1, A2)
             found_planet = nil
             -- Has it been added in a previous iteration?
             for index, planet in ipairs(new_planets) do
-                if x == planet.minchunk.x*80 and z == planet.minchunk.z*80 then
+                if x == planet.minp.x and z == planet.minp.z then
                     found_planet = planet
                     break
                 end
@@ -219,8 +215,8 @@ function infinite_ng_callback(minp, maxp, area, A, A1, A2)
             -- Otherwise add it
             if found_planet == nil then
                 found_planet = {
-                    minchunk = {x=x/80, z=z/80},
-                    maxchunk = {x=x/80, z=z/80},
+                    minp = {x=x, z=z},
+                    maxp = {x=x, z=z},
                     seed = 1
                 }
                 table.insert(new_planets, found_planet)
@@ -294,85 +290,85 @@ chunk wide square.
 ]]
 
 add_planet {
-    minchunk = {x=0, z=0},
-    maxchunk = {x=0, z=0},
+    minp = {x=0, z=0},
+    maxp = {x=79, z=79},
     seed=56748364,
 }
 
 add_planet {
-    minchunk = {x=-1, z=0},
-    maxchunk = {x=-1, z=0},
+    minp = {x=-80, z=0},
+    maxp = {x=-1, z=79},
     seed=6592659,
 }
 
 add_planet {
-    minchunk = {x=-1, z=-1},
-    maxchunk = {x=-1, z=-1},
+    minp = {x=-80, z=-80},
+    maxp = {x=-1, z=-1},
     seed=7603769,
 }
 
 add_planet {
-    minchunk = {x=0, z=-1},
-    maxchunk = {x=0, z=-1},
+    minp = {x=0, z=-80},
+    maxp = {x=79, z=-1},
     seed=756037595639,
 }
 add_planet {
-    minchunk = {x=1, z=0},
-    maxchunk = {x=1, z=0},
+    minp = {x=80, z=0},
+    maxp = {x=159, z=79},
     seed=65926595629574,
 }
 add_planet {
-    minchunk = {x=1, z=1},
-    maxchunk = {x=1, z=1},
+    minp = {x=80, z=80},
+    maxp = {x=159, z=159},
     seed=6596593619576837,
 }
 add_planet {
-    minchunk = {x=0, z=1},
-    maxchunk = {x=0, z=1},
+    minp = {x=0, z=80},
+    maxp = {x=79, z=159},
     seed=658923648967494674,
 }
 add_planet {
-    minchunk = {x=-1, z=1},
-    maxchunk = {x=-1, z=1},
+    minp = {x=-80, z=80},
+    maxp = {x=-1, z=159},
     seed=6593265946295,
 }
 add_planet {
-    minchunk = {x=1, z=-1},
-    maxchunk = {x=1, z=-1},
+    minp = {x=80, z=-80},
+    maxp = {x=159, z=-1},
     seed=7693658956382957582,
 }
 add_planet {
-    minchunk = {x=1, z=-2},
-    maxchunk = {x=1, z=-2},
+    minp = {x=80, z=-160},
+    maxp = {x=159, z=-81},
     seed=6583658565638,
 }
 add_planet {
-    minchunk = {x=0, z=-2},
-    maxchunk = {x=0, z=-2},
+    minp = {x=0, z=-160},
+    maxp = {x=79, z=-81},
     seed=65893684523769,
 }
 add_planet {
-    minchunk = {x=-1, z=-2},
-    maxchunk = {x=-1, z=-2},
+    minp = {x=-80, z=-160},
+    maxp = {x=-1, z=-81},
     seed=6436786754367,
 }
 add_planet {
-    minchunk = {x=-2, z=-2},
-    maxchunk = {x=-2, z=-2},
+    minp = {x=-160, z=-160},
+    maxp = {x=-81, z=-81},
     seed=65746746745367567,
 }
 add_planet {
-    minchunk = {x=-2, z=-1},
-    maxchunk = {x=-2, z=-1},
+    minp = {x=-160, z=-80},
+    maxp = {x=-81, z=-1},
     seed=532642675436734,
 }
 add_planet {
-    minchunk = {x=-2, z=0},
-    maxchunk = {x=-2, z=0},
+    minp = {x=-160, z=0},
+    maxp = {x=-81, z=79},
     seed=5725623757825632,
 }
 add_planet {
-    minchunk = {x=-2, z=1},
-    maxchunk = {x=-2, z=1},
+    minp = {x=-160, z=80},
+    maxp = {x=-81, z=159},
     seed=4521573274389547,
 }
