@@ -42,8 +42,10 @@ function pass_elevation(minp, maxp, area, A, A2, planet)
     local Perlin_2d_mountain_roughness = PerlinNoise({offset=0, scale=0.5, spread={x=300, y=300}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
     local Perlin_2d_mountain_elevation = PerlinNoise({offset=0, scale=0.5, spread={x=100, y=100}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
     local Perlin_2d_terrain_roughness = PerlinNoise({offset=0, scale=0.5, spread={x=16, y=16}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
-    for z=minp.z, maxp.z do
-        for x=minp.x, maxp.x do
+    for z_abs=minp.z, maxp.z do
+        z = z_abs + planet.offset.z
+        for x_abs=minp.x, maxp.x do
+            x = x_abs + planet.offset.x
             local ground = 0
 
             -- Use land/ocean elevation as initial ground level
@@ -67,8 +69,9 @@ function pass_elevation(minp, maxp, area, A, A2, planet)
             hash = int_hash(hash)
             G = PcgRandom(planet.seed, hash)
 
-            for y=minp.y, maxp.y do
-                local i = area:index(x, y, z)
+            for y_abs=minp.y, maxp.y do
+                y = y_abs + planet.offset.y
+                local i = area:index(x_abs, y_abs, z_abs)
                 if y < math.floor(ground) - 3 - planet.rockiness*terrain_roughness then
                     A[i] = planet.node_types.stone -- Deep layer/rocks
                 elseif y < math.floor(ground) then

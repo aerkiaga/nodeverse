@@ -25,6 +25,7 @@ region in a "planet" with a certain seed, so that it generates terrain from that
 planet. 'planet' is a table containing:
     minp        starting x, y and z node coordinates
     maxp        ending x, y and z node coordinates
+    offset      world position P will map to planet coordinates P + offset
     seed        planet seed; each seed represents a unique planet
 For now, this function is meant to be used exactly once for each unique planet,
 paired with a call to 'planetgen.remove_planet'. It generates all global planet

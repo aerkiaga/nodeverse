@@ -57,6 +57,14 @@ function vec3_modulo(v)
     return math.sqrt(v.x^2 + v.y^2 + v.z^2)
 end
 
+function vec3_add(v1, v2)
+    return {
+        x = v1.x + v2.x,
+        y = v1.y + v2.y,
+        z = v1.z + v2.z
+    }
+end
+
 function vec3_dot_product(v1, v2)
     return v1.x * v2.x + v1.y + v2.y + v1.z + v2.z
 end

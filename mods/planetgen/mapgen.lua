@@ -28,8 +28,8 @@ Contains a list of all current mappings between chunk coordinate rectangles
 and the same region on a planet with some seed. Entry format is:
     minp        starting x, y and z node coordinates
     maxp        ending x, y and z node coordinates
+    offset      world position P will map to planet coordinates P + offset
     seed        planet seed; each seed represents a unique planet
-TODO: store chunk offset to generate a specific planet chunk anywhere
 ]]--
 planet_list = {
 }
@@ -61,6 +61,7 @@ function generate_planet_chunk(minp, maxp, area, A, A1, A2, planet)
     pass_caves(minp, maxp, area, A, A2, planet)
     for i in area:iter(minp.x, minp.y, minp.z, maxp.x, maxp.y, maxp.z) do
         pos = area:position(i)
+        pos = vec3_add(pos, planet.offset)
 
         -- Apply lighting
         if A[i] == planet.node_types.liquid and planet.atmosphere == "scorching" then
@@ -221,6 +222,7 @@ function infinite_ng_callback(minp, maxp, area, A, A1, A2)
                 found_planet = {
                     minp = {x=x, y=-640, z=z},
                     maxp = {x=x, y=639, z=z},
+                    offset = {x=0, y=0, z=0},
                     seed = 1
                 }
                 table.insert(new_planets, found_planet)
@@ -300,83 +302,99 @@ chunk wide square.
 add_planet {
     minp = {x=0, y=-640, z=0},
     maxp = {x=79, y=639, z=79},
+    offset = {x=0, y=0, z=0},
     seed=56748364,
 }
 
 add_planet {
     minp = {x=-80, y=-640, z=0},
     maxp = {x=-1, y=639, z=79},
+    offset = {x=0, y=0, z=0},
     seed=6592659,
 }
 
 add_planet {
     minp = {x=-80, y=-640, z=-80},
     maxp = {x=-1, y=639, z=-1},
+    offset = {x=0, y=0, z=0},
     seed=7603769,
 }
 
 add_planet {
     minp = {x=0, y=-640, z=-80},
     maxp = {x=79, y=639, z=-1},
+    offset = {x=0, y=0, z=0},
     seed=756037595639,
 }
 add_planet {
     minp = {x=80, y=-640, z=0},
     maxp = {x=159, y=639, z=79},
+    offset = {x=0, y=0, z=0},
     seed=65926595629574,
 }
 add_planet {
     minp = {x=80, y=-640, z=80},
     maxp = {x=159, y=639, z=159},
+    offset = {x=0, y=0, z=0},
     seed=6596593619576837,
 }
 add_planet {
     minp = {x=0, y=-640, z=80},
     maxp = {x=79, y=639, z=159},
+    offset = {x=0, y=0, z=0},
     seed=658923648967494674,
 }
 add_planet {
     minp = {x=-80, y=-640, z=80},
     maxp = {x=-1, y=639, z=159},
+    offset = {x=0, y=0, z=0},
     seed=6593265946295,
 }
 add_planet {
     minp = {x=80, y=-640, z=-80},
     maxp = {x=159, y=639, z=-1},
+    offset = {x=0, y=0, z=0},
     seed=7693658956382957582,
 }
 add_planet {
     minp = {x=80, y=-640, z=-160},
     maxp = {x=159, y=639, z=-81},
+    offset = {x=0, y=0, z=0},
     seed=6583658565638,
 }
 add_planet {
     minp = {x=0, y=-640, z=-160},
     maxp = {x=79, y=639, z=-81},
+    offset = {x=0, y=0, z=0},
     seed=65893684523769,
 }
 add_planet {
     minp = {x=-80, y=-640, z=-160},
     maxp = {x=-1, y=639, z=-81},
+    offset = {x=0, y=0, z=0},
     seed=6436786754367,
 }
 add_planet {
     minp = {x=-160, y=-640, z=-160},
     maxp = {x=-81, y=639, z=-81},
+    offset = {x=0, y=0, z=0},
     seed=65746746745367567,
 }
 add_planet {
     minp = {x=-160, y=-640, z=-80},
     maxp = {x=-81, y=639, z=-1},
+    offset = {x=0, y=0, z=0},
     seed=532642675436734,
 }
 add_planet {
     minp = {x=-160, y=-640, z=0},
     maxp = {x=-81, y=639, z=79},
+    offset = {x=0, y=0, z=0},
     seed=5725623757825632,
 }
 add_planet {
     minp = {x=-160, y=-640, z=80},
     maxp = {x=-81, y=639, z=159},
+    offset = {x=0, y=0, z=0},
     seed=4521573274389547,
 }

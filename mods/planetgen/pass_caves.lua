@@ -127,7 +127,8 @@ function pass_caves_calculate_side_contribution(side, relp, Perlin_2d_side, side
     return opening_weight * opening_contrib + volume_weight * volume_contrib
 end
 
-function pass_caves_generate_block(block_minp, minp, maxp, area, A, A2, planet)
+function pass_caves_generate_block(block_minp_abs, minp, maxp, area, A, A2, planet)
+    block_minp = vec3_add(block_minp_abs, planet.offset)
     local side_seeds = {
         int_hash(block_minp.x/16*65771 + block_minp.y/16*56341 + block_minp.z/16*63427),
         int_hash(block_minp.x/16*65771 + (block_minp.y/16 - 1)*56341 + block_minp.z/16*63427),
@@ -176,9 +177,12 @@ function pass_caves_generate_block(block_minp, minp, maxp, area, A, A2, planet)
     local Perlin_3d_side = pass_caves_generate_volume_noise(side_seeds)
 
     -- APPLY
-    for z=minp.z, maxp.z do
-        for x=minp.x, maxp.x do
-            for y=minp.y, maxp.y do
+    for z_abs=minp.z, maxp.z do
+        z = z_abs + planet.offset.z
+        for x_abs=minp.x, maxp.x do
+            x = x_abs + planet.offset.x
+            for y_abs=minp.y, maxp.y do
+                y = y_abs + planet.offset.y
                 repeat
                     local truth = false
                     local rel_x = x-block_minp.x
