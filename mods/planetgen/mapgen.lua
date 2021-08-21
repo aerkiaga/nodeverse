@@ -59,7 +59,21 @@ end
 function generate_planet_chunk(minp, maxp, area, A, A1, A2, planet)
     pass_elevation(minp, maxp, area, A, A2, planet)
     if planet.caveness > 2^(-3) then
-        pass_caves(minp, maxp, area, A, A2, planet)
+        local new_minp = minp
+        local new_maxp = maxp
+        if planet.walled then
+            new_minp = {
+                x=math.max(minp.x, planet.minp.x+1),
+                y=minp.y,
+                z=math.max(minp.z, planet.minp.z+1)
+            }
+            new_maxp = {
+                x=math.min(maxp.x, planet.maxp.x-1),
+                y=maxp.y,
+                z=math.min(maxp.z, planet.maxp.z-1)
+            }
+        end
+        pass_caves(new_minp, new_maxp, area, A, A2, planet)
     end
     for i in area:iter(minp.x, minp.y, minp.z, maxp.x, maxp.y, maxp.z) do
         local pos = area:position(i)

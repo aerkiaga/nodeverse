@@ -42,10 +42,26 @@ function pass_elevation(minp, maxp, area, A, A2, planet)
     local Perlin_2d_mountain_roughness = PerlinNoise({offset=0, scale=0.5, spread={x=300, y=300}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
     local Perlin_2d_mountain_elevation = PerlinNoise({offset=0, scale=0.5, spread={x=100, y=100}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
     local Perlin_2d_terrain_roughness = PerlinNoise({offset=0, scale=0.5, spread={x=16, y=16}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
+    local is_wall_z = false
+    local is_wall_x = false
     for z_abs=minp.z, maxp.z do
         local z = z_abs + planet.offset.z
+        if planet.walled then
+            if z_abs == planet.minp.z or z_abs == planet.maxp.z then
+                is_wall_z = true
+            else
+                is_wall_z = false
+            end
+        end
         for x_abs=minp.x, maxp.x do
             local x = x_abs + planet.offset.x
+            if planet.walled then
+                if x_abs == planet.minp.x or x_abs == planet.maxp.x then
+                    is_wall_x = true
+                else
+                    is_wall_x = false
+                end
+            end
             local ground = 0
 
             -- Use land/ocean elevation as initial ground level
@@ -167,6 +183,9 @@ function pass_elevation(minp, maxp, area, A, A2, planet)
                     A[i] = gen_weighted(G, options)
                 else
                     A[i] = minetest.CONTENT_AIR -- Atmosphere
+                end
+                if (is_wall_z or is_wall_x) and A[i] ~= minetest.CONTENT_AIR then
+                    A[i] = planet.node_types.stone
                 end
             end
         end

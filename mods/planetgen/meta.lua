@@ -1,5 +1,7 @@
 function generate_planet_metadata(planet)
     local G = PcgRandom(planet.seed, planet.seed)
+    -- Default input parameters
+    if planet.walled == nil then planet.walled = false end
     -- HAS OCEANS
     -- Whether the planet has oceans full of liquid
     planet.has_oceans = gen_true_with_probability(G, 3/5)

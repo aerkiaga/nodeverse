@@ -28,6 +28,7 @@ planet. 'planet' is a table containing:
     maxp        ending x, y and z node coordinates
     offset      world position P will map to planet coordinates P + offset
     seed        planet seed; each seed represents a unique planet
+    walled      (optional) builds stone walls around the planet
 For now, this function is meant to be used exactly once for each unique planet,
 paired with a call to 'planetgen.remove_planet'. It generates all global planet
 metadata and registers all nodes.
@@ -74,7 +75,8 @@ for n=1, num_planets do
         minp = {x=current_node.x-r_min, y=current_node.y-2*r_min, z=current_node.z-r_min},
         maxp = {x=current_node.x+r_max, y=current_node.y+4*r_max, z=current_node.z+r_max},
         offset = {x=-current_node.x, y=-current_node.y, z=-current_node.z},
-        seed = seed_from_n(n)
+        seed = seed_from_n(n),
+        walled = true
     }
     delta_angle = math.sqrt(math.pi*separation / (n*separation_per_turn))
     if n == 1 then
