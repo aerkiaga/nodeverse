@@ -76,7 +76,11 @@ for n=1, num_planets do
         offset = {x=-current_node.x, y=-current_node.y, z=-current_node.z},
         seed = seed_from_n(n)
     }
-    delta_angle = math.sqrt(2*math.pi*separation / (n*separation_per_turn))
+    delta_angle = math.sqrt(math.pi*separation / (n*separation_per_turn))
+    if n == 1 then
+        -- Avoid the first two planets overlapping
+        delta_angle = delta_angle*2
+    end
     current_pos = vec3_rotate(current_pos, delta_angle, {x=0, y=1, z=0})
     outward = {x=current_pos.x, y=0, z=current_pos.z}
     outward = vec3_scale(outward, 1/vec3_modulo(outward))
