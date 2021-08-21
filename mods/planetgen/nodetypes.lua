@@ -5,6 +5,7 @@ longer needed.
 
  # INDEX
     REGISTRATION
+    VARIANT SELECTION
 ]]
 
 function register_base_nodes(G, planet, prefix)
@@ -294,10 +295,6 @@ function register_base_floral_nodes(G, planet, prefix)
     end
 end
 
---[[
- # REGISTRATION
-]]
-
 function register_planet_nodes(planet)
     local prefix = string.format('planetgen:p%X_', planet.seed)
     local G = PcgRandom(planet.seed, planet.seed)
@@ -348,13 +345,23 @@ function unregister_planet_nodes(planet)
     end
 end
 
-function choose_planet_nodes_and_colors(planet)
-    planet.node_types.stone = minetest.get_content_id('planetgen:stone' .. planet.seed % 4 + 1)
-    planet.node_types.liquid = minetest.get_content_id('planetgen:liquid')
-    planet.color_dictionary[planet.node_types.liquid] = planet.seed % 8
-end
-
 function register_color_variants(name, num_variants, random_yrot, color_fn, def_fn)
+    --[[
+    Will register a number of node types. These are meant to be variants of a
+    common abstract node type.
+    name            string      node base name, e.g. 'tall_grass'
+    num_variants    number      number of distinct node types to register
+    random_yrot     number      value to be registered at 'random_yrot_nodes'
+    color_fn        function (x)
+        (optional) Should return a table with 'r', 'g', and 'b' members in the
+        range [0 .. 255], that will be passed as color string to 'def_fn'.
+        x           number      in range [0 .. 1], unique to each variant
+    def_fn          function (n, color)
+        Should return a node definition table to be passed as second argument to
+        'minetest.register_node()'.
+        n           number      index of variant, [1 .. 'num_variants']
+        color       string      return value of 'color_fn', converted to string
+    ]]--
     local name = "planetgen:" .. name
     for n=1, num_variants do
         local variant_name = name
@@ -371,6 +378,16 @@ function register_color_variants(name, num_variants, random_yrot, color_fn, def_
         random_yrot_nodes[minetest.get_content_id(variant_name)] = random_yrot
     end
 end
+
+--[[
+ # REGISTRATION
+Color variants can be generated in two ways: one involves creating a color
+palette at node registration and giving values to 'planet.color_dictionary[id]'.
+The other is done by passing a value of 'num_variants' > 1 to function
+'register_color_variants()', thus creating multiple node types. Of course, both
+can be combined, by creating as many palettes as 'num_variants' and using
+parameter 'n' of 'def_fn' to choose.
+]]
 
 function register_all_nodes()
     -- STONE
@@ -390,7 +407,7 @@ function register_all_nodes()
                 "(stone.png^[transformR180)^[colorize:" .. color .. ":32",
                 "stone.png^[colorize:" .. color .. ":32"
             },
-            paramtype2 = "colorfacedir",
+            paramtype2 = "facedir",
             place_param2 = 8
         } end
     )
@@ -442,4 +459,14 @@ function register_all_nodes()
             waving = 3,
         } end
     )
+end
+
+--[[
+ # VARIANT SELECTION
+]]
+
+function choose_planet_nodes_and_colors(planet)
+    planet.node_types.stone = minetest.get_content_id('planetgen:stone' .. planet.seed % 4 + 1)
+    planet.node_types.liquid = minetest.get_content_id('planetgen:liquid')
+    planet.color_dictionary[planet.node_types.liquid] = planet.seed % 8
 end
