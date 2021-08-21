@@ -1,4 +1,6 @@
-function generate_planet_metadata(planet)
+function generate_planet_metadata(seed)
+    local planet = {}
+    planet.seed = seed
     local G = PcgRandom(planet.seed, planet.seed)
     -- Default input parameters
     if planet.walled == nil then planet.walled = false end
@@ -100,4 +102,5 @@ function generate_planet_metadata(planet)
         color_b = math.abs(G:next()) % 0x100
         planet.grass_color = string.format("#%.2X%.2X%.2X", color_r, color_g, color_b)
     end
+    return planet
 end

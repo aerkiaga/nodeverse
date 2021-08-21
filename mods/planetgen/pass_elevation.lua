@@ -151,31 +151,17 @@ end
  # ENTRY POINT
 ]]--
 
-function pass_elevation(minp, maxp, area, A, A2, planet)
+function pass_elevation(minp_abs, maxp_abs, area, offset, A, A2, planet)
     local Perlin_2d_ocean_elevation = PerlinNoise({offset=0, scale=0.5, spread={x=500, y=500}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
     local Perlin_2d_mountain_roughness = PerlinNoise({offset=0, scale=0.5, spread={x=300, y=300}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
     local Perlin_2d_mountain_elevation = PerlinNoise({offset=0, scale=0.5, spread={x=100, y=100}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
     local Perlin_2d_terrain_roughness = PerlinNoise({offset=0, scale=0.5, spread={x=16, y=16}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
     local is_wall_z = false
     local is_wall_x = false
-    for z_abs=minp.z, maxp.z do
-        local z = z_abs + planet.offset.z
-        if planet.walled then
-            if z_abs == planet.minp.z or z_abs == planet.maxp.z then
-                is_wall_z = true
-            else
-                is_wall_z = false
-            end
-        end
-        for x_abs=minp.x, maxp.x do
-            local x = x_abs + planet.offset.x
-            if planet.walled then
-                if x_abs == planet.minp.x or x_abs == planet.maxp.x then
-                    is_wall_x = true
-                else
-                    is_wall_x = false
-                end
-            end
+    for z_abs=minp_abs.z, maxp_abs.z do
+        local z = z_abs + offset.z
+        for x_abs=minp_abs.x, maxp_abs.x do
+            local x = x_abs + offset.x
             local ground_comp = {}
             local ground = 0
 
@@ -201,15 +187,12 @@ function pass_elevation(minp, maxp, area, A, A2, planet)
             hash = int_hash(hash)
             local G = PcgRandom(planet.seed, hash)
 
-            for y_abs=minp.y, maxp.y do
-                local y = y_abs + planet.offset.y
+            for y_abs=minp_abs.y, maxp_abs.y do
+                local y = y_abs + offset.y
                 local i = area:index(x_abs, y_abs, z_abs)
                 local node_id = pass_elevation_compute_node(
                     G, y, ground, ground_comp, planet
                 )
-                if (is_wall_z or is_wall_x) and node_id ~= minetest.CONTENT_AIR then
-                    node_id = planet.node_types.stone
-                end
                 A[i] = node_id
             end
         end
