@@ -1,9 +1,14 @@
 function generate_planet_metadata(seed)
     local planet = {}
-    planet.seed = seed
-    local G = PcgRandom(planet.seed, planet.seed)
+    local G = PcgRandom(seed, seed)
     -- Default input parameters
-    if planet.walled == nil then planet.walled = false end
+    planet.seed = seed
+    -- NODE TYPES
+    -- Contains node IDs for all planet node types
+    planet.node_types = {}
+    -- COLOR DICTIONARY
+    -- Maps node IDs to param2 color indices
+    planet.color_dictionary = {}
     -- HAS OCEANS
     -- Whether the planet has oceans full of liquid
     planet.has_oceans = gen_true_with_probability(G, 3/5)

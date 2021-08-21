@@ -110,16 +110,25 @@ function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
 
         -- Apply random texture rotation to all supported nodes
         local rot = random_yrot_nodes[A[i]]
+        local param2 = 0
         if rot ~= nil then
             local hash = pos.x + pos.y*0x10 + pos.z*0x100
             hash = int_hash(hash)
-            A2[i] = hash % 133757 % rot
+            param2 = hash % 133757 % rot
             if rot == 2 then
-                A2[i] = A2[i] * 2
+                param2 = param2 * 2
             end
-        else
-            A2[i] = 0
         end
+
+        -- Apply 'colorfacedir' color to all supported nodes
+        -- TODO: support 'color' and 'colorwallmounted' colors
+        local color = planet.color_dictionary[A[i]]
+        if color ~= nil then
+            color = color * 0x20
+            param2 = param2 + color
+        end
+
+        A2[i] = param2
 
         -- Generate walls around mappings
         if mapping.walled and A[i] ~= minetest.CONTENT_AIR and (

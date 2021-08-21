@@ -300,7 +300,6 @@ end
 
 function register_planet_nodes(planet)
     local prefix = string.format('planetgen:p%X_', planet.seed)
-    planet.node_types = {}
     local G = PcgRandom(planet.seed, planet.seed)
     register_base_nodes(G, planet, prefix)
     register_liquid_nodes(G, planet, prefix)
@@ -347,5 +346,4 @@ function unregister_planet_nodes(planet)
             minetest.registered_nodes[prefix .. 'tall_grass'] = nil
         end
     end
-    planet.node_types = nil
 end
