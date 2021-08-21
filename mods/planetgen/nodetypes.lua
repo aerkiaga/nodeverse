@@ -347,3 +347,11 @@ function unregister_planet_nodes(planet)
         end
     end
 end
+
+function choose_planet_nodes_and_colors(planet)
+    planet.node_types.stone = minetest.get_content_id('planetgen:stone')
+    planet.node_types.liquid = minetest.get_content_id('planetgen:water_source')
+end
+
+function register_all_nodes()
+end

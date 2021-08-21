@@ -52,7 +52,8 @@ function add_planet_mapping(mapping)
     local planet = planet_dictionary[mapping.seed]
     if planet == nil then
         planet = generate_planet_metadata(mapping.seed)
-        register_planet_nodes(planet)
+        --register_planet_nodes(planet)
+        choose_planet_nodes_and_colors(planet)
         planet_dictionary[mapping.seed] = planet
         planet.seed = mapping.seed
         planet.num_mappings = 1
@@ -302,3 +303,5 @@ Here, add random texture rotation around Y axis to dummy stone block
 random_yrot_nodes = {
     [minetest.get_content_id('planetgen:stone')] = 4
 }
+
+register_all_nodes()
