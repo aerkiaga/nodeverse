@@ -102,6 +102,14 @@ function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
         local pos_abs = area:position(i)
         local pos = vec3_add(pos_abs, offset)
 
+        -- Generate walls around mappings
+        if mapping.walled and A[i] ~= minetest.CONTENT_AIR and (
+            pos_abs.x == mapping.minp.x or pos_abs.x == mapping.maxp.x
+            or pos_abs.z == mapping.minp.z or pos_abs.z == mapping.maxp.z
+        ) then
+            A[i] = planet.node_types.stone
+        end
+
         -- Apply lighting
         if A[i] == planet.node_types.liquid and planet.atmosphere == "scorching" then
             A1[i] = 128
@@ -130,14 +138,6 @@ function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
         end
 
         A2[i] = param2
-
-        -- Generate walls around mappings
-        if mapping.walled and A[i] ~= minetest.CONTENT_AIR and (
-            pos_abs.x == mapping.minp.x or pos_abs.x == mapping.maxp.x
-            or pos_abs.z == mapping.minp.z or pos_abs.z == mapping.maxp.z
-        ) then
-            A[i] = planet.node_types.stone
-        end
     end
 end
 

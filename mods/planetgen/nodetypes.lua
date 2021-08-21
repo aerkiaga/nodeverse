@@ -349,9 +349,23 @@ function unregister_planet_nodes(planet)
 end
 
 function choose_planet_nodes_and_colors(planet)
-    planet.node_types.stone = minetest.get_content_id('planetgen:stone')
+    planet.node_types.stone = minetest.get_content_id('planetgen:def_stone')
+    planet.color_dictionary[planet.node_types.stone] = planet.seed % 16
     planet.node_types.liquid = minetest.get_content_id('planetgen:water_source')
 end
 
 function register_all_nodes()
+    minetest.register_node('planetgen:def_stone', {
+        drawtype = "normal",
+        visual_scale = 1.0,
+        tiles = {
+            "stone.png",
+            "stone.png",
+            "(stone.png^[transformR180)", "stone.png","(stone.png^[transformR180)", "stone.png",
+        },
+        palette = "palette_stone.png",
+        paramtype2 = "colorfacedir",
+        place_param2 = 0,
+    })
+    random_yrot_nodes[minetest.get_content_id('planetgen:def_stone')] = 2
 end
