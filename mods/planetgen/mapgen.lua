@@ -49,8 +49,8 @@ end
 
 -- API
 function add_planet_mapping(mapping)
-    local planet = nil
-    if planet_dictionary[mapping.seed] == nil then
+    local planet = planet_dictionary[mapping.seed]
+    if planet == nil then
         planet = generate_planet_metadata(mapping.seed)
         register_planet_nodes(planet)
         planet_dictionary[mapping.seed] = planet
