@@ -22,8 +22,8 @@ function generate_planet_metadata(planet)
     -- STONE COLOR
     -- Blended into stone, gravel and dust textures
     local color_r = math.abs(G:next()) % 0x100
-    local color_g = math.abs(G:next()) % color_r
-    local color_b = math.abs(G:next()) % color_g
+    local color_g = math.abs(G:next()) % (color_r+1)
+    local color_b = math.abs(G:next()) % (color_g+1)
     planet.stone_color = string.format("#%.2X%.2X%.2X", color_r, color_g, color_b)
     -- LIQUID COLOR
     -- Blended into liquids
@@ -86,8 +86,8 @@ function generate_planet_metadata(planet)
     color_g = math.abs(G:next()) % 0x100
     if gen_true_with_probability(G, 1/2) then
         color_g = 0x80 + color_g % 0x80
-        color_r = math.abs(G:next()) % color_g
-        color_b = math.abs(G:next()) % color_g
+        color_r = math.abs(G:next()) % (color_g+1)
+        color_b = math.abs(G:next()) % (color_g+1)
         planet.grass_color = string.format("#%.2X%.2X%.2X", color_r, color_g, color_b)
     else
         color_r = math.abs(G:next()) % 0x100
