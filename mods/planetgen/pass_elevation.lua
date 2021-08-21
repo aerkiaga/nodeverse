@@ -33,6 +33,112 @@ function pass_elevation_compute_craters(x, z, planet)
     return r
 end
 
+function pass_elevation_compute_node(G, y, ground, ground_comp, planet)
+    if y < math.floor(ground) - 3 - planet.rockiness*ground_comp.terrain_roughness then
+        return planet.node_types.stone -- Deep layer/rocks
+    elseif y < math.floor(ground) then
+        return planet.node_types.gravel -- Intermediate layer
+    elseif y == math.floor(ground) then
+        if planet.has_oceans and (ground_comp.ocean_elevation + ground_comp.mountain_elevation
+        + ground_comp.mountain_roughness + y/20 < -0.4 or y < -1) then
+            if planet.atmosphere ~= "scorching" then
+                return planet.node_types.sediment --Beach/ocean floor
+            else
+                return planet.node_types.gravel
+            end
+        else
+            -- Normal land
+            if planet.life == "dead" then
+                if not planet.has_oceans and ground_comp.ocean_elevation
+                + ground_comp.terrain_roughness/10 < 0 then
+                    return planet.node_types.sediment
+                else
+                    return planet.node_types.dust
+                end
+            elseif planet.atmosphere == "hot" then
+                if planet.has_oceans and ground_comp.ocean_elevation
+                - ground_comp.terrain_roughness/10 > 0.3 then
+                    return planet.node_types.dust
+                elseif not planet.has_oceans and ground_comp.ocean_elevation
+                + ground_comp.terrain_roughness/10 < 0 then
+                    return planet.node_types.sediment -- Desert
+                else
+                    return planet.node_types.grass_soil
+                end
+            else
+                return planet.node_types.grass_soil
+            end
+        end
+    elseif planet.has_oceans and y < 0 then
+        return planet.node_types.liquid -- Ocean
+    elseif y == math.floor(ground) + 1 then
+        local air_weight = 100
+        local grass_weight = 0
+        local dry_grass_weight = 0
+        local tall_grass_weight = 0
+        local snow_weight = 0
+        if planet.has_oceans and (ground_comp.ocean_elevation + ground_comp.mountain_elevation
+        + ground_comp.mountain_roughness + (y-1)/20 < -0.4 or (y-1) < -1) then
+            --
+        elseif planet.life ~= "dead" then
+            if planet.atmosphere == "hot" then
+                if planet.has_oceans and ground_comp.ocean_elevation
+                - ground_comp.terrain_roughness/10 > 0.3 then
+                    grass_weight = 1
+                    dry_grass_weight = 5
+                elseif not planet.has_oceans and ground_comp.ocean_elevation
+                + ground_comp.terrain_roughness/10 < 0 then
+                    grass_weight = 0
+                    dry_grass_weight = 1
+                else
+                    grass_weight = 8
+                    dry_grass_weight = 4
+                end
+            elseif planet.atmosphere == "cold" then
+                if ground_comp.mountain_elevation >= 0 then
+                    snow_weight = 50 + 50*(ground_comp.mountain_elevation^(1/5))
+                else
+                    snow_weight = 50 - 50*((-ground_comp.mountain_elevation)^(1/5))
+                end
+                air_weight = 100 - snow_weight
+                grass_weight = air_weight / 4
+            elseif planet.life == "lush" then
+                grass_weight = 25
+                tall_grass_weight = 15
+            else
+                grass_weight = 15
+                tall_grass_weight = 2
+            end
+        else
+            if planet.atmosphere == "cold" then
+                snow_weight = 100
+                air_weight = 0
+            elseif planet.atmosphere == "freezing" then
+                snow_weight = 90
+                air_weight = 10
+            end
+        end
+        local options = {
+            [minetest.CONTENT_AIR] = air_weight
+        }
+        if planet.node_types.grass ~= nil then
+            options[planet.node_types.grass] = grass_weight
+        end
+        if planet.node_types.dry_grass ~= nil then
+            options[planet.node_types.dry_grass] = dry_grass_weight
+        end
+        if planet.node_types.tall_grass ~= nil then
+            options[planet.node_types.tall_grass] = tall_grass_weight
+        end
+        if planet.node_types.snow ~= nil then
+            options[planet.node_types.snow] = snow_weight
+        end
+        return gen_weighted(G, options)
+    else
+        return minetest.CONTENT_AIR -- Atmosphere
+    end
+end
+
 --[[
  # ENTRY POINT
 ]]--
@@ -62,20 +168,22 @@ function pass_elevation(minp, maxp, area, A, A2, planet)
                     is_wall_x = false
                 end
             end
+            local ground_comp = {}
             local ground = 0
 
             -- Use land/ocean elevation as initial ground level
-            local ocean_elevation = Perlin_2d_ocean_elevation:get_2d({x=x, y=z})
-            ground = ground + ocean_elevation * 25
+            ground_comp.ocean_elevation = Perlin_2d_ocean_elevation:get_2d({x=x, y=z})
+            ground = ground + ground_comp.ocean_elevation * 25
 
             -- Compute mountain roughness and elevation into ground level
-            local mountain_roughness = Perlin_2d_mountain_roughness:get_2d({x=x, y=z})
-            local mountain_elevation = Perlin_2d_mountain_elevation:get_2d({x=x, y=z})
-            ground = ground + (mountain_elevation+planet.terrestriality) * (mountain_roughness/(math.abs(mountain_roughness)+0.5) + 1)^2 * 25
+            ground_comp.mountain_roughness = Perlin_2d_mountain_roughness:get_2d({x=x, y=z})
+            ground_comp.mountain_elevation = Perlin_2d_mountain_elevation:get_2d({x=x, y=z})
+            ground = ground + (ground_comp.mountain_elevation+planet.terrestriality)
+            * (ground_comp.mountain_roughness/(math.abs(ground_comp.mountain_roughness)+0.5) + 1)^2 * 25
 
             -- Add terrain roughness for high-frequency details
-            local terrain_roughness = Perlin_2d_terrain_roughness:get_2d({x=x, y=z})
-            ground = ground + terrain_roughness * 2
+            ground_comp.terrain_roughness = Perlin_2d_terrain_roughness:get_2d({x=x, y=z})
+            ground = ground + ground_comp.terrain_roughness * 2
 
             if planet.atmosphere == "vacuum" then
                 ground = ground + pass_elevation_compute_craters(x, z, planet)
@@ -88,105 +196,13 @@ function pass_elevation(minp, maxp, area, A, A2, planet)
             for y_abs=minp.y, maxp.y do
                 local y = y_abs + planet.offset.y
                 local i = area:index(x_abs, y_abs, z_abs)
-                if y < math.floor(ground) - 3 - planet.rockiness*terrain_roughness then
-                    A[i] = planet.node_types.stone -- Deep layer/rocks
-                elseif y < math.floor(ground) then
-                    A[i] = planet.node_types.gravel -- Intermediate layer
-                elseif y == math.floor(ground) then
-                    if planet.has_oceans and (ocean_elevation + mountain_elevation + mountain_roughness + y/20 < -0.4 or y < -1) then
-                        if planet.atmosphere ~= "scorching" then
-                            A[i] = planet.node_types.sediment --Beach/ocean floor
-                        else
-                            A[i] = planet.node_types.gravel
-                        end
-                    else
-                        -- Normal land
-                        if planet.life == "dead" then
-                            if not planet.has_oceans and ocean_elevation + terrain_roughness/10 < 0 then
-                                A[i] = planet.node_types.sediment
-                            else
-                                A[i] = planet.node_types.dust
-                            end
-                        elseif planet.atmosphere == "hot" then
-                            if planet.has_oceans and ocean_elevation - terrain_roughness/10 > 0.3 then
-                                A[i] = planet.node_types.dust
-                            elseif not planet.has_oceans and ocean_elevation + terrain_roughness/10 < 0 then
-                                A[i] = planet.node_types.sediment -- Desert
-                            else
-                                A[i] = planet.node_types.grass_soil
-                            end
-                        else
-                            A[i] = planet.node_types.grass_soil
-                        end
-                    end
-                elseif planet.has_oceans and y < 0 then
-                    A[i] = planet.node_types.liquid -- Ocean
-                elseif y == math.floor(ground) + 1 then
-                    local air_weight = 100
-                    local grass_weight = 0
-                    local dry_grass_weight = 0
-                    local tall_grass_weight = 0
-                    local snow_weight = 0
-                    if planet.has_oceans and (ocean_elevation + mountain_elevation + mountain_roughness + (y-1)/20 < -0.4 or (y-1) < -1) then
-                        --
-                    elseif planet.life ~= "dead" then
-                        if planet.atmosphere == "hot" then
-                            if planet.has_oceans and ocean_elevation - terrain_roughness/10 > 0.3 then
-                                grass_weight = 1
-                                dry_grass_weight = 5
-                            elseif not planet.has_oceans and ocean_elevation + terrain_roughness/10 < 0 then
-                                grass_weight = 0
-                                dry_grass_weight = 1
-                            else
-                                grass_weight = 8
-                                dry_grass_weight = 4
-                            end
-                        elseif planet.atmosphere == "cold" then
-                            if mountain_elevation >= 0 then
-                                snow_weight = 50 + 50*(mountain_elevation^(1/5))
-                            else
-                                snow_weight = 50 - 50*((-mountain_elevation)^(1/5))
-                            end
-                            air_weight = 100 - snow_weight
-                            grass_weight = air_weight / 4
-                        elseif planet.life == "lush" then
-                            grass_weight = 25
-                            tall_grass_weight = 15
-                        else
-                            grass_weight = 15
-                            tall_grass_weight = 2
-                        end
-                    else
-                        if planet.atmosphere == "cold" then
-                            snow_weight = 100
-                            air_weight = 0
-                        elseif planet.atmosphere == "freezing" then
-                            snow_weight = 90
-                            air_weight = 10
-                        end
-                    end
-                    local options = {
-                        [minetest.CONTENT_AIR] = air_weight
-                    }
-                    if planet.node_types.grass ~= nil then
-                        options[planet.node_types.grass] = grass_weight
-                    end
-                    if planet.node_types.dry_grass ~= nil then
-                        options[planet.node_types.dry_grass] = dry_grass_weight
-                    end
-                    if planet.node_types.tall_grass ~= nil then
-                        options[planet.node_types.tall_grass] = tall_grass_weight
-                    end
-                    if planet.node_types.snow ~= nil then
-                        options[planet.node_types.snow] = snow_weight
-                    end
-                    A[i] = gen_weighted(G, options)
-                else
-                    A[i] = minetest.CONTENT_AIR -- Atmosphere
+                local node_id = pass_elevation_compute_node(
+                    G, y, ground, ground_comp, planet
+                )
+                if (is_wall_z or is_wall_x) and node_id ~= minetest.CONTENT_AIR then
+                    node_id = planet.node_types.stone
                 end
-                if (is_wall_z or is_wall_x) and A[i] ~= minetest.CONTENT_AIR then
-                    A[i] = planet.node_types.stone
-                end
+                A[i] = node_id
             end
         end
     end
