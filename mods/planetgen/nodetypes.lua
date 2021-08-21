@@ -350,17 +350,20 @@ end
 
 function choose_planet_nodes_and_colors(planet)
     planet.node_types.stone = minetest.get_content_id('planetgen:stone' .. planet.seed % 4 + 1)
-    --planet.color_dictionary[planet.node_types.stone] = planet.seed % 16
-    planet.node_types.liquid = minetest.get_content_id('planetgen:water_source')
+    planet.node_types.liquid = minetest.get_content_id('planetgen:liquid')
+    planet.color_dictionary[planet.node_types.liquid] = planet.seed % 8
 end
 
-function register_color_variants_continuous(name, num_variants, random_yrot, color_fn, def_fn)
+function register_color_variants(name, num_variants, random_yrot, color_fn, def_fn)
     local name = "planetgen:" .. name
     for n=1, num_variants do
-        local variant_name = name .. n
+        local variant_name = name
+        if num_variants > 1 then
+            variant_name = variant_name .. n
+        end
         local color = nil
         if color_fn ~= nil then
-            color = color_fn(n/num_variants)
+            color = color_fn((n-1)/(num_variants-1))
             color = string.format("#%.2X%.2X%.2X", color.r, color.g, color.b)
         end
         definition = def_fn(n, color)
@@ -373,7 +376,7 @@ function register_all_nodes()
     -- STONE
     -- Main material to make up a planet
     -- Is entirely solid and anisotropic
-    register_color_variants_continuous(
+    register_color_variants(
         "stone", 4, 2,
         function (x) return {r=0, g=255*x, b=255} end,
         function (n, color) return {
@@ -389,6 +392,54 @@ function register_all_nodes()
             },
             paramtype2 = "colorfacedir",
             place_param2 = 8
+        } end
+    )
+
+    -- LIQUID
+    -- The liquid that fills a planet's oceans
+    -- Might be water, or something else:
+    -- water        Most common; essential for life
+    -- hydrocarbon  Extremely cold, liquid short-chain hydrocarbon mix
+    -- lava         Molten mix of rocks at high temperature
+    register_color_variants(
+        "liquid", 1, 4,
+        nil,
+        function (n, color) return {
+            drawtype = "liquid",
+            visual_scale = 1.0,
+            tiles = {
+                {
+                    name = "water_animation.png^[opacity:160",
+                    backface_culling = false,
+                    animation = {
+                        type = "vertical_frames",
+                        aspect_w = 16,
+                        aspect_h = 16,
+                        length = liquid_animation_length
+                    }
+                },
+                {
+                    name = "water_animation.png^[opacity:160",
+                    backface_culling = true,
+                    animation = {
+                        type = "vertical_frames",
+                        aspect_w = 16,
+                        aspect_h = 16,
+                        length = liquid_animation_length
+                    }
+                }
+            },
+            use_texture_alpha = "blend",
+            palette = "palette_water.png",
+            paramtype = "light",
+            paramtype2 = "colorfacedir",
+            place_param2 = 8,
+            is_ground_content = false,
+            walkable = false,
+            liquidtype = "source",
+            liquid_alternative_flowing = 'planetgen:flowing_liquid',
+    	    liquid_alternative_source = 'planetgen:liquid',
+            waving = 3,
         } end
     )
 end
