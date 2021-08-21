@@ -349,23 +349,46 @@ function unregister_planet_nodes(planet)
 end
 
 function choose_planet_nodes_and_colors(planet)
-    planet.node_types.stone = minetest.get_content_id('planetgen:def_stone')
-    planet.color_dictionary[planet.node_types.stone] = planet.seed % 16
+    planet.node_types.stone = minetest.get_content_id('planetgen:stone' .. planet.seed % 4 + 1)
+    --planet.color_dictionary[planet.node_types.stone] = planet.seed % 16
     planet.node_types.liquid = minetest.get_content_id('planetgen:water_source')
 end
 
+function register_color_variants_continuous(name, num_variants, random_yrot, color_fn, def_fn)
+    local name = "planetgen:" .. name
+    for n=1, num_variants do
+        local variant_name = name .. n
+        local color = nil
+        if color_fn ~= nil then
+            color = color_fn(n/num_variants)
+            color = string.format("#%.2X%.2X%.2X", color.r, color.g, color.b)
+        end
+        definition = def_fn(n, color)
+        minetest.register_node(variant_name, definition)
+        random_yrot_nodes[minetest.get_content_id(variant_name)] = random_yrot
+    end
+end
+
 function register_all_nodes()
-    minetest.register_node('planetgen:def_stone', {
-        drawtype = "normal",
-        visual_scale = 1.0,
-        tiles = {
-            "stone.png",
-            "stone.png",
-            "(stone.png^[transformR180)", "stone.png","(stone.png^[transformR180)", "stone.png",
-        },
-        palette = "palette_stone.png",
-        paramtype2 = "colorfacedir",
-        place_param2 = 0,
-    })
-    random_yrot_nodes[minetest.get_content_id('planetgen:def_stone')] = 2
+    -- STONE
+    -- Main material to make up a planet
+    -- Is entirely solid and anisotropic
+    register_color_variants_continuous(
+        "stone", 4, 2,
+        function (x) return {r=0, g=255*x, b=255} end,
+        function (n, color) return {
+            drawtype = "normal",
+            visual_scale = 1.0,
+            tiles = {
+                "stone.png^[colorize:" .. color .. ":32",
+                "stone.png^[colorize:" .. color .. ":32",
+                "(stone.png^[transformR180)^[colorize:" .. color .. ":32",
+                "stone.png^[colorize:" .. color .. ":32",
+                "(stone.png^[transformR180)^[colorize:" .. color .. ":32",
+                "stone.png^[colorize:" .. color .. ":32"
+            },
+            paramtype2 = "colorfacedir",
+            place_param2 = 8
+        } end
+    )
 end
