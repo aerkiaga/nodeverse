@@ -20,7 +20,7 @@ function register_base_nodes(G, planet, prefix)
             "dust2.png^[colorize:" .. stone_color .. ":64",
             "dust.png^[colorize:" .. stone_color .. ":64", "dust2.png^[colorize:" .. stone_color .. ":64", "dust2.png^[colorize:" .. stone_color .. ":64", "dust.png^[colorize:" .. stone_color .. ":64"
         },
-        paramtype2 = "facedir",
+        paramtype2 = "colorfacedir",
         place_param2 = 8,
     })
     random_yrot_nodes[minetest.get_content_id(prefix .. 'dust')] = 24
@@ -36,7 +36,7 @@ function register_base_nodes(G, planet, prefix)
             "sediment2.png^[colorize:" .. stone_color .. ":48",
             "sediment.png^[colorize:" .. stone_color .. ":48", "sediment2.png^[colorize:" .. stone_color .. ":48", "sediment2.png^[colorize:" .. stone_color .. ":48", "sediment.png^[colorize:" .. stone_color .. ":48"
         },
-        paramtype2 = "facedir",
+        paramtype2 = "colorfacedir",
         place_param2 = 8,
     })
     random_yrot_nodes[minetest.get_content_id(prefix .. 'sediment')] = 24
@@ -51,7 +51,7 @@ function register_base_nodes(G, planet, prefix)
             "gravel.png^[colorize:" .. stone_color .. ":48",
             "(gravel.png^[transformR180)^[colorize:" .. stone_color .. ":48", "(gravel.png^[transformR90)^[colorize:" .. stone_color .. ":48","(gravel.png^[transformR270)^[colorize:" .. stone_color .. ":48", "gravel.png^[colorize:" .. stone_color .. ":48",
         },
-        paramtype2 = "facedir",
+        paramtype2 = "colorfacedir",
         place_param2 = 8,
     })
     random_yrot_nodes[minetest.get_content_id(prefix .. 'gravel')] = 4
@@ -66,7 +66,7 @@ function register_base_nodes(G, planet, prefix)
             "stone.png^[colorize:" .. stone_color .. ":32",
             "(stone.png^[transformR180)^[colorize:" .. stone_color .. ":32", "stone.png^[colorize:" .. stone_color .. ":32","(stone.png^[transformR180)^[colorize:" .. stone_color .. ":32", "stone.png^[colorize:" .. stone_color .. ":32",
         },
-        paramtype2 = "facedir",
+        paramtype2 = "colorfacedir",
         place_param2 = 8,
     })
     random_yrot_nodes[minetest.get_content_id(prefix .. 'stone')] = 2
@@ -125,7 +125,7 @@ function register_liquid_nodes(G, planet, prefix)
         },
         use_texture_alpha = "blend",
         paramtype = "light",
-        paramtype2 = "facedir",
+        paramtype2 = "colorfacedir",
         place_param2 = 8,
         is_ground_content = false,
         walkable = false,
@@ -192,7 +192,7 @@ function register_base_icy_nodes(G, planet, prefix)
             "snow_side.png",
             "snow_side.png"
         },
-        paramtype2 = "facedir",
+        paramtype2 = "colorfacedir",
         place_param2 = 8,
         walkable = false,
         leveled = 16,
@@ -231,7 +231,7 @@ function register_base_floral_nodes(G, planet, prefix)
             {name = "grass_soil_side.png^[transformFX", color = grass_color},
             {name = "grass_soil_side.png", color = grass_color}
         },
-        paramtype2 = "facedir",
+        paramtype2 = "colorfacedir",
         place_param2 = 8,
     })
     random_yrot_nodes[minetest.get_content_id(prefix .. 'grass_soil')] = 4
