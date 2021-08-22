@@ -52,7 +52,7 @@ first two planets overlap, while the rest are laid out with large gaps between
 them.
 ]]
 
-num_planets = 100
+num_planets = 1000
 planet_size = 80
 function seed_from_n(n)
     return n
