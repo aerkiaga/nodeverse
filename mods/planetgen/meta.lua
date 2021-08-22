@@ -79,18 +79,5 @@ function generate_planet_metadata(seed)
         normal = normal_weight,
         dead = dead_weight
     })
-    -- GRASS COLOR
-    -- Blended into grass_soil
-    color_g = math.abs(G:next()) % 0x100
-    if gen_true_with_probability(G, 1/2) then
-        color_g = 0x80 + color_g % 0x80
-        color_r = math.abs(G:next()) % (color_g+1)
-        color_b = math.abs(G:next()) % (color_g+1)
-        planet.grass_color = string.format("#%.2X%.2X%.2X", color_r, color_g, color_b)
-    else
-        color_r = math.abs(G:next()) % 0x100
-        color_b = math.abs(G:next()) % 0x100
-        planet.grass_color = string.format("#%.2X%.2X%.2X", color_r, color_g, color_b)
-    end
     return planet
 end

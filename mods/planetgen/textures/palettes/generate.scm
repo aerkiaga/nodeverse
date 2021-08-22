@@ -74,7 +74,7 @@
                     (theX (remainder inCurrent 8))
                     (theY (quotient inCurrent 8))
                 )
-                (gimp-drawable-set-pixel inLayer theX theY 3 (inFunction inCurrent))
+                (gimp-drawable-set-pixel inLayer theX theY 3 (inFunction (- inCurrent inStart)))
             )
             (doFillVariantsRecursive inLayer inStart (+ inCurrent 1) inEnd inFunction)
         )

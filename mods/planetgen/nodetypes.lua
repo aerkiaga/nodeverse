@@ -12,21 +12,6 @@ function register_base_floral_nodes_old(G, planet, prefix)
     local stone_color = planet.stone_color
     local grass_color = planet.grass_color
 
-    -- GRASS
-    -- A short grassy plant
-    minetest.register_node(prefix .. 'grass', {
-        drawtype = "plantlike",
-        visual_scale = 1.0,
-        tiles = {
-            {name = "grass.png", color = grass_color},
-        },
-        paramtype2 = "degrotate",
-        place_param2 = 0,
-        sunlight_propagates = true,
-        walkable = false,
-    })
-    random_yrot_nodes[minetest.get_content_id(prefix .. 'grass')] = 20
-
     -- DRY GRASS
     -- A dry grassy plant
     if planet.atmosphere == "hot" then
@@ -148,7 +133,7 @@ function register_color_variants(name, num_variants, random_yrot, color_fn, def_
             color = color_fn(n)
             color = string.format("#%.2X%.2X%.2X", color.r, color.g, color.b)
         end
-        definition = def_fn(n, color)
+        local definition = def_fn(n, color)
         minetest.register_node(variant_name, definition)
         random_yrot_nodes[minetest.get_content_id(variant_name)] = random_yrot
     end
@@ -162,12 +147,39 @@ function fnBitsDistribution(n, lower, num, max)
     return math.floor(max * fnExtractBits(n, lower, num) / ((2^num) - 1))
 end
 
+function fnLighten(n, m)
+    return 255 - math.floor((255 - n) / m)
+end
+
 function fnColorStone(n)
     n = n - 1
     local r = fnBitsDistribution(n, 0, 2, 192)
     local g = fnBitsDistribution(n, 2, 1, r)
     local b = fnBitsDistribution(n, 3, 1, g)
     return {r=r, g=g, b=b}
+end
+
+function fnColorGrassRandom(n)
+    local r = fnBitsDistribution(n, 0, 2, 255)
+    local g = fnBitsDistribution(n, 2, 2, 255)
+    local b = fnBitsDistribution(n, 4, 1, 255)
+    return {r=fnLighten(r, 1.7), g=fnLighten(g, 1.7), b=fnLighten(b, 1.7)}
+end
+
+function fnColorGrassNormal(n)
+    local g = 128 + fnBitsDistribution(n, 0, 1, 127)
+    local r = fnBitsDistribution(n, 1, 2, g)
+    local b = fnBitsDistribution(n, 3, 1, g - 64)
+    return {r=fnLighten(r, 1.7), g=fnLighten(g, 1.7), b=fnLighten(b, 1.7)}
+end
+
+function fnColorGrass(n)
+    n = n - 1
+    if n < 32 then
+        return fnColorGrassRandom(n)
+    else
+        return fnColorGrassNormal(n)
+    end
 end
 
 function register_base_nodes()
@@ -298,49 +310,6 @@ function register_liquid_nodes()
             is_ground_content = false,
             walkable = false,
             liquidtype = "source",
-            liquid_alternative_flowing = "planetgen:flowing_water" .. n,
-    	    liquid_alternative_source = "planetgen:water" .. n,
-            waving = 3,
-        } end
-    )
-    register_color_variants(
-        "flowing_water", 4, 4,
-        nil,
-        function (n, color) return {
-            drawtype = "flowingliquid",
-            visual_scale = 1.0,
-            tiles = {"water.png"},
-            special_tiles = {
-                {
-                    name = "water_animation.png^[opacity:180",
-                    backface_culling = false,
-                    animation = {
-                        type = "vertical_frames",
-                        aspect_w = 16,
-                        aspect_h = 16,
-                        length = 2.0
-                    }
-                },
-                {
-                    name = "water_animation.png^[opacity:180",
-                    backface_culling = true,
-                    animation = {
-                        type = "vertical_frames",
-                        aspect_w = 16,
-                        aspect_h = 16,
-                        length = 2.0
-                    }
-                }
-            },
-            use_texture_alpha = "blend",
-            palette = "palette_water" .. n .. ".png",
-            paramtype = "light",
-            paramtype2 = "flowingliquid",
-            place_param2 = 0,
-            is_ground_content = false,
-            walkable = false,
-            liquidtype = "flowing",
-            liquid_alternative_flowing = "planetgen:flowing_water" .. n,
     	    liquid_alternative_source = "planetgen:water" .. n,
             waving = 3,
         } end
@@ -547,10 +516,11 @@ end
 function register_base_floral_nodes()
     -- GRASS SOIL
     -- A surface node for planets supporting life
+    -- 16 stone colors as nodetype, 48 grass colors as palette and nodetype
     register_color_variants(
         "grass_soil", 16*6, 4,
-        fnColorStone,
-        function (n, color) return {
+        function (n) return fnColorStone(n % 16) end,
+        function (n, color) print(string.format("n = %d, %s", n, "palette_grass" .. math.floor((n-1) / 16) + 1 .. ".png")) return {
             drawtype = "normal",
             visual_scale = 1.0,
             tiles = {
@@ -572,6 +542,23 @@ function register_base_floral_nodes()
             paramtype2 = "colorfacedir",
             palette = "palette_grass" .. math.floor((n-1) / 16) + 1 .. ".png",
             place_param2 = 8,
+        } end
+    )
+    -- GRASS
+    -- A short grassy plant
+    register_color_variants(
+        "grass", 48, 20,
+        fnColorGrass,
+        function (n, color) return {
+            drawtype = "plantlike",
+            visual_scale = 1.0,
+            tiles = {
+                {name = "grass.png", color = color},
+            },
+            paramtype2 = "degrotate",
+            place_param2 = 0,
+            sunlight_propagates = true,
+            walkable = false,
         } end
     )
 end
@@ -616,11 +603,17 @@ function choose_planet_nodes_and_colors(planet)
         planet.color_dictionary[planet.node_types.liquid] = G:next(0, 7)
     end
     planet.node_types.snow = minetest.get_content_id("planetgen:snow")
+    local grass_colorN
     if gen_true_with_probability(G, 1/2) then
-        planet.node_types.grass_soil = minetest.get_content_id("planetgen:grass_soil" .. G:next(1, 4))
-        planet.color_dictionary[planet.node_types.grass_soil] = G:next(0, 7)
+        grass_colorN = G:next(1, 4)
     else
-        planet.node_types.grass_soil = minetest.get_content_id("planetgen:grass_soil" .. G:next(5, 6))
-        planet.color_dictionary[planet.node_types.grass_soil] = G:next(0, 7)
+        grass_colorN = G:next(5, 6)
     end
+    grass_colorN = 1 --D
+    local grass_colorP = planet.seed % 8--G:next(0, 7)
+    local grass_soil_color = 16*(grass_colorN-1) + stone_color + 1
+    planet.node_types.grass_soil = minetest.get_content_id("planetgen:grass_soil" .. grass_soil_color)
+    planet.color_dictionary[planet.node_types.grass_soil] = grass_colorP
+    local grass_colorT = 8*(grass_colorN-1) + grass_colorP + 1
+    planet.node_types.grass = minetest.get_content_id("planetgen:grass" .. grass_colorT)
 end
