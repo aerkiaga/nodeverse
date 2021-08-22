@@ -100,9 +100,9 @@ Default game setup:
 An infinite cloud of floating planets.
 ]]
 
-block_size = 200
-planets_per_block = 1
-planet_size = 100
+block_size = 400
+planets_per_block = 4
+planet_size = 80
 
 function new_area_callback(minp, maxp, area, A, A1, A2)
     -- Iterate over all overlapping block_size * block_size * block_size blocks
