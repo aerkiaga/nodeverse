@@ -1,9 +1,10 @@
 --[[
-This file must register all custom node types used by a planet, before any of
-those nodes is actually placed in the map, and then unregister them when no
-longer needed.
+The functions in this file perform registration of all node types used by the
+mod, and then assign these to the different planets. Each base node type has
+one or more variants to this end.
 
  # INDEX
+    NODE TYPES
     REGISTRATION
     VARIANT SELECTION
 ]]
@@ -54,6 +55,7 @@ function fnLighten(n, m)
     return 255 - math.floor((255 - n) / m)
 end
 
+-- 16 colors
 function fnColorStone(n)
     n = n - 1
     local r = fnBitsDistribution(n, 0, 2, 192)
@@ -76,6 +78,7 @@ function fnColorGrassNormal(n)
     return {r=fnLighten(r, 1.7), g=fnLighten(g, 1.7), b=fnLighten(b, 1.7)}
 end
 
+-- 48 colors
 function fnColorGrass(n)
     n = n - 1
     if n < 32 then
@@ -85,10 +88,34 @@ function fnColorGrass(n)
     end
 end
 
+--[[
+ # NODE TYPES
+Allocated: 312
+64 .... base
+16          dust
+16          sediment
+16          gravel
+16          stone
+8 ..... liquid
+4           water
+1           hydrocarbon
+1           flowing_hydrocarbon
+1           lava
+1           flowing_lava
+1 ..... icy
+1           snow
+240 ... base floral
+96          grass_soil
+48          grass
+48          dry_grass
+48          tall_grass
+]]--
+
 function register_base_nodes()
     -- DUST
     -- Covers a planet's surface
     -- Made of the same material as STONE
+    -- 16 stone colors as nodetype
     register_color_variants(
         "dust", 16, 24,
         fnColorStone,
@@ -111,6 +138,7 @@ function register_base_nodes()
     -- Covers a planet's ocean floor and beaches
     -- Made of the same material as STONE
     -- Deposited by LIQUID over time
+    -- 16 stone colors as nodetype
     register_color_variants(
         "sediment", 16, 24,
         fnColorStone,
@@ -132,6 +160,7 @@ function register_base_nodes()
     -- GRAVEL
     -- Lies under a layer of DUST
     -- Less granular than DUST
+    -- 16 stone colors as nodetype
     register_color_variants(
         "gravel", 16, 4,
         fnColorStone,
@@ -153,6 +182,7 @@ function register_base_nodes()
     -- STONE
     -- Main material to make up a planet
     -- Is entirely solid and anisotropic
+    -- 16 stone colors as nodetype
     register_color_variants(
         "stone", 16, 2,
         fnColorStone,
@@ -177,6 +207,7 @@ function register_liquid_nodes()
     -- WATER
     -- The liquid that fills a temperate planet's oceans.
     -- Most common liquid; essential for life.
+    -- 32 water colors as palette and nodetype
     register_color_variants(
         "water", 4, 4,
         nil,
@@ -217,9 +248,11 @@ function register_liquid_nodes()
             waving = 3,
         } end
     )
+    -- TODO: add flowing water (32 water colors as nodetype)
     -- HYDROCARBON
     -- Extremely cold, liquid short-chain hydrocarbon mix.
     -- Forms lakes in very cold planets.
+    -- Single variant
     register_color_variants(
         "hydrocarbon", 1, 4,
         nil,
@@ -260,6 +293,7 @@ function register_liquid_nodes()
             waving = 3,
         } end
     )
+    -- Single variant
     register_color_variants(
         "flowing_hydrocarbon", 1, 4,
         nil,
@@ -304,6 +338,7 @@ function register_liquid_nodes()
     -- LAVA
     -- Molten mix of rocks at high temperature.
     -- Fills the oceans of very hot planets with intense volcanic activity.
+    -- Single variant
     register_color_variants(
         "lava", 1, 4,
         nil,
@@ -344,6 +379,7 @@ function register_liquid_nodes()
             waving = 3,
         } end
     )
+    -- Single variant
     register_color_variants(
         "flowing_lava", 1, 4,
         nil,
@@ -390,6 +426,7 @@ end
 function register_icy_nodes()
     -- SNOW
     -- Covers planets with very low temperatures
+    -- Single variant
     register_color_variants(
         "snow", 1, 4,
         nil,
@@ -449,6 +486,7 @@ function register_base_floral_nodes()
     )
     -- GRASS
     -- A short grassy plant
+    -- 48 grass colors as nodetype
     register_color_variants(
         "grass", 48, 20,
         fnColorGrass,
@@ -467,6 +505,7 @@ function register_base_floral_nodes()
 
     -- DRY GRASS
     -- A dry grassy plant
+    -- 48 grass colors as nodetype
     register_color_variants(
         "dry_grass", 48, 20,
         fnColorGrass,
@@ -485,6 +524,7 @@ function register_base_floral_nodes()
 
     -- TALL GRASS
     -- A tall grassy plant
+    -- 48 grass colors as nodetype
     register_color_variants(
         "tall_grass", 48, 20,
         fnColorGrass,
