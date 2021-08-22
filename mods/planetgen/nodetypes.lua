@@ -8,56 +8,6 @@ longer needed.
     VARIANT SELECTION
 ]]
 
-function register_planet_nodes(planet)
-    local prefix = string.format('planetgen:p%X_', planet.seed)
-    local G = PcgRandom(planet.seed, planet.seed)
-    register_base_nodes(G, planet, prefix)
-    register_liquid_nodes(G, planet, prefix)
-    if planet.atmosphere == "cold" or planet.atmosphere == "freezing" then
-        register_base_icy_nodes(G, planet, prefix)
-    end
-    if planet.life ~= "dead" then
-        register_base_floral_nodes(G, planet, prefix)
-    end
-end
-
-function unregister_planet_nodes(planet)
-    prefix = 'planetgen:p' .. planet.seed .. '_'
-    -- Unregister base nodes and their random rotation info
-    random_yrot_nodes[minetest.get_content_id(prefix .. 'dust')] = nil
-    random_yrot_nodes[minetest.get_content_id(prefix .. 'sediment')] = nil
-    random_yrot_nodes[minetest.get_content_id(prefix .. 'gravel')] = nil
-    random_yrot_nodes[minetest.get_content_id(prefix .. 'stone')] = nil
-    minetest.registered_nodes[prefix .. 'dust'] = nil
-    minetest.registered_nodes[prefix .. 'sediment'] = nil
-    minetest.registered_nodes[prefix .. 'gravel'] = nil
-    minetest.registered_nodes[prefix .. 'stone'] = nil
-    -- Unregister liquid nodes and their random rotation info
-    random_yrot_nodes[minetest.get_content_id(prefix .. 'liquid')] = nil
-    minetest.registered_nodes[prefix .. 'liquid'] = nil
-    minetest.registered_nodes[prefix .. 'flowing_liquid'] = nil
-
-    if planet.atmosphere == "cold" or planet.atmosphere == "freezing" then
-        random_yrot_nodes[minetest.get_content_id(prefix .. 'snow')] = nil
-        minetest.registered_nodes[prefix .. 'snow'] = nil
-    end
-
-    if planet.life ~= "dead" then
-        -- Unregister base floral nodes and their random rotation info
-        random_yrot_nodes[minetest.get_content_id(prefix .. 'grass_soil')] = nil
-        random_yrot_nodes[minetest.get_content_id(prefix .. 'grass')] = nil
-        minetest.registered_nodes[prefix .. 'grass_soil'] = nil
-        minetest.registered_nodes[prefix .. 'grass'] = nil
-        if planet.atmosphere == "hot" then
-            random_yrot_nodes[minetest.get_content_id(prefix .. 'dry_grass')] = nil
-            minetest.registered_nodes[prefix .. 'dry_grass'] = nil
-        elseif planet.atmosphere == "normal" or planet.atmosphere == "reducing" then
-            random_yrot_nodes[minetest.get_content_id(prefix .. 'tall_grass')] = nil
-            minetest.registered_nodes[prefix .. 'tall_grass'] = nil
-        end
-    end
-end
-
 function register_color_variants(name, num_variants, random_yrot, color_fn, def_fn)
     --[[
     Will register a number of node types. These are meant to be variants of a
