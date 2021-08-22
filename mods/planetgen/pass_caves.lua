@@ -150,8 +150,10 @@ function pass_caves_calculate_side_contribution(
     return opening_weight * opening_contrib + volume_weight * volume_contrib
 end
 
-function pass_caves_generate_block(block_minp_abs, minp, maxp, area, A, A2, noise, planet)
-    local block_minp = vec3_add(block_minp_abs, planet.offset)
+function pass_caves_generate_block(
+    block_minp_abs, minp_abs, maxp_abs, area, offset, A, A2, noise, planet
+)
+    local block_minp = vec3_add(block_minp_abs, offset)
     local side_seeds = {
         int_hash(block_minp.x/16*65771 + block_minp.y/16*56341 + block_minp.z/16*63427),
         int_hash(block_minp.x/16*65771 + (block_minp.y/16 - 1)*56341 + block_minp.z/16*63427),
@@ -200,12 +202,12 @@ function pass_caves_generate_block(block_minp_abs, minp, maxp, area, A, A2, nois
     local Perlin_3d_side = pass_caves_generate_volume_noise(side_seeds, noise)
 
     -- APPLY
-    for z_abs=minp.z, maxp.z do
-        local z = z_abs + planet.offset.z
-        for x_abs=minp.x, maxp.x do
-            local x = x_abs + planet.offset.x
-            for y_abs=minp.y, maxp.y do
-                local y = y_abs + planet.offset.y
+    for z_abs=minp_abs.z, maxp_abs.z do
+        local z = z_abs + offset.z
+        for x_abs=minp_abs.x, maxp_abs.x do
+            local x = x_abs + offset.x
+            for y_abs=minp_abs.y, maxp_abs.y do
+                local y = y_abs + offset.y
                 repeat
                     local truth = false
                     local rel_x = x-block_minp.x
@@ -278,35 +280,35 @@ end
  # ENTRY POINT
 ]]--
 
-function pass_caves(minp, maxp, area, A, A2, planet)
+function pass_caves(minp_abs, maxp_abs, area, offset, A, A2, planet)
     local noise = pass_caves_init_noise(planet)
 
     -- Start xyz of block to generate
     -- Can be lower than start xyz of generated area
-    local block_minp = {x=minp.x-minp.x%16, y=minp.y-minp.y%16, z=minp.z-minp.z%16}
-    while block_minp.z <= maxp.z do
-        while block_minp.y <= maxp.y do
-            while block_minp.x <= maxp.x do
+    local block_minp = {x=minp_abs.x-minp_abs.x%16, y=minp_abs.y-minp_abs.y%16, z=minp_abs.z-minp_abs.z%16}
+    while block_minp.z <= maxp_abs.z do
+        while block_minp.y <= maxp_abs.y do
+            while block_minp.x <= maxp_abs.x do
                 -- Bounds of block or block fragment to generate
                 local common_minp = {
-                    x=math.max(minp.x, block_minp.x),
-                    y=math.max(minp.y, block_minp.y),
-                    z=math.max(minp.z, block_minp.z)
+                    x=math.max(minp_abs.x, block_minp.x),
+                    y=math.max(minp_abs.y, block_minp.y),
+                    z=math.max(minp_abs.z, block_minp.z)
                 }
                 local common_maxp = {
-                    x=math.min(maxp.x, block_minp.x+15),
-                    y=math.min(maxp.y, block_minp.y+15),
-                    z=math.min(maxp.z, block_minp.z+15)
+                    x=math.min(maxp_abs.x, block_minp.x+15),
+                    y=math.min(maxp_abs.y, block_minp.y+15),
+                    z=math.min(maxp_abs.z, block_minp.z+15)
                 }
                 pass_caves_generate_block(
-                    block_minp, common_minp, common_maxp, area, A, A2, noise, planet
+                    block_minp, common_minp, common_maxp, area, offset, A, A2, noise, planet
                 )
                 block_minp.x = block_minp.x+16
             end
-            block_minp.x = minp.x-minp.x%16
+            block_minp.x = minp_abs.x-minp_abs.x%16
             block_minp.y = block_minp.y+16
         end
-        block_minp.y = minp.y-minp.y%16
+        block_minp.y = minp_abs.y-minp_abs.y%16
         block_minp.z = block_minp.z+16
     end
 end

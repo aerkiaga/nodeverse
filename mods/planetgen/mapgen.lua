@@ -30,54 +30,85 @@ and the same region on a planet with some seed. Entry format is:
     maxp        ending x, y and z node coordinates
     offset      world position P will map to planet coordinates P + offset
     seed        planet seed; each seed represents a unique planet
+    walled      (optional) builds stone walls around the mapped area
 ]]--
-planet_list = {
+planet_mappings = {
 }
 
-function clear_planet_area(planet)
-    local minp = {x=planet.minp.x, y=planet.minp.y, z=planet.minp.z}
-    local maxp = {x=planet.maxp.x, y=planet.maxp.y, z=planet.maxp.z}
+--[[
+Maps planet IDs (keys) to actual planet metadata tables (values).
+]]--
+planet_dictionary = {
+}
+
+function clear_planet_mapping_area(mapping)
+    local minp = {x=mapping.minp.x, y=mapping.minp.y, z=mapping.minp.z}
+    local maxp = {x=mapping.maxp.x, y=mapping.maxp.y, z=mapping.maxp.z}
     minetest.delete_area(minp, maxp)
 end
 
 -- API
-function add_planet(planet)
-    generate_planet_metadata(planet)
-    register_planet_nodes(planet)
-    table.insert(planet_list, planet)
-    clear_planet_area(planet)
-    return #planet_list
+function add_planet_mapping(mapping)
+    local planet = planet_dictionary[mapping.seed]
+    if planet == nil then
+        planet = generate_planet_metadata(mapping.seed)
+        --register_planet_nodes(planet)
+        choose_planet_nodes_and_colors(planet)
+        planet_dictionary[mapping.seed] = planet
+        planet.seed = mapping.seed
+        planet.num_mappings = 1
+    else
+        planet.num_mappings = planet.num_mappings + 1
+    end
+    table.insert(planet_mappings, mapping)
+    clear_planet_mapping_area(mapping)
+    return #planet_mappings
 end
 
 -- API
-function remove_planet(index)
-    clear_planet_area(planet_list[index])
+function remove_planet_mapping(index)
+    clear_planet_mapping_area(planet_mappings[index])
+    local planet = planet_dictionary[planet_mappings[index].seed]
+    planet.num_mappings = planet.num_mappings - 1
+    if planet.num_mappings == 0 then
+        planet_dictionary[planet_mappings[index].seed] = nil
+    end
     unregister_planet_nodes(planet)
-    table.remove(planet_list, index)
+    table.remove(planet_mappings, index)
 end
 
-function generate_planet_chunk(minp, maxp, area, A, A1, A2, planet)
-    pass_elevation(minp, maxp, area, A, A2, planet)
+function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
+    local planet = planet_dictionary[mapping.seed]
+    local offset = mapping.offset
+    pass_elevation(minp, maxp, area, offset, A, A2, planet)
     if planet.caveness > 2^(-3) then
         local new_minp = minp
         local new_maxp = maxp
-        if planet.walled then
+        if mapping.walled then
             new_minp = {
-                x=math.max(minp.x, planet.minp.x+1),
+                x=math.max(minp.x, mapping.minp.x+1),
                 y=minp.y,
-                z=math.max(minp.z, planet.minp.z+1)
+                z=math.max(minp.z, mapping.minp.z+1)
             }
             new_maxp = {
-                x=math.min(maxp.x, planet.maxp.x-1),
+                x=math.min(maxp.x, mapping.maxp.x-1),
                 y=maxp.y,
-                z=math.min(maxp.z, planet.maxp.z-1)
+                z=math.min(maxp.z, mapping.maxp.z-1)
             }
         end
-        pass_caves(new_minp, new_maxp, area, A, A2, planet)
+        pass_caves(new_minp, new_maxp, area, offset, A, A2, planet)
     end
     for i in area:iter(minp.x, minp.y, minp.z, maxp.x, maxp.y, maxp.z) do
-        local pos = area:position(i)
-        pos = vec3_add(pos, planet.offset)
+        local pos_abs = area:position(i)
+        local pos = vec3_add(pos_abs, offset)
+
+        -- Generate walls around mappings
+        if mapping.walled and A[i] ~= minetest.CONTENT_AIR and (
+            pos_abs.x == mapping.minp.x or pos_abs.x == mapping.maxp.x
+            or pos_abs.z == mapping.minp.z or pos_abs.z == mapping.maxp.z
+        ) then
+            A[i] = planet.node_types.stone
+        end
 
         -- Apply lighting
         if A[i] == planet.node_types.liquid and planet.atmosphere == "scorching" then
@@ -88,16 +119,25 @@ function generate_planet_chunk(minp, maxp, area, A, A1, A2, planet)
 
         -- Apply random texture rotation to all supported nodes
         local rot = random_yrot_nodes[A[i]]
+        local param2 = 0
         if rot ~= nil then
             local hash = pos.x + pos.y*0x10 + pos.z*0x100
             hash = int_hash(hash)
-            A2[i] = hash % 133757 % rot
+            param2 = hash % 133757 % rot
             if rot == 2 then
-                A2[i] = A2[i] * 2
+                param2 = param2 * 2
             end
-        else
-            A2[i] = 0
         end
+
+        -- Apply 'colorfacedir' color to all supported nodes
+        -- TODO: support 'color' and 'colorwallmounted' colors
+        local color = planet.color_dictionary[A[i]]
+        if color ~= nil then
+            color = color * 0x20
+            param2 = param2 + color
+        end
+
+        A2[i] = param2
     end
 end
 
@@ -188,20 +228,20 @@ function mapgen_callback(minp, maxp, blockseed)
     -- A list of areas that are not mapped to a planet (yet)
     local not_generated_boxes = {{minp = minp, maxp = maxp}}
 
-    -- Find planet(s) for the generated region
-    for key, planet in pairs(planet_list) do
+    -- Find mapping(s) for the generated region
+    for key, mapping in pairs(planet_mappings) do
         local commonmin = {
-            x=math.max(minp.x, planet.minp.x),
-            y=math.max(minp.y, planet.minp.y),
-            z=math.max(minp.z, planet.minp.z)
+            x=math.max(minp.x, mapping.minp.x),
+            y=math.max(minp.y, mapping.minp.y),
+            z=math.max(minp.z, mapping.minp.z)
         }
         local commonmax = {
-            x=math.min(maxp.x, planet.maxp.x),
-            y=math.min(maxp.y, planet.maxp.y),
-            z=math.min(maxp.z, planet.maxp.z)
+            x=math.min(maxp.x, mapping.maxp.x),
+            y=math.min(maxp.y, mapping.maxp.y),
+            z=math.min(maxp.z, mapping.maxp.z)
         }
         if commonmax.x >= commonmin.x and commonmax.y >= commonmin.y and commonmax.z >= commonmin.z then
-            generate_planet_chunk(commonmin, commonmax, area, A, A1, A2, planet)
+            generate_planet_chunk(commonmin, commonmax, area, A, A1, A2, mapping)
             not_generated_boxes = split_not_generated_boxes(not_generated_boxes, commonmin, commonmax)
         end
     end
@@ -217,58 +257,13 @@ function mapgen_callback(minp, maxp, blockseed)
     VM:write_to_map()
 end
 
-function infinite_ng_callback(minp, maxp, area, A, A1, A2)
-    -- This should generate planets on the fly in all directions
-    -- However, it can't, due to inability to register node types after startup
-    -- TODO: work around this issue
-    local new_planets = {}
-    -- Iterate through overlapping mapchunks
-    for z=minp.z - minp.z%80, maxp.z - maxp.z%80 + 79, 80 do
-        for x=minp.x - minp.x%80, maxp.x - maxp.x%80 + 79, 80 do
-            local found_planet = nil
-            -- Has it been added in a previous iteration?
-            for index, planet in ipairs(new_planets) do
-                if x == planet.minp.x and z == planet.minp.z then
-                    found_planet = planet
-                    break
-                end
-            end
-            -- Otherwise add it
-            if found_planet == nil then
-                found_planet = {
-                    minp = {x=x, y=-640, z=z},
-                    maxp = {x=x, y=639, z=z},
-                    offset = {x=0, y=0, z=0},
-                    seed = 1
-                }
-                table.insert(new_planets, found_planet)
-                --add_planet(found_planet)
-            end
-            -- And generate the appropriate terrain with the new planet
-            local local_minp = {
-                x=math.max(x, minp.x),
-                y=math.max(-640, minp.y),
-                z=math.max(z, minp.z)
-            }
-            local local_maxp = {
-                x=math.min(x+79, maxp.x),
-                y=math.min(639, maxp.y),
-                z=math.min(z+79, maxp.z)
-            }
-            if local_maxp.y > local_minp.y then
-                --generate_planet_chunk(local_minp, local_maxp, area, A, A1, A2, found_planet)
-            end
-        end
-    end
-end
-
 --[[
 # INITIALIZATION
 ]]--
 
 minetest.register_on_generated(mapgen_callback)
 
-register_on_not_generated(infinite_ng_callback)
+register_on_not_generated(nil)
 
 -- Nodes defined only to avoid errors from mapgens
 
@@ -308,3 +303,5 @@ Here, add random texture rotation around Y axis to dummy stone block
 random_yrot_nodes = {
     [minetest.get_content_id('planetgen:stone')] = 4
 }
+
+register_all_nodes()

@@ -1,7 +1,14 @@
-function generate_planet_metadata(planet)
-    local G = PcgRandom(planet.seed, planet.seed)
+function generate_planet_metadata(seed)
+    local planet = {}
+    local G = PcgRandom(seed, seed)
     -- Default input parameters
-    if planet.walled == nil then planet.walled = false end
+    planet.seed = seed
+    -- NODE TYPES
+    -- Contains node IDs for all planet node types
+    planet.node_types = {}
+    -- COLOR DICTIONARY
+    -- Maps node IDs to param2 color indices
+    planet.color_dictionary = {}
     -- HAS OCEANS
     -- Whether the planet has oceans full of liquid
     planet.has_oceans = gen_true_with_probability(G, 3/5)
@@ -25,21 +32,6 @@ function generate_planet_metadata(planet)
         log2_caveness = (log2_caveness + 2)*5 - 2
     end
     planet.caveness = 2^log2_caveness
-    -- STONE COLOR
-    -- Blended into stone, gravel and dust textures
-    local color_r = math.abs(G:next()) % 0x100
-    local color_g = math.abs(G:next()) % (color_r+1)
-    local color_b = math.abs(G:next()) % (color_g+1)
-    planet.stone_color = string.format("#%.2X%.2X%.2X", color_r, color_g, color_b)
-    -- LIQUID COLOR
-    -- Blended into liquids
-    if gen_true_with_probability(G, planet.terrestriality + 0.18) then
-        planet.liquid_color = string.format("#%.6X", math.abs(G:next()) % 0x1000000)
-    else
-        color_r = math.abs(G:next()) % 0x40
-        color_g = math.abs(G:next()) % 0x80
-        planet.liquid_color = string.format("#%.2X%.2XFF", color_r, color_g)
-    end
     -- ATMOSPHERE
     -- vacuum       No liquids, no oxygen, extreme cold; can't sustain life
     -- freezing     Liquid hydrocarbon lakes, extreme cold; can't sustain life
@@ -87,17 +79,5 @@ function generate_planet_metadata(planet)
         normal = normal_weight,
         dead = dead_weight
     })
-    -- GRASS COLOR
-    -- Blended into grass_soil
-    color_g = math.abs(G:next()) % 0x100
-    if gen_true_with_probability(G, 1/2) then
-        color_g = 0x80 + color_g % 0x80
-        color_r = math.abs(G:next()) % (color_g+1)
-        color_b = math.abs(G:next()) % (color_g+1)
-        planet.grass_color = string.format("#%.2X%.2X%.2X", color_r, color_g, color_b)
-    else
-        color_r = math.abs(G:next()) % 0x100
-        color_b = math.abs(G:next()) % 0x100
-        planet.grass_color = string.format("#%.2X%.2X%.2X", color_r, color_g, color_b)
-    end
+    return planet
 end

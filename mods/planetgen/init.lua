@@ -20,26 +20,25 @@ Coordinate types:
 https://minetest.gitlab.io/minetest/map-terminology-and-coordinates/
 ]]--
 
---[[    planetgen.add_planet(planet)
+--[[    planetgen.add_planet_mapping(mapping)
 Adds a mapping from a rectangular chunk-aligned region of the world to the same
 region in a "planet" with a certain seed, so that it generates terrain from that
-planet. 'planet' is a table containing:
+planet. 'mapping' is a table containing:
     minp        starting x, y and z node coordinates
     maxp        ending x, y and z node coordinates
     offset      world position P will map to planet coordinates P + offset
     seed        planet seed; each seed represents a unique planet
-    walled      (optional) builds stone walls around the planet
-For now, this function is meant to be used exactly once for each unique planet,
-paired with a call to 'planetgen.remove_planet'. It generates all global planet
-metadata and registers all nodes.
-TODO: rewrite 'planetgen.add_planet' and 'planetgen.remove_planet' to support
-multiple mappings to a single planet.
+    walled      (optional) builds stone walls around the mapped area
+When this function is called with no other mappings to the same planet (seed),
+all planet metadata is generated and nodes are registered. This means it's
+impossible to call this function after setup.
     Returns planet mapping index.
 ]]--
 
---[[    planetgen.remove_planet(index)
+--[[    planetgen.remove_planet_mapping(mapping)
 Removes a planet mapping from the list. 'index' is the index returned by
-'planetgen.add_planet'. Unregisters all nodes specific to the planet.
+'planetgen.add_planet'. Unregisters all nodes specific to the planet if there
+are no mappings to it left.
 ]]--
 
 --[[
@@ -71,7 +70,7 @@ for n=1, num_planets do
     }
     r_min = math.floor(planet_size / 2)
     r_max = math.ceil(planet_size / 2) - 1
-    add_planet {
+    add_planet_mapping {
         minp = {x=current_node.x-r_min, y=current_node.y-2*r_min, z=current_node.z-r_min},
         maxp = {x=current_node.x+r_max, y=current_node.y+4*r_max, z=current_node.z+r_max},
         offset = {x=-current_node.x, y=-current_node.y, z=-current_node.z},
