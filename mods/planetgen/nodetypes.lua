@@ -64,6 +64,30 @@ function fnColorStone(n)
     return {r=r, g=g, b=b}
 end
 
+function fnColorWaterRandom(n)
+    local r = fnBitsDistribution(n, 0, 2, 192)
+    local g = fnBitsDistribution(n, 2, 2, 255)
+    local b = fnBitsDistribution(n, 4, 1, 255)
+    return {r=fnLighten(r, 2), g=fnLighten(g, 2), b=fnLighten(b, 2)}
+end
+
+function fnColorWaterNormal(n)
+    local r = fnBitsDistribution(n, 0, 1, 64)
+    local g = fnBitsDistribution(n, 1, 2, 192)
+    local b = 255
+    return {r=fnLighten(r, 2), g=fnLighten(g, 2), b=fnLighten(b, 2)}
+end
+
+-- 32 colors
+function fnColorWater(n)
+    n = n - 1
+    if n < 24 then
+        return fnColorWaterRandom(n)
+    else
+        return fnColorWaterNormal(n)
+    end
+end
+
 function fnColorGrassRandom(n)
     local r = fnBitsDistribution(n, 0, 2, 255)
     local g = fnBitsDistribution(n, 2, 2, 255)
@@ -90,14 +114,15 @@ end
 
 --[[
  # NODE TYPES
-Allocated: 312
+Allocated: 372
 64 .... base
 16          dust
 16          sediment
 16          gravel
 16          stone
-8 ..... liquid
-4           water
+68 .... liquid
+32          water
+32          flowing_water
 1           hydrocarbon
 1           flowing_hydrocarbon
 1           lava
@@ -207,10 +232,10 @@ function register_liquid_nodes()
     -- WATER
     -- The liquid that fills a temperate planet's oceans.
     -- Most common liquid; essential for life.
-    -- 32 water colors as palette and nodetype
+    -- 32 water colors as nodetype
     register_color_variants(
-        "water", 4, 4,
-        nil,
+        "water", 32, 4,
+        fnColorWater,
         function (n, color) return {
             drawtype = "liquid",
             visual_scale = 1.0,
@@ -236,19 +261,62 @@ function register_liquid_nodes()
                     }
                 }
             },
+            color = color,
             use_texture_alpha = "blend",
-            palette = "palette_water" .. n .. ".png",
             paramtype = "light",
-            paramtype2 = "colorfacedir",
+            paramtype2 = "facedir",
             place_param2 = 0,
             is_ground_content = false,
             walkable = false,
             liquidtype = "source",
+            liquid_alternative_flowing = "planetgen:flowing_water" .. n,
     	    liquid_alternative_source = "planetgen:water" .. n,
             waving = 3,
         } end
     )
-    -- TODO: add flowing water (32 water colors as nodetype)
+    -- 32 water colors as nodetype
+    register_color_variants(
+        "flowing_water", 32, 4,
+        fnColorWater,
+        function (n, color) return {
+            drawtype = "flowingliquid",
+            visual_scale = 1.0,
+            tiles = {"water.png"},
+            special_tiles = {
+                {
+                    name = "water_animation.png^[opacity:180",
+                    backface_culling = false,
+                    animation = {
+                        type = "vertical_frames",
+                        aspect_w = 16,
+                        aspect_h = 16,
+                        length = 4.0
+                    }
+                },
+                {
+                    name = "water_animation.png^[opacity:180",
+                    backface_culling = true,
+                    animation = {
+                        type = "vertical_frames",
+                        aspect_w = 16,
+                        aspect_h = 16,
+                        length = 4.0
+                    }
+                }
+            },
+            color = color,
+            use_texture_alpha = "blend",
+            paramtype = "light",
+            paramtype2 = "flowingliquid",
+            place_param2 = 0,
+            is_ground_content = false,
+            walkable = false,
+            liquidtype = "flowing",
+            liquid_alternative_flowing = "planetgen:flowing_water" .. n,
+    	    liquid_alternative_source = "planetgen:water" .. n,
+            waving = 3,
+        } end
+    )
     -- HYDROCARBON
     -- Extremely cold, liquid short-chain hydrocarbon mix.
     -- Forms lakes in very cold planets.
@@ -575,11 +643,9 @@ function choose_planet_nodes_and_colors(planet)
     elseif planet.atmosphere == "scorching" then
         planet.node_types.liquid = minetest.get_content_id("planetgen:lava")
     elseif gen_true_with_probability(G, planet.terrestriality + 0.18) then
-        planet.node_types.liquid = minetest.get_content_id("planetgen:water" .. G:next(1, 3))
-        planet.color_dictionary[planet.node_types.liquid] = G:next(0, 7)
+        planet.node_types.liquid = minetest.get_content_id("planetgen:water" .. G:next(1, 24))
     else
-        planet.node_types.liquid = minetest.get_content_id("planetgen:water" .. 4)
-        planet.color_dictionary[planet.node_types.liquid] = G:next(0, 7)
+        planet.node_types.liquid = minetest.get_content_id("planetgen:water" .. G:next(25, 32))
     end
     planet.node_types.snow = minetest.get_content_id("planetgen:snow")
     local grass_colorN
