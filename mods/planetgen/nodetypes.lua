@@ -8,76 +8,6 @@ longer needed.
     VARIANT SELECTION
 ]]
 
-function register_base_nodes(G, planet, prefix)
-    local stone_color = planet.stone_color
-    -- DUST
-    -- Covers a planet's surface
-    -- Made of the same material as STONE
-    minetest.register_node(prefix .. 'dust', {
-        drawtype = "normal",
-        visual_scale = 1.0,
-        tiles = {
-            "dust.png^[colorize:" .. stone_color .. ":64",
-            "dust2.png^[colorize:" .. stone_color .. ":64",
-            "dust.png^[colorize:" .. stone_color .. ":64", "dust2.png^[colorize:" .. stone_color .. ":64", "dust2.png^[colorize:" .. stone_color .. ":64", "dust.png^[colorize:" .. stone_color .. ":64"
-        },
-        paramtype2 = "colorfacedir",
-        place_param2 = 8,
-    })
-    random_yrot_nodes[minetest.get_content_id(prefix .. 'dust')] = 24
-    -- SEDIMENT
-    -- Covers a planet's ocean floor and beaches
-    -- Made of the same material as STONE
-    -- Deposited by LIQUID over time
-    minetest.register_node(prefix .. 'sediment', {
-        drawtype = "normal",
-        visual_scale = 1.0,
-        tiles = {
-            "sediment.png^[colorize:" .. stone_color .. ":48",
-            "sediment2.png^[colorize:" .. stone_color .. ":48",
-            "sediment.png^[colorize:" .. stone_color .. ":48", "sediment2.png^[colorize:" .. stone_color .. ":48", "sediment2.png^[colorize:" .. stone_color .. ":48", "sediment.png^[colorize:" .. stone_color .. ":48"
-        },
-        paramtype2 = "colorfacedir",
-        place_param2 = 8,
-    })
-    random_yrot_nodes[minetest.get_content_id(prefix .. 'sediment')] = 24
-    -- GRAVEL
-    -- Lies under a layer of DUST
-    -- Less granular than DUST
-    minetest.register_node(prefix .. 'gravel', {
-        drawtype = "normal",
-        visual_scale = 1.0,
-        tiles = {
-            "gravel.png^[colorize:" .. stone_color .. ":48",
-            "gravel.png^[colorize:" .. stone_color .. ":48",
-            "(gravel.png^[transformR180)^[colorize:" .. stone_color .. ":48", "(gravel.png^[transformR90)^[colorize:" .. stone_color .. ":48","(gravel.png^[transformR270)^[colorize:" .. stone_color .. ":48", "gravel.png^[colorize:" .. stone_color .. ":48",
-        },
-        paramtype2 = "colorfacedir",
-        place_param2 = 8,
-    })
-    random_yrot_nodes[minetest.get_content_id(prefix .. 'gravel')] = 4
-    -- STONE
-    -- Main material to make up a planet
-    -- Is entirely solid and anisotropic
-    minetest.register_node(prefix .. 'stone', {
-        drawtype = "normal",
-        visual_scale = 1.0,
-        tiles = {
-            "stone.png^[colorize:" .. stone_color .. ":32",
-            "stone.png^[colorize:" .. stone_color .. ":32",
-            "(stone.png^[transformR180)^[colorize:" .. stone_color .. ":32", "stone.png^[colorize:" .. stone_color .. ":32","(stone.png^[transformR180)^[colorize:" .. stone_color .. ":32", "stone.png^[colorize:" .. stone_color .. ":32",
-        },
-        paramtype2 = "colorfacedir",
-        place_param2 = 8,
-    })
-    random_yrot_nodes[minetest.get_content_id(prefix .. 'stone')] = 2
-
-    planet.node_types.dust = minetest.get_content_id(prefix .. 'dust')
-    planet.node_types.sediment = minetest.get_content_id(prefix .. 'sediment')
-    planet.node_types.gravel = minetest.get_content_id(prefix .. 'gravel')
-    planet.node_types.stone = minetest.get_content_id(prefix .. 'stone')
-end
-
 function register_liquid_nodes(G, planet, prefix)
     local liquid_color = planet.liquid_color
     local liquid_type = "water"
@@ -395,17 +325,71 @@ function fnColorStone(n)
     return {r=r, g=g, b=b}
 end
 
---[[
- # REGISTRATION
-Color variants can be generated in two ways: one involves creating a color
-palette at node registration and giving values to 'planet.color_dictionary[id]'.
-The other is done by passing a value of 'num_variants' > 1 to function
-'register_color_variants()', thus creating multiple node types. Of course, both
-can be combined, by creating as many palettes as 'num_variants' and using
-parameter 'n' of 'def_fn' to choose.
-]]
-
-function register_all_nodes()
+function register_base_nodes()
+    -- DUST
+    -- Covers a planet's surface
+    -- Made of the same material as STONE
+    register_color_variants(
+        "dust", 16, 24,
+        fnColorStone,
+        function (n, color) return {
+            drawtype = "normal",
+            visual_scale = 1.0,
+            tiles = {
+                "dust.png^[colorize:" .. color .. ":64",
+                "dust2.png^[colorize:" .. color .. ":64",
+                "dust.png^[colorize:" .. color .. ":64",
+                "dust2.png^[colorize:" .. color .. ":64",
+                "dust2.png^[colorize:" .. color .. ":64",
+                "dust.png^[colorize:" .. color .. ":64"
+            },
+            paramtype2 = "colorfacedir",
+            place_param2 = 8,
+        } end
+    )
+    -- SEDIMENT
+    -- Covers a planet's ocean floor and beaches
+    -- Made of the same material as STONE
+    -- Deposited by LIQUID over time
+    register_color_variants(
+        "sediment", 16, 24,
+        fnColorStone,
+        function (n, color) return {
+            drawtype = "normal",
+            visual_scale = 1.0,
+            tiles = {
+                "sediment.png^[colorize:" .. color .. ":48",
+                "sediment2.png^[colorize:" .. color .. ":48",
+                "sediment.png^[colorize:" .. color .. ":48",
+                "sediment2.png^[colorize:" .. color .. ":48",
+                "sediment2.png^[colorize:" .. color .. ":48",
+                "sediment.png^[colorize:" .. color .. ":48"
+            },
+            paramtype2 = "colorfacedir",
+            place_param2 = 8,
+        } end
+    )
+    -- GRAVEL
+    -- Lies under a layer of DUST
+    -- Less granular than DUST
+    register_color_variants(
+        "gravel", 16, 4,
+        fnColorStone,
+        function (n, color) return {
+            drawtype = "normal",
+            visual_scale = 1.0,
+            tiles = {
+                "gravel.png^[colorize:" .. color .. ":48",
+                "gravel.png^[colorize:" .. color .. ":48",
+                "(gravel.png^[transformR180)^[colorize:" .. color .. ":48",
+                "(gravel.png^[transformR90)^[colorize:" .. color .. ":48",
+                "(gravel.png^[transformR270)^[colorize:" .. color .. ":48",
+                "gravel.png^[colorize:" .. color .. ":48",
+            },
+            paramtype2 = "colorfacedir",
+            place_param2 = 8,
+        } end
+    )
     -- STONE
     -- Main material to make up a planet
     -- Is entirely solid and anisotropic
@@ -427,6 +411,20 @@ function register_all_nodes()
             place_param2 = 8
         } end
     )
+end
+
+--[[
+ # REGISTRATION
+Color variants can be generated in two ways: one involves creating a color
+palette at node registration and giving values to 'planet.color_dictionary[id]'.
+The other is done by passing a value of 'num_variants' > 1 to function
+'register_color_variants()', thus creating multiple node types. Of course, both
+can be combined, by creating as many palettes as 'num_variants' and using
+parameter 'n' of 'def_fn' to choose.
+]]
+
+function register_all_nodes()
+    register_base_nodes()
 
     -- LIQUID
     -- The liquid that fills a planet's oceans
@@ -483,7 +481,11 @@ end
 
 function choose_planet_nodes_and_colors(planet)
     local G = PcgRandom(planet.seed, planet.seed)
-    planet.node_types.stone = minetest.get_content_id("planetgen:stone" .. G:next(1, 16))
+    local stone_color = G:next(1, 16)
+    planet.node_types.dust = minetest.get_content_id("planetgen:dust" .. stone_color)
+    planet.node_types.sediment = minetest.get_content_id("planetgen:sediment" .. stone_color)
+    planet.node_types.gravel = minetest.get_content_id("planetgen:gravel" .. stone_color)
+    planet.node_types.stone = minetest.get_content_id("planetgen:stone" .. stone_color)
     if gen_true_with_probability(G, planet.terrestriality + 0.18) then
         planet.node_types.liquid = minetest.get_content_id("planetgen:liquid" .. G:next(1, 3))
     else

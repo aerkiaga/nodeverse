@@ -32,12 +32,6 @@ function generate_planet_metadata(seed)
         log2_caveness = (log2_caveness + 2)*5 - 2
     end
     planet.caveness = 2^log2_caveness
-    -- STONE COLOR
-    -- Blended into stone, gravel and dust textures
-    local color_r = math.abs(G:next()) % 0x100
-    local color_g = math.abs(G:next()) % (color_r+1)
-    local color_b = math.abs(G:next()) % (color_g+1)
-    planet.stone_color = string.format("#%.2X%.2X%.2X", color_r, color_g, color_b)
     -- LIQUID COLOR
     -- Blended into liquids
     if gen_true_with_probability(G, planet.terrestriality + 0.18) then
