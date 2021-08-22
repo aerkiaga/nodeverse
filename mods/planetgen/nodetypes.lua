@@ -121,8 +121,8 @@ end
 
 function fnColorGrassNormal(n)
     local g = 128 + fnBitsDistribution(n, 0, 1, 127)
-    local r = fnBitsDistribution(n, 1, 2, g)
-    local b = fnBitsDistribution(n, 3, 1, g - 64)
+    local r = fnBitsDistribution(n, 1, 2, g - 64)
+    local b = fnBitsDistribution(n, 3, 1, g - 128)
     return {r=fnLighten(r, 1.7), g=fnLighten(g, 1.7), b=fnLighten(b, 1.7)}
 end
 

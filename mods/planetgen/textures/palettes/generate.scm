@@ -58,8 +58,8 @@
     (let*
         (
             (theG (+ 128 (fnBitsDistribution n 0 1 127)))
-            (theR (fnBitsDistribution n 1 2 theG))
-            (theB (fnBitsDistribution n 3 1 (- theG 64)))
+            (theR (fnBitsDistribution n 1 2 (- theG 64)))
+            (theB (fnBitsDistribution n 3 1 (- theG 128)))
         )
         (vector (fnLighten theR 1.7) (fnLighten theG 1.7) (fnLighten theB 1.7))
     )
