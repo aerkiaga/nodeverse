@@ -5,6 +5,37 @@
 ; Finally, export the atlas to this directory as 'atlas.png'
 ; See 'split.sh' for following steps
 
+(define (fnBlue x)
+    '#(0 0 255)
+)
+
+(define (doFillVariantsRecursive inLayer inStart inCurrent inEnd inFunction)
+    (if (>= inCurrent inEnd)
+        '()
+        (let* () ;local variables
+            (let*
+                (
+                    (theX (remainder inCurrent 8))
+                    (theY (quotient inCurrent 8))
+                    (theFnX (/ (- inCurrent inStart) (- (- inEnd 1) inStart)))
+                )
+                (gimp-drawable-set-pixel inLayer theX theY 3 (inFunction theFnX))
+            )
+            (doFillVariantsRecursive inLayer inStart (+ inCurrent 1) inEnd inFunction)
+        )
+    )
+)
+
+(define (doFillVariants inLayer inRow inCount inFunction)
+    (let*
+        (
+            (theStart (* inRow 8))
+            (theEnd (+ theStart (* inCount 8)))
+        ) ;local variables
+        (doFillVariantsRecursive inLayer theStart theStart theEnd inFunction)
+    )
+)
+
 (define (script-fu-planetgen-palette-atlas)
     (let*
         (
@@ -24,9 +55,12 @@
                100
                LAYER-MODE-NORMAL
             )))
-        ) ;end of our local variables
+        ) ;local variables
 
         (gimp-image-add-layer theImage theLayer 0)
+
+        (doFillVariants theLayer 0 4 fnBlue)
+
         (gimp-display-new theImage)
         (gimp-image-clean-all theImage)
     )
