@@ -3,6 +3,10 @@ The functions in this file perform registration of all node types used by the
 mod, and then assign these to the different planets. Each base node type has
 one or more variants to this end.
 
+Some of the color-generation functions in this file match equivalent functions
+in 'textures/palettes/generate.scm'; if you edit any of the functions marked as
+such, you should perform the same changes in that file.
+
  # INDEX
     NODE TYPES
     REGISTRATION
@@ -64,6 +68,7 @@ function fnColorStone(n)
     return {r=r, g=g, b=b}
 end
 
+-- Matches 'fnColorWaterRandom' in 'textures/palettes/generate.scm'
 function fnColorWaterRandom(n)
     local r = fnBitsDistribution(n, 0, 2, 192)
     local g = fnBitsDistribution(n, 2, 2, 255)
@@ -71,6 +76,7 @@ function fnColorWaterRandom(n)
     return {r=fnLighten(r, 2), g=fnLighten(g, 2), b=fnLighten(b, 2)}
 end
 
+-- Matches 'fnColorWaterNormal' in 'textures/palettes/generate.scm'
 function fnColorWaterNormal(n)
     local r = fnBitsDistribution(n, 0, 1, 64)
     local g = fnBitsDistribution(n, 1, 2, 192)
@@ -79,8 +85,9 @@ function fnColorWaterNormal(n)
 end
 
 -- 32 colors
+-- Matches 'fnColorWater' in 'textures/palettes/generate.scm'
 function fnColorWater(n)
-    n = n - 1
+    n = n - 1 -- make 0-based
     if n < 24 then
         return fnColorWaterRandom(n)
     else
@@ -88,6 +95,7 @@ function fnColorWater(n)
     end
 end
 
+-- Matches 'fnColorGrassRandom' in 'textures/palettes/generate.scm'
 function fnColorGrassRandom(n)
     local r = fnBitsDistribution(n, 0, 2, 255)
     local g = fnBitsDistribution(n, 2, 2, 255)
@@ -95,6 +103,7 @@ function fnColorGrassRandom(n)
     return {r=fnLighten(r, 1.7), g=fnLighten(g, 1.7), b=fnLighten(b, 1.7)}
 end
 
+-- Matches 'fnColorGrassNormal' in 'textures/palettes/generate.scm'
 function fnColorGrassNormal(n)
     local g = 128 + fnBitsDistribution(n, 0, 1, 127)
     local r = fnBitsDistribution(n, 1, 2, g - 64)
@@ -103,8 +112,9 @@ function fnColorGrassNormal(n)
 end
 
 -- 48 colors
+-- Matches 'fnColorGrass' in 'textures/palettes/generate.scm'
 function fnColorGrass(n)
-    n = n - 1
+    n = n - 1 -- make 0-based
     if n < 32 then
         return fnColorGrassRandom(n)
     else

@@ -5,6 +5,10 @@
 ; Finally, export the atlas to this directory as 'atlas.png'
 ; See 'split.sh' for following steps
 
+; Some of the functions in this script should match equivalent ones in
+; 'nodetypes.lua'. If you edit the functions marked as such, make sure you
+; perform the same changes in that file.
+
 (define (exp2 z)
     (inexact->exact(round(exp (* z (log 2)))))
 )
@@ -21,6 +25,7 @@
     (- 255 (floor (/ (- 255 n) m)))
 )
 
+; Matches 'fnColorWaterRandom' in 'nodetypes.lua'
 (define (fnColorWaterRandom n)
     (let*
         (
@@ -32,6 +37,7 @@
     )
 )
 
+; Matches 'fnColorWaterNormal' in 'nodetypes.lua'
 (define (fnColorWaterNormal n)
     (let*
         (
@@ -43,6 +49,15 @@
     )
 )
 
+; Matches 'fnColorWater' in 'nodetypes.lua'
+( define (fnColorWater n)
+    (if (< n 24)
+        (fnColorWaterRandom n)
+        (fnColorWaterNormal n)
+    )
+)
+
+; Matches 'fnColorGrassRandom' in 'nodetypes.lua'
 (define (fnColorGrassRandom n)
     (let*
         (
@@ -54,6 +69,7 @@
     )
 )
 
+; Matches 'fnColorGrassNormal' in 'nodetypes.lua'
 (define (fnColorGrassNormal n)
     (let*
         (
@@ -62,6 +78,14 @@
             (theB (fnBitsDistribution n 3 1 (- theG 128)))
         )
         (vector (fnLighten theR 1.7) (fnLighten theG 1.7) (fnLighten theB 1.7))
+    )
+)
+
+; Matches 'fnColorGrass' in 'nodetypes.lua'
+( define (fnColorGrass n)
+    (if (< n 32)
+        (fnColorGrassRandom n)
+        (fnColorGrassNormal n)
     )
 )
 
@@ -114,10 +138,8 @@
 
         (gimp-image-add-layer theImage theLayer 0)
 
-        (doFillVariants theLayer 0 3 fnColorWaterRandom)
-        (doFillVariants theLayer 3 1 fnColorWaterNormal)
-        (doFillVariants theLayer 4 4 fnColorGrassRandom)
-        (doFillVariants theLayer 8 2 fnColorGrassNormal)
+        (doFillVariants theLayer 0 4 fnColorWater)
+        (doFillVariants theLayer 4 6 fnColorGrass)
 
         (gimp-display-new theImage)
         (gimp-image-clean-all theImage)

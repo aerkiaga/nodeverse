@@ -5,10 +5,8 @@ This is a procedurally generated space exploration game, inspired by No Man's
 Sky and other similar titles, but built around voxel mechanics. It features an
 immensely large universe with a never-ending variety of planets to explore.
 
-**NOTE**: choose *singlenode* as mapgen type.
-
 ## Status
-100 random planets are created floating in space. Blocks include stone, gravel,
+1000 random planets are created floating in space. Blocks include stone, gravel,
 dust, sediment, liquid (water, hydrocarbon, lava), grass soil, grass, dry grass,
 tall grass and snow. Planets of different colors, rockier, more hilly or flat,
 richer in oceans, arid, frozen, volcanic, and with or without living organisms
