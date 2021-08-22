@@ -494,7 +494,7 @@ function register_liquid_nodes()
             visual_scale = 1.0,
             tiles = {
                 {
-                    name = "lava_animation.png^[opacity:180",
+                    name = "lava_animation.png",
                     backface_culling = false,
                     animation = {
                         type = "vertical_frames",
@@ -504,7 +504,7 @@ function register_liquid_nodes()
                     }
                 },
                 {
-                    name = "lava_animation.png^[opacity:180",
+                    name = "lava_animation.png",
                     backface_culling = true,
                     animation = {
                         type = "vertical_frames",
@@ -535,7 +535,7 @@ function register_liquid_nodes()
             tiles = {"lava.png"},
             special_tiles = {
                 {
-                    name = "lava_animation.png^[opacity:180",
+                    name = "lava_animation.png",
                     backface_culling = false,
                     animation = {
                         type = "vertical_frames",
@@ -545,7 +545,7 @@ function register_liquid_nodes()
                     }
                 },
                 {
-                    name = "lava_animation.png^[opacity:180",
+                    name = "lava_animation.png",
                     backface_culling = true,
                     animation = {
                         type = "vertical_frames",

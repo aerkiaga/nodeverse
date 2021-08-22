@@ -17,6 +17,10 @@
     (round (* (/ (fnExtractBits n lower num) (- (exp2 num) 1)) max))
 )
 
+(define (fnLighten n)
+    (- 255 (quotient (- 255 n) 2))
+)
+
 (define (fnColorWaterRandom n)
     (let*
         (
@@ -24,7 +28,7 @@
             (theG (fnBitsDistribution n 2 2 255))
             (theB (fnBitsDistribution n 4 1 255))
         )
-        (vector theR theG theB)
+        (vector (fnLighten theR) (fnLighten theG) (fnLighten theB))
     )
 )
 
@@ -35,7 +39,7 @@
             (theG (fnBitsDistribution n 1 2 192))
             (theB 255)
         )
-        (vector theR theG theB)
+        (vector (fnLighten theR) (fnLighten theG) (fnLighten theB))
     )
 )
 
