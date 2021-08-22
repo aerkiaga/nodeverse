@@ -5,8 +5,38 @@
 ; Finally, export the atlas to this directory as 'atlas.png'
 ; See 'split.sh' for following steps
 
-(define (fnBlue x)
-    '#(0 0 255)
+(define (exp2 z)
+    (inexact->exact(round(exp (* z (log 2)))))
+)
+
+(define (fnExtractBits n lower num)
+    (remainder (quotient n (exp2 lower)) (exp2 num))
+)
+
+(define (fnBitsDistribution n lower num max)
+    (round (* (/ (fnExtractBits n lower num) (- (exp2 num) 1)) max))
+)
+
+(define (fnColorWaterRandom n)
+    (let*
+        (
+            (theR (fnBitsDistribution n 0 2 255))
+            (theG (fnBitsDistribution n 2 2 255))
+            (theB (fnBitsDistribution n 4 1 255))
+        )
+        (vector theR theG theB)
+    )
+)
+
+(define (fnColorWaterNormal n)
+    (let*
+        (
+            (theR (fnBitsDistribution n 0 1 64))
+            (theG (fnBitsDistribution n 1 2 128))
+            (theB 255)
+        )
+        (vector theR theG theB)
+    )
 )
 
 (define (doFillVariantsRecursive inLayer inStart inCurrent inEnd inFunction)
@@ -17,9 +47,8 @@
                 (
                     (theX (remainder inCurrent 8))
                     (theY (quotient inCurrent 8))
-                    (theFnX (/ (- inCurrent inStart) (- (- inEnd 1) inStart)))
                 )
-                (gimp-drawable-set-pixel inLayer theX theY 3 (inFunction theFnX))
+                (gimp-drawable-set-pixel inLayer theX theY 3 (inFunction inCurrent))
             )
             (doFillVariantsRecursive inLayer inStart (+ inCurrent 1) inEnd inFunction)
         )
@@ -59,7 +88,8 @@
 
         (gimp-image-add-layer theImage theLayer 0)
 
-        (doFillVariants theLayer 0 4 fnBlue)
+        (doFillVariants theLayer 0 3 fnColorWaterRandom)
+        (doFillVariants theLayer 3 1 fnColorWaterNormal)
 
         (gimp-display-new theImage)
         (gimp-image-clean-all theImage)

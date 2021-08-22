@@ -419,7 +419,7 @@ function register_all_nodes()
     -- hydrocarbon  Extremely cold, liquid short-chain hydrocarbon mix
     -- lava         Molten mix of rocks at high temperature
     register_color_variants(
-        "liquid", 1, 4,
+        "liquid", 4, 4,
         nil,
         function (n, color) return {
             drawtype = "liquid",
@@ -447,7 +447,7 @@ function register_all_nodes()
                 }
             },
             use_texture_alpha = "blend",
-            palette = "palette_water.png",
+            palette = "palette_water" .. n .. ".png",
             paramtype = "light",
             paramtype2 = "colorfacedir",
             place_param2 = 8,
@@ -466,7 +466,12 @@ end
 ]]
 
 function choose_planet_nodes_and_colors(planet)
-    planet.node_types.stone = minetest.get_content_id('planetgen:stone' .. planet.seed % 4 + 1)
-    planet.node_types.liquid = minetest.get_content_id('planetgen:liquid')
-    planet.color_dictionary[planet.node_types.liquid] = planet.seed % 8
+    local G = PcgRandom(planet.seed, planet.seed)
+    planet.node_types.stone = minetest.get_content_id("planetgen:stone" .. G:next(1, 4))
+    if gen_true_with_probability(G, planet.terrestriality + 0.18) then
+        planet.node_types.liquid = minetest.get_content_id("planetgen:liquid" .. G:next(1, 3))
+    else
+        planet.node_types.liquid = minetest.get_content_id("planetgen:liquid" .. 4)
+    end
+    planet.color_dictionary[planet.node_types.liquid] = G:next(0, 7)
 end
