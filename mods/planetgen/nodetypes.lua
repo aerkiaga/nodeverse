@@ -8,107 +8,6 @@ longer needed.
     VARIANT SELECTION
 ]]
 
-function register_liquid_nodes(G, planet, prefix)
-    local liquid_color = planet.liquid_color
-    local liquid_type = "water"
-    local liquid_style = "^[colorize:" .. liquid_color .. ":128)^[opacity:160"
-    local liquid_animation_length = 2.0
-    if planet.atmosphere == "freezing" then
-        liquid_type = "hydrocarbon"
-        liquid_style = ")^[opacity:160"
-        liquid_animation_length = 4.0
-    elseif planet.atmosphere == "scorching" then
-        liquid_type = "lava"
-        liquid_style = ")"
-        liquid_animation_length = 8.0
-    end
-
-    -- LIQUID
-    -- The liquid that fills a planet's oceans
-    -- Might be water, or something else:
-    -- water        Most common; essential for life
-    -- hydrocarbon  Extremely cold, liquid short-chain hydrocarbon mix
-    -- lava         Molten mix of rocks at high temperature
-    minetest.register_node(prefix .. 'liquid', {
-        drawtype = "liquid",
-        visual_scale = 1.0,
-        tiles = {
-            {
-                name = "(" .. liquid_type .. "_animation.png" .. liquid_style,
-                backface_culling = false,
-                animation = {
-                    type = "vertical_frames",
-                    aspect_w = 16,
-                    aspect_h = 16,
-                    length = liquid_animation_length
-                }
-            },
-            {
-                name = "(" .. liquid_type .. "_animation.png" .. liquid_style,
-                backface_culling = true,
-                animation = {
-                    type = "vertical_frames",
-                    aspect_w = 16,
-                    aspect_h = 16,
-                    length = liquid_animation_length
-                }
-            }
-        },
-        use_texture_alpha = "blend",
-        paramtype = "light",
-        paramtype2 = "colorfacedir",
-        place_param2 = 8,
-        is_ground_content = false,
-        walkable = false,
-        liquidtype = "source",
-        liquid_alternative_flowing = prefix .. 'flowing_liquid',
-	    liquid_alternative_source = prefix .. 'liquid',
-        waving = 3,
-    })
-    random_yrot_nodes[minetest.get_content_id(prefix .. 'liquid')] = 4
-
-    minetest.register_node(prefix .. 'flowing_liquid', {
-        drawtype = "flowingliquid",
-        visual_scale = 1.0,
-        tiles = {liquid_type .. ".png"},
-        special_tiles = {
-            {
-                name = "(" .. liquid_type .. "_animation.png" .. liquid_style,
-                backface_culling = false,
-                animation = {
-                    type = "vertical_frames",
-                    aspect_w = 16,
-                    aspect_h = 16,
-                    length = liquid_animation_length
-                }
-            },
-            {
-                name = "(" .. liquid_type .. "_animation.png" .. liquid_style,
-                backface_culling = true,
-                animation = {
-                    type = "vertical_frames",
-                    aspect_w = 16,
-                    aspect_h = 16,
-                    length = liquid_animation_length
-                }
-            }
-        },
-        use_texture_alpha = "blend",
-        paramtype = "light",
-        paramtype2 = "flowingliquid",
-        place_param2 = 8,
-        is_ground_content = false,
-        walkable = false,
-        liquidtype = "flowing",
-        liquid_alternative_flowing = prefix .. 'flowing_liquid',
-	    liquid_alternative_source = prefix .. 'liquid',
-        waving = 3,
-    })
-
-    planet.node_types.liquid = minetest.get_content_id(prefix .. 'liquid')
-    planet.node_types.flowing_liquid = minetest.get_content_id(prefix .. 'flowing_liquid')
-end
-
 function register_base_icy_nodes(G, planet, prefix)
     -- SNOW
     -- Covers planets with very low temperatures
@@ -344,7 +243,7 @@ function register_base_nodes()
                 "dust.png^[colorize:" .. color .. ":64"
             },
             paramtype2 = "colorfacedir",
-            place_param2 = 8,
+            place_param2 = 0,
         } end
     )
     -- SEDIMENT
@@ -366,7 +265,7 @@ function register_base_nodes()
                 "sediment.png^[colorize:" .. color .. ":48"
             },
             paramtype2 = "colorfacedir",
-            place_param2 = 8,
+            place_param2 = 0,
         } end
     )
     -- GRAVEL
@@ -387,7 +286,7 @@ function register_base_nodes()
                 "gravel.png^[colorize:" .. color .. ":48",
             },
             paramtype2 = "colorfacedir",
-            place_param2 = 8,
+            place_param2 = 0,
         } end
     )
     -- STONE
@@ -408,7 +307,264 @@ function register_base_nodes()
                 "stone.png^[colorize:" .. color .. ":32"
             },
             paramtype2 = "facedir",
-            place_param2 = 8
+            place_param2 = 0
+        } end
+    )
+end
+
+function register_liquid_nodes()
+    -- WATER
+    -- The liquid that fills a temperate planet's oceans.
+    -- Most common liquid; essential for life.
+    register_color_variants(
+        "water", 4, 4,
+        nil,
+        function (n, color) return {
+            drawtype = "liquid",
+            visual_scale = 1.0,
+            tiles = {
+                {
+                    name = "water_animation.png^[opacity:180",
+                    backface_culling = false,
+                    animation = {
+                        type = "vertical_frames",
+                        aspect_w = 16,
+                        aspect_h = 16,
+                        length = 2.0
+                    }
+                },
+                {
+                    name = "water_animation.png^[opacity:180",
+                    backface_culling = true,
+                    animation = {
+                        type = "vertical_frames",
+                        aspect_w = 16,
+                        aspect_h = 16,
+                        length = 2.0
+                    }
+                }
+            },
+            use_texture_alpha = "blend",
+            palette = "palette_water" .. n .. ".png",
+            paramtype = "light",
+            paramtype2 = "colorfacedir",
+            place_param2 = 0,
+            is_ground_content = false,
+            walkable = false,
+            liquidtype = "source",
+            liquid_alternative_flowing = "planetgen:flowing_water" .. n,
+    	    liquid_alternative_source = "planetgen:water" .. n,
+            waving = 3,
+        } end
+    )
+    register_color_variants(
+        "flowing_water", 4, 4,
+        nil,
+        function (n, color) return {
+            drawtype = "flowingliquid",
+            visual_scale = 1.0,
+            tiles = {"water.png"},
+            special_tiles = {
+                {
+                    name = "water_animation.png^[opacity:180",
+                    backface_culling = false,
+                    animation = {
+                        type = "vertical_frames",
+                        aspect_w = 16,
+                        aspect_h = 16,
+                        length = 2.0
+                    }
+                },
+                {
+                    name = "water_animation.png^[opacity:180",
+                    backface_culling = true,
+                    animation = {
+                        type = "vertical_frames",
+                        aspect_w = 16,
+                        aspect_h = 16,
+                        length = 2.0
+                    }
+                }
+            },
+            use_texture_alpha = "blend",
+            palette = "palette_water" .. n .. ".png",
+            paramtype = "light",
+            paramtype2 = "flowingliquid",
+            place_param2 = 0,
+            is_ground_content = false,
+            walkable = false,
+            liquidtype = "flowing",
+            liquid_alternative_flowing = "planetgen:flowing_water" .. n,
+    	    liquid_alternative_source = "planetgen:water" .. n,
+            waving = 3,
+        } end
+    )
+    -- HYDROCARBON
+    -- Extremely cold, liquid short-chain hydrocarbon mix.
+    -- Forms lakes in very cold planets.
+    register_color_variants(
+        "hydrocarbon", 1, 4,
+        nil,
+        function (n, color) return {
+            drawtype = "liquid",
+            visual_scale = 1.0,
+            tiles = {
+                {
+                    name = "hydrocarbon_animation.png^[opacity:180",
+                    backface_culling = false,
+                    animation = {
+                        type = "vertical_frames",
+                        aspect_w = 16,
+                        aspect_h = 16,
+                        length = 4.0
+                    }
+                },
+                {
+                    name = "hydrocarbon_animation.png^[opacity:180",
+                    backface_culling = true,
+                    animation = {
+                        type = "vertical_frames",
+                        aspect_w = 16,
+                        aspect_h = 16,
+                        length = 4.0
+                    }
+                }
+            },
+            use_texture_alpha = "blend",
+            paramtype = "light",
+            paramtype2 = "facedir",
+            place_param2 = 0,
+            is_ground_content = false,
+            walkable = false,
+            liquidtype = "source",
+            liquid_alternative_flowing = "planetgen:flowing_hydrocarbon" .. n,
+    	    liquid_alternative_source = "planetgen:hydrocarbon" .. n,
+            waving = 3,
+        } end
+    )
+    register_color_variants(
+        "flowing_hydrocarbon", 1, 4,
+        nil,
+        function (n, color) return {
+            drawtype = "flowingliquid",
+            visual_scale = 1.0,
+            tiles = {"hydrocarbon.png"},
+            special_tiles = {
+                {
+                    name = "hydrocarbon_animation.png^[opacity:180",
+                    backface_culling = false,
+                    animation = {
+                        type = "vertical_frames",
+                        aspect_w = 16,
+                        aspect_h = 16,
+                        length = 4.0
+                    }
+                },
+                {
+                    name = "hydrocarbon_animation.png^[opacity:180",
+                    backface_culling = true,
+                    animation = {
+                        type = "vertical_frames",
+                        aspect_w = 16,
+                        aspect_h = 16,
+                        length = 4.0
+                    }
+                }
+            },
+            use_texture_alpha = "blend",
+            paramtype = "light",
+            paramtype2 = "flowingliquid",
+            place_param2 = 0,
+            is_ground_content = false,
+            walkable = false,
+            liquidtype = "flowing",
+            liquid_alternative_flowing = "planetgen:flowing_hydrocarbon" .. n,
+    	    liquid_alternative_source = "planetgen:hydrocarbon" .. n,
+            waving = 3,
+        } end
+    )
+    -- LAVA
+    -- Molten mix of rocks at high temperature.
+    -- Fills the oceans of very hot planets with intense volcanic activity.
+    register_color_variants(
+        "lava", 1, 4,
+        nil,
+        function (n, color) return {
+            drawtype = "liquid",
+            visual_scale = 1.0,
+            tiles = {
+                {
+                    name = "lava_animation.png^[opacity:180",
+                    backface_culling = false,
+                    animation = {
+                        type = "vertical_frames",
+                        aspect_w = 16,
+                        aspect_h = 16,
+                        length = 8.0
+                    }
+                },
+                {
+                    name = "lava_animation.png^[opacity:180",
+                    backface_culling = true,
+                    animation = {
+                        type = "vertical_frames",
+                        aspect_w = 16,
+                        aspect_h = 16,
+                        length = 8.0
+                    }
+                }
+            },
+            use_texture_alpha = "blend",
+            paramtype = "light",
+            paramtype2 = "facedir",
+            place_param2 = 0,
+            is_ground_content = false,
+            walkable = false,
+            liquidtype = "source",
+            liquid_alternative_flowing = "planetgen:flowing_lava" .. n,
+    	    liquid_alternative_source = "planetgen:lava" .. n,
+            waving = 3,
+        } end
+    )
+    register_color_variants(
+        "flowing_lava", 1, 4,
+        nil,
+        function (n, color) return {
+            drawtype = "flowingliquid",
+            visual_scale = 1.0,
+            tiles = {"lava.png"},
+            special_tiles = {
+                {
+                    name = "lava_animation.png^[opacity:180",
+                    backface_culling = false,
+                    animation = {
+                        type = "vertical_frames",
+                        aspect_w = 16,
+                        aspect_h = 16,
+                        length = 8.0
+                    }
+                },
+                {
+                    name = "lava_animation.png^[opacity:180",
+                    backface_culling = true,
+                    animation = {
+                        type = "vertical_frames",
+                        aspect_w = 16,
+                        aspect_h = 16,
+                        length = 8.0
+                    }
+                }
+            },
+            use_texture_alpha = "blend",
+            paramtype = "light",
+            paramtype2 = "flowingliquid",
+            place_param2 = 0,
+            is_ground_content = false,
+            walkable = false,
+            liquidtype = "flowing",
+            liquid_alternative_flowing = "planetgen:flowing_lava" .. n,
+    	    liquid_alternative_source = "planetgen:lava" .. n,
+            waving = 3,
         } end
     )
 end
@@ -425,54 +581,7 @@ parameter 'n' of 'def_fn' to choose.
 
 function register_all_nodes()
     register_base_nodes()
-
-    -- LIQUID
-    -- The liquid that fills a planet's oceans
-    -- Might be water, or something else:
-    -- water        Most common; essential for life
-    -- hydrocarbon  Extremely cold, liquid short-chain hydrocarbon mix
-    -- lava         Molten mix of rocks at high temperature
-    register_color_variants(
-        "liquid", 4, 4,
-        nil,
-        function (n, color) return {
-            drawtype = "liquid",
-            visual_scale = 1.0,
-            tiles = {
-                {
-                    name = "water_animation.png^[opacity:180",
-                    backface_culling = false,
-                    animation = {
-                        type = "vertical_frames",
-                        aspect_w = 16,
-                        aspect_h = 16,
-                        length = liquid_animation_length
-                    }
-                },
-                {
-                    name = "water_animation.png^[opacity:180",
-                    backface_culling = true,
-                    animation = {
-                        type = "vertical_frames",
-                        aspect_w = 16,
-                        aspect_h = 16,
-                        length = liquid_animation_length
-                    }
-                }
-            },
-            use_texture_alpha = "blend",
-            palette = "palette_water" .. n .. ".png",
-            paramtype = "light",
-            paramtype2 = "colorfacedir",
-            place_param2 = 8,
-            is_ground_content = false,
-            walkable = false,
-            liquidtype = "source",
-            liquid_alternative_flowing = 'planetgen:flowing_liquid',
-    	    liquid_alternative_source = 'planetgen:liquid',
-            waving = 3,
-        } end
-    )
+    register_liquid_nodes()
 end
 
 --[[
@@ -486,10 +595,15 @@ function choose_planet_nodes_and_colors(planet)
     planet.node_types.sediment = minetest.get_content_id("planetgen:sediment" .. stone_color)
     planet.node_types.gravel = minetest.get_content_id("planetgen:gravel" .. stone_color)
     planet.node_types.stone = minetest.get_content_id("planetgen:stone" .. stone_color)
-    if gen_true_with_probability(G, planet.terrestriality + 0.18) then
-        planet.node_types.liquid = minetest.get_content_id("planetgen:liquid" .. G:next(1, 3))
+    if planet.atmosphere == "freezing" then
+        planet.node_types.liquid = minetest.get_content_id("planetgen:hydrocarbon")
+    elseif planet.atmosphere == "scorching" then
+        planet.node_types.liquid = minetest.get_content_id("planetgen:lava")
+    elseif gen_true_with_probability(G, planet.terrestriality + 0.18) then
+        planet.node_types.liquid = minetest.get_content_id("planetgen:water" .. G:next(1, 3))
+        planet.color_dictionary[planet.node_types.liquid] = G:next(0, 7)
     else
-        planet.node_types.liquid = minetest.get_content_id("planetgen:liquid" .. 4)
+        planet.node_types.liquid = minetest.get_content_id("planetgen:water" .. 4)
+        planet.color_dictionary[planet.node_types.liquid] = G:next(0, 7)
     end
-    planet.color_dictionary[planet.node_types.liquid] = G:next(0, 7)
 end

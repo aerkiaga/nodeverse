@@ -53,7 +53,7 @@ them.
 ]]
 
 num_planets = 100
-planet_size = 80
+planet_size = 20
 function seed_from_n(n)
     return n
 end
