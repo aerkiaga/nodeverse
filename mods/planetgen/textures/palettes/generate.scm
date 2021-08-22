@@ -32,7 +32,7 @@
     (let*
         (
             (theR (fnBitsDistribution n 0 1 64))
-            (theG (fnBitsDistribution n 1 2 128))
+            (theG (fnBitsDistribution n 1 2 192))
             (theB 255)
         )
         (vector theR theG theB)

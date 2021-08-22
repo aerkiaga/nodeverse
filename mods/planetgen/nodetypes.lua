@@ -426,7 +426,7 @@ function register_all_nodes()
             visual_scale = 1.0,
             tiles = {
                 {
-                    name = "water_animation.png^[opacity:160",
+                    name = "water_animation.png^[opacity:180",
                     backface_culling = false,
                     animation = {
                         type = "vertical_frames",
@@ -436,7 +436,7 @@ function register_all_nodes()
                     }
                 },
                 {
-                    name = "water_animation.png^[opacity:160",
+                    name = "water_animation.png^[opacity:180",
                     backface_culling = true,
                     animation = {
                         type = "vertical_frames",
