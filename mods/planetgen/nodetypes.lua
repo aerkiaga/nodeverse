@@ -8,34 +8,6 @@ longer needed.
     VARIANT SELECTION
 ]]
 
-function register_base_icy_nodes(G, planet, prefix)
-    -- SNOW
-    -- Covers planets with very low temperatures
-    minetest.register_node(prefix .. 'snow', {
-        drawtype = "nodebox",
-        visual_scale = 1.0,
-        tiles = {
-            "snow_top.png",
-            "snow_top.png",
-            "snow_side.png^[transformFX",
-            "snow_side.png^[transformFX",
-            "snow_side.png",
-            "snow_side.png"
-        },
-        paramtype2 = "colorfacedir",
-        place_param2 = 8,
-        walkable = false,
-        leveled = 16,
-        node_box = {
-            type = "leveled",
-            fixed = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}
-        },
-    })
-    random_yrot_nodes[minetest.get_content_id(prefix .. 'snow')] = 4
-
-    planet.node_types.snow = minetest.get_content_id(prefix .. 'snow')
-end
-
 function register_base_floral_nodes(G, planet, prefix)
     local stone_color = planet.stone_color
     local grass_color = planet.grass_color
@@ -569,6 +541,35 @@ function register_liquid_nodes()
     )
 end
 
+function register_icy_nodes()
+    -- SNOW
+    -- Covers planets with very low temperatures
+    register_color_variants(
+        "snow", 1, 4,
+        nil,
+        function (n, color) return {
+            drawtype = "nodebox",
+            visual_scale = 1.0,
+            tiles = {
+                "snow_top.png",
+                "snow_top.png",
+                "snow_side.png^[transformFX",
+                "snow_side.png^[transformFX",
+                "snow_side.png",
+                "snow_side.png"
+            },
+            paramtype2 = "colorfacedir",
+            place_param2 = 8,
+            walkable = false,
+            leveled = 16,
+            node_box = {
+                type = "leveled",
+                fixed = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}
+            },
+        } end
+    )
+end
+
 --[[
  # REGISTRATION
 Color variants can be generated in two ways: one involves creating a color
@@ -582,6 +583,7 @@ parameter 'n' of 'def_fn' to choose.
 function register_all_nodes()
     register_base_nodes()
     register_liquid_nodes()
+    register_icy_nodes()
 end
 
 --[[
@@ -606,4 +608,5 @@ function choose_planet_nodes_and_colors(planet)
         planet.node_types.liquid = minetest.get_content_id("planetgen:water" .. 4)
         planet.color_dictionary[planet.node_types.liquid] = G:next(0, 7)
     end
+    planet.node_types.snow = minetest.get_content_id("planetgen:snow")
 end
