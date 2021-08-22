@@ -3,15 +3,33 @@ Planetgen defines a custom map generator that can map arbitrary areas of planets
 with various seeds into any part of the world. It overrides map generation and
 provides an API to control it from other mods or from within this file.
 
-Read mapgen.lua to learn how this works. For the API reference, keep reading
+Read 'mapgen.lua' to learn how this works. For the API reference, keep reading
 this file. To see or edit the default game setup, search '# GAME SETUP' in your
-editor or IDE.
+editor or IDE and jump to it.
 ]]--
 
 dofile(minetest.get_modpath("planetgen") .. "/mapgen.lua")
 
 --[[
 # API REFERENCE
+Planetgen is a configurable mapgen that can be used in many ways. The API it
+offers can be used from this file (see GAME SETUP) and have this mod generate
+custom terrain, or from a different mod to integrate it into a game.
+
+All functions in the API must be prefixed with 'planetgen.' if used from a
+different mod, while functions called from within this mod must not.
+
+There are two basic ways to use this API. The simplest one is simply to call
+'planetgen.add_planet_mapping()' at startup to place one or more planets at
+certain locations in the world. These can be as large as necessary (e.g.
+vertically stacked but filling the world horizontally), and many thousands of
+planets can be created (e.g. 10k floating planets).
+
+The second basic way to use the API is to register a callback function via
+'planetgen.register_on_not_generated()', and within that generate new areas with
+'planetgen.generate_planet_chunk()'. This allows one to generate an infinite
+world with as many planets as desired, and add or remove planet areas
+programmatically (e.g. to simulate a larger universe).
 
 Coordinate format:
 See https://minetest.gitlab.io/minetest/representations-of-simple-things/
@@ -20,72 +38,79 @@ Coordinate types:
 https://minetest.gitlab.io/minetest/map-terminology-and-coordinates/
 ]]--
 
+--[[    planetgen.register_on_not_generated(callback)
+Registers a function that will be called whenever an area not mapped to any
+planet has been unsuccessfully generated. This allows to generate the area via
+'planetgen.generate_planet_chunk()', and/or manually generate custom content in
+that area.
+    callback    function (minp, maxp, area, A, A1, A2)
+    Will be passed the extents of the unmapped area, as well as objects useful
+    for overriding map generation.
+        minp        starting x, y and z node coordinates
+        maxp        ending x, y and z node coordinates
+        area        value returned by Minetest's 'VoxelArea:new()'
+        A           value returned by Minetest's 'VoxelManip:get_data()'
+        A1          value returned by Minetest's 'VoxelManip:get_light_data()'
+        A2          value returned by Minetest's 'VoxelManip:get_param2_data()'
+Note: 'planetgen.add_planet_mapping()' should not be called from within the
+callback at the moment, as it causes an unidentified bug that crashes Minetest.
+Use 'planetgen.generate_planet_chunk()' directly.
+]]
+
 --[[    planetgen.add_planet_mapping(mapping)
-Adds a mapping from a rectangular chunk-aligned region of the world to the same
+Adds a mapping from a rectangular chunk-aligned region of the world to some
 region in a "planet" with a certain seed, so that it generates terrain from that
-planet. 'mapping' is a table containing:
+planet upon following generation attemps. 'mapping' is a table containing:
     minp        starting x, y and z node coordinates
     maxp        ending x, y and z node coordinates
     offset      world position P will map to planet coordinates P + offset
     seed        planet seed; each seed represents a unique planet
     walled      (optional) builds stone walls around the mapped area
 When this function is called with no other mappings to the same planet (seed),
-all planet metadata is generated and nodes are registered. This means it's
-impossible to call this function after setup.
+all planet metadata is generated and node variants are chosen. This function can
+be called either at startup or at any later time, as it performs no actual
+registrations.
     Returns planet mapping index.
 ]]--
 
---[[    planetgen.remove_planet_mapping(mapping)
-Removes a planet mapping from the list. 'index' is the index returned by
-'planetgen.add_planet'. Unregisters all nodes specific to the planet if there
-are no mappings to it left.
+--[[    planetgen.remove_planet_mapping(index)
+Removes a planet mapping from the list. The area mapped by it will be
+immediately cleared and unloaded, and further attempts to load it will result in
+the 'on not generated' callback being called, if registered (see
+'planetgen.register_on_not_generated()').
+    index       mapping index returned by 'planetgen.add_planet'
 ]]--
+
+--[[    generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
+Uses the map generation code provided by this mod to generate planet terrain
+within an area. The generated area will be the intersection of the boxes
+delimited by [minp .. maxp] and [mapping.minp .. mapping.maxp].
+    minp        starting x, y and z node coordinates
+    maxp        ending x, y and z node coordinates
+    area        value from 'on not generated' callback or 'VoxelArea:new()'
+    A           value from 'on not generated' callback or 'VoxelArea:get_data()'
+    A1          value from 'on not generated' callback or 'VoxelArea:get_light_data()'
+    A2          value from 'on not generated' callback or 'VoxelArea:get_param2_data()'
+    mapping     see 'planetgen.add_planet_mapping()' for format
+]]
 
 --[[
 # GAME SETUP
 
 Default game setup:
-Generate a number of planets following a conic spiral with Archimedean floor
-plan, trying to keep distances even. A Fermat spiral with golden angle step was
-also attempted, but the results were noticeably worse in terms of balance. The
-first two planets overlap, while the rest are laid out with large gaps between
-them.
+A single planet extending infinitely in all directions.
 ]]
 
-num_planets = 1000
-planet_size = 80
-function seed_from_n(n)
-    return n
+function new_area_callback(minp, maxp, area, A, A1, A2)
+    -- Simply map all new areas to the same planet
+    local new_mapping = {
+        minp = minp,
+        maxp = maxp,
+        offset = {x=0, y=100, z=0},
+        seed = 0
+    }
+    --local index = add_planet_mapping(new_mapping) -- DON'T
+    generate_planet_chunk(minp, maxp, area, A, A1, A2, new_mapping)
 end
 
-current_pos = {x=1, y=-100, z=0}
-elevation_per_turn = planet_size
-separation_per_turn = 2*planet_size
-separation = 2*planet_size
-for n=1, num_planets do
-    current_node = {
-        x=math.floor(current_pos.x),
-        y=math.floor(current_pos.y),
-        z=math.floor(current_pos.z)
-    }
-    r_min = math.floor(planet_size / 2)
-    r_max = math.ceil(planet_size / 2) - 1
-    add_planet_mapping {
-        minp = {x=current_node.x-r_min, y=current_node.y-2*r_min, z=current_node.z-r_min},
-        maxp = {x=current_node.x+r_max, y=current_node.y+4*r_max, z=current_node.z+r_max},
-        offset = {x=-current_node.x, y=-current_node.y, z=-current_node.z},
-        seed = seed_from_n(n),
-        walled = true
-    }
-    delta_angle = math.sqrt(math.pi*separation / (n*separation_per_turn))
-    if n == 1 then
-        -- Avoid the first two planets overlapping
-        delta_angle = delta_angle*2
-    end
-    current_pos = vec3_rotate(current_pos, delta_angle, {x=0, y=1, z=0})
-    outward = {x=current_pos.x, y=0, z=current_pos.z}
-    outward = vec3_scale(outward, 1/vec3_modulo(outward))
-    outward = vec3_scale(outward, separation_per_turn * delta_angle / (2*math.pi))
-    outward.y = elevation_per_turn * delta_angle / (2*math.pi)
-    current_pos = vec3_add(current_pos, outward)
-end
+register_on_not_generated(new_area_callback)

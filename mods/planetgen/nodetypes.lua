@@ -538,7 +538,7 @@ function register_base_floral_nodes()
     register_color_variants(
         "grass_soil", 16*6, 4,
         function (n) return fnColorStone(n % 16) end,
-        function (n, color) print(string.format("n = %d, %s", n, "palette_grass" .. math.floor((n-1) / 16) + 1 .. ".png")) return {
+        function (n, color) return {
             drawtype = "normal",
             visual_scale = 1.0,
             tiles = {

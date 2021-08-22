@@ -47,12 +47,10 @@ function clear_planet_mapping_area(mapping)
     minetest.delete_area(minp, maxp)
 end
 
--- API
-function add_planet_mapping(mapping)
+function planet_from_mapping(mapping)
     local planet = planet_dictionary[mapping.seed]
     if planet == nil then
         planet = generate_planet_metadata(mapping.seed)
-        --register_planet_nodes(planet)
         choose_planet_nodes_and_colors(planet)
         planet_dictionary[mapping.seed] = planet
         planet.seed = mapping.seed
@@ -60,6 +58,12 @@ function add_planet_mapping(mapping)
     else
         planet.num_mappings = planet.num_mappings + 1
     end
+    return planet
+end
+
+-- API
+function add_planet_mapping(mapping)
+    local planet = planet_from_mapping(mapping)
     table.insert(planet_mappings, mapping)
     clear_planet_mapping_area(mapping)
     return #planet_mappings
@@ -68,7 +72,7 @@ end
 -- API
 function remove_planet_mapping(index)
     clear_planet_mapping_area(planet_mappings[index])
-    local planet = planet_dictionary[planet_mappings[index].seed]
+    local planet = planet_from_mapping(mapping)
     planet.num_mappings = planet.num_mappings - 1
     if planet.num_mappings == 0 then
         planet_dictionary[planet_mappings[index].seed] = nil
@@ -77,8 +81,9 @@ function remove_planet_mapping(index)
     table.remove(planet_mappings, index)
 end
 
+-- API
 function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
-    local planet = planet_dictionary[mapping.seed]
+    local planet = planet_from_mapping(mapping)
     local offset = mapping.offset
     pass_elevation(minp, maxp, area, offset, A, A2, planet)
     if planet.caveness > 2^(-3) then
@@ -210,6 +215,7 @@ end
 
 on_not_generated_callback = nil
 
+-- API
 function register_on_not_generated(callback)
     on_not_generated_callback = callback
 end
