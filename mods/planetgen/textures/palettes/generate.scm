@@ -17,8 +17,8 @@
     (round (* (/ (fnExtractBits n lower num) (- (exp2 num) 1)) max))
 )
 
-(define (fnLighten n)
-    (- 255 (quotient (- 255 n) 2))
+(define (fnLighten n m)
+    (- 255 (floor (/ (- 255 n) m)))
 )
 
 (define (fnColorWaterRandom n)
@@ -28,7 +28,7 @@
             (theG (fnBitsDistribution n 2 2 255))
             (theB (fnBitsDistribution n 4 1 255))
         )
-        (vector (fnLighten theR) (fnLighten theG) (fnLighten theB))
+        (vector (fnLighten theR 2) (fnLighten theG 2) (fnLighten theB 2))
     )
 )
 
@@ -39,7 +39,29 @@
             (theG (fnBitsDistribution n 1 2 192))
             (theB 255)
         )
-        (vector (fnLighten theR) (fnLighten theG) (fnLighten theB))
+        (vector (fnLighten theR 2) (fnLighten theG 2) (fnLighten theB 2))
+    )
+)
+
+(define (fnColorGrassRandom n)
+    (let*
+        (
+            (theR (fnBitsDistribution n 0 2 255))
+            (theG (fnBitsDistribution n 2 2 255))
+            (theB (fnBitsDistribution n 4 1 255))
+        )
+        (vector (fnLighten theR 1.7) (fnLighten theG 1.7) (fnLighten theB 1.7))
+    )
+)
+
+(define (fnColorGrassNormal n)
+    (let*
+        (
+            (theG (+ 128 (fnBitsDistribution n 0 1 127)))
+            (theR (fnBitsDistribution n 1 2 theG))
+            (theB (fnBitsDistribution n 3 1 (- theG 64)))
+        )
+        (vector (fnLighten theR 1.7) (fnLighten theG 1.7) (fnLighten theB 1.7))
     )
 )
 
@@ -73,7 +95,7 @@
     (let*
         (
             (theImageWidth  8)
-            (theImageHeight 4)
+            (theImageHeight 10)
             (theImage (car (gimp-image-new
                  theImageWidth
                  theImageHeight
@@ -94,6 +116,8 @@
 
         (doFillVariants theLayer 0 3 fnColorWaterRandom)
         (doFillVariants theLayer 3 1 fnColorWaterNormal)
+        (doFillVariants theLayer 4 4 fnColorGrassRandom)
+        (doFillVariants theLayer 8 2 fnColorGrassNormal)
 
         (gimp-display-new theImage)
         (gimp-image-clean-all theImage)

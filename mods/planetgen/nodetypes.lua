@@ -8,35 +8,9 @@ longer needed.
     VARIANT SELECTION
 ]]
 
-function register_base_floral_nodes(G, planet, prefix)
+function register_base_floral_nodes_old(G, planet, prefix)
     local stone_color = planet.stone_color
     local grass_color = planet.grass_color
-
-    -- GRASS SOIL
-    -- A surface node for planets supporting life
-    minetest.register_node(prefix .. 'grass_soil', {
-        drawtype = "normal",
-        visual_scale = 1.0,
-        tiles = {
-            {name = "grass_soil_top.png", color = grass_color},
-            "dust.png^[colorize:" .. stone_color .. ":64",
-            "dust2.png^[colorize:" .. stone_color .. ":64",
-            "dust.png^[colorize:" .. stone_color .. ":64",
-            "dust2.png^[colorize:" .. stone_color .. ":64",
-            "dust2.png^[colorize:" .. stone_color .. ":64"
-        },
-        overlay_tiles = {
-            "",
-            "",
-            {name = "grass_soil_side.png", color = grass_color},
-            {name = "grass_soil_side.png^[transformFX", color = grass_color},
-            {name = "grass_soil_side.png^[transformFX", color = grass_color},
-            {name = "grass_soil_side.png", color = grass_color}
-        },
-        paramtype2 = "colorfacedir",
-        place_param2 = 8,
-    })
-    random_yrot_nodes[minetest.get_content_id(prefix .. 'grass_soil')] = 4
 
     -- GRASS
     -- A short grassy plant
@@ -570,6 +544,38 @@ function register_icy_nodes()
     )
 end
 
+function register_base_floral_nodes()
+    -- GRASS SOIL
+    -- A surface node for planets supporting life
+    register_color_variants(
+        "grass_soil", 16*6, 4,
+        fnColorStone,
+        function (n, color) return {
+            drawtype = "normal",
+            visual_scale = 1.0,
+            tiles = {
+                {name = "grass_soil_top.png"},
+                {name = "dust.png^[colorize:" .. color .. ":64", color = "white"},
+                {name = "dust2.png^[colorize:" .. color .. ":64", color = "white"},
+                {name = "dust.png^[colorize:" .. color .. ":64", color = "white"},
+                {name = "dust2.png^[colorize:" .. color .. ":64", color = "white"},
+                {name = "dust2.png^[colorize:" .. color .. ":64", color = "white"}
+            },
+            overlay_tiles = {
+                "",
+                "",
+                {name = "grass_soil_side.png"},
+                {name = "grass_soil_side.png^[transformFX"},
+                {name = "grass_soil_side.png^[transformFX"},
+                {name = "grass_soil_side.png"}
+            },
+            paramtype2 = "colorfacedir",
+            palette = "palette_grass" .. math.floor((n-1) / 16) + 1 .. ".png",
+            place_param2 = 8,
+        } end
+    )
+end
+
 --[[
  # REGISTRATION
 Color variants can be generated in two ways: one involves creating a color
@@ -584,6 +590,7 @@ function register_all_nodes()
     register_base_nodes()
     register_liquid_nodes()
     register_icy_nodes()
+    register_base_floral_nodes()
 end
 
 --[[
@@ -609,4 +616,11 @@ function choose_planet_nodes_and_colors(planet)
         planet.color_dictionary[planet.node_types.liquid] = G:next(0, 7)
     end
     planet.node_types.snow = minetest.get_content_id("planetgen:snow")
+    if gen_true_with_probability(G, 1/2) then
+        planet.node_types.grass_soil = minetest.get_content_id("planetgen:grass_soil" .. G:next(1, 4))
+        planet.color_dictionary[planet.node_types.grass_soil] = G:next(0, 7)
+    else
+        planet.node_types.grass_soil = minetest.get_content_id("planetgen:grass_soil" .. G:next(5, 6))
+        planet.color_dictionary[planet.node_types.grass_soil] = G:next(0, 7)
+    end
 end

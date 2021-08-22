@@ -11,3 +11,9 @@ mv palette0.png     palette_water1.png
 mv palette1.png     palette_water2.png
 mv palette2.png     palette_water3.png
 mv palette3.png     palette_water4.png
+mv palette4.png     palette_grass1.png
+mv palette5.png     palette_grass2.png
+mv palette6.png     palette_grass3.png
+mv palette7.png     palette_grass4.png
+mv palette8.png     palette_grass5.png
+mv palette9.png     palette_grass6.png
