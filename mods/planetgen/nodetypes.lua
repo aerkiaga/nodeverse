@@ -609,9 +609,8 @@ function choose_planet_nodes_and_colors(planet)
     else
         grass_colorN = G:next(5, 6)
     end
-    grass_colorN = 1 --D
-    local grass_colorP = planet.seed % 8--G:next(0, 7)
-    local grass_soil_color = 16*(grass_colorN-1) + stone_color + 1
+    local grass_colorP = G:next(0, 7)
+    local grass_soil_color = 16*(grass_colorN-1) + (stone_color-1) + 1
     planet.node_types.grass_soil = minetest.get_content_id("planetgen:grass_soil" .. grass_soil_color)
     planet.color_dictionary[planet.node_types.grass_soil] = grass_colorP
     local grass_colorT = 8*(grass_colorN-1) + grass_colorP + 1
