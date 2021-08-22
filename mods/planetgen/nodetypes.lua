@@ -355,7 +355,7 @@ function register_color_variants(name, num_variants, random_yrot, color_fn, def_
     color_fn        function (x)
         (optional) Should return a table with 'r', 'g', and 'b' members in the
         range [0 .. 255], that will be passed as color string to 'def_fn'.
-        x           number      in range [0 .. 1], unique to each variant
+        n           number      index of variant, [1 .. 'num_variants']
     def_fn          function (n, color)
         Should return a node definition table to be passed as second argument to
         'minetest.register_node()'.
@@ -370,13 +370,29 @@ function register_color_variants(name, num_variants, random_yrot, color_fn, def_
         end
         local color = nil
         if color_fn ~= nil then
-            color = color_fn((n-1)/(num_variants-1))
+            color = color_fn(n)
             color = string.format("#%.2X%.2X%.2X", color.r, color.g, color.b)
         end
         definition = def_fn(n, color)
         minetest.register_node(variant_name, definition)
         random_yrot_nodes[minetest.get_content_id(variant_name)] = random_yrot
     end
+end
+
+function fnExtractBits(n, lower, num)
+    return math.floor(n / (2^lower)) % (2^num)
+end
+
+function fnBitsDistribution(n, lower, num, max)
+    return math.floor(max * fnExtractBits(n, lower, num) / ((2^num) - 1))
+end
+
+function fnColorStone(n)
+    n = n - 1
+    local r = fnBitsDistribution(n, 0, 2, 192)
+    local g = fnBitsDistribution(n, 2, 1, r)
+    local b = fnBitsDistribution(n, 3, 1, g)
+    return {r=r, g=g, b=b}
 end
 
 --[[
@@ -394,8 +410,8 @@ function register_all_nodes()
     -- Main material to make up a planet
     -- Is entirely solid and anisotropic
     register_color_variants(
-        "stone", 4, 2,
-        function (x) return {r=0, g=255*x, b=255} end,
+        "stone", 16, 2,
+        fnColorStone,
         function (n, color) return {
             drawtype = "normal",
             visual_scale = 1.0,
@@ -467,7 +483,7 @@ end
 
 function choose_planet_nodes_and_colors(planet)
     local G = PcgRandom(planet.seed, planet.seed)
-    planet.node_types.stone = minetest.get_content_id("planetgen:stone" .. G:next(1, 4))
+    planet.node_types.stone = minetest.get_content_id("planetgen:stone" .. G:next(1, 16))
     if gen_true_with_probability(G, planet.terrestriality + 0.18) then
         planet.node_types.liquid = minetest.get_content_id("planetgen:liquid" .. G:next(1, 3))
     else
