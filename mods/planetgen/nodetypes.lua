@@ -8,53 +8,6 @@ longer needed.
     VARIANT SELECTION
 ]]
 
-function register_base_floral_nodes_old(G, planet, prefix)
-    local stone_color = planet.stone_color
-    local grass_color = planet.grass_color
-
-    -- DRY GRASS
-    -- A dry grassy plant
-    if planet.atmosphere == "hot" then
-        minetest.register_node(prefix .. 'dry_grass', {
-            drawtype = "plantlike",
-            visual_scale = 1.0,
-            tiles = {
-                {name = "grass_dry.png", color = grass_color},
-            },
-            paramtype2 = "degrotate",
-            place_param2 = 0,
-            sunlight_propagates = true,
-            walkable = false,
-        })
-        random_yrot_nodes[minetest.get_content_id(prefix .. 'dry_grass')] = 20
-    end
-
-    -- TALL GRASS
-    -- A tall grassy plant
-    if planet.atmosphere == "normal" or planet.atmosphere == "reducing" then
-        minetest.register_node(prefix .. 'tall_grass', {
-            drawtype = "plantlike",
-            visual_scale = 1.0,
-            tiles = {
-                {name = "grass_tall.png", color = grass_color},
-            },
-            paramtype2 = "degrotate",
-            place_param2 = 0,
-            sunlight_propagates = true,
-            walkable = false,
-        })
-        random_yrot_nodes[minetest.get_content_id(prefix .. 'tall_grass')] = 20
-    end
-
-    planet.node_types.grass_soil = minetest.get_content_id(prefix .. 'grass_soil')
-    planet.node_types.grass = minetest.get_content_id(prefix .. 'grass')
-    if planet.atmosphere == "hot" then
-        planet.node_types.dry_grass = minetest.get_content_id(prefix .. 'dry_grass')
-    elseif planet.atmosphere == "normal" or planet.atmosphere == "reducing" then
-        planet.node_types.tall_grass = minetest.get_content_id(prefix .. 'tall_grass')
-    end
-end
-
 function register_planet_nodes(planet)
     local prefix = string.format('planetgen:p%X_', planet.seed)
     local G = PcgRandom(planet.seed, planet.seed)
@@ -561,6 +514,42 @@ function register_base_floral_nodes()
             walkable = false,
         } end
     )
+
+    -- DRY GRASS
+    -- A dry grassy plant
+    register_color_variants(
+        "dry_grass", 48, 20,
+        fnColorGrass,
+        function (n, color) return {
+            drawtype = "plantlike",
+            visual_scale = 1.0,
+            tiles = {
+                {name = "grass_dry.png", color = color},
+            },
+            paramtype2 = "degrotate",
+            place_param2 = 0,
+            sunlight_propagates = true,
+            walkable = false,
+        } end
+    )
+
+    -- TALL GRASS
+    -- A tall grassy plant
+    register_color_variants(
+        "tall_grass", 48, 20,
+        fnColorGrass,
+        function (n, color) return {
+            drawtype = "plantlike",
+            visual_scale = 1.0,
+            tiles = {
+                {name = "grass_tall.png", color = color},
+            },
+            paramtype2 = "degrotate",
+            place_param2 = 0,
+            sunlight_propagates = true,
+            walkable = false,
+        } end
+    )
 end
 
 --[[
@@ -615,4 +604,6 @@ function choose_planet_nodes_and_colors(planet)
     planet.color_dictionary[planet.node_types.grass_soil] = grass_colorP
     local grass_colorT = 8*(grass_colorN-1) + grass_colorP + 1
     planet.node_types.grass = minetest.get_content_id("planetgen:grass" .. grass_colorT)
+    planet.node_types.dry_grass = minetest.get_content_id("planetgen:dry_grass" .. grass_colorT)
+    planet.node_types.tall_grass = minetest.get_content_id("planetgen:tall_grass" .. grass_colorT)
 end
