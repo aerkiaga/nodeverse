@@ -356,8 +356,8 @@ function register_liquid_nodes()
             is_ground_content = false,
             walkable = false,
             liquidtype = "source",
-            liquid_alternative_flowing = "planetgen:flowing_hydrocarbon" .. n,
-    	    liquid_alternative_source = "planetgen:hydrocarbon" .. n,
+            liquid_alternative_flowing = "planetgen:flowing_hydrocarbon",
+    	    liquid_alternative_source = "planetgen:hydrocarbon",
             waving = 3,
         } end
     )
@@ -398,8 +398,8 @@ function register_liquid_nodes()
             is_ground_content = false,
             walkable = false,
             liquidtype = "flowing",
-            liquid_alternative_flowing = "planetgen:flowing_hydrocarbon" .. n,
-    	    liquid_alternative_source = "planetgen:hydrocarbon" .. n,
+            liquid_alternative_flowing = "planetgen:flowing_hydrocarbon",
+    	    liquid_alternative_source = "planetgen:hydrocarbon",
             waving = 3,
         } end
     )
@@ -442,8 +442,8 @@ function register_liquid_nodes()
             is_ground_content = false,
             walkable = false,
             liquidtype = "source",
-            liquid_alternative_flowing = "planetgen:flowing_lava" .. n,
-    	    liquid_alternative_source = "planetgen:lava" .. n,
+            liquid_alternative_flowing = "planetgen:flowing_lava",
+    	    liquid_alternative_source = "planetgen:lava",
             waving = 3,
         } end
     )
@@ -484,8 +484,8 @@ function register_liquid_nodes()
             is_ground_content = false,
             walkable = false,
             liquidtype = "flowing",
-            liquid_alternative_flowing = "planetgen:flowing_lava" .. n,
-    	    liquid_alternative_source = "planetgen:lava" .. n,
+            liquid_alternative_flowing = "planetgen:flowing_lava",
+    	    liquid_alternative_source = "planetgen:lava",
             waving = 3,
         } end
     )
