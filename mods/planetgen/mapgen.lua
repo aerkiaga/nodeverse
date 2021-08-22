@@ -65,19 +65,16 @@ end
 function add_planet_mapping(mapping)
     local planet = planet_from_mapping(mapping)
     table.insert(planet_mappings, mapping)
-    clear_planet_mapping_area(mapping)
     return #planet_mappings
 end
 
 -- API
 function remove_planet_mapping(index)
-    clear_planet_mapping_area(planet_mappings[index])
     local planet = planet_from_mapping(mapping)
     planet.num_mappings = planet.num_mappings - 1
     if planet.num_mappings == 0 then
         planet_dictionary[planet_mappings[index].seed] = nil
     end
-    unregister_planet_nodes(planet)
     table.remove(planet_mappings, index)
 end
 

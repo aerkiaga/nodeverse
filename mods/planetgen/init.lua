@@ -42,7 +42,9 @@ https://minetest.gitlab.io/minetest/map-terminology-and-coordinates/
 Registers a function that will be called whenever an area not mapped to any
 planet has been unsuccessfully generated. This allows to generate the area via
 'planetgen.generate_planet_chunk()', and/or manually generate custom content in
-that area.
+that area. 'planetgen.add_planet_mapping()' can also be called here to prevent
+further calls to the callback for this area, but note that it does not
+automatically call 'planetgen.generate_planet_chunk()'.
     callback    function (minp, maxp, area, A, A1, A2)
     Will be passed the extents of the unmapped area, as well as objects useful
     for overriding map generation.
@@ -52,9 +54,6 @@ that area.
         A           value returned by Minetest's 'VoxelManip:get_data()'
         A1          value returned by Minetest's 'VoxelManip:get_light_data()'
         A2          value returned by Minetest's 'VoxelManip:get_param2_data()'
-Note: 'planetgen.add_planet_mapping()' should not be called from within the
-callback at the moment, as it causes an unidentified bug that crashes Minetest.
-Use 'planetgen.generate_planet_chunk()' directly.
 ]]
 
 --[[    planetgen.add_planet_mapping(mapping)
@@ -109,7 +108,6 @@ function new_area_callback(minp, maxp, area, A, A1, A2)
         offset = {x=0, y=100, z=0},
         seed = 0
     }
-    --local index = add_planet_mapping(new_mapping) -- DON'T
     generate_planet_chunk(minp, maxp, area, A, A1, A2, new_mapping)
 end
 
