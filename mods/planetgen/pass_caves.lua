@@ -378,9 +378,20 @@ function caves_gen_block_new(
         for y_abs=minp_abs.y, maxp_abs.y do
             for x_abs=minp_abs.x, maxp_abs.x do
                 local i = area:index(x_abs, y_abs, z_abs)
+                local Ai = A[i]
 
-                if caves_3d_buffer[k] > caves_threshold_buffer[k] then
-                    A[i] = minetest.CONTENT_AIR
+                if Ai == minetest.CONTENT_AIR
+                or Ai == planet.node_types.sediment
+                or Ai == planet.node_types.liquid then else
+                    local threshold = caves_threshold_buffer[k]
+                    if Ai == planet.node_types.grass
+                    or Ai == planet.node_types.dry_grass
+                    or Ai == planet.node_types.tall_grass then
+                        threshold = threshold - 0.2
+                    end
+                    if caves_3d_buffer[k] > threshold then
+                        A[i] = minetest.CONTENT_AIR
+                    end
                 end
 
                 k = k + 1
@@ -405,8 +416,8 @@ end
 function caves_init_noise_new(planet)
     return PerlinMapWrapper (
         {
-            offset=0, scale=0.5, spread={x=10, y=10, z=10}, seed=planet.seed,
-            octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"
+            offset=0, scale=0.5, spread={x=8, y=8, z=8}, seed=planet.seed,
+            octaves=2, persist=0.5, lacunarity=2.0, flags="defaults"
         },
         {x=16, y=16, z=16}
     )
