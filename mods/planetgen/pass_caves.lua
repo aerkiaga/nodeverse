@@ -264,21 +264,37 @@ function caves_gen_block(
     end
 end
 
-function caves_gen_threshold_buffer(sides, buffer)
-    local k = 1
-    for z_rel=0, 15 do
-        for y_rel=0, 15 do
-            for x_rel=0, 15 do
-                buffer[k] = 0
+caves_threshold_buffer = {}
 
+function caves_init_threshold_buffer()
+    local k = 1
+    local buffer = caves_threshold_buffer
+    for z_rel=0, 15 do
+        local z_wall = z_rel == 0 or z_rel == 15
+        for y_rel=0, 15 do
+            local y_wall = z_wall or y_rel == 0 or y_rel == 15
+            for x_rel=0, 15 do
+                local x_wall = y_wall or x_rel == 0 or x_rel == 15
+                if x_wall then
+                    buffer[k] = 1
+                else
+                    buffer[k] = 0
+                end
                 k = k + 1
             end
         end
     end
 end
 
+function caves_gen_threshold_buffer(sides)
+    if #caves_threshold_buffer == 0 then
+        caves_init_threshold_buffer()
+    end
+    local buffer = caves_threshold_buffer
+    local k = 1
+end
+
 caves_3d_buffer = {}
-caves_threshold_buffer = {}
 
 function caves_gen_block_new(
     block_minp_abs, minp_abs, maxp_abs, area, offset, A, A2, noise, planet
@@ -307,7 +323,7 @@ function caves_gen_block_new(
         return
     end
 
-    caves_gen_threshold_buffer(sides, caves_threshold_buffer)
+    caves_gen_threshold_buffer(sides)
 
     noise:get_3d_map_flat(block_minp, caves_3d_buffer)
 
