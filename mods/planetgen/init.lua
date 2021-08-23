@@ -42,9 +42,10 @@ https://minetest.gitlab.io/minetest/map-terminology-and-coordinates/
 Registers a function that will be called whenever an area not mapped to any
 planet has been unsuccessfully generated. This allows to generate the area via
 'planetgen.generate_planet_chunk()', and/or manually generate custom content in
-that area. 'planetgen.add_planet_mapping()' can also be called here to prevent
-further calls to the callback for this area, but note that it does not
-automatically call 'planetgen.generate_planet_chunk()'.
+that area and then call 'planetgen.set_dirty flag()' to acknowledge it.
+'planetgen.add_planet_mapping()' can also be called here to prevent further
+calls to the callback for this area, but note that it does not automatically
+call 'planetgen.generate_planet_chunk()'.
     callback    function (minp, maxp, area, A, A1, A2)
     Will be passed the extents of the unmapped area, as well as objects useful
     for overriding map generation.
@@ -73,14 +74,13 @@ registrations.
 ]]--
 
 --[[    planetgen.remove_planet_mapping(index)
-Removes a planet mapping from the list. The area mapped by it will be
-immediately cleared and unloaded, and further attempts to load it will result in
-the 'on not generated' callback being called, if registered (see
+Removes a planet mapping from the list. Further attempts to generate the area
+will result in the 'on not generated' callback being called if registered (see
 'planetgen.register_on_not_generated()').
     index       mapping index returned by 'planetgen.add_planet'
 ]]--
 
---[[    generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
+--[[    planetgen.generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
 Uses the map generation code provided by this mod to generate planet terrain
 within an area. The generated area will be the intersection of the boxes
 delimited by [minp .. maxp] and [mapping.minp .. mapping.maxp].
@@ -91,6 +91,12 @@ delimited by [minp .. maxp] and [mapping.minp .. mapping.maxp].
     A1          value from 'on not generated' callback or 'VoxelArea:get_light_data()'
     A2          value from 'on not generated' callback or 'VoxelArea:get_param2_data()'
     mapping     see 'planetgen.add_planet_mapping()' for format
+]]
+
+--[[    planetgen.set_dirty_flag(callback)
+Must be called when generating custom terrain directly via the 'on not
+generated' callback. It is not necessary to call it if the new area is generated
+using 'planetgen.generate_planet_chunk()' or if no terrain is generated.
 ]]
 
 --[[

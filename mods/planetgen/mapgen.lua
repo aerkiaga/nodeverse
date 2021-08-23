@@ -78,8 +78,16 @@ function remove_planet_mapping(index)
     table.remove(planet_mappings, index)
 end
 
+generator_dirty_flag = false
+
+-- API
+function set_dirty_flag()
+    generator_dirty_flag = true
+end
+
 -- API
 function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
+    set_dirty_flag()
     local planet = planet_from_mapping(mapping)
     local offset = mapping.offset
     pass_elevation(minp, maxp, area, offset, A, A2, planet)
@@ -278,11 +286,14 @@ function mapgen_callback(minp, maxp, blockseed)
             on_not_generated_callback(box.minp, box.maxp, area, A, A1, A2)
         end
     end
-    VM:set_data(A)
-    VM:set_light_data(A1)
-    VM:set_param2_data(A2)
-    --VM:calc_lighting()
-    VM:write_to_map()
+    if generator_dirty_flag then
+        generator_dirty_flag = false
+        VM:set_data(A)
+        VM:set_light_data(A1)
+        VM:set_param2_data(A2)
+        --VM:calc_lighting()
+        VM:write_to_map()
+    end
 end
 
 --[[
