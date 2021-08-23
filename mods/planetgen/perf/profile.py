@@ -30,6 +30,7 @@ for filename in os.listdir(cwd):
             defined = False
             comment = False
             return_indent = None
+            lambda_indent = None
             for line in f:
                 # Skip all comment lines
                 if comment:
@@ -48,18 +49,23 @@ for filename in os.listdir(cwd):
                 # Inside a function
                 if defined:
                     pos = line.find("return")
-                    if pos == 0 or pos > 0 and line[0:pos].isspace():
+                    if pos == 0 or pos > 0 and line[0:pos].isspace() and (lambda_indent is None or pos <= lambda_indent):
                         output_lines.append(pos*" " + profile_end.format(function_name))
                         return_indent = pos
                     else:
-                        pos = line.find("end")
-                        if pos > 0 and return_indent is not None and pos <= return_indent:
-                            return_indent = None
-                        elif pos == 0:
-                            if return_indent is None:
-                                output_lines.append("    " + profile_end.format(function_name))
-                            defined = False
-                            return_indent = None
+                        if line.find("function") >= 0:
+                            lambda_indent = len(line) - len(line.lstrip())
+                        else:
+                            pos = line.find("end")
+                            if pos > 0 and return_indent is not None and pos <= return_indent:
+                                return_indent = None
+                            if pos > 0 and lambda_indent is not None and pos <= lambda_indent:
+                                lambda_indent = None
+                            elif pos == 0:
+                                if return_indent is None:
+                                    output_lines.append("    " + profile_end.format(function_name))
+                                defined = False
+                                return_indent = None
 
                 output_lines.append(line)
 
