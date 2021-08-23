@@ -83,64 +83,82 @@ function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
     local planet = planet_from_mapping(mapping)
     local offset = mapping.offset
     pass_elevation(minp, maxp, area, offset, A, A2, planet)
+
+    local minp_x = mapping.minp.x
+    local minp_z = mapping.minp.z
+    local maxp_x = mapping.maxp.x
+    local maxp_z = mapping.maxp.z
     if planet.caveness > 2^(-3) then
         local new_minp = minp
         local new_maxp = maxp
         if mapping.walled then
             new_minp = {
-                x=math.max(minp.x, mapping.minp.x+1),
+                x=math.max(minp.x, minp_x+1),
                 y=minp.y,
-                z=math.max(minp.z, mapping.minp.z+1)
+                z=math.max(minp.z, minp_z+1)
             }
             new_maxp = {
-                x=math.min(maxp.x, mapping.maxp.x-1),
+                x=math.min(maxp.x, maxp_x-1),
                 y=maxp.y,
-                z=math.min(maxp.z, mapping.maxp.z-1)
+                z=math.min(maxp.z, maxp_z-1)
             }
         end
         pass_caves(new_minp, new_maxp, area, offset, A, A2, planet)
     end
-    for i in area:iter(minp.x, minp.y, minp.z, maxp.x, maxp.y, maxp.z) do
-        local pos_abs = area:position(i)
-        local pos = vec3_add(pos_abs, offset)
 
-        -- Generate walls around mappings
-        if mapping.walled and A[i] ~= minetest.CONTENT_AIR and (
-            pos_abs.x == mapping.minp.x or pos_abs.x == mapping.maxp.x
-            or pos_abs.z == mapping.minp.z or pos_abs.z == mapping.maxp.z
-        ) then
-            A[i] = planet.node_types.stone
-        end
+    local is_walled = mapping.walled
+    local is_scorching = (planet.atmosphere == "scorching")
+    local node_air = minetest.CONTENT_AIR
+    local offset_x, offset_y, offset_z = offset.x, offset.y, offset.z
+    for z_abs=minp.z, maxp.z do
+        for y_abs=minp.y, maxp.y do
+            for x_abs=minp.x, maxp.x do
+                local i = area:index(x_abs, y_abs, z_abs)
+                local Ai = A[i]
+                if Ai ~= node_air then
+                    local pos_x = x_abs + offset_x
+                    local pos_y = y_abs + offset_y
+                    local pos_z = z_abs + offset_z
 
-        -- Apply lighting
-        if A[i] == planet.node_types.liquid and planet.atmosphere == "scorching" then
-            A1[i] = 128
-        else
-            A1[i] = 15
-        end
+                    -- Generate walls around mappings
+                    if is_walled and (
+                        x_abs == minp_x or x_abs == maxp_x
+                        or z_abs == minp_z or z_abs == maxp_z
+                    ) then
+                        A[i] = planet.node_types.stone
+                    end
 
-        -- Apply random texture rotation to all supported nodes
-        local rot = random_yrot_nodes[A[i]]
-        local param2 = 0
-        if rot ~= nil then
-            local hash = pos.x + pos.y*0x10 + pos.z*0x100
-            hash = int_hash(hash)
-            param2 = hash % 133757 % rot
-            if rot == 2 then
-                param2 = param2 * 2
-            end
-        end
+                    -- Apply lighting
+                    if is_scorching and Ai == planet.node_types.liquid then
+                        A1[i] = 128
+                    else
+                        A1[i] = 15
+                    end
 
-        -- Apply 'colorfacedir' color to all supported nodes
-        -- TODO: support 'color' and 'colorwallmounted' colors
-        local color = planet.color_dictionary[A[i]]
-        if color ~= nil then
-            color = color * 0x20
-            param2 = param2 + color
-        end
+                    -- Apply random texture rotation to all supported nodes
+                    local rot = random_yrot_nodes[Ai]
+                    local param2 = 0
+                    if rot ~= nil then
+                        local hash = pos_x + pos_y*471 + pos_z*3273
+                        param2 = hash % 13357 % rot
+                        if rot == 2 then
+                            param2 = param2 * 2
+                        end
+                    end
 
-        A2[i] = param2
-    end
+                    -- Apply 'colorfacedir' color to all supported nodes
+                    -- TODO: support 'color' and 'colorwallmounted' colors
+                    local color = planet.color_dictionary[Ai]
+                    if color ~= nil then
+                        color = color * 0x20
+                        param2 = param2 + color
+                    end
+
+                    A2[i] = param2
+                end -- if
+            end -- for
+        end -- for
+    end -- for
 end
 
 function split_not_generated_boxes(not_generated_boxes, minp, maxp)
@@ -175,9 +193,9 @@ function split_not_generated_boxes(not_generated_boxes, minp, maxp)
             local x_stops = {box.minp.x, commonmin.x-1, commonmax.x+1, box.maxp.x}
             local y_stops = {box.minp.y, commonmin.y-1, commonmax.y+1, box.maxp.y}
             local z_stops = {box.minp.z, commonmin.z-1, commonmax.z+1, box.maxp.z}
-            for x_index=1, 3 do
+            for z_index=1, 3 do
                 for y_index=1, 3 do
-                    for z_index=1, 3 do
+                    for x_index=1, 3 do
                         -- Avoid center box
                         if x_index ~= 2 or y_index ~= 2 or z_index ~= 2 then
                             local box2 = {
@@ -221,12 +239,19 @@ end
 # ENTRY POINT
 ]]--
 
+A, A1, A2 = nil
+
 function mapgen_callback(minp, maxp, blockseed)
     local VM, emin, emax = minetest.get_mapgen_object("voxelmanip")
     local area = VoxelArea:new{MinEdge=emin, MaxEdge=emax}
-    local A = VM:get_data()
-    local A1 = VM:get_light_data()
-    local A2 = VM:get_param2_data()
+    if A == nil then
+        A = VM:get_data()
+        A2 = VM:get_param2_data()
+    else
+        VM:get_data(A)
+        VM:get_param2_data(A2)
+    end
+    A1 = VM:get_light_data()
 
     -- A list of areas that are not mapped to a planet (yet)
     local not_generated_boxes = {{minp = minp, maxp = maxp}}
@@ -256,7 +281,7 @@ function mapgen_callback(minp, maxp, blockseed)
     VM:set_data(A)
     VM:set_light_data(A1)
     VM:set_param2_data(A2)
-    VM:calc_lighting()
+    --VM:calc_lighting()
     VM:write_to_map()
 end
 
