@@ -131,19 +131,25 @@ function elevation_compute_cover_layer(G, y, ground, ground_comp, planet)
     return gen_weighted(G, options)
 end
 
-function elevation_compute_node(G, y, ground, ground_comp, planet)
-    if y < math.floor(ground) - 3 - planet.rockiness*ground_comp.terrain_roughness then
-        return planet.node_types.stone -- Deep layer/rocks
-    elseif y < math.floor(ground) then
-        return planet.node_types.gravel -- Intermediate layer
-    elseif y == math.floor(ground) then
-        return elevation_compute_soil_layer(G, y, ground, ground_comp, planet)
-    elseif planet.has_oceans and y < 0 then
-        return planet.node_types.liquid -- Ocean
-    elseif y == math.floor(ground) + 1 then
-        return elevation_compute_cover_layer(G, y, ground, ground_comp, planet)
-    else
-        return minetest.CONTENT_AIR -- Atmosphere
+function elevation_gen_node_column(
+    x_abs, minp_abs_y, maxp_abs_y, z_abs, area, offset, G, ground, ground_comp, planet
+)
+    for y_abs=minp_abs_y, maxp_abs_y do
+        local y = y_abs + offset.y
+        local i = area:index(x_abs, y_abs, z_abs)
+        if y < math.floor(ground) - 3 - planet.rockiness*ground_comp.terrain_roughness then
+            A[i] = planet.node_types.stone -- Deep layer/rocks
+        elseif y < math.floor(ground) then
+            A[i] = planet.node_types.gravel -- Intermediate layer
+        elseif y == math.floor(ground) then
+            A[i] = elevation_compute_soil_layer(G, y, ground, ground_comp, planet)
+        elseif planet.has_oceans and y < 0 then
+            A[i] = planet.node_types.liquid -- Ocean
+        elseif y == math.floor(ground) + 1 then
+            A[i] = elevation_compute_cover_layer(G, y, ground, ground_comp, planet)
+        else
+            A[i] = minetest.CONTENT_AIR -- Atmosphere
+        end
     end
 end
 
@@ -187,14 +193,10 @@ function pass_elevation(minp_abs, maxp_abs, area, offset, A, A2, planet)
             hash = hash % 571
             local G = PcgRandom(planet.seed, hash)
 
-            for y_abs=minp_abs.y, maxp_abs.y do
-                local y = y_abs + offset.y
-                local i = area:index(x_abs, y_abs, z_abs)
-                local node_id = elevation_compute_node(
-                    G, y, ground, ground_comp, planet
-                )
-                A[i] = node_id
-            end
+            elevation_gen_node_column(
+                x_abs, minp_abs.y, maxp_abs.y, z_abs, area,
+                offset, G, ground, ground_comp, planet
+            )
         end
     end
 end
