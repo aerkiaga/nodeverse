@@ -183,8 +183,8 @@ function pass_elevation(minp_abs, maxp_abs, area, offset, A, A2, planet)
                 ground = ground + elevation_compute_craters(x, z, planet)
             end
 
-            local hash = x + z*0x100
-            hash = int_hash(hash)
+            local hash = x + z*4713
+            hash = hash % 571
             local G = PcgRandom(planet.seed, hash)
 
             for y_abs=minp_abs.y, maxp_abs.y do
