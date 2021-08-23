@@ -47,7 +47,7 @@ for filename in os.listdir(cwd):
                     continue
 
                 # Inside a function
-                if defined:
+                if function_name is not None:
                     pos = line.find("return")
                     if pos == 0 or pos > 0 and line[0:pos].isspace() and (lambda_indent is None or pos <= lambda_indent):
                         output_lines.append(pos*" " + profile_end.format(function_name))
@@ -66,6 +66,7 @@ for filename in os.listdir(cwd):
                                     output_lines.append("    " + profile_end.format(function_name))
                                 defined = False
                                 return_indent = None
+                                function_name = None
 
                 output_lines.append(line)
 

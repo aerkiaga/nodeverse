@@ -5,15 +5,24 @@ parts of the code, as well as other functions.
  # INDEX
     DISTRIBUTIONS
     VECTOR MATH
+    NOISE
 ]]
+
+function table_copy(tab)
+    r = {}
+    for key, value in pairs(tab) do
+        r[key] = value
+    end
+    return r
+end
 
 profile_times = {}
 
- function profile_start(name)
+function profile_start(name) --
     profile_times[name] = minetest.get_us_time()
 end
 
- function profile_end(name)
+function profile_end(name) --
     if profile_times[name] == nil then
         print(string.format("Profiling not started: %s", name))
         return
@@ -128,4 +137,43 @@ function vec3_rotate(v, theta, axis)
             math.cos(theta) + axis.z^2*(1 - math.cos(theta)),
         }
     })
+end
+
+--[[
+ # NOISE
+]]
+
+perlin_generators = {}
+
+function PerlinWrapper(noiseparams)
+    local generator = nil
+    for key, value in pairs(perlin_generators) do
+        if key.offset == noiseparams.offset
+        and key.scale == noiseparams.scale
+        and key.spread == noiseparams.spread
+        and key.octaves == noiseparams.octaves
+        and key.persistence == noiseparams.persistence
+        and key.lacunarity == noiseparams.lacunarity then
+            generator = value
+        end
+    end
+    if generator == nil then
+        noiseparams2 = table_copy(noiseparams)
+        noiseparams2.seed = 0
+        generator = PerlinNoise(noiseparams2)
+        perlin_generators[noiseparams2] = generator
+    end
+    x_offset = noiseparams.seed % 0x10000 - 0x8000
+    y_offset = noiseparams.seed % 0x1000 - 0x800
+    z_offset = noiseparams.seed % 0x100 - 0x80
+    return {
+        get_2d = function (self, pos)
+            pos = {x=pos.x-x_offset, y=pos.y-y_offset}
+            return generator:get_2d(pos)
+        end,
+        get_3d = function (self, pos)
+            pos = {x=pos.x-x_offset, y=pos.y-y_offset, z=pos.z-z_offset}
+            return generator:get_3d(pos)
+        end
+    }
 end

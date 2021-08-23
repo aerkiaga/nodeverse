@@ -267,11 +267,11 @@ end
 
 function caves_init_noise(planet)
     return {
-        side = PerlinNoise({
+        side = PerlinWrapper({
             offset=0, scale=0.5, spread={x=10, y=10}, seed=planet.seed,
             octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"
         }),
-        volume = PerlinNoise({
+        volume = PerlinWrapper({
             offset=0, scale=0.5, spread={x=10, y=10, z=10}, seed=planet.seed,
             octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"
         })
