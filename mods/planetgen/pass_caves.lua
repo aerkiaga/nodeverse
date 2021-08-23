@@ -204,15 +204,15 @@ function pass_caves_generate_block(
     -- APPLY
     for z_abs=minp_abs.z, maxp_abs.z do
         local z = z_abs + offset.z
-        for x_abs=minp_abs.x, maxp_abs.x do
-            local x = x_abs + offset.x
-            for y_abs=minp_abs.y, maxp_abs.y do
-                local y = y_abs + offset.y
+        local rel_z = z-block_minp.z
+        for y_abs=minp_abs.y, maxp_abs.y do
+            local y = y_abs + offset.y
+            local rel_y = y-block_minp.y
+            for x_abs=minp_abs.x, maxp_abs.x do
+                local x = x_abs + offset.x
+                local rel_x = x-block_minp.x
                 repeat
                     local truth = false
-                    local rel_x = x-block_minp.x
-                    local rel_y = y-block_minp.y
-                    local rel_z = z-block_minp.z
 
                     -- Don't touch some nodes
                     local i = area:index(x_abs, y_abs, z_abs)

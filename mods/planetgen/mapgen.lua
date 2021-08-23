@@ -175,9 +175,9 @@ function split_not_generated_boxes(not_generated_boxes, minp, maxp)
             local x_stops = {box.minp.x, commonmin.x-1, commonmax.x+1, box.maxp.x}
             local y_stops = {box.minp.y, commonmin.y-1, commonmax.y+1, box.maxp.y}
             local z_stops = {box.minp.z, commonmin.z-1, commonmax.z+1, box.maxp.z}
-            for x_index=1, 3 do
+            for z_index=1, 3 do
                 for y_index=1, 3 do
-                    for z_index=1, 3 do
+                    for x_index=1, 3 do
                         -- Avoid center box
                         if x_index ~= 2 or y_index ~= 2 or z_index ~= 2 then
                             local box2 = {
@@ -221,12 +221,19 @@ end
 # ENTRY POINT
 ]]--
 
+A, A1, A2 = nil
+
 function mapgen_callback(minp, maxp, blockseed)
     local VM, emin, emax = minetest.get_mapgen_object("voxelmanip")
     local area = VoxelArea:new{MinEdge=emin, MaxEdge=emax}
-    local A = VM:get_data()
-    local A1 = VM:get_light_data()
-    local A2 = VM:get_param2_data()
+    if A == nil then
+        A = VM:get_data()
+        A2 = VM:get_param2_data()
+    else
+        VM:get_data(A)
+        VM:get_param2_data(A2)
+    end
+    A1 = VM:get_light_data()
 
     -- A list of areas that are not mapped to a planet (yet)
     local not_generated_boxes = {{minp = minp, maxp = maxp}}
