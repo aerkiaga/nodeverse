@@ -278,7 +278,37 @@ function caves_gen_block_new(
         int_hash(block_minp.x/16*65917 + block_minp.y/16*76827 + (block_minp.z/16 - 1)*65823),
     }
 
-    --
+    -- Delete a fixed proportion of side openings, depending on planet and depth
+    -- The less openings, the less connected and large the caves will be
+    -- At a certain threshold, cave size tends to infinity:
+    --[[
+    "In the simple cubic lattice, for bond-percolation our Monte Carlo
+    simulation gives a value of p∞ = 0.2492 ± 0.0002, [...]"
+
+    S. Wilke 1983 "Bond percolation threshold in the simple cubic lattice"
+    ]]--
+    local caveness = planet.caveness
+    if block_minp.y < -16*4 then caveness = caveness / 4
+    elseif block_minp.y < -16*2 then caveness = caveness ^ (1/4)
+    end
+    for key, value in pairs(side_seeds) do
+        if gen_true_with_probability(PcgRandom(planet.seed, value), 1 - caveness) then
+            side_seeds[key] = nil
+        end
+    end
+
+    if not caves_check_block(side_seeds, block_minp, noise, planet) then
+        return
+    end
+
+    for z_abs=minp_abs.z, maxp_abs.z do
+        for y_abs=minp_abs.y, maxp_abs.y do
+            for x_abs=minp_abs.x, maxp_abs.x do
+                local i = area:index(x_abs, y_abs, z_abs)
+                A[i] = minetest.CONTENT_AIR
+            end
+        end
+    end
 end
 
 function caves_init_noise(planet)
