@@ -6,11 +6,11 @@ Sky and other similar titles, but built around voxel mechanics. It features an
 immensely large universe with a never-ending variety of planets to explore.
 
 ## Status
-A single infinite planet is created. Blocks include stone, gravel, dust,
-sediment, liquid (water, hydrocarbon, lava), grass soil, grass, dry grass, tall
-grass and snow. Planets of different colors, rockier, more hilly or flat, richer
-in oceans, arid, frozen, volcanic, and with or without living organisms are
-generated. World generation features oceans, caves, deserts and craters.
+An infinite cloud of floating planets is created. Blocks include stone, gravel,
+dust, sediment, liquid (water, hydrocarbon, lava), grass soil, grass, dry grass,
+tall grass and snow. Planets of different colors, rockier, more hilly or flat,
+richer in oceans, arid, frozen, volcanic, and with or without living organisms
+are generated. World generation features oceans, caves, deserts and craters.
 
 The next step is adding a rocket ship that can be used to visit other planets.
 
