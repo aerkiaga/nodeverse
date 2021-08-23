@@ -9,7 +9,7 @@ tunnel is made joining them, by means of radial Perlin noise.
     ENTRY POINT
 ]]--
 
-function pass_caves_check_block(side_seeds, block_minp, planet)
+function caves_check_block(side_seeds, block_minp, planet)
     local num_openings = 0
     for index=1, 6 do
         if side_seeds[index] ~= nil then num_openings = num_openings + 1 end
@@ -18,7 +18,7 @@ function pass_caves_check_block(side_seeds, block_minp, planet)
     return false
 end
 
-function pass_caves_generate_side_openings(side_seeds, noise)
+function caves_gen_side_openings(side_seeds, noise)
     -- Returns side opening shape noise generators
     local Perlin_2d_generic = function (index)
         --return PerlinNoise({offset=0, scale=0.5, spread={x=10, y=10}, seed=side_seeds[index], octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
@@ -44,7 +44,7 @@ function pass_caves_generate_side_openings(side_seeds, noise)
     }
 end
 
-function pass_caves_generate_side_opening_positions(generator_1, side_seeds, block_minp, planet)
+function caves_gen_side_opening_positions(generator_1, side_seeds, block_minp, planet)
     -- Returns side opening relative positions
     local generators = {
         generator_1,
@@ -65,7 +65,7 @@ function pass_caves_generate_side_opening_positions(generator_1, side_seeds, blo
     }
 end
 
-function pass_caves_generate_volume_noise(side_seeds, noise)
+function caves_gen_volume_noise(side_seeds, noise)
     -- Returns tunnel noise generators
     local Perlin_3d_generic = function (index)
         --return PerlinNoise({offset=0, scale=0.5, spread={x=10, y=10, z=10}, seed=int_hash(side_seeds[index]), octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
@@ -92,7 +92,7 @@ function pass_caves_generate_volume_noise(side_seeds, noise)
     }
 end
 
-function pass_caves_calculate_side_contribution(
+function caves_calculate_side_contribution(
     side, relp, Perlin_2d_side, side_position, center_pos, Perlin_3d_side
 )
     -- Decide if a block is part of a tunnel connecting to a face (return > 0)
@@ -150,7 +150,7 @@ function pass_caves_calculate_side_contribution(
     return opening_weight * opening_contrib + volume_weight * volume_contrib
 end
 
-function pass_caves_generate_block(
+function caves_gen_block(
     block_minp_abs, minp_abs, maxp_abs, area, offset, A, A2, noise, planet
 )
     local block_minp = vec3_add(block_minp_abs, offset)
@@ -182,16 +182,16 @@ function pass_caves_generate_block(
         end
     end
 
-    if not pass_caves_check_block(side_seeds, block_minp, noise, planet) then
+    if not caves_check_block(side_seeds, block_minp, noise, planet) then
         return
     end
 
     -- Generate side opening shape noise generators
-    local Perlin_2d_side = pass_caves_generate_side_openings(side_seeds, noise)
+    local Perlin_2d_side = caves_gen_side_openings(side_seeds, noise)
 
     -- Generate side opening positions
     local generator_1 = PcgRandom(planet.seed, block_minp.x/16*65771 + block_minp.y/16*56341 + block_minp.z/16*63427)
-    local side_position = pass_caves_generate_side_opening_positions(generator_1, side_seeds, block_minp, planet)
+    local side_position = caves_gen_side_opening_positions(generator_1, side_seeds, block_minp, planet)
 
     -- Generate center position
     local center_pos = {
@@ -201,7 +201,7 @@ function pass_caves_generate_block(
     }
 
     -- Generate volume noise generators
-    local Perlin_3d_side = pass_caves_generate_volume_noise(side_seeds, noise)
+    local Perlin_3d_side = caves_gen_volume_noise(side_seeds, noise)
 
     -- APPLY
     for z_abs=minp_abs.z, maxp_abs.z do
@@ -230,32 +230,32 @@ function pass_caves_generate_block(
                     -- Logical OR tunnels from center to all faces
                     -- Side +Y
                     if side_seeds[1] ~= nil and not truth then
-                        local contrib = pass_caves_calculate_side_contribution(1, {x=rel_x, y=rel_z, z=rel_y}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                        local contrib = caves_calculate_side_contribution(1, {x=rel_x, y=rel_z, z=rel_y}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
                         truth = truth or (contrib > threshold)
                     end
                     -- Side -Y
                     if side_seeds[2] ~= nil and not truth then
-                        local contrib = pass_caves_calculate_side_contribution(2, {x=rel_x, y=rel_z, z=rel_y}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                        local contrib = caves_calculate_side_contribution(2, {x=rel_x, y=rel_z, z=rel_y}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
                         truth = truth or (contrib > threshold)
                     end
                     -- Side +X
                     if side_seeds[3] ~= nil and not truth then
-                        local contrib = pass_caves_calculate_side_contribution(3, {x=rel_y, y=rel_z, z=rel_x}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                        local contrib = caves_calculate_side_contribution(3, {x=rel_y, y=rel_z, z=rel_x}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
                         truth = truth or (contrib > threshold)
                     end
                     -- Side -X
                     if side_seeds[4] ~= nil and not truth then
-                        local contrib = pass_caves_calculate_side_contribution(4, {x=rel_y, y=rel_z, z=rel_x}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                        local contrib = caves_calculate_side_contribution(4, {x=rel_y, y=rel_z, z=rel_x}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
                         truth = truth or (contrib > threshold)
                     end
                     -- Side +Z
                     if side_seeds[5] ~= nil and not truth then
-                        local contrib = pass_caves_calculate_side_contribution(5, {x=rel_x, y=rel_y, z=rel_z}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                        local contrib = caves_calculate_side_contribution(5, {x=rel_x, y=rel_y, z=rel_z}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
                         truth = truth or (contrib > threshold)
                     end
                     -- Side -Z
                     if side_seeds[6] ~= nil and not truth then
-                        local contrib = pass_caves_calculate_side_contribution(6, {x=rel_x, y=rel_y, z=rel_z}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
+                        local contrib = caves_calculate_side_contribution(6, {x=rel_x, y=rel_y, z=rel_z}, Perlin_2d_side, side_position, center_pos, Perlin_3d_side)
                         truth = truth or (contrib > threshold)
                     end
                     if truth then A[i] = minetest.CONTENT_AIR end
@@ -265,7 +265,7 @@ function pass_caves_generate_block(
     end
 end
 
-function pass_caves_init_noise(planet)
+function caves_init_noise(planet)
     return {
         side = PerlinNoise({
             offset=0, scale=0.5, spread={x=10, y=10}, seed=planet.seed,
@@ -283,7 +283,7 @@ end
 ]]--
 
 function pass_caves(minp_abs, maxp_abs, area, offset, A, A2, planet)
-    local noise = pass_caves_init_noise(planet)
+    local noise = caves_init_noise(planet)
 
     -- Start xyz of block to generate
     -- Can be lower than start xyz of generated area
@@ -302,7 +302,7 @@ function pass_caves(minp_abs, maxp_abs, area, offset, A, A2, planet)
                     y=math.min(maxp_abs.y, block_minp.y+15),
                     z=math.min(maxp_abs.z, block_minp.z+15)
                 }
-                pass_caves_generate_block(
+                caves_gen_block(
                     block_minp, common_minp, common_maxp, area, offset, A, A2, noise, planet
                 )
                 block_minp.x = block_minp.x+16
