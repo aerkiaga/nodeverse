@@ -9,13 +9,12 @@ tunnel is made joining them, by means of radial Perlin noise.
     ENTRY POINT
 ]]--
 
-function caves_check_block(side_seeds, block_minp, planet)
+function caves_check_block(sides)
     local num_openings = 0
     for index=1, 6 do
-        if side_seeds[index] ~= nil then num_openings = num_openings + 1 end
+        if sides[index] then num_openings = num_openings + 1 end
     end
-    if num_openings > 1 then return true end
-    return false
+    return num_openings > 1
 end
 
 function caves_gen_side_openings(side_seeds, noise)
@@ -265,20 +264,27 @@ function caves_gen_block(
     end
 end
 
+function caves_gen_threshold_buffer(sides, buffer)
+    local k = 1
+    for z_rel=0, 15 do
+        for y_rel=0, 15 do
+            for x_rel=0, 15 do
+                buffer[k] = 0
+
+                k = k + 1
+            end
+        end
+    end
+end
+
 caves_3d_buffer = {}
+caves_threshold_buffer = {}
 
 function caves_gen_block_new(
     block_minp_abs, minp_abs, maxp_abs, area, offset, A, A2, noise, planet
 )
     local block_minp = vec3_add(block_minp_abs, offset)
-    local side_seeds = {
-        int_hash(block_minp.x/16*65771 + block_minp.y/16*56341 + block_minp.z/16*63427),
-        int_hash(block_minp.x/16*65771 + (block_minp.y/16 - 1)*56341 + block_minp.z/16*63427),
-        int_hash(block_minp.x/16*65263 + block_minp.y/16*65825 + block_minp.z/16*54819),
-        int_hash((block_minp.x/16 - 1)*65263 + block_minp.y/16*65825 + block_minp.z/16*54819),
-        int_hash(block_minp.x/16*65917 + block_minp.y/16*76827 + block_minp.z/16*65823),
-        int_hash(block_minp.x/16*65917 + block_minp.y/16*76827 + (block_minp.z/16 - 1)*65823),
-    }
+    local sides = {}
 
     -- Delete a fixed proportion of side openings, depending on planet and depth
     -- The less openings, the less connected and large the caves will be
@@ -293,15 +299,15 @@ function caves_gen_block_new(
     if block_minp.y < -16*4 then caveness = caveness / 4
     elseif block_minp.y < -16*2 then caveness = caveness ^ (1/4)
     end
-    for key, value in pairs(side_seeds) do
-        if gen_true_with_probability(PcgRandom(planet.seed, value), 1 - caveness) then
-            side_seeds[key] = nil
-        end
+    for n=1, 6 do
+        sides[n] = gen_true_with_probability(PcgRandom(planet.seed, value), 1 - caveness)
     end
 
-    if not caves_check_block(side_seeds, block_minp, noise, planet) then
+    if not caves_check_block(sides) then
         return
     end
+
+    caves_gen_threshold_buffer(sides, caves_threshold_buffer)
 
     noise:get_3d_map_flat(block_minp, caves_3d_buffer)
 
@@ -311,7 +317,7 @@ function caves_gen_block_new(
             for x_abs=minp_abs.x, maxp_abs.x do
                 local i = area:index(x_abs, y_abs, z_abs)
 
-                if caves_3d_buffer[k] > 0 then
+                if caves_3d_buffer[k] > caves_threshold_buffer[k] then
                     A[i] = minetest.CONTENT_AIR
                 end
 
