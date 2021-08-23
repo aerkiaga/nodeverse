@@ -1,5 +1,18 @@
 #!/usr/bin/env python3
 
+# This is a Python script
+# It parses performance events from stdin and generates a readable performance
+# summary in table format. This table has the following columns:
+#   NAME    Name of the profiled function
+#   COUNT   Number of calls made to this function during profiling
+#   AVERAGE Average time spent inside the function on each call
+#   TOTAL   Total time spent inside the function
+#   ...     Log chart of TOTAL
+
+# In order to record and display performance data, run (from the mod top-level
+# directory): 'minetest 2>&1 | python3 perf/analyze.py', and then play a game
+# with the profiling-enabled mod.
+
 import sys, re, math
 
 re_line = re.compile(r"(\w+) (\d+)")
