@@ -265,6 +265,22 @@ function caves_gen_block(
     end
 end
 
+function caves_gen_block_new(
+    block_minp_abs, minp_abs, maxp_abs, area, offset, A, A2, noise, planet
+)
+    local block_minp = vec3_add(block_minp_abs, offset)
+    local side_seeds = {
+        int_hash(block_minp.x/16*65771 + block_minp.y/16*56341 + block_minp.z/16*63427),
+        int_hash(block_minp.x/16*65771 + (block_minp.y/16 - 1)*56341 + block_minp.z/16*63427),
+        int_hash(block_minp.x/16*65263 + block_minp.y/16*65825 + block_minp.z/16*54819),
+        int_hash((block_minp.x/16 - 1)*65263 + block_minp.y/16*65825 + block_minp.z/16*54819),
+        int_hash(block_minp.x/16*65917 + block_minp.y/16*76827 + block_minp.z/16*65823),
+        int_hash(block_minp.x/16*65917 + block_minp.y/16*76827 + (block_minp.z/16 - 1)*65823),
+    }
+
+    --
+end
+
 function caves_init_noise(planet)
     return {
         side = PerlinWrapper({
@@ -278,12 +294,20 @@ function caves_init_noise(planet)
     }
 end
 
+function caves_init_noise_new(planet)
+    return PerlinWrapper {
+        offset=0, scale=0.5, spread={x=10, y=10}, seed=planet.seed,
+        octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"
+    }
+end
+
 --[[
  # ENTRY POINT
 ]]--
 
 function pass_caves(minp_abs, maxp_abs, area, offset, A, A2, planet)
-    local noise = caves_init_noise(planet)
+    --local noise = caves_init_noise(planet)
+    local noise = caves_init_noise_new(planet)
 
     -- Start xyz of block to generate
     -- Can be lower than start xyz of generated area
@@ -302,7 +326,10 @@ function pass_caves(minp_abs, maxp_abs, area, offset, A, A2, planet)
                     y=math.min(maxp_abs.y, block_minp.y+15),
                     z=math.min(maxp_abs.z, block_minp.z+15)
                 }
-                caves_gen_block(
+                --caves_gen_block(
+                    --block_minp, common_minp, common_maxp, area, offset, A, A2, noise, planet
+                --)
+                caves_gen_block_new(
                     block_minp, common_minp, common_maxp, area, offset, A, A2, noise, planet
                 )
                 block_minp.x = block_minp.x+16

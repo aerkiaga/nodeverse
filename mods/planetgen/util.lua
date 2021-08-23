@@ -9,7 +9,7 @@ parts of the code, as well as other functions.
 ]]
 
 function table_copy(tab)
-    r = {}
+    local r = {}
     for key, value in pairs(tab) do
         r[key] = value
     end
@@ -158,14 +158,14 @@ function PerlinWrapper(noiseparams)
         end
     end
     if generator == nil then
-        noiseparams2 = table_copy(noiseparams)
+        local noiseparams2 = table_copy(noiseparams)
         noiseparams2.seed = 0
         generator = PerlinNoise(noiseparams2)
         perlin_generators[noiseparams2] = generator
     end
-    x_offset = noiseparams.seed % 0x10000 - 0x8000
-    y_offset = noiseparams.seed % 0x1000 - 0x800
-    z_offset = noiseparams.seed % 0x100 - 0x80
+    local x_offset = noiseparams.seed % 0x10000 - 0x8000
+    local y_offset = noiseparams.seed % 0x1000 - 0x800
+    local z_offset = noiseparams.seed % 0x100 - 0x80
     return {
         get_2d = function (self, pos)
             pos = {x=pos.x-x_offset, y=pos.y-y_offset}

@@ -112,7 +112,6 @@ function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
         for y_abs=minp.y, maxp.y do
             for x_abs=minp.x, maxp.x do
                 local i = area:index(x_abs, y_abs, z_abs)
-                --for i in area:iter(minp.x, minp.y, minp.z, maxp.x, maxp.y, maxp.z) do
                 local Ai = A[i]
                 if Ai ~= minetest.CONTENT_AIR then
                     local pos_abs = area:position(i)
@@ -154,10 +153,10 @@ function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
                     end
 
                     A2[i] = param2
-                end
-            end
-        end
-    end
+                end -- if
+            end -- for
+        end -- for
+    end -- for
 end
 
 function split_not_generated_boxes(not_generated_boxes, minp, maxp)
