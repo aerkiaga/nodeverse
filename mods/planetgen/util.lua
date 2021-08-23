@@ -1,11 +1,22 @@
 --[[
 Here are defined all distribution generators and math utilities used by other
-parts of the code.
+parts of the code, as well as other functions.
 
  # INDEX
     DISTRIBUTIONS
     VECTOR MATH
 ]]
+
+profile_times = {}
+
+function profile_start(name)
+    profile_times[name] = minetest.get_us_time()
+end
+
+function profile_end(name)
+    local time = minetest.get_us_time() - profile_times[name]
+    print(string.format("%s %d", name, time))
+end
 
 function int_hash(value)
     return tonumber(minetest.sha1(value):sub(0, 8), 16)
