@@ -177,3 +177,41 @@ function PerlinWrapper(noiseparams)
         end
     }
 end
+
+perlin_map_generators = {}
+
+function PerlinMapWrapper(noiseparams, size)
+    local generator = nil
+    for key, value in pairs(perlin_map_generators) do
+        if key[1].offset == noiseparams.offset
+        and key[1].scale == noiseparams.scale
+        and key[1].spread == noiseparams.spread
+        and key[1].octaves == noiseparams.octaves
+        and key[1].persistence == noiseparams.persistence
+        and key[1].lacunarity == noiseparams.lacunarity
+        and key[2].x == size.x
+        and key[2].y == size.y
+        and key[2].z == size.z then
+            generator = value
+        end
+    end
+    if generator == nil then
+        local noiseparams2 = table_copy(noiseparams)
+        noiseparams2.seed = 0
+        generator = PerlinNoiseMap(noiseparams2, size)
+        perlin_map_generators[{noiseparams2, size}] = generator
+    end
+    local x_offset = noiseparams.seed % 0x12000 - 0x7000
+    local y_offset = noiseparams.seed % 0x1200 - 0x700
+    local z_offset = noiseparams.seed % 0x120 - 0x70
+    return {
+        get_2d_map_flat = function (self, pos, buffer)
+            pos = {x=pos.x-x_offset, y=pos.y-y_offset}
+            return generator:get_2d_map_flat(pos, buffer)
+        end,
+        get_3d_map_flat = function (self, pos, buffer)
+            pos = {x=pos.x-x_offset, y=pos.y-y_offset, z=pos.z-z_offset}
+            return generator:get_3d_map_flat(pos, buffer)
+        end
+    }
+end

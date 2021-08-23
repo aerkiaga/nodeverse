@@ -265,6 +265,8 @@ function caves_gen_block(
     end
 end
 
+caves_3d_buffer = {}
+
 function caves_gen_block_new(
     block_minp_abs, minp_abs, maxp_abs, area, offset, A, A2, noise, planet
 )
@@ -301,11 +303,19 @@ function caves_gen_block_new(
         return
     end
 
+    noise:get_3d_map_flat(block_minp, caves_3d_buffer)
+
+    local k = 1
     for z_abs=minp_abs.z, maxp_abs.z do
         for y_abs=minp_abs.y, maxp_abs.y do
             for x_abs=minp_abs.x, maxp_abs.x do
                 local i = area:index(x_abs, y_abs, z_abs)
-                A[i] = minetest.CONTENT_AIR
+
+                if caves_3d_buffer[k] > 0 then
+                    A[i] = minetest.CONTENT_AIR
+                end
+
+                k = k + 1
             end
         end
     end
@@ -325,10 +335,13 @@ function caves_init_noise(planet)
 end
 
 function caves_init_noise_new(planet)
-    return PerlinWrapper {
-        offset=0, scale=0.5, spread={x=10, y=10}, seed=planet.seed,
-        octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"
-    }
+    return PerlinMapWrapper (
+        {
+            offset=0, scale=0.5, spread={x=10, y=10, z=10}, seed=planet.seed,
+            octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"
+        },
+        {x=16, y=16, z=16}
+    )
 end
 
 --[[
