@@ -264,11 +264,11 @@ function caves_gen_block(
     end
 end
 
-caves_threshold_buffer = {}
+caves_def_threshold_buffer = {}
 
-function caves_init_threshold_buffer()
+function caves_init_def_threshold_buffer()
     local k = 1
-    local buffer = caves_threshold_buffer
+    local buffer = caves_def_threshold_buffer
     for z_rel=0, 15 do
         local z_wall = z_rel == 0 or z_rel == 15
         for y_rel=0, 15 do
@@ -286,12 +286,49 @@ function caves_init_threshold_buffer()
     end
 end
 
+caves_threshold_buffer = {}
+
+caves_const_boxes = {
+    --[[
+    {minp = {x=15, y=1, z=1}, maxp = {x=15, y=14, z=14}}, -- X+
+    {minp = {x=1, y=15, z=1}, maxp = {x=14, y=15, z=14}}, -- Y+
+    {minp = {x=1, y=1, z=15}, maxp = {x=14, y=14, z=15}}, -- Z+
+    {minp = {x=0, y=1, z=1}, maxp = {x=0, y=14, z=14}}, -- X-
+    {minp = {x=1, y=0, z=1}, maxp = {x=14, y=0, z=14}}, -- Y-
+    {minp = {x=1, y=1, z=0}, maxp = {x=14, y=14, z=0}}, -- Z-
+    ]]
+    {minp = {x=15, y=0, z=0}, maxp = {x=15, y=15, z=15}}, -- X+
+    {minp = {x=0, y=15, z=0}, maxp = {x=15, y=15, z=15}}, -- Y+
+    {minp = {x=0, y=0, z=15}, maxp = {x=15, y=15, z=15}}, -- Z+
+    {minp = {x=0, y=0, z=0}, maxp = {x=0, y=15, z=15}}, -- X-
+    {minp = {x=0, y=0, z=0}, maxp = {x=15, y=0, z=15}}, -- Y-
+    {minp = {x=0, y=0, z=0}, maxp = {x=15, y=15, z=0}}, -- Z-
+}
+
 function caves_gen_threshold_buffer(sides)
-    if #caves_threshold_buffer == 0 then
-        caves_init_threshold_buffer()
+    if #caves_def_threshold_buffer == 0 then
+        caves_init_def_threshold_buffer()
     end
+    local src_buffer = caves_def_threshold_buffer
     local buffer = caves_threshold_buffer
-    local k = 1
+    for k = 1, 4096 do
+        buffer[k] = src_buffer[k]
+    end
+    for index, value in ipairs(sides) do
+        if value then
+            local box = caves_const_boxes[index]
+            local minp_x, minp_y, minp_z = box.minp.x, box.minp.y, box.minp.z
+            local maxp_x, maxp_y, maxp_z = box.maxp.x, box.maxp.y, box.maxp.z
+            for z_rel=minp_z, maxp_z do
+                for y_rel=minp_y, maxp_y do
+                    for x_rel=minp_x, maxp_x do
+                        local k = 256*z_rel + 16*y_rel + x_rel + 1
+                        buffer[k] = 0
+                    end
+                end
+            end
+        end
+    end
 end
 
 caves_3d_buffer = {}
@@ -316,7 +353,14 @@ function caves_gen_block_new(
     elseif block_minp.y < -16*2 then caveness = caveness ^ (1/4)
     end
     for n=1, 6 do
-        sides[n] = gen_true_with_probability(PcgRandom(planet.seed, value), 1 - caveness)
+        local n2 = ((n - 1) % 3) + 1
+        local block_minp2 = {x=block_minp.x, y=block_minp.y, z=block_minp.z}
+        if n == 4 then block_minp2.x = block_minp2.x - 16
+        elseif n == 5 then block_minp2.y = block_minp2.y - 16
+        elseif n == 6 then block_minp2.z = block_minp2.z - 16
+        end
+        local seed = block_minp2.x%0x10000 + block_minp2.y%0x100 + block_minp2.z
+        sides[n] = gen_true_with_probability(PcgRandom(planet.seed + seed, n2 + seed), 1 - caveness)
     end
 
     if not caves_check_block(sides) then
