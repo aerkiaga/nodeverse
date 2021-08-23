@@ -108,19 +108,22 @@ function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
 
     local is_walled = mapping.walled
     local is_scorching = (planet.atmosphere == "scorching")
+    local node_air = minetest.CONTENT_AIR
+    local offset_x, offset_y, offset_z = offset.x, offset.y, offset.z
     for z_abs=minp.z, maxp.z do
         for y_abs=minp.y, maxp.y do
             for x_abs=minp.x, maxp.x do
                 local i = area:index(x_abs, y_abs, z_abs)
                 local Ai = A[i]
-                if Ai ~= minetest.CONTENT_AIR then
-                    local pos_abs = area:position(i)
-                    local pos = vec3_add(pos_abs, offset)
+                if Ai ~= node_air then
+                    local pos_x = x_abs + offset_x
+                    local pos_y = y_abs + offset_y
+                    local pos_z = z_abs + offset_z
 
                     -- Generate walls around mappings
                     if is_walled and (
-                        pos_abs.x == minp_x or pos_abs.x == maxp_x
-                        or pos_abs.z == minp_z or pos_abs.z == maxp_z
+                        x_abs == minp_x or x_abs == maxp_x
+                        or z_abs == minp_z or z_abs == maxp_z
                     ) then
                         A[i] = planet.node_types.stone
                     end
@@ -136,7 +139,7 @@ function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
                     local rot = random_yrot_nodes[Ai]
                     local param2 = 0
                     if rot ~= nil then
-                        local hash = pos.x + pos.y*0x10 + pos.z*0x100
+                        local hash = pos_x + pos_y*0x10 + pos_z*0x100
                         hash = int_hash(hash)
                         param2 = hash % 133757 % rot
                         if rot == 2 then
