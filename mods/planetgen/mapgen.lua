@@ -281,7 +281,7 @@ function mapgen_callback(minp, maxp, blockseed)
     VM:set_data(A)
     VM:set_light_data(A1)
     VM:set_param2_data(A2)
-    VM:calc_lighting()
+    --VM:calc_lighting()
     VM:write_to_map()
 end
 
