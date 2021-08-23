@@ -1,5 +1,5 @@
 # Performance profiling
-**Planetgen** includes the functions `profile_start()` and `profile.end()` for
+**Planetgen** includes the functions `profile_start()` and `profile_end()` for
 this purpose, both of which print performance events to *stderr*. The scripts
 in this directory are provided to automate the process. All the following
 commands assume a Unix-like environment.
