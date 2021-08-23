@@ -9,11 +9,15 @@ parts of the code, as well as other functions.
 
 profile_times = {}
 
-function profile_start(name)
+ function profile_start(name)
     profile_times[name] = minetest.get_us_time()
 end
 
-function profile_end(name)
+ function profile_end(name)
+    if profile_times[name] == nil then
+        print(string.format("Profiling not started: %s", name))
+        return
+    end
     local time = minetest.get_us_time() - profile_times[name]
     print(string.format("%s %d", name, time))
 end

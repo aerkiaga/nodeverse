@@ -15,13 +15,12 @@
 # * The exact phrase '-- auto-generated' is recognized by 'unprofile.py', so
 #   either don't change it or edit that file.
 # * The trailing '\n' is required.
-profile_start = '    profile_start("{}") -- auto-generated\n'
-profile_end = '    profile_end("{}") -- auto-generated\n'
+profile_start = 'profile_start("{}") -- auto-generated\n'
+profile_end = 'profile_end("{}") -- auto-generated\n'
 
 import os, re
 
 re_function = re.compile(r"^function (\w+)")
-re_end = re.compile(r"^end$")
 cwd = os.getcwd()
 for filename in os.listdir(cwd):
     if filename.endswith(".lua"):
@@ -30,7 +29,9 @@ for filename in os.listdir(cwd):
             function_name = None
             defined = False
             comment = False
+            return_indent = None
             for line in f:
+                # Skip all comment lines
                 if comment:
                     if line.find("]]") >= 0:
                         comment = False
@@ -44,11 +45,21 @@ for filename in os.listdir(cwd):
                     output_lines.append(line)
                     continue
 
-                match = re_end.match(line)
-                if defined and match is not None:
-                    output_lines.append(profile_end.format(function_name))
-                    defined = False
-                    function_name = None
+                # Inside a function
+                if defined:
+                    pos = line.find("return")
+                    if pos == 0 or pos > 0 and line[0:pos].isspace():
+                        output_lines.append(pos*" " + profile_end.format(function_name))
+                        return_indent = pos
+                    else:
+                        pos = line.find("end")
+                        if pos > 0 and return_indent is not None and pos <= return_indent:
+                            return_indent = None
+                        elif pos == 0:
+                            if return_indent is None:
+                                output_lines.append("    " + profile_end.format(function_name))
+                            defined = False
+                            return_indent = None
 
                 output_lines.append(line)
 
@@ -56,7 +67,7 @@ for filename in os.listdir(cwd):
                 if match is not None:
                     function_name = match.group(1)
                 if not defined and function_name is not None and line.find(")") >= 0:
-                    output_lines.append(profile_start.format(function_name))
+                    output_lines.append("    " + profile_start.format(function_name))
                     defined = True
             f.seek(0)
             for line in output_lines:

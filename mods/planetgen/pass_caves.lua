@@ -182,7 +182,9 @@ function pass_caves_generate_block(
         end
     end
 
-    if not pass_caves_check_block(side_seeds, block_minp, noise, planet) then return end
+    if not pass_caves_check_block(side_seeds, block_minp, noise, planet) then
+        return
+    end
 
     -- Generate side opening shape noise generators
     local Perlin_2d_side = pass_caves_generate_side_openings(side_seeds, noise)
