@@ -271,12 +271,17 @@ function caves_init_def_threshold_buffer()
     local buffer = caves_def_threshold_buffer
     for z_rel=0, 15 do
         local z_wall = z_rel == 0 or z_rel == 15
+        local z_near_wall = z_rel < 4 or z_rel > 11
         for y_rel=0, 15 do
             local y_wall = z_wall or y_rel == 0 or y_rel == 15
+            local y_near_wall = z_near_wall or y_rel < 4 or y_rel > 11
             for x_rel=0, 15 do
                 local x_wall = y_wall or x_rel == 0 or x_rel == 15
+                local x_near_wall = y_near_wall or x_rel < 4 or x_rel > 11
                 if x_wall then
-                    buffer[k] = 1
+                    buffer[k] = 0.7
+                elseif x_near_wall then
+                    buffer[k] = 0.2
                 else
                     buffer[k] = 0
                 end
@@ -289,14 +294,6 @@ end
 caves_threshold_buffer = {}
 
 caves_const_boxes = {
-    --[[
-    {minp = {x=15, y=1, z=1}, maxp = {x=15, y=14, z=14}}, -- X+
-    {minp = {x=1, y=15, z=1}, maxp = {x=14, y=15, z=14}}, -- Y+
-    {minp = {x=1, y=1, z=15}, maxp = {x=14, y=14, z=15}}, -- Z+
-    {minp = {x=0, y=1, z=1}, maxp = {x=0, y=14, z=14}}, -- X-
-    {minp = {x=1, y=0, z=1}, maxp = {x=14, y=0, z=14}}, -- Y-
-    {minp = {x=1, y=1, z=0}, maxp = {x=14, y=14, z=0}}, -- Z-
-    ]]
     {minp = {x=15, y=0, z=0}, maxp = {x=15, y=15, z=15}}, -- X+
     {minp = {x=0, y=15, z=0}, maxp = {x=15, y=15, z=15}}, -- Y+
     {minp = {x=0, y=0, z=15}, maxp = {x=15, y=15, z=15}}, -- Z+
@@ -304,6 +301,20 @@ caves_const_boxes = {
     {minp = {x=0, y=0, z=0}, maxp = {x=15, y=0, z=15}}, -- Y-
     {minp = {x=0, y=0, z=0}, maxp = {x=15, y=15, z=0}}, -- Z-
 }
+
+function caves_set_threshold_buffer_box(box, value)
+    local buffer = caves_threshold_buffer
+    local minp_x, minp_y, minp_z = box.minp.x, box.minp.y, box.minp.z
+    local maxp_x, maxp_y, maxp_z = box.maxp.x, box.maxp.y, box.maxp.z
+    for z_rel=minp_z, maxp_z do
+        for y_rel=minp_y, maxp_y do
+            for x_rel=minp_x, maxp_x do
+                local k = 256*z_rel + 16*y_rel + x_rel + 1
+                buffer[k] = value
+            end
+        end
+    end
+end
 
 function caves_gen_threshold_buffer(sides)
     if #caves_def_threshold_buffer == 0 then
@@ -317,16 +328,7 @@ function caves_gen_threshold_buffer(sides)
     for index, value in ipairs(sides) do
         if value then
             local box = caves_const_boxes[index]
-            local minp_x, minp_y, minp_z = box.minp.x, box.minp.y, box.minp.z
-            local maxp_x, maxp_y, maxp_z = box.maxp.x, box.maxp.y, box.maxp.z
-            for z_rel=minp_z, maxp_z do
-                for y_rel=minp_y, maxp_y do
-                    for x_rel=minp_x, maxp_x do
-                        local k = 256*z_rel + 16*y_rel + x_rel + 1
-                        buffer[k] = 0
-                    end
-                end
-            end
+            caves_set_threshold_buffer_box(box, 0.2)
         end
     end
 end
