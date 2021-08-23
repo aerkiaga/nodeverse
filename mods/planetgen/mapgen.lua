@@ -139,9 +139,8 @@ function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
                     local rot = random_yrot_nodes[Ai]
                     local param2 = 0
                     if rot ~= nil then
-                        local hash = pos_x + pos_y*0x10 + pos_z*0x100
-                        hash = int_hash(hash)
-                        param2 = hash % 133757 % rot
+                        local hash = pos_x + pos_y*471 + pos_z*3273
+                        param2 = hash % 13357 % rot
                         if rot == 2 then
                             param2 = param2 * 2
                         end
