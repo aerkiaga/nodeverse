@@ -12,8 +12,8 @@
 
 # The inserted lines can be set to other values, but remember:
 # * There can be at most one '{}', that will be replaced with the function name.
-# * The exact phrase '-- auto-generated' is recognized by 'unprofile.py', so
-#   either don't change it or edit that file.
+# * The exact phrase '-- auto-generated' is recognized by 'unprofile.py' and by
+#   this script, so either don't change it or edit both files.
 # * The trailing '\n' is required.
 profile_start = 'profile_start("{}") -- auto-generated\n'
 profile_end = 'profile_end("{}") -- auto-generated\n'
@@ -75,7 +75,20 @@ for filename in os.listdir(cwd):
                 if not defined and function_name is not None and line.find(")") >= 0:
                     output_lines.append("    " + profile_start.format(function_name))
                     defined = True
-            f.seek(0)
+            final_output_lines = []
+            held_line = None
             for line in output_lines:
+                if line.find("-- auto-generated") >= 0:
+                    if held_line is not None:
+                        held_line = None
+                    else:
+                        held_line = line
+                else:
+                    if held_line is not None:
+                        final_output_lines.append(held_line)
+                        held_line = None
+                    final_output_lines.append(line)
+            f.seek(0)
+            for line in final_output_lines:
                 f.write(line)
             f.truncate()
