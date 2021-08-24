@@ -124,6 +124,7 @@ local function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
     local is_scorching = (planet.atmosphere == "scorching")
     local node_air = minetest.CONTENT_AIR
     local offset_x, offset_y, offset_z = offset.x, offset.y, offset.z
+    local fast_int_hash = fast_int_hash
     for z_abs=minpz, maxpz do
         for y_abs=minpy, maxpy do
             for x_abs=minpx, maxpx do
@@ -153,8 +154,8 @@ local function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
                     local rot = random_yrot_nodes[Ai]
                     local param2 = 0
                     if rot ~= nil then
-                        local hash = pos_x + pos_y*471 + pos_z*3273
-                        param2 = hash % 13357 % rot
+                        local hash = pos_x*313 + pos_y*477 + pos_z*327
+                        param2 = fast_int_hash(hash) % rot
                         if rot == 2 then
                             param2 = param2 * 2
                         end

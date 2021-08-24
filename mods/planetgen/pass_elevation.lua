@@ -168,6 +168,7 @@ function pass_elevation(minp_abs, maxp_abs, area, offset, A, A2, planet)
     local is_wall_z = false
     local is_wall_x = false
     local abs = math.abs
+    local fast_int_hash = fast_int_hash
     for z_abs=minp_abs.z, maxp_abs.z do
         local z = z_abs + offset.z
         for x_abs=minp_abs.x, maxp_abs.x do
@@ -194,7 +195,7 @@ function pass_elevation(minp_abs, maxp_abs, area, offset, A, A2, planet)
             end
 
             local hash = x + z*4713
-            hash = hash % 571
+            hash = fast_int_hash(hash)
             local G = PcgRandom(planet.seed, hash)
 
             elevation_gen_node_column(
