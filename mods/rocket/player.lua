@@ -24,6 +24,7 @@ rocket.player_to_rocket = function (player, pos)
         speed = 2.2,
         gravity = 0.6,
     })
+	player:set_pos(pos)
     player_api.set_model(player, "rocket_player.obj")
     local name = player:get_player_name()
     rocket_players[name] = true
@@ -46,17 +47,17 @@ rocket.rocket_to_player = function(player, pos)
         speed = 1,
         gravity = 1,
     })
-    
+
     --Move to rocket landing position
     if(pos ~= nil) then
-        player:set_pos({x=pos.x+2,y=pos.y,z=pos.z})
+        player:set_pos {x=pos.x+2, y=pos.y, z=pos.z}
     end
-    
+
     player:get_inventory():add_item("main", "rocket:rocket 1")
 end
 
 rocket.particles = function(pos)
-    minetest.add_particlespawner({
+    minetest.add_particlespawner {
         amount = 5,
         time   = 0.1,
         minpos = {x=pos.x-0.2,y=pos.y,z=pos.z-0.2},
@@ -74,7 +75,7 @@ rocket.particles = function(pos)
         collision_removal  = false,
         vertical = false,
         texture = 'thrust.png',
-    })
+    }
 end
 
 --Rocket globalstep
@@ -84,21 +85,22 @@ local function rocket_physics(dtime)
         --Check if player is rocket
         local name = player:get_player_name()
         if(rocket_players[name]) then
-            
+
             --Handle the rocket flying up
             local controls = player:get_player_control()
             local pos = player:get_pos()
             if(controls.jump) then
-                player:add_velocity({x=0,y=1.1,z=0})
+                player:add_velocity {x=0,y=1.1,z=0}
                 rocket.particles(pos)
             end
-            
+
             if(liftoff_players[name]) then
                 --Handle the player landing on ground
                 pos.y = pos.y - 1
                 local node = minetest.get_node(pos)
                 pos.y = pos.y + 1
-                if(minetest.registered_nodes[node.name].walkable and math.abs(player:get_player_velocity().y) < 0.2 ) then
+                if(minetest.registered_nodes[node.name].walkable
+				and math.abs(player:get_player_velocity().y) < 0.2 ) then
                     rocket.rocket_to_player(player, pos)
                 end
             else

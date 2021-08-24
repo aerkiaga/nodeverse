@@ -3,7 +3,7 @@ local function rocket_rightclick(pos, node, clicker, itemstack, pointed_thing)
     -- remove the rocket on the ground
     minetest.remove_node(pos)
     -- change the player into a rocket player
-    rocket.player_to_rocket(clicker,pos)
+    rocket.player_to_rocket(clicker, pos)
 end
 
 --Rocket Node Definition
@@ -24,9 +24,9 @@ local rocket_definition = {
 
     tiles = {"rocket.png"},
     groups = { oddly_breakable_by_hand=3 },
-    
+
     on_rightclick = rocket_rightclick,
 }
 
 --Register with auto-box, allowing multi-node collision-box representations
-autobox.register_node("rocket:rocket","rocket.box",rocket_definition,true)
+autobox.register_node("rocket:rocket", "rocket.box", rocket_definition, true)
