@@ -50,7 +50,7 @@ rocket.rocket_to_player = function(player, pos)
 
     --Move to rocket landing position
     if pos ~= nil then
-        player:set_pos {x=pos.x+2, y=pos.y, z=pos.z}
+        player:set_pos {x=pos.x, y=pos.y, z=pos.z}
     end
 
     player:get_inventory():add_item("main", "rocket:rocket 1")
