@@ -16,9 +16,6 @@ Planetgen is a configurable mapgen that can be used in many ways. The API it
 offers can be used from this file (see GAME SETUP) and have this mod generate
 custom terrain, or from a different mod to integrate it into a game.
 
-All functions in the API must be prefixed with 'planetgen.' if used from a
-different mod, while functions called from within this mod must not.
-
 There are two basic ways to use this API. The simplest one is simply to call
 'planetgen.add_planet_mapping()' at startup to place one or more planets at
 certain locations in the world. These can be as large as necessary (e.g.
@@ -110,7 +107,7 @@ local block_size = 300
 local planets_per_block = 4
 local planet_size = 60
 
-function new_area_callback(minp, maxp, area, A, A1, A2)
+local function new_area_callback(minp, maxp, area, A, A1, A2)
     local max = math.max
     local min = math.min
     local ceil = math.ceil
@@ -171,7 +168,7 @@ function new_area_callback(minp, maxp, area, A, A1, A2)
                         planet_mapping.offset = {x=0, y=-planet_pos.y, z=0}
                         planet_mapping.seed = seed + n
                         planet_mapping.walled = true
-                        local_generate_planet_chunk(
+                        planetgen.generate_planet_chunk(
                             common_minp2, common_maxp2, area, A, A1, A2, planet_mapping
                         )
                     end
@@ -181,10 +178,10 @@ function new_area_callback(minp, maxp, area, A, A1, A2)
     end
 end
 
-register_on_not_generated(new_area_callback)
+planetgen.register_on_not_generated(new_area_callback)
 
 -- Add starting planet
-add_planet_mapping {
+planetgen.add_planet_mapping {
     minp = {
         x=-math.floor(planet_size/2),
         y=-2*planet_size,

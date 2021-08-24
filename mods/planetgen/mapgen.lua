@@ -17,6 +17,9 @@ a list of all tags in order.
     INITIALIZATION
 --]]
 
+-- Namespace for all the API functions
+planetgen = {}
+
 dofile(minetest.get_modpath("planetgen") .. "/util.lua")
 dofile(minetest.get_modpath("planetgen") .. "/meta.lua")
 dofile(minetest.get_modpath("planetgen") .. "/nodetypes.lua")
@@ -62,11 +65,12 @@ local function planet_from_mapping(mapping)
 end
 
 -- API
-function add_planet_mapping(mapping)
+local function add_planet_mapping(mapping)
     local planet = planet_from_mapping(mapping)
     table.insert(planet_mappings, mapping)
     return #planet_mappings
 end
+planetgen.add_planet_mapping = add_planet_mapping
 
 -- API
 local function remove_planet_mapping(index)
@@ -77,6 +81,7 @@ local function remove_planet_mapping(index)
     end
     table.remove(planet_mappings, index)
 end
+planetgen.remove_planet_mapping = remove_planet_mapping
 
 local generator_dirty_flag = false
 
@@ -84,12 +89,13 @@ local generator_dirty_flag = false
 local function set_dirty_flag()
     generator_dirty_flag = true
 end
+planetgen.set_dirty_flag = set_dirty_flag
 
 -- API
-function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
+local function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
     local max = math.max
     local min = math.min
-    
+
     set_dirty_flag()
     local planet = planet_from_mapping(mapping)
     local offset = mapping.offset
@@ -173,6 +179,7 @@ function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
         end -- for
     end -- for
 end
+planetgen.generate_planet_chunk = generate_planet_chunk
 
 local function split_not_generated_boxes(not_generated_boxes, minp, maxp)
     --[[
@@ -247,9 +254,10 @@ end
 local on_not_generated_callback = nil
 
 -- API
-function register_on_not_generated(callback)
+local function register_on_not_generated(callback)
     on_not_generated_callback = callback
 end
+planetgen.register_on_not_generated = register_on_not_generated
 
 --[[
 # ENTRY POINT

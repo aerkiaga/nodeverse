@@ -11,7 +11,7 @@ assigned a higher threshold.
     ENTRY POINT
 ]]--
 
-function caves_check_block(sides)
+local function caves_check_block(sides)
     local num_openings = 0
     for index=1, 6 do
         if sides[index] then num_openings = num_openings + 1 end
@@ -21,7 +21,7 @@ end
 
 caves_def_threshold_buffer = {}
 
-function caves_init_def_threshold_buffer()
+local function caves_init_def_threshold_buffer()
     local k = 1
     local buffer = caves_def_threshold_buffer
     for z_rel=0, 15 do
@@ -57,7 +57,7 @@ caves_const_boxes = {
     {minp = {x=0, y=0, z=0}, maxp = {x=15, y=15, z=0}}, -- Z-
 }
 
-function caves_set_threshold_buffer_box(box, value)
+local function caves_set_threshold_buffer_box(box, value)
     local buffer = caves_threshold_buffer
     local minp_x, minp_y, minp_z = box.minp.x, box.minp.y, box.minp.z
     local maxp_x, maxp_y, maxp_z = box.maxp.x, box.maxp.y, box.maxp.z
@@ -71,7 +71,7 @@ function caves_set_threshold_buffer_box(box, value)
     end
 end
 
-function caves_gen_threshold_buffer(sides)
+local function caves_gen_threshold_buffer(sides)
     if #caves_def_threshold_buffer == 0 then
         caves_init_def_threshold_buffer()
     end
@@ -90,7 +90,7 @@ end
 
 caves_3d_buffer = {}
 
-function caves_gen_block(
+local function caves_gen_block(
     block_minp_abs, minp_abs, maxp_abs, offset, area, A, A2, noise, planet
 )
     local block_minp = vec3_add(block_minp_abs, offset)
@@ -163,7 +163,7 @@ function caves_gen_block(
     end
 end
 
-function caves_init_noise(planet)
+local function caves_init_noise(planet)
     return PerlinMapWrapper (
         {
             offset=0, scale=0.5, spread={x=8, y=8, z=8}, seed=planet.seed,
