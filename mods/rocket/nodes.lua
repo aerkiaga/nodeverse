@@ -1,12 +1,12 @@
---rightclick definition
+-- Rightclick definition
 local function rocket_rightclick(pos, node, clicker, itemstack, pointed_thing)
-    -- remove the rocket on the ground
+    -- Remove the rocket on the ground
     minetest.remove_node(pos)
-    -- change the player into a rocket player
+    -- Change the player into a rocket player
     rocket.player_to_rocket(clicker, pos)
 end
 
---Rocket Node Definition
+-- Rocket Node Definition
 local rocket_definition = {
     description =  "Rocket",
     drawtype = "mesh",
@@ -28,5 +28,5 @@ local rocket_definition = {
     on_rightclick = rocket_rightclick,
 }
 
---Register with auto-box, allowing multi-node collision-box representations
+-- Register with auto-box, allowing multi-node collision-box representations
 autobox.register_node("rocket:rocket", "rocket.box", rocket_definition, true)

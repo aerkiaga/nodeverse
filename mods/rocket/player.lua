@@ -18,7 +18,7 @@ player_api.register_model("rocket_player.obj", {
 	eye_height = 1.47,
 })
 
---Turn a player into a rocket
+-- Turn a player into a rocket
 rocket.player_to_rocket = function (player, pos)
     player:set_physics_override({
         speed = 2.2,
@@ -78,7 +78,7 @@ rocket.particles = function(pos)
     }
 end
 
---Rocket globalstep
+-- Rocket globalstep
 local function rocket_physics(dtime)
     local player_list = minetest.get_connected_players()
     for _, player in pairs(player_list) do
@@ -114,10 +114,12 @@ end
 
 minetest.register_globalstep(rocket_physics)
 
---Rocket on_join_player
+-- Rocket on_join_player
 local function rocket_join_player(player, last_login)
-    rocket.rocket_to_player(player)
-    player:get_inventory():add_item("main", "rocket:rocket 1")
+    local inventory = player:get_inventory()
+	if not inventory:contains_item("main", "rocket:rocket 1") then
+		inventory:add_item("main", "rocket:rocket 1")
+	end
 end
 
 minetest.register_on_joinplayer(rocket_join_player)
