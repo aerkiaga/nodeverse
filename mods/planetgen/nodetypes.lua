@@ -278,6 +278,7 @@ local function register_liquid_nodes()
             place_param2 = 0,
             is_ground_content = false,
             walkable = false,
+            buildable_to = true,
             liquidtype = "source",
             liquid_alternative_flowing = "planetgen:flowing_water" .. n,
     	    liquid_alternative_source = "planetgen:water" .. n,
@@ -321,6 +322,7 @@ local function register_liquid_nodes()
             place_param2 = 0,
             is_ground_content = false,
             walkable = false,
+            buildable_to = true,
             liquidtype = "flowing",
             liquid_alternative_flowing = "planetgen:flowing_water" .. n,
     	    liquid_alternative_source = "planetgen:water" .. n,
@@ -365,6 +367,7 @@ local function register_liquid_nodes()
             place_param2 = 0,
             is_ground_content = false,
             walkable = false,
+            buildable_to = true,
             liquidtype = "source",
             liquid_alternative_flowing = "planetgen:flowing_hydrocarbon",
     	    liquid_alternative_source = "planetgen:hydrocarbon",
@@ -407,6 +410,7 @@ local function register_liquid_nodes()
             place_param2 = 0,
             is_ground_content = false,
             walkable = false,
+            buildable_to = true,
             liquidtype = "flowing",
             liquid_alternative_flowing = "planetgen:flowing_hydrocarbon",
     	    liquid_alternative_source = "planetgen:hydrocarbon",
@@ -451,6 +455,7 @@ local function register_liquid_nodes()
             place_param2 = 0,
             is_ground_content = false,
             walkable = false,
+            buildable_to = true,
             liquidtype = "source",
             liquid_alternative_flowing = "planetgen:flowing_lava",
     	    liquid_alternative_source = "planetgen:lava",
@@ -493,6 +498,7 @@ local function register_liquid_nodes()
             place_param2 = 0,
             is_ground_content = false,
             walkable = false,
+            buildable_to = true,
             liquidtype = "flowing",
             liquid_alternative_flowing = "planetgen:flowing_lava",
     	    liquid_alternative_source = "planetgen:lava",
@@ -522,6 +528,7 @@ local function register_icy_nodes()
             paramtype2 = "colorfacedir",
             place_param2 = 8,
             walkable = false,
+            buildable_to = true,
             leveled = 16,
             node_box = {
                 type = "leveled",
@@ -578,6 +585,7 @@ local function register_base_floral_nodes()
             place_param2 = 0,
             sunlight_propagates = true,
             walkable = false,
+            buildable_to = true,
         } end
     )
 
@@ -597,6 +605,7 @@ local function register_base_floral_nodes()
             place_param2 = 0,
             sunlight_propagates = true,
             walkable = false,
+            buildable_to = true,
         } end
     )
 
@@ -616,6 +625,7 @@ local function register_base_floral_nodes()
             place_param2 = 0,
             sunlight_propagates = true,
             walkable = false,
+            buildable_to = true,
         } end
     )
 end
