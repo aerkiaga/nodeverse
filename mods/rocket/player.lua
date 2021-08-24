@@ -100,11 +100,11 @@ local function rocket_physics(dtime)
                 local node = minetest.get_node(pos)
                 pos.y = pos.y + 1
                 if minetest.registered_nodes[node.name].walkable
-				and math.abs(player:get_player_velocity().y) < 0.2 then
+				and math.abs(player:get_velocity().y) < 0.2 then
                     rocket.rocket_to_player(player, pos)
                 end
             else
-                if player:get_player_velocity().y > 1 then
+                if player:get_velocity().y > 1 then
                     liftoff_players[name] = true
                 end
             end
