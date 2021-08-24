@@ -5,7 +5,17 @@ provides an API to control it from other mods or from within this file.
 
 Read 'mapgen.lua' to learn how this works. For the API reference, keep reading
 this file. To see or edit the default game setup, search '# GAME SETUP' in your
-editor or IDE and jump to it.
+editor or IDE and jump to it; you can also see the '# EXAMPLES'.
+
+Files are tagged with keywords throughout to make jumping to important places
+easier. In order to jump to a tag, simply search '# TAG NAME' in your editor or
+IDE and jump to the one match. At the start of each file there is an INDEX with
+a list of all tags in order.
+
+ # INDEX
+    API REFERENCE
+    GAME SETUP
+    EXAMPLES
 ]]--
 
 dofile(minetest.get_modpath("planetgen") .. "/mapgen.lua")
@@ -112,7 +122,6 @@ local function new_area_callback(minp, maxp, area, A, A1, A2)
     local min = math.min
     local ceil = math.ceil
     local floor = math.floor
-    local local_generate_planet_chunk = planetgen.generate_planet_chunk
     local minpx, minpy, minpz = minp.x, minp.y, minp.z
     local maxpx, maxpy, maxpz = maxp.x, maxp.y, maxp.z
     -- Iterate over all overlapping block_size * block_size * block_size blocks
@@ -168,7 +177,7 @@ local function new_area_callback(minp, maxp, area, A, A1, A2)
                         planet_mapping.offset = {x=0, y=-planet_pos.y, z=0}
                         planet_mapping.seed = seed + n
                         planet_mapping.walled = true
-                        local_generate_planet_chunk(
+                        planetgen.generate_planet_chunk(
                             common_minp2, common_maxp2, area, A, A1, A2, planet_mapping
                         )
                     end
@@ -196,3 +205,22 @@ planetgen.add_planet_mapping {
     seed = 0,
     walled = true
 }
+
+--[[
+# EXAMPLES
+]]--
+
+--[[
+This function generates the same planet in all directions, indefinitely.
+]]
+local function example_infinite_callback(minp, maxp, area, A, A1, A2)
+    planet_mapping = {
+        minp = minp,
+        maxp = maxp,
+        offset = {x=0, y=100, z=0},
+        seed = 0
+    }
+    planetgen.generate_planet_chunk(
+        minp, maxp, area, A, A1, A2, planet_mapping
+    )
+end

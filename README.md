@@ -7,14 +7,19 @@ immensely large universe with a never-ending variety of planets to explore.
 
 ## Status
 An infinite cloud of floating planets is created. Blocks include stone, gravel,
-dust, sediment, liquid (water, hydrocarbon, lava), grass soil, grass, dry grass,
-tall grass and snow. Planets of different colors, rockier, more hilly or flat,
-richer in oceans, arid, frozen, volcanic, and with or without living organisms
-are generated. World generation features oceans, caves, deserts and craters.
+dust, sediment, water, hydrocarbon, lava, grass soil, grass, dry grass, tall
+grass and snow. Planets of different colors, rockier, more hilly or flat, richer
+in oceans, arid, frozen, volcanic, and with or without living organisms are
+generated. World generation features oceans, caves, deserts and craters.
 
-The next step is adding a rocket ship that can be used to visit other planets.
+## Mods
+This is a list of the components that make up this game. Each of these mods can
+be used by itself, as long as its dependencies are satisfied.
 
-The game is not yet playable, as it does not include any user-interaction code.
+Name | Dependencies | Description
+---- | ------------ | -----------
+`planetgen` | None | Generates planet terrain. See its `README.md` for instructions on advanced usage.
+`rocket` | `autobox`, `player_api`, `hand` | Adds a rocket to fly to many other planets.
 
 ## TODO
  * Add minerals and ores
@@ -22,13 +27,6 @@ The game is not yet playable, as it does not include any user-interaction code.
  * Add basic items
  * Add basic crafting
  * Add spacecraft building
- * Add flight
  * Add interplanetary space
  * Add interstellar travel
  * Improve all of the above
-
-## Contributing
-The code is made to be as self-documenting as possible. Just go into the `mods`
-directory and read the `init.lua` file within a mod. It should present the API
-exported by the mod, if any, and gently guide the reader through the code
-itself.
