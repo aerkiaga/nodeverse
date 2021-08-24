@@ -112,7 +112,7 @@ local function new_area_callback(minp, maxp, area, A, A1, A2)
     local min = math.min
     local ceil = math.ceil
     local floor = math.floor
-    local local_generate_planet_chunk = generate_planet_chunk
+    local local_generate_planet_chunk = planetgen.generate_planet_chunk
     local minpx, minpy, minpz = minp.x, minp.y, minp.z
     local maxpx, maxpy, maxpz = maxp.x, maxp.y, maxp.z
     -- Iterate over all overlapping block_size * block_size * block_size blocks
@@ -168,7 +168,7 @@ local function new_area_callback(minp, maxp, area, A, A1, A2)
                         planet_mapping.offset = {x=0, y=-planet_pos.y, z=0}
                         planet_mapping.seed = seed + n
                         planet_mapping.walled = true
-                        planetgen.generate_planet_chunk(
+                        local_generate_planet_chunk(
                             common_minp2, common_maxp2, area, A, A1, A2, planet_mapping
                         )
                     end
