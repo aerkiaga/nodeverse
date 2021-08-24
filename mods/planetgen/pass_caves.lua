@@ -11,7 +11,7 @@ assigned a higher threshold.
     ENTRY POINT
 ]]--
 
-function caves_check_block(sides)
+local function caves_check_block(sides)
     local num_openings = 0
     for index=1, 6 do
         if sides[index] then num_openings = num_openings + 1 end
@@ -21,7 +21,7 @@ end
 
 caves_def_threshold_buffer = {}
 
-function caves_init_def_threshold_buffer()
+local function caves_init_def_threshold_buffer()
     local k = 1
     local buffer = caves_def_threshold_buffer
     for z_rel=0, 15 do
@@ -57,7 +57,7 @@ caves_const_boxes = {
     {minp = {x=0, y=0, z=0}, maxp = {x=15, y=15, z=0}}, -- Z-
 }
 
-function caves_set_threshold_buffer_box(box, value)
+local function caves_set_threshold_buffer_box(box, value)
     local buffer = caves_threshold_buffer
     local minp_x, minp_y, minp_z = box.minp.x, box.minp.y, box.minp.z
     local maxp_x, maxp_y, maxp_z = box.maxp.x, box.maxp.y, box.maxp.z
@@ -71,7 +71,7 @@ function caves_set_threshold_buffer_box(box, value)
     end
 end
 
-function caves_gen_threshold_buffer(sides)
+local function caves_gen_threshold_buffer(sides)
     if #caves_def_threshold_buffer == 0 then
         caves_init_def_threshold_buffer()
     end
@@ -90,7 +90,7 @@ end
 
 caves_3d_buffer = {}
 
-function caves_gen_block(
+local function caves_gen_block(
     block_minp_abs, minp_abs, maxp_abs, offset, area, A, A2, noise, planet
 )
     local block_minp = vec3_add(block_minp_abs, offset)
@@ -129,9 +129,14 @@ function caves_gen_block(
 
     noise:get_3d_map_flat(block_minp, caves_3d_buffer)
 
+    local minp_z_rel, minp_y_rel, minp_x_rel = minp_abs.z % 16, minp_abs.y % 16, minp_abs.x % 16
+    local maxp_y_rel, maxp_x_rel = maxp_abs.y % 16, maxp_abs.x % 16
     local k = 1
+    k = k + 256*(minp_z_rel % 16)
     for z_abs=minp_abs.z, maxp_abs.z do
+        k = k + 16*(minp_y_rel % 16)
         for y_abs=minp_abs.y, maxp_abs.y do
+            k = k + minp_x_rel % 16
             for x_abs=minp_abs.x, maxp_abs.x do
                 local i = area:index(x_abs, y_abs, z_abs)
                 local Ai = A[i]
@@ -152,11 +157,13 @@ function caves_gen_block(
 
                 k = k + 1
             end
+            k = k + 15 - maxp_x_rel % 16
         end
+        k = k + 16*(15 - maxp_y_rel % 16)
     end
 end
 
-function caves_init_noise(planet)
+local function caves_init_noise(planet)
     return PerlinMapWrapper (
         {
             offset=0, scale=0.5, spread={x=8, y=8, z=8}, seed=planet.seed,

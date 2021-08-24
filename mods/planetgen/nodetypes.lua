@@ -13,7 +13,7 @@ such, you should perform the same changes in that file.
     VARIANT SELECTION
 ]]
 
-function register_color_variants(name, num_variants, random_yrot, color_fn, def_fn)
+local function register_color_variants(name, num_variants, random_yrot, color_fn, def_fn)
     --[[
     Will register a number of node types. These are meant to be variants of a
     common abstract node type.
@@ -47,20 +47,20 @@ function register_color_variants(name, num_variants, random_yrot, color_fn, def_
     end
 end
 
-function fnExtractBits(n, lower, num)
+local function fnExtractBits(n, lower, num)
     return math.floor(n / (2^lower)) % (2^num)
 end
 
-function fnBitsDistribution(n, lower, num, max)
+local function fnBitsDistribution(n, lower, num, max)
     return math.floor(max * fnExtractBits(n, lower, num) / ((2^num) - 1))
 end
 
-function fnLighten(n, m)
+local function fnLighten(n, m)
     return 255 - math.floor((255 - n) / m)
 end
 
 -- 16 colors
-function fnColorStone(n)
+local function fnColorStone(n)
     n = n - 1
     local r = fnBitsDistribution(n, 0, 2, 192)
     local g = fnBitsDistribution(n, 2, 1, r)
@@ -69,7 +69,7 @@ function fnColorStone(n)
 end
 
 -- Matches 'fnColorWaterRandom' in 'textures/palettes/generate.scm'
-function fnColorWaterRandom(n)
+local function fnColorWaterRandom(n)
     local r = fnBitsDistribution(n, 0, 2, 192)
     local g = fnBitsDistribution(n, 2, 2, 255)
     local b = fnBitsDistribution(n, 4, 1, 255)
@@ -77,7 +77,7 @@ function fnColorWaterRandom(n)
 end
 
 -- Matches 'fnColorWaterNormal' in 'textures/palettes/generate.scm'
-function fnColorWaterNormal(n)
+local function fnColorWaterNormal(n)
     local r = fnBitsDistribution(n, 0, 1, 64)
     local g = fnBitsDistribution(n, 1, 2, 192)
     local b = 255
@@ -86,7 +86,7 @@ end
 
 -- 32 colors
 -- Matches 'fnColorWater' in 'textures/palettes/generate.scm'
-function fnColorWater(n)
+local function fnColorWater(n)
     n = n - 1 -- make 0-based
     if n < 24 then
         return fnColorWaterRandom(n)
@@ -96,7 +96,7 @@ function fnColorWater(n)
 end
 
 -- Matches 'fnColorGrassRandom' in 'textures/palettes/generate.scm'
-function fnColorGrassRandom(n)
+local function fnColorGrassRandom(n)
     local r = fnBitsDistribution(n, 0, 2, 255)
     local g = fnBitsDistribution(n, 2, 2, 255)
     local b = fnBitsDistribution(n, 4, 1, 255)
@@ -104,7 +104,7 @@ function fnColorGrassRandom(n)
 end
 
 -- Matches 'fnColorGrassNormal' in 'textures/palettes/generate.scm'
-function fnColorGrassNormal(n)
+local function fnColorGrassNormal(n)
     local g = 128 + fnBitsDistribution(n, 0, 1, 127)
     local r = fnBitsDistribution(n, 1, 2, g - 64)
     local b = fnBitsDistribution(n, 3, 1, g - 128)
@@ -113,7 +113,7 @@ end
 
 -- 48 colors
 -- Matches 'fnColorGrass' in 'textures/palettes/generate.scm'
-function fnColorGrass(n)
+local function fnColorGrass(n)
     n = n - 1 -- make 0-based
     if n < 32 then
         return fnColorGrassRandom(n)
@@ -146,7 +146,7 @@ Allocated: 372
 48          tall_grass
 ]]--
 
-function register_base_nodes()
+local function register_base_nodes()
     -- DUST
     -- Covers a planet's surface
     -- Made of the same material as STONE
@@ -238,7 +238,7 @@ function register_base_nodes()
     )
 end
 
-function register_liquid_nodes()
+local function register_liquid_nodes()
     -- WATER
     -- The liquid that fills a temperate planet's oceans.
     -- Most common liquid; essential for life.
@@ -501,7 +501,7 @@ function register_liquid_nodes()
     )
 end
 
-function register_icy_nodes()
+local function register_icy_nodes()
     -- SNOW
     -- Covers planets with very low temperatures
     -- Single variant
@@ -531,7 +531,7 @@ function register_icy_nodes()
     )
 end
 
-function register_base_floral_nodes()
+local function register_base_floral_nodes()
     -- GRASS SOIL
     -- A surface node for planets supporting life
     -- 16 stone colors as nodetype, 48 grass colors as palette and nodetype
