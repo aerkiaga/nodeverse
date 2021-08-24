@@ -98,6 +98,8 @@ local function rocket_physics(dtime, player, name)
 	    if minetest.registered_nodes[node.name].walkable
 		and math.abs(vel.y) < 0.2 then
 	        rocket.rocket_to_player(player, pos)
+			rocket_players[name] = nil
+			liftoff_players[name] = nil
 	    end
 	else
 	    if vel.y > 1 then
