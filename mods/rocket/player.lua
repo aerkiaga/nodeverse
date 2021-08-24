@@ -79,37 +79,29 @@ rocket.particles = function(pos)
 end
 
 -- Rocket globalstep
-local function rocket_physics(dtime)
-    local player_list = minetest.get_connected_players()
-    for _, player in pairs(player_list) do
-        --Check if player is rocket
-        local name = player:get_player_name()
-        if rocket_players[name] then
+local function rocket_physics(dtime, player, name)
+	-- Handle the rocket flying up
+	local controls = player:get_player_control()
+	local pos = player:get_pos()
+	if controls.jump then
+	    player:add_velocity {x=0,y=20*dtime,z=0}
+	    rocket.particles(pos)
+	end
 
-            --Handle the rocket flying up
-            local controls = player:get_player_control()
-            local pos = player:get_pos()
-            if controls.jump then
-                player:add_velocity {x=0,y=20*dtime,z=0}
-                rocket.particles(pos)
-            end
-
-            if(liftoff_players[name]) then
-                --Handle the player landing on ground
-                pos.y = pos.y - 1
-                local node = minetest.get_node(pos)
-                pos.y = pos.y + 1
-                if minetest.registered_nodes[node.name].walkable
-				and math.abs(player:get_velocity().y) < 0.2 then
-                    rocket.rocket_to_player(player, pos)
-                end
-            else
-                if player:get_velocity().y > 1 then
-                    liftoff_players[name] = true
-                end
-            end
-        end
-    end
+	if(liftoff_players[name]) then
+	    -- Handle the player landing on ground
+	    pos.y = pos.y - 1
+	    local node = minetest.get_node(pos)
+	    pos.y = pos.y + 1
+	    if minetest.registered_nodes[node.name].walkable
+		and math.abs(player:get_velocity().y) < 0.2 then
+	        rocket.rocket_to_player(player, pos)
+	    end
+	else
+	    if player:get_velocity().y > 1 then
+	        liftoff_players[name] = true
+	    end
+	end
 end
 
 local function globalstep_callback(dtime)
@@ -118,7 +110,7 @@ local function globalstep_callback(dtime)
         -- Check if player is rocket
         local name = player:get_player_name()
         if rocket_players[name] ~= nil then
-			rocket_physics(dtime)
+			rocket_physics(dtime, player, name)
         end
     end
 end
