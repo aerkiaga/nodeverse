@@ -21,7 +21,7 @@ player_api.register_model("rocket_player.obj", {
 -- Turn a player into a rocket
 rocket.player_to_rocket = function (player, pos)
     player:set_physics_override {
-        speed = 2.2,
+        speed = 5,
         gravity = 0.6,
     }
 	player:set_pos(pos)
