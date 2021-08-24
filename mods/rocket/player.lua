@@ -88,17 +88,19 @@ local function rocket_physics(dtime, player, name)
 	    rocket.particles(pos)
 	end
 
+	local vel = player:get_velocity()
+
 	if(liftoff_players[name]) then
 	    -- Handle the player landing on ground
 	    pos.y = pos.y - 1
 	    local node = minetest.get_node(pos)
 	    pos.y = pos.y + 1
 	    if minetest.registered_nodes[node.name].walkable
-		and math.abs(player:get_velocity().y) < 0.2 then
+		and math.abs(vel.y) < 0.2 then
 	        rocket.rocket_to_player(player, pos)
 	    end
 	else
-	    if player:get_velocity().y > 1 then
+	    if vel.y > 1 then
 	        liftoff_players[name] = true
 	    end
 	end
