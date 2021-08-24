@@ -106,56 +106,63 @@ Default game setup:
 An infinite cloud of floating planets.
 ]]
 
-block_size = 300
-planets_per_block = 4
-planet_size = 60
+local block_size = 300
+local planets_per_block = 4
+local planet_size = 60
 
 function new_area_callback(minp, maxp, area, A, A1, A2)
+    local max = math.max
+    local min = math.min
+    local ceil = math.ceil
+    local floor = math.floor
+    local local_generate_planet_chunk = generate_planet_chunk
+    local minpx, minpy, minpz = minp.x, minp.y, minp.z
+    local maxpx, maxpy, maxpz = maxp.x, maxp.y, maxp.z
     -- Iterate over all overlapping block_size * block_size * block_size blocks
-    for block_x=minp.x - minp.x%block_size, maxp.x - maxp.x%block_size, block_size do
-        for block_y=minp.y - minp.y%block_size, maxp.y - maxp.y%block_size, block_size do
-            for block_z=minp.z - minp.z%block_size, maxp.z - maxp.z%block_size, block_size do
+    for block_x=minpx - minpx%block_size, maxpx - maxpx%block_size, block_size do
+        for block_y=minpy - minpy%block_size, maxpy - maxpy%block_size, block_size do
+            for block_z=minpz - minpz%block_size, maxpz - maxpz%block_size, block_size do
                 -- Get overlapping area
                 local common_minp = {
-                    x=math.max(minp.x, block_x),
-                    y=math.max(minp.y, block_y),
-                    z=math.max(minp.z, block_z)
+                    x=max(minpx, block_x),
+                    y=max(minpy, block_y),
+                    z=max(minpz, block_z)
                 }
                 local common_maxp = {
-                    x=math.min(maxp.x, block_x + block_size - 1),
-                    y=math.min(maxp.y, block_y + block_size - 1),
-                    z=math.min(maxp.z, block_z + block_size - 1)
+                    x=min(maxpx, block_x + block_size - 1),
+                    y=min(maxpy, block_y + block_size - 1),
+                    z=min(maxpz, block_z + block_size - 1)
                 }
                 -- Check overlap with randomly placed planets
                 local seed = block_x + 0x10*block_y + 0x1000*block_z
                 local G = PcgRandom(seed, seed)
                 for n=1, planets_per_block do
                     local planet_pos = {
-                        x=block_x + G:next(math.ceil(planet_size/2), block_size - math.ceil(planet_size/2)),
-                        y=block_y + G:next(math.ceil(planet_size/2), block_size - math.ceil(planet_size/2)),
-                        z=block_z + G:next(math.ceil(planet_size/2), block_size - math.ceil(planet_size/2))
+                        x=block_x + G:next(ceil(planet_size/2), block_size - ceil(planet_size/2)),
+                        y=block_y + G:next(ceil(planet_size/2), block_size - ceil(planet_size/2)),
+                        z=block_z + G:next(ceil(planet_size/2), block_size - ceil(planet_size/2))
                     }
                     local planet_mapping = {
                         minp = {
-                            x=planet_pos.x - math.floor(planet_size/2),
-                            y=planet_pos.y - 4*math.floor(planet_size/2),
-                            z=planet_pos.z - math.floor(planet_size/2),
+                            x=planet_pos.x - floor(planet_size/2),
+                            y=planet_pos.y - 4*floor(planet_size/2),
+                            z=planet_pos.z - floor(planet_size/2),
                         },
                         maxp = {
-                            x=planet_pos.x + math.floor(planet_size/2),
-                            y=planet_pos.y + 4*math.floor(planet_size/2),
-                            z=planet_pos.z + math.floor(planet_size/2),
+                            x=planet_pos.x + floor(planet_size/2),
+                            y=planet_pos.y + 4*floor(planet_size/2),
+                            z=planet_pos.z + floor(planet_size/2),
                         }
                     }
                     local common_minp2 = {
-                        x=math.max(common_minp.x, planet_mapping.minp.x),
-                        y=math.max(common_minp.y, planet_mapping.minp.y),
-                        z=math.max(common_minp.z, planet_mapping.minp.z)
+                        x=max(common_minp.x, planet_mapping.minp.x),
+                        y=max(common_minp.y, planet_mapping.minp.y),
+                        z=max(common_minp.z, planet_mapping.minp.z)
                     }
                     local common_maxp2 = {
-                        x=math.min(common_maxp.x, planet_mapping.maxp.x),
-                        y=math.min(common_maxp.y, planet_mapping.maxp.y),
-                        z=math.min(common_maxp.z, planet_mapping.maxp.z)
+                        x=min(common_maxp.x, planet_mapping.maxp.x),
+                        y=min(common_maxp.y, planet_mapping.maxp.y),
+                        z=min(common_maxp.z, planet_mapping.maxp.z)
                     }
                     if common_maxp2.x > common_minp2.x
                     and common_maxp2.y > common_minp2.y
@@ -164,7 +171,7 @@ function new_area_callback(minp, maxp, area, A, A1, A2)
                         planet_mapping.offset = {x=0, y=-planet_pos.y, z=0}
                         planet_mapping.seed = seed + n
                         planet_mapping.walled = true
-                        generate_planet_chunk(
+                        local_generate_planet_chunk(
                             common_minp2, common_maxp2, area, A, A1, A2, planet_mapping
                         )
                     end
