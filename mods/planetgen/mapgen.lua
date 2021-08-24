@@ -96,7 +96,7 @@ function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
     local minp_z = mapping.minp.z
     local maxp_x = mapping.maxp.x
     local maxp_z = mapping.maxp.z
-    if planet.caveness > 2^(-3) then
+    if planet.caveness > 2^(-4) then
         local new_minp = minp
         local new_maxp = maxp
         if mapping.walled then

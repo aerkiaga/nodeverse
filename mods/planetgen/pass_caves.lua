@@ -129,9 +129,14 @@ function caves_gen_block(
 
     noise:get_3d_map_flat(block_minp, caves_3d_buffer)
 
+    local minp_z_rel, minp_y_rel, minp_x_rel = minp_abs.z % 16, minp_abs.y % 16, minp_abs.x % 16
+    local maxp_y_rel, maxp_x_rel = maxp_abs.y % 16, maxp_abs.x % 16
     local k = 1
+    k = k + 256*(minp_z_rel % 16)
     for z_abs=minp_abs.z, maxp_abs.z do
+        k = k + 16*(minp_y_rel % 16)
         for y_abs=minp_abs.y, maxp_abs.y do
+            k = k + minp_x_rel % 16
             for x_abs=minp_abs.x, maxp_abs.x do
                 local i = area:index(x_abs, y_abs, z_abs)
                 local Ai = A[i]
@@ -152,7 +157,9 @@ function caves_gen_block(
 
                 k = k + 1
             end
+            k = k + 15 - maxp_x_rel % 16
         end
+        k = k + 16*(15 - maxp_y_rel % 16)
     end
 end
 
