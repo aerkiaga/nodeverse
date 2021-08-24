@@ -22,7 +22,7 @@ player_api.register_model("rocket_player.obj", {
 rocket.player_to_rocket = function (player, pos)
     player:set_physics_override {
         speed = 5,
-        gravity = 0.6,
+        gravity = 1,
     }
 	player:set_pos(pos)
     player_api.set_model(player, "rocket_player.obj")
@@ -84,7 +84,7 @@ local function rocket_physics(dtime, player, name)
 	local controls = player:get_player_control()
 	local pos = player:get_pos()
 	if controls.jump then
-	    player:add_velocity {x=0,y=20*dtime,z=0}
+	    player:add_velocity {x=0,y=30*dtime,z=0}
 	    rocket.particles(pos)
 	end
 
