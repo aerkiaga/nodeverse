@@ -1,5 +1,4 @@
-# my-minetest-game
-**NOTE**: name is still TBD
+# Nodeverse
 
 This is a procedurally generated space exploration game, inspired by No Man's
 Sky and other similar titles, but built around voxel mechanics. It features an
