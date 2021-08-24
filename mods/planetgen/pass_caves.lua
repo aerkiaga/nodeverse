@@ -118,7 +118,7 @@ local function caves_gen_block(
         elseif n == 6 then block_minp2.z = block_minp2.z - 16
         end
         local seed = block_minp2.x%0x10000 + block_minp2.y%0x100 + block_minp2.z
-        sides[n] = gen_true_with_probability(PcgRandom(planet.seed + seed, n2 + seed), 1 - caveness)
+        sides[n] = gen_true_with_probability(PcgRandom(planet.seed + seed, n2 + seed), caveness)
     end
 
     if not caves_check_block(sides) then

@@ -27,7 +27,7 @@ function generate_planet_metadata(seed)
     planet.rockiness = 5*math.abs(planet.rockiness-1) + 8*(planet.rockiness-1) + 3
     -- CAVENESS
     -- The tendency to form underground caves
-    local log2_caveness = gen_linear(G, -8, -2.5)
+    local log2_caveness = gen_linear(G, -8, -1.5)
     planet.caveness = 2^log2_caveness
     -- ATMOSPHERE
     -- vacuum       No liquids, no oxygen, extreme cold; can't sustain life
