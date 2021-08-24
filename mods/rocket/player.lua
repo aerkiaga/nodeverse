@@ -20,10 +20,10 @@ player_api.register_model("rocket_player.obj", {
 
 -- Turn a player into a rocket
 rocket.player_to_rocket = function (player, pos)
-    player:set_physics_override({
+    player:set_physics_override {
         speed = 2.2,
         gravity = 0.6,
-    })
+    }
 	player:set_pos(pos)
     player_api.set_model(player, "rocket_player.obj")
     local name = player:get_player_name()
@@ -43,13 +43,13 @@ rocket.rocket_to_player = function(player, pos)
         30
     )
     rocket_players[player:get_player_name()] = false
-    player:set_physics_override({
+    player:set_physics_override {
         speed = 1,
         gravity = 1,
-    })
+    }
 
     --Move to rocket landing position
-    if(pos ~= nil) then
+    if pos ~= nil then
         player:set_pos {x=pos.x+2, y=pos.y, z=pos.z}
     end
 
@@ -84,13 +84,13 @@ local function rocket_physics(dtime)
     for _, player in pairs(player_list) do
         --Check if player is rocket
         local name = player:get_player_name()
-        if(rocket_players[name]) then
+        if rocket_players[name] then
 
             --Handle the rocket flying up
             local controls = player:get_player_control()
             local pos = player:get_pos()
-            if(controls.jump) then
-                player:add_velocity {x=0,y=1.1,z=0}
+            if controls.jump then
+                player:add_velocity {x=0,y=20*dtime,z=0}
                 rocket.particles(pos)
             end
 
@@ -99,12 +99,12 @@ local function rocket_physics(dtime)
                 pos.y = pos.y - 1
                 local node = minetest.get_node(pos)
                 pos.y = pos.y + 1
-                if(minetest.registered_nodes[node.name].walkable
-				and math.abs(player:get_player_velocity().y) < 0.2 ) then
+                if minetest.registered_nodes[node.name].walkable
+				and math.abs(player:get_player_velocity().y) < 0.2 then
                     rocket.rocket_to_player(player, pos)
                 end
             else
-                if(player:get_player_velocity().y > 1) then
+                if player:get_player_velocity().y > 1 then
                     liftoff_players[name] = true
                 end
             end
@@ -112,7 +112,18 @@ local function rocket_physics(dtime)
     end
 end
 
-minetest.register_globalstep(rocket_physics)
+local function globalstep_callback(dtime)
+    local player_list = minetest.get_connected_players()
+    for _, player in pairs(player_list) do
+        -- Check if player is rocket
+        local name = player:get_player_name()
+        if rocket_players[name] ~= nil then
+			rocket_physics(dtime)
+        end
+    end
+end
+
+minetest.register_globalstep(globalstep_callback)
 
 -- Rocket on_join_player
 local function rocket_join_player(player, last_login)
