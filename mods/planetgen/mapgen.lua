@@ -41,13 +41,13 @@ Maps planet IDs (keys) to actual planet metadata tables (values).
 planet_dictionary = {
 }
 
-function clear_planet_mapping_area(mapping)
+local function clear_planet_mapping_area(mapping)
     local minp = {x=mapping.minp.x, y=mapping.minp.y, z=mapping.minp.z}
     local maxp = {x=mapping.maxp.x, y=mapping.maxp.y, z=mapping.maxp.z}
     minetest.delete_area(minp, maxp)
 end
 
-function planet_from_mapping(mapping)
+local function planet_from_mapping(mapping)
     local planet = planet_dictionary[mapping.seed]
     if planet == nil then
         planet = generate_planet_metadata(mapping.seed)
@@ -69,7 +69,7 @@ function add_planet_mapping(mapping)
 end
 
 -- API
-function remove_planet_mapping(index)
+local function remove_planet_mapping(index)
     local planet = planet_from_mapping(mapping)
     planet.num_mappings = planet.num_mappings - 1
     if planet.num_mappings == 0 then
@@ -78,20 +78,25 @@ function remove_planet_mapping(index)
     table.remove(planet_mappings, index)
 end
 
-generator_dirty_flag = false
+local generator_dirty_flag = false
 
 -- API
-function set_dirty_flag()
+local function set_dirty_flag()
     generator_dirty_flag = true
 end
 
 -- API
 function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
+    local max = math.max
+    local min = math.min
+    
     set_dirty_flag()
     local planet = planet_from_mapping(mapping)
     local offset = mapping.offset
     pass_elevation(minp, maxp, area, offset, A, A2, planet)
 
+    local minpx, minpy, minpz = minp.x, minp.y, minp.z
+    local maxpx, maxpy, maxpz = maxp.x, maxp.y, maxp.z
     local minp_x = mapping.minp.x
     local minp_z = mapping.minp.z
     local maxp_x = mapping.maxp.x
@@ -101,14 +106,14 @@ function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
         local new_maxp = maxp
         if mapping.walled then
             new_minp = {
-                x=math.max(minp.x, minp_x+1),
-                y=minp.y,
-                z=math.max(minp.z, minp_z+1)
+                x=max(minpx, minp_x+1),
+                y=minpy,
+                z=max(minpz, minp_z+1)
             }
             new_maxp = {
-                x=math.min(maxp.x, maxp_x-1),
-                y=maxp.y,
-                z=math.min(maxp.z, maxp_z-1)
+                x=min(maxpx, maxp_x-1),
+                y=maxpy,
+                z=min(maxpz, maxp_z-1)
             }
         end
         pass_caves(new_minp, new_maxp, area, offset, A, A2, planet)
@@ -118,9 +123,9 @@ function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
     local is_scorching = (planet.atmosphere == "scorching")
     local node_air = minetest.CONTENT_AIR
     local offset_x, offset_y, offset_z = offset.x, offset.y, offset.z
-    for z_abs=minp.z, maxp.z do
-        for y_abs=minp.y, maxp.y do
-            for x_abs=minp.x, maxp.x do
+    for z_abs=minpz, maxpz do
+        for y_abs=minpy, maxpy do
+            for x_abs=minpx, maxpx do
                 local i = area:index(x_abs, y_abs, z_abs)
                 local Ai = A[i]
                 if Ai ~= node_air then
@@ -169,7 +174,7 @@ function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
     end -- for
 end
 
-function split_not_generated_boxes(not_generated_boxes, minp, maxp)
+local function split_not_generated_boxes(not_generated_boxes, minp, maxp)
     --[[
     Takes a set of boxes and splits as many of them as necessary so that all of
     the remaining boxes are outside the area specified by 'minp' and 'maxp'.
@@ -183,18 +188,21 @@ function split_not_generated_boxes(not_generated_boxes, minp, maxp)
     |    :     :                |
     |____:_____:________________|
     ]]
+    local max = math.max
+    local min = math.min
+    local tinsert = table.insert
 
     local r = {}
     for index, box in ipairs(not_generated_boxes) do
         local commonmin = {
-            x=math.max(minp.x, box.minp.x),
-            y=math.max(minp.y, box.minp.y),
-            z=math.max(minp.z, box.minp.z)
+            x=max(minp.x, box.minp.x),
+            y=max(minp.y, box.minp.y),
+            z=max(minp.z, box.minp.z)
         }
         local commonmax = {
-            x=math.min(maxp.x, box.maxp.x),
-            y=math.min(maxp.y, box.maxp.y),
-            z=math.min(maxp.z, box.maxp.z)
+            x=min(maxp.x, box.maxp.x),
+            y=min(maxp.y, box.maxp.y),
+            z=min(maxp.z, box.maxp.z)
         }
         -- Box defined by 'minp' and 'maxp' intersects 'box'
         if commonmax.x >= commonmin.x and commonmax.z >= commonmin.z then
@@ -223,20 +231,20 @@ function split_not_generated_boxes(not_generated_boxes, minp, maxp)
                                 box2.maxp.z = box2.maxp.z - 1
                             end
                             if box2.maxp.x >= box2.minp.x and box2.maxp.y >= box2.minp.y and box2.maxp.z >= box2.minp.z then
-                                table.insert(r, box2)
+                                tinsert(r, box2)
                             end
                         end
                     end
                 end
             end
         else
-            table.insert(r, box)
+            tinsert(r, box)
         end
     end
     return r
 end
 
-on_not_generated_callback = nil
+local on_not_generated_callback = nil
 
 -- API
 function register_on_not_generated(callback)
@@ -247,9 +255,11 @@ end
 # ENTRY POINT
 ]]--
 
-A, A1, A2 = nil
+local A, A1, A2 = nil, nil, nil
 
-function mapgen_callback(minp, maxp, blockseed)
+local function mapgen_callback(minp, maxp, blockseed)
+    local max = math.max
+    local min = math.min
     local VM, emin, emax = minetest.get_mapgen_object("voxelmanip")
     local area = VoxelArea:new{MinEdge=emin, MaxEdge=emax}
     if A == nil then
@@ -267,14 +277,14 @@ function mapgen_callback(minp, maxp, blockseed)
     -- Find mapping(s) for the generated region
     for key, mapping in pairs(planet_mappings) do
         local commonmin = {
-            x=math.max(minp.x, mapping.minp.x),
-            y=math.max(minp.y, mapping.minp.y),
-            z=math.max(minp.z, mapping.minp.z)
+            x=max(minp.x, mapping.minp.x),
+            y=max(minp.y, mapping.minp.y),
+            z=max(minp.z, mapping.minp.z)
         }
         local commonmax = {
-            x=math.min(maxp.x, mapping.maxp.x),
-            y=math.min(maxp.y, mapping.maxp.y),
-            z=math.min(maxp.z, mapping.maxp.z)
+            x=min(maxp.x, mapping.maxp.x),
+            y=min(maxp.y, mapping.maxp.y),
+            z=min(maxp.z, mapping.maxp.z)
         }
         if commonmax.x >= commonmin.x and commonmax.y >= commonmin.y and commonmax.z >= commonmin.z then
             generate_planet_chunk(commonmin, commonmax, area, A, A1, A2, mapping)

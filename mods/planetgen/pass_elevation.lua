@@ -7,13 +7,16 @@ rocky areas.
     ENTRY POINT
 ]]
 
-function elevation_compute_craters(x, z, planet)
-    local chunk_x = math.floor(x/80)
-    local chunk_z = math.floor(z/80)
+local function elevation_compute_craters(x, z, planet)
+    local floor = math.floor
+    local max = math.max
+    local min = math.min
+    local chunk_x = floor(x/80)
+    local chunk_z = floor(z/80)
     local hash = chunk_x + chunk_z*0x1000
     local hash = int_hash(hash)
     local G = PcgRandom(planet.seed, hash)
-    local num_craters = math.floor(gen_linear_sum(G, 0, 2, 3))
+    local num_craters = floor(gen_linear_sum(G, 0, 2, 3))
 
     local r = 0
     for n=1, num_craters do
@@ -24,16 +27,16 @@ function elevation_compute_craters(x, z, planet)
         local rel_z = (z % 80) - crater_z
         local radius = (rel_x^2 + rel_z^2)^(1/2)
         if radius < crater_r then
-            local new_r = -(math.max(0, crater_r^2 - radius^2)^(1/2))
+            local new_r = -(max(0, crater_r^2 - radius^2)^(1/2))
             local flatness = 1 + crater_r / 15
             new_r = new_r / flatness
-            r = math.min(r, new_r)
+            r = min(r, new_r)
         end
     end
     return r
 end
 
-function elevation_compute_soil_layer(G, y, ground, ground_comp, planet)
+local function elevation_compute_soil_layer(G, y, ground, ground_comp, planet)
     if planet.has_oceans and (ground_comp.ocean_elevation + ground_comp.mountain_elevation
     + ground_comp.mountain_roughness + y/20 < -0.4 or y < -1) then
         if planet.atmosphere ~= "scorching" then
@@ -66,7 +69,7 @@ function elevation_compute_soil_layer(G, y, ground, ground_comp, planet)
     end
 end
 
-function elevation_compute_cover_layer(G, y, ground, ground_comp, planet)
+local function elevation_compute_cover_layer(G, y, ground, ground_comp, planet)
     local air_weight = 100
     local grass_weight = 0
     local dry_grass_weight = 0
@@ -131,8 +134,8 @@ function elevation_compute_cover_layer(G, y, ground, ground_comp, planet)
     return gen_weighted(G, options)
 end
 
-function elevation_gen_node_column(
-    x_abs, minp_abs_y, maxp_abs_y, z_abs, area, offset, G, ground, ground_comp, planet
+local function elevation_gen_node_column(
+    x_abs, minp_abs_y, maxp_abs_y, z_abs, area, offset, G, ground, ground_comp, planet, A
 )
     for y_abs=minp_abs_y, maxp_abs_y do
         local y = y_abs + offset.y
@@ -164,6 +167,7 @@ function pass_elevation(minp_abs, maxp_abs, area, offset, A, A2, planet)
     local Perlin_2d_terrain_roughness = PerlinWrapper({offset=0, scale=0.5, spread={x=16, y=16}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
     local is_wall_z = false
     local is_wall_x = false
+    local abs = math.abs
     for z_abs=minp_abs.z, maxp_abs.z do
         local z = z_abs + offset.z
         for x_abs=minp_abs.x, maxp_abs.x do
@@ -179,7 +183,7 @@ function pass_elevation(minp_abs, maxp_abs, area, offset, A, A2, planet)
             ground_comp.mountain_roughness = Perlin_2d_mountain_roughness:get_2d({x=x, y=z})
             ground_comp.mountain_elevation = Perlin_2d_mountain_elevation:get_2d({x=x, y=z})
             ground = ground + (ground_comp.mountain_elevation+planet.terrestriality)
-            * (ground_comp.mountain_roughness/(math.abs(ground_comp.mountain_roughness)+0.5) + 1)^2 * 25
+            * (ground_comp.mountain_roughness/(abs(ground_comp.mountain_roughness)+0.5) + 1)^2 * 25
 
             -- Add terrain roughness for high-frequency details
             ground_comp.terrain_roughness = Perlin_2d_terrain_roughness:get_2d({x=x, y=z})
@@ -195,7 +199,7 @@ function pass_elevation(minp_abs, maxp_abs, area, offset, A, A2, planet)
 
             elevation_gen_node_column(
                 x_abs, minp_abs.y, maxp_abs.y, z_abs, area,
-                offset, G, ground, ground_comp, planet
+                offset, G, ground, ground_comp, planet, A
             )
         end
     end
