@@ -7,11 +7,6 @@ Included files:
     pass_elevation.lua  First pass: terrain elevation and layers, oceans
     pass_caves.lua      Second pass: caves
 
-Files are tagged with keywords throughout to make jumping to important places
-easier. In order to jump to a tag, simply search '# TAG NAME' in your editor or
-IDE and jump to the one match. At the start of each file there is an INDEX with
-a list of all tags in order.
-
  # INDEX
     ENTRY POINT
     INITIALIZATION

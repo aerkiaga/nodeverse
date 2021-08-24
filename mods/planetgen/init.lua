@@ -6,6 +6,15 @@ provides an API to control it from other mods or from within this file.
 Read 'mapgen.lua' to learn how this works. For the API reference, keep reading
 this file. To see or edit the default game setup, search '# GAME SETUP' in your
 editor or IDE and jump to it.
+
+Files are tagged with keywords throughout to make jumping to important places
+easier. In order to jump to a tag, simply search '# TAG NAME' in your editor or
+IDE and jump to the one match. At the start of each file there is an INDEX with
+a list of all tags in order.
+
+ # INDEX
+    API REFERENCE
+    GAME SETUP
 ]]--
 
 dofile(minetest.get_modpath("planetgen") .. "/mapgen.lua")
