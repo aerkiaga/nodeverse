@@ -17,39 +17,40 @@ player_api.register_model("rocket_player.obj", {
 	eye_height = 1.47,
 })
 
-rocket.update_hud = function (player, name, thrust)
+rocket.update_hud = function (player)
+	local name = player:get_player_name()
 	if players_data[name] == nil then
 		return
 	end
-	local old_thrust = players_data[name].thrust
-	local thrust_hud = players_data[name].thrust_hud
-	if old_thrust ~= nil then
-		if thrust == nil or old_thrust ~= thrust then
-			player:hud_remove(thrust_hud)
+	local old_thrust = players_data[name].visible_thrust
+	local new_thrust = players_data[name].thrust
+	if new_thrust ~= old_thrust then
+		-- Delete old HUD
+		local old_hud = players_data[name].thrust_hud
+		if old_hud ~= nil then
+			player:hud_remove(old_hud)
 			players_data[name].thrust_hud = nil
-		elseif old_thrust == thrust then
-			return
 		end
+		-- Add new HUD
+		if new_thrust == nil then
+			players_data[name].thrust_hud = nil
+		elseif new_thrust == "full" then
+			players_data[name].thrust_hud = player:hud_add {
+				hud_elem_type = "image",
+				position = {x=0.1, y=0.1},
+				scale = {x=4, y=4},
+				text = "icon_full_thrust.png"
+			}
+		elseif new_thrust == "low" then
+			players_data[name].thrust_hud = player:hud_add {
+				hud_elem_type = "image",
+				position = {x=0.1, y=0.1},
+				scale = {x=4, y=4},
+				text = "icon_low_thrust.png"
+			}
+		end
+		players_data[name].visible_thrust = new_thrust
 	end
-	if thrust == nil then
-		thrust_hud = nil
-	elseif thrust == "full" then
-		thrust_hud = player:hud_add {
-			hud_elem_type = "image",
-			position = {x=0.1, y=0.1},
-			scale = {x=4, y=4},
-			text = "icon_full_thrust.png"
-		}
-	elseif thrust == "low" then
-		thrust_hud = player:hud_add {
-			hud_elem_type = "image",
-			position = {x=0.1, y=0.1},
-			scale = {x=4, y=4},
-			text = "icon_low_thrust.png"
-		}
-	end
-	players_data[name].thrust = thrust
-	players_data[name].thrust_hud = thrust_hud
 end
 
 -- Turn a player into a rocket
@@ -62,13 +63,15 @@ rocket.player_to_rocket = function (player, pos)
     player_api.set_model(player, "rocket_player.obj")
     local name = player:get_player_name()
     players_data[name].is_rocket = true
-	rocket.update_hud(player, name, nil)
     players_data[name].is_lifted_off = false
+	players_data[name].thrust = nil
+	rocket.update_hud(player)
 end
 
 --Turn a rocket player back into a player
 rocket.rocket_to_player = function(player, pos)
-    player_api.player_attached[player:get_player_name()] = false
+	local name = player:get_player_name()
+    player_api.player_attached[name] = false
     player_api.set_model(player, "character.b3d")
     player:set_local_animation(
         {x = 0,   y = 79},
@@ -77,7 +80,6 @@ rocket.rocket_to_player = function(player, pos)
         {x = 200, y = 219},
         30
     )
-	rocket.update_hud(player, name, nil)
     player:set_physics_override {
         speed = 1,
         gravity = 1,
@@ -89,6 +91,11 @@ rocket.rocket_to_player = function(player, pos)
     end
 
     player:get_inventory():add_item("main", "rocket:rocket 1")
+
+	players_data[name].is_rocket = false
+	players_data[name].is_lifted_off = false
+	players_data[name].thrust = nil
+	rocket.update_hud(player)
 end
 
 rocket.particles = function(pos, vel, dtime)
@@ -121,15 +128,15 @@ local function rocket_physics(dtime, player, name)
 	local physics = player:get_physics_override()
 	if controls.jump then
 	    physics.gravity = -1
-		rocket.update_hud(player, name, "full")
+		players_data[name].thrust = "full"
 	    rocket.particles(pos, vel, dtime)
 	elseif controls.sneak then
 		physics.gravity = 0
-		rocket.update_hud(player, name, "low")
+		players_data[name].thrust = "low"
 	    rocket.particles(pos, vel, dtime)
 	else
 		physics.gravity = 1
-		rocket.update_hud(player, name, nil)
+		players_data[name].thrust = nil
 	end
 	player:set_physics_override(physics)
 
@@ -143,14 +150,13 @@ local function rocket_physics(dtime, player, name)
 	    if minetest.registered_nodes[node.name].walkable
 		and math.abs(vel.y) < 1.5 then
 	        rocket.rocket_to_player(player, pos)
-			players_data[name].is_rocket = false
-			players_data[name].is_lifted_off = false
 	    end
 	else
 	    if vel.y > 1 then
 	        players_data[name].is_lifted_off = true
 	    end
 	end
+	rocket.update_hud(player)
 end
 
 local function globalstep_callback(dtime)
