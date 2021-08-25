@@ -56,21 +56,20 @@ rocket.rocket_to_player = function(player, pos)
     player:get_inventory():add_item("main", "rocket:rocket 1")
 end
 
-rocket.particles = function(pos)
+rocket.particles = function(pos, dtime)
     minetest.add_particlespawner {
-        amount = 5,
-        time   = 0.1,
-        minpos = {x=pos.x-0.2,y=pos.y,z=pos.z-0.2},
-        maxpos = {x=pos.x+0.2,y=pos.y,z=pos.z+0.2},
-        minvel = {x=0,y=-4,z=0},
-        maxvel = {x=0,y=-3,z=0},
+        amount = 50 * dtime,
+        time   = dtime,
+        minpos = {x=pos.x-0.5, y=pos.y, z=pos.z-0.5},
+        maxpos = {x=pos.x+0.5, y=pos.y, z=pos.z+0.5},
+        minvel = {x=-0.7,y=-4,z=-0.7},
+        maxvel = {x=0.7,y=-2,z=0.7},
         minacc = 0,
         maxacc = 0,
-        minexptime = 3.5,
-        minexptime = 3.5,
+        minexptime = 3,
         maxexptime = 4,
         minsize = 0.8,
-        maxsize = 1.5,
+        maxsize = 10,
         collisiondetection = false,
         collision_removal  = false,
         vertical = false,
@@ -85,7 +84,7 @@ local function rocket_physics(dtime, player, name)
 	local pos = player:get_pos()
 	if controls.jump then
 	    player:add_velocity {x=0,y=30*dtime,z=0}
-	    rocket.particles(pos)
+	    rocket.particles(pos, dtime)
 	end
 
 	local vel = player:get_velocity()
