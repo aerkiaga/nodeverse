@@ -82,10 +82,14 @@ local function rocket_physics(dtime, player, name)
 	-- Handle the rocket flying up
 	local controls = player:get_player_control()
 	local pos = player:get_pos()
+	local physics = player:get_physics_override()
 	if controls.jump then
-	    player:add_velocity {x=0,y=30*dtime,z=0}
+	    physics.gravity = -1
 	    rocket.particles(pos, dtime)
+	else
+		physics.gravity = 1
 	end
+	player:set_physics_override(physics)
 
 	local vel = player:get_velocity()
 
@@ -95,7 +99,7 @@ local function rocket_physics(dtime, player, name)
 	    local node = minetest.get_node(pos)
 	    pos.y = pos.y + 1
 	    if minetest.registered_nodes[node.name].walkable
-		and math.abs(vel.y) < 0.2 then
+		and math.abs(vel.y) < 1.5 then
 	        rocket.rocket_to_player(player, pos)
 			rocket_players[name] = nil
 			liftoff_players[name] = nil
