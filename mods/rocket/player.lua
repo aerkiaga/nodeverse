@@ -157,6 +157,7 @@ rocket.particles = function(pos, vel, dtime)
         collision_removal  = false,
         vertical = false,
         texture = 'thrust.png',
+		glow = 10,
     }
 end
 
