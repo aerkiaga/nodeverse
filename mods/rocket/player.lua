@@ -43,14 +43,18 @@ rocket.update_hud = function (player)
 				hud_elem_type = "image",
 				position = {x=0.1, y=0.1},
 				scale = {x=4, y=4},
-				text = "icon_full_thrust.png"
+				text = "icon_full_thrust.png",
+				alignment = {x=1, y=1},
+				offset = {x=0, y=80}
 			}
 		elseif new_thrust == "low" then
 			players_data[name].thrust_hud = player:hud_add {
 				hud_elem_type = "image",
 				position = {x=0.1, y=0.1},
 				scale = {x=4, y=4},
-				text = "icon_low_thrust.png"
+				text = "icon_low_thrust.png",
+				alignment = {x=1, y=1},
+				offset = {x=0, y=80}
 			}
 		end
 		players_data[name].visible_thrust = new_thrust
@@ -79,10 +83,51 @@ rocket.update_hud = function (player)
 				position = {x=0.1, y=0.1},
 				scale = {x=4, y=4},
 				text = "icon_crash_danger.png",
-				offset = {x=80, y=0}
+				alignment = {x=1, y=1},
+				offset = {x=80, y=80}
 			}
 		end
 		players_data[name].visible_danger = new_danger
+	end
+	-- Update fuel icon
+	local new_fuel = players_data[name].fuel or 100
+	local old_fuel = players_data[name].visible_fuel or 0
+	new_fuel = math.floor(new_fuel*78/100)
+	old_fuel = math.floor(new_fuel*78/100)
+	if new_fuel ~= old_fuel then
+		-- Delete old HUD
+		local old_outline_hud = players_data[name].fuel_outline_hud
+		if old_outline_hud ~= nil then
+			player:hud_remove(old_outline_hud)
+			players_data[name].fuel_outline_hud = nil
+		end
+		local old_bar_hud = players_data[name].fuel_bar_hud
+		if old_bar_hud ~= nil then
+			player:hud_remove(old_bar_hud)
+			players_data[name].fuel_bar_hud = nil
+		end
+		-- Add new HUD
+		if new_fuel == 0 then
+			players_data[name].fuel_bar_hud = nil
+		else
+			players_data[name].fuel_bar_hud = player:hud_add {
+				hud_elem_type = "image",
+				position = {x=0.1, y=0.1},
+				scale = {x=4*new_fuel/78, y=4.5},
+				text = "icon_fuel_bar.png",
+				alignment = {x=1, y=1},
+				offset = {x=1, y=1},
+			}
+		end
+		players_data[name].fuel_outline_hud = player:hud_add {
+			hud_elem_type = "image",
+			position = {x=0.1, y=0.1},
+			scale = {x=4, y=4},
+			text = "icon_fuel_outline.png",
+			alignment = {x=1, y=1},
+			offset = {x=0, y=0},
+		}
+		players_data[name].visible_fuel = new_fuel
 	end
 end
 
@@ -168,15 +213,18 @@ local function rocket_physics(dtime, player, name)
 	local pos = player:get_pos()
 	local vel = player:get_velocity()
 	local physics = player:get_physics_override()
+	local spent_fuel = 0
 	if controls.jump then
 		physics.speed = 5
 	    physics.gravity = -1
 		players_data[name].thrust = "full"
+		spent_fuel = 1 * dtime
 	    rocket.particles(pos, vel, dtime)
 	elseif controls.sneak then
 		physics.speed = 2
 		physics.gravity = 0
 		players_data[name].thrust = "low"
+		spent_fuel = 0.4 * dtime
 	    rocket.particles(pos, vel, dtime)
 	else
 		if players_data[name].is_lifted_off then
@@ -188,6 +236,7 @@ local function rocket_physics(dtime, player, name)
 		players_data[name].thrust = nil
 	end
 	player:set_physics_override(physics)
+	players_data[name].fuel = players_data[name].fuel - spent_fuel
 
 	local vel = player:get_velocity()
 
@@ -229,7 +278,8 @@ local function rocket_join_player(player, last_login)
 	players_data[name] = {
 		is_rocket = false,
 		is_lifted_off = false,
-		thrust = nil
+		thrust = nil,
+		fuel = 100
 	}
 	rocket.rocket_to_player(player)
 	rocket.update_hud(player)
