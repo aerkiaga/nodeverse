@@ -99,11 +99,17 @@ rocket.rocket_to_player = function(player, pos)
 end
 
 rocket.particles = function(pos, vel, dtime)
+	local maxtime = dtime
+	local offset = 0
+	if vel.y < 0 then
+		maxtime = math.min(dtime, -1/vel.y)
+		offset = -vel.y*dtime*2
+	end
     minetest.add_particlespawner {
         amount = 50 * dtime,
-        time   = dtime,
-        minpos = {x=pos.x-0.5, y=pos.y, z=pos.z-0.5},
-        maxpos = {x=pos.x+0.5, y=pos.y, z=pos.z+0.5},
+        time   = maxtime,
+        minpos = {x=pos.x-0.5, y=pos.y-offset, z=pos.z-0.5},
+        maxpos = {x=pos.x+0.5, y=pos.y-offset, z=pos.z+0.5},
         minvel = {x=-0.7,y=math.min(-1, vel.y-8),z=-0.7},
         maxvel = {x=0.7,y=math.min(-1, vel.y-6),z=0.7},
         minacc = 0,
