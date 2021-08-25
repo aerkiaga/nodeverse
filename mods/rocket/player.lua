@@ -237,7 +237,6 @@ end
 local function rocket_respawn_player(player)
 	local name = player:get_player_name()
 	rocket.rocket_to_player(player)
-	player:hud_remove(players_data[name].danger_hud)
 	rocket.update_hud(player)
 end
 
