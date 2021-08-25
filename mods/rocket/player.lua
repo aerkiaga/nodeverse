@@ -22,6 +22,7 @@ rocket.update_hud = function (player)
 	if players_data[name] == nil then
 		return
 	end
+	-- Update thrust icons
 	local old_thrust = players_data[name].visible_thrust
 	local new_thrust = players_data[name].thrust
 	if new_thrust ~= old_thrust then
@@ -51,6 +52,35 @@ rocket.update_hud = function (player)
 		end
 		players_data[name].visible_thrust = new_thrust
 	end
+	-- Update crash danger icon
+	local vel = player:get_velocity()
+	local new_danger = nil
+	-- Empirical, only slightly (-0.5) conservative value for fall damage
+	if vel.y < -14 then
+		new_danger = "crash"
+	end
+	local old_danger = players_data[name].visible_danger
+	if new_danger ~= old_danger then
+		-- Delete old HUD
+		local old_hud = players_data[name].danger_hud
+		if old_hud ~= nil then
+			player:hud_remove(old_hud)
+			players_data[name].danger_hud = nil
+		end
+		-- Add new HUD
+		if new_danger == nil then
+			players_data[name].danger_hud = nil
+		elseif new_danger == "crash" then
+			players_data[name].danger_hud = player:hud_add {
+				hud_elem_type = "image",
+				position = {x=0.1, y=0.1},
+				scale = {x=4, y=4},
+				text = "icon_crash_danger.png",
+				offset = {x=80, y=0}
+			}
+		end
+		players_data[name].visible_danger = new_danger
+	end
 end
 
 -- Turn a player into a rocket
@@ -65,7 +95,6 @@ rocket.player_to_rocket = function (player, pos)
     players_data[name].is_rocket = true
     players_data[name].is_lifted_off = false
 	players_data[name].thrust = nil
-	rocket.update_hud(player)
 end
 
 --Turn a rocket player back into a player
@@ -98,7 +127,6 @@ rocket.rocket_to_player = function(player, pos)
 	players_data[name].is_rocket = false
 	players_data[name].is_lifted_off = false
 	players_data[name].thrust = nil
-	rocket.update_hud(player)
 end
 
 rocket.particles = function(pos, vel, dtime)
