@@ -18,6 +18,34 @@ player_api.register_model("rocket_player.obj", {
 	eye_height = 1.47,
 })
 
+rocket.update_hud = function (player, name, thrust)
+	local old_thrust = rocket_players[name].thrust
+	local thrust_hud = rocket_players[name].thrust_hud
+	print(thrust)
+	print(old_thrust)
+	print(thrust_hud)
+	if old_thrust ~= nil then
+		if thrust == nil or old_thrust ~= thrust then
+			player:hud_remove(thrust_hud)
+			rocket_players[name].thrust_hud = nil
+		elseif old_thrust == thrust then
+			return
+		end
+	end
+	if thrust == nil then
+		thrust_hud = nil
+	elseif thrust == "full" then
+		thrust_hud = player:hud_add {
+			hud_elem_type = "image",
+			position = {x=0.1, y=0.1},
+			scale = {x=4, y=4},
+			text = "icon_full_thrust.png"
+		}
+	end
+	rocket_players[name].thrust = thrust
+	rocket_players[name].thrust_hud = thrust_hud
+end
+
 -- Turn a player into a rocket
 rocket.player_to_rocket = function (player, pos)
     player:set_physics_override {
@@ -27,7 +55,8 @@ rocket.player_to_rocket = function (player, pos)
 	player:set_pos(pos)
     player_api.set_model(player, "rocket_player.obj")
     local name = player:get_player_name()
-    rocket_players[name] = true
+    rocket_players[name] = {}
+	rocket.update_hud(player, name, nil)
     liftoff_players[name] = false
 end
 
@@ -42,7 +71,8 @@ rocket.rocket_to_player = function(player, pos)
         {x = 200, y = 219},
         30
     )
-    rocket_players[player:get_player_name()] = false
+    rocket_players[player:get_player_name()] = nil
+	rocket.update_hud(player, name, nil)
     player:set_physics_override {
         speed = 1,
         gravity = 1,
@@ -86,12 +116,15 @@ local function rocket_physics(dtime, player, name)
 	local physics = player:get_physics_override()
 	if controls.jump then
 	    physics.gravity = -1
+		rocket.update_hud(player, name, "full")
 	    rocket.particles(pos, vel, dtime)
 	elseif controls.sneak then
 		physics.gravity = 0
+		rocket.update_hud(player, name, "low")
 	    rocket.particles(pos, vel, dtime)
 	else
 		physics.gravity = 1
+		rocket.update_hud(player, name, nil)
 	end
 	player:set_physics_override(physics)
 
