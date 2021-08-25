@@ -201,7 +201,7 @@ planetgen.add_planet_mapping {
         y=2*planet_size,
         z=math.floor(planet_size/2)
     },
-    offset = {x=0, y=100, z=0},
+    offset = {x=0, y=0, z=0},
     seed = 0,
     walled = true
 }
@@ -217,7 +217,7 @@ local function example_infinite_callback(minp, maxp, area, A, A1, A2)
     planet_mapping = {
         minp = minp,
         maxp = maxp,
-        offset = {x=0, y=100, z=0},
+        offset = {x=0, y=0, z=0},
         seed = 0
     }
     planetgen.generate_planet_chunk(
