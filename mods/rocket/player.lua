@@ -90,7 +90,10 @@ rocket.rocket_to_player = function(player, pos)
         player:set_pos {x=pos.x, y=pos.y, z=pos.z}
     end
 
-    player:get_inventory():add_item("main", "rocket:rocket 1")
+	local inventory = player:get_inventory()
+	if not inventory:contains_item("main", "rocket:rocket 1") then
+		inventory:add_item("main", "rocket:rocket 1")
+	end
 
 	players_data[name].is_rocket = false
 	players_data[name].is_lifted_off = false
@@ -181,11 +184,6 @@ local function globalstep_callback(dtime)
 			if players_data[name].is_rocket then
 				rocket_physics(dtime, player, name)
 			end
-		else
-			players_data[name] = {
-				is_rocket = false,
-				is_lifted_off = false,
-			}
         end
     end
 end
@@ -194,10 +192,12 @@ minetest.register_globalstep(globalstep_callback)
 
 -- Rocket on_join_player
 local function rocket_join_player(player, last_login)
-    local inventory = player:get_inventory()
-	if not inventory:contains_item("main", "rocket:rocket 1") then
-		inventory:add_item("main", "rocket:rocket 1")
-	end
+	local name = player:get_player_name()
+	players_data[name] = {
+		is_rocket = false,
+		is_lifted_off = false,
+	}
+	rocket.rocket_to_player(player)
 end
 
 minetest.register_on_joinplayer(rocket_join_player)
