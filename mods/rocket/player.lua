@@ -5,8 +5,7 @@
 -- physics, and allowing them to turn back into a player
 --
 
-local rocket_players = {}
-local liftoff_players = {}
+local players_data = {}
 
 -- Default player appearance
 player_api.register_model("rocket_player.obj", {
@@ -19,15 +18,15 @@ player_api.register_model("rocket_player.obj", {
 })
 
 rocket.update_hud = function (player, name, thrust)
-	local old_thrust = rocket_players[name].thrust
-	local thrust_hud = rocket_players[name].thrust_hud
-	print(thrust)
-	print(old_thrust)
-	print(thrust_hud)
+	if players_data[name] == nil then
+		return
+	end
+	local old_thrust = players_data[name].thrust
+	local thrust_hud = players_data[name].thrust_hud
 	if old_thrust ~= nil then
 		if thrust == nil or old_thrust ~= thrust then
 			player:hud_remove(thrust_hud)
-			rocket_players[name].thrust_hud = nil
+			players_data[name].thrust_hud = nil
 		elseif old_thrust == thrust then
 			return
 		end
@@ -41,9 +40,16 @@ rocket.update_hud = function (player, name, thrust)
 			scale = {x=4, y=4},
 			text = "icon_full_thrust.png"
 		}
+	elseif thrust == "low" then
+		thrust_hud = player:hud_add {
+			hud_elem_type = "image",
+			position = {x=0.1, y=0.1},
+			scale = {x=4, y=4},
+			text = "icon_low_thrust.png"
+		}
 	end
-	rocket_players[name].thrust = thrust
-	rocket_players[name].thrust_hud = thrust_hud
+	players_data[name].thrust = thrust
+	players_data[name].thrust_hud = thrust_hud
 end
 
 -- Turn a player into a rocket
@@ -55,9 +61,9 @@ rocket.player_to_rocket = function (player, pos)
 	player:set_pos(pos)
     player_api.set_model(player, "rocket_player.obj")
     local name = player:get_player_name()
-    rocket_players[name] = {}
+    players_data[name].is_rocket = true
 	rocket.update_hud(player, name, nil)
-    liftoff_players[name] = false
+    players_data[name].is_lifted_off = false
 end
 
 --Turn a rocket player back into a player
@@ -71,7 +77,6 @@ rocket.rocket_to_player = function(player, pos)
         {x = 200, y = 219},
         30
     )
-    rocket_players[player:get_player_name()] = nil
 	rocket.update_hud(player, name, nil)
     player:set_physics_override {
         speed = 1,
@@ -130,7 +135,7 @@ local function rocket_physics(dtime, player, name)
 
 	local vel = player:get_velocity()
 
-	if(liftoff_players[name]) then
+	if(players_data[name].is_lifted_off) then
 	    -- Handle the player landing on ground
 	    pos.y = pos.y - 1
 	    local node = minetest.get_node(pos)
@@ -138,12 +143,12 @@ local function rocket_physics(dtime, player, name)
 	    if minetest.registered_nodes[node.name].walkable
 		and math.abs(vel.y) < 1.5 then
 	        rocket.rocket_to_player(player, pos)
-			rocket_players[name] = nil
-			liftoff_players[name] = nil
+			players_data[name].is_rocket = false
+			players_data[name].is_lifted_off = false
 	    end
 	else
 	    if vel.y > 1 then
-	        liftoff_players[name] = true
+	        players_data[name].is_lifted_off = true
 	    end
 	end
 end
@@ -153,8 +158,15 @@ local function globalstep_callback(dtime)
     for _, player in pairs(player_list) do
         -- Check if player is rocket
         local name = player:get_player_name()
-        if rocket_players[name] ~= nil then
-			rocket_physics(dtime, player, name)
+        if players_data[name] ~= nil then
+			if players_data[name].is_rocket then
+				rocket_physics(dtime, player, name)
+			end
+		else
+			players_data[name] = {
+				is_rocket = false,
+				is_lifted_off = false,
+			}
         end
     end
 end
