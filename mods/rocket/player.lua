@@ -23,6 +23,9 @@ rocket.update_hud = function (player)
 		return
 	end
 	-- Update thrust icons
+	if not players_data[name].is_rocket then
+		players_data[name].thrust = nil
+	end
 	local old_thrust = players_data[name].visible_thrust
 	local new_thrust = players_data[name].thrust
 	if new_thrust ~= old_thrust then
@@ -56,7 +59,7 @@ rocket.update_hud = function (player)
 	local vel = player:get_velocity()
 	local new_danger = nil
 	-- Empirical, only slightly (-0.5) conservative value for fall damage
-	if vel.y < -14 then
+	if players_data[name].is_rocket and vel.y < -14 then
 		new_danger = "crash"
 	end
 	local old_danger = players_data[name].visible_danger
@@ -118,6 +121,7 @@ rocket.rocket_to_player = function(player, pos)
     if pos ~= nil then
         player:set_pos {x=pos.x, y=pos.y, z=pos.z}
     end
+	player:set_velocity {x=0, y=0, z=0}
 
 	local inventory = player:get_inventory()
 	if not inventory:contains_item("main", "rocket:rocket 1") then
@@ -224,8 +228,18 @@ local function rocket_join_player(player, last_login)
 	players_data[name] = {
 		is_rocket = false,
 		is_lifted_off = false,
+		thrust = nil
 	}
 	rocket.rocket_to_player(player)
+	rocket.update_hud(player)
+end
+
+local function rocket_respawn_player(player)
+	local name = player:get_player_name()
+	rocket.rocket_to_player(player)
+	player:hud_remove(players_data[name].danger_hud)
+	rocket.update_hud(player)
 end
 
 minetest.register_on_joinplayer(rocket_join_player)
+minetest.register_on_respawnplayer(rocket_respawn_player)
