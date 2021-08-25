@@ -56,7 +56,7 @@ end
 -- Turn a player into a rocket
 rocket.player_to_rocket = function (player, pos)
     player:set_physics_override {
-        speed = 5,
+        speed = 0,
         gravity = 1,
     }
 	player:set_pos(pos)
@@ -127,14 +127,21 @@ local function rocket_physics(dtime, player, name)
 	local vel = player:get_velocity()
 	local physics = player:get_physics_override()
 	if controls.jump then
+		physics.speed = 5
 	    physics.gravity = -1
 		players_data[name].thrust = "full"
 	    rocket.particles(pos, vel, dtime)
 	elseif controls.sneak then
+		physics.speed = 2
 		physics.gravity = 0
 		players_data[name].thrust = "low"
 	    rocket.particles(pos, vel, dtime)
 	else
+		if players_data[name].is_lifted_off then
+			physics.speed = 1
+		else
+			physics.speed = 0
+		end
 		physics.gravity = 1
 		players_data[name].thrust = nil
 	end
