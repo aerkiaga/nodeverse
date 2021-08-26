@@ -232,12 +232,17 @@ local function rocket_physics(dtime, player, name)
 		players_data[name].thrust = "full"
 		spent_fuel = 1 * dtime
 	    rocket.particles(pos, vel, dtime)
-	elseif controls.sneak and current_fuel > 0 then
-		physics.speed = 2
-		physics.gravity = 0
-		players_data[name].thrust = "low"
-		spent_fuel = 0.4 * dtime
-	    rocket.particles(pos, vel, dtime)
+	elseif controls.sneak then
+		if players_data[name].is_lifted_off and current_fuel > 0 then
+			physics.speed = 2
+			physics.gravity = 0
+			players_data[name].thrust = "low"
+			spent_fuel = 0.4 * dtime
+		    rocket.particles(pos, vel, dtime)
+		else
+			rocket.rocket_to_player(player)
+			physics = nil
+		end
 	else
 		if players_data[name].is_lifted_off then
 			physics.speed = 1
@@ -247,7 +252,9 @@ local function rocket_physics(dtime, player, name)
 		physics.gravity = 1
 		players_data[name].thrust = nil
 	end
-	player:set_physics_override(physics)
+	if physics ~= nil then
+		player:set_physics_override(physics)
+	end
 	players_data[name].fuel = current_fuel - spent_fuel
 
 	local vel = player:get_velocity()
