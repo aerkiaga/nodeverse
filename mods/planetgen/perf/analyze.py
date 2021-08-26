@@ -45,6 +45,6 @@ print("NAME" + (32-4)*" " + "COUNT" + (12-5)*" " +\
 "AVERAGE" + (12-7)*" " + "TOTAL" + (12-5)*" " + "...")
 data = sorted(data.items(), key=lambda x: x[1]["total"], reverse=True)
 for name, stats in data:
-    print("{:<32s}{:<12d}{:<12s}{:<12s}{:s}".format(name, stats["count"],\
+    print("{:<48s}{:<12d}{:<12s}{:<12s}{:s}".format(name, stats["count"],\
     time_format(stats["total"]/stats["count"]), time_format(stats["total"]),
     math.floor(math.log2(stats["total"]))*"#"))

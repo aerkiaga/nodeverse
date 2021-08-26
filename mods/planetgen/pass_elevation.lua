@@ -160,7 +160,7 @@ end
  # ENTRY POINT
 ]]--
 
-function pass_elevation(minp_abs, maxp_abs, area, offset, A, A2, planet)
+function planetgen.pass_elevation(minp_abs, maxp_abs, area, offset, A, A2, planet)
     local Perlin_2d_ocean_elevation = PerlinWrapper({offset=0, scale=0.5, spread={x=500, y=500}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
     local Perlin_2d_mountain_roughness = PerlinWrapper({offset=0, scale=0.5, spread={x=300, y=300}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
     local Perlin_2d_mountain_elevation = PerlinWrapper({offset=0, scale=0.5, spread={x=100, y=100}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})

@@ -49,7 +49,7 @@ local function planet_from_mapping(mapping)
     local planet = planet_dictionary[mapping.seed]
     if planet == nil then
         planet = generate_planet_metadata(mapping.seed)
-        choose_planet_nodes_and_colors(planet)
+        planetgen.choose_planet_nodes_and_colors(planet)
         planet_dictionary[mapping.seed] = planet
         planet.seed = mapping.seed
         planet.num_mappings = 1
@@ -91,7 +91,7 @@ function planetgen.generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
     planetgen.set_dirty_flag()
     local planet = planet_from_mapping(mapping)
     local offset = mapping.offset
-    pass_elevation(minp, maxp, area, offset, A, A2, planet)
+    planetgen.pass_elevation(minp, maxp, area, offset, A, A2, planet)
 
     local minpx, minpy, minpz = minp.x, minp.y, minp.z
     local maxpx, maxpy, maxpz = maxp.x, maxp.y, maxp.z
@@ -114,7 +114,7 @@ function planetgen.generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
                 z=min(maxpz, maxp_z-1)
             }
         end
-        pass_caves(new_minp, new_maxp, area, offset, A, A2, planet)
+        planetgen.pass_caves(new_minp, new_maxp, area, offset, A, A2, planet)
     end
 
     local is_walled = mapping.walled
@@ -352,4 +352,4 @@ planetgen.random_yrot_nodes = {
     [minetest.get_content_id('planetgen:stone')] = 4
 }
 
-register_all_nodes()
+planetgen.register_all_nodes()

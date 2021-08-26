@@ -640,7 +640,7 @@ can be combined, by creating as many palettes as 'num_variants' and using
 parameter 'n' of 'def_fn' to choose.
 ]]
 
-function register_all_nodes()
+function planetgen.register_all_nodes()
     register_base_nodes()
     register_liquid_nodes()
     register_icy_nodes()
@@ -651,7 +651,7 @@ end
  # VARIANT SELECTION
 ]]
 
-function choose_planet_nodes_and_colors(planet)
+function planetgen.choose_planet_nodes_and_colors(planet)
     local G = PcgRandom(planet.seed, planet.seed)
     local stone_color = G:next(1, 16)
     planet.node_types.dust = minetest.get_content_id("planetgen:dust" .. stone_color)
