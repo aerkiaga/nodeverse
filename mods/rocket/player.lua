@@ -90,10 +90,17 @@ rocket.update_hud = function (player)
 		players_data[name].visible_danger = new_danger
 	end
 	-- Update fuel icon
-	local new_fuel = players_data[name].fuel or 100
-	local old_fuel = players_data[name].visible_fuel or 0
-	new_fuel = math.floor(new_fuel*78/100)
-	old_fuel = math.floor(new_fuel*78/100)
+	local new_fuel = players_data[name].fuel
+	local old_fuel = players_data[name].visible_fuel
+	if not players_data[name].is_rocket then
+		new_fuel = nil
+	end
+	if new_fuel ~= nil then
+		new_fuel = math.floor(new_fuel*78/100)
+	end
+	if old_fuel ~= nil then
+		old_fuel = math.floor(old_fuel*78/100)
+	end
 	if new_fuel ~= old_fuel then
 		-- Delete old HUD
 		local old_outline_hud = players_data[name].fuel_outline_hud
@@ -107,26 +114,28 @@ rocket.update_hud = function (player)
 			players_data[name].fuel_bar_hud = nil
 		end
 		-- Add new HUD
-		if new_fuel == 0 then
-			players_data[name].fuel_bar_hud = nil
-		else
-			players_data[name].fuel_bar_hud = player:hud_add {
+		if new_fuel ~= nil then
+			if new_fuel == 0 then
+				players_data[name].fuel_bar_hud = nil
+			else
+				players_data[name].fuel_bar_hud = player:hud_add {
+					hud_elem_type = "image",
+					position = {x=0.1, y=0.1},
+					scale = {x=4*new_fuel/78, y=4.5},
+					text = "icon_fuel_bar.png",
+					alignment = {x=1, y=1},
+					offset = {x=1, y=1},
+				}
+			end
+			players_data[name].fuel_outline_hud = player:hud_add {
 				hud_elem_type = "image",
 				position = {x=0.1, y=0.1},
-				scale = {x=4*new_fuel/78, y=4.5},
-				text = "icon_fuel_bar.png",
+				scale = {x=4, y=4},
+				text = "icon_fuel_outline.png",
 				alignment = {x=1, y=1},
-				offset = {x=1, y=1},
+				offset = {x=0, y=0},
 			}
 		end
-		players_data[name].fuel_outline_hud = player:hud_add {
-			hud_elem_type = "image",
-			position = {x=0.1, y=0.1},
-			scale = {x=4, y=4},
-			text = "icon_fuel_outline.png",
-			alignment = {x=1, y=1},
-			offset = {x=0, y=0},
-		}
 		players_data[name].visible_fuel = new_fuel
 	end
 end
