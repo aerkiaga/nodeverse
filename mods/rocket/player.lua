@@ -187,6 +187,7 @@ end
 local function rocket_respawn_player(player)
 	local name = player:get_player_name()
 	rocket.rocket_to_player(player)
+	players_data[name].fuel = 100
 	rocket.update_hud(player)
 end
 
