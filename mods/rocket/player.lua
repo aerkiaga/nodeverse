@@ -271,7 +271,7 @@ local function rocket_physics(dtime, player, name)
 	        rocket.rocket_to_player(player, pos)
 	    end
 	else
-	    if vel.y > 1 then
+	    if vel.y > 2 then
 	        players_data[name].is_lifted_off = true
 	    end
 	end
