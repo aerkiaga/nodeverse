@@ -1,5 +1,14 @@
 local players_data = rocket.players_data
 
+local function delete_old_hud(player, hud_name)
+	local name = player:get_player_name()
+	local old_hud = players_data[name][hud_name .. "_hud"]
+	if old_hud ~= nil then
+		player:hud_remove(old_hud)
+		players_data[name][hud_name .. "_hud"] = nil
+	end
+end
+
 function rocket.update_hud(player)
 	local name = player:get_player_name()
 	if players_data[name] == nil then
@@ -13,11 +22,7 @@ function rocket.update_hud(player)
 	local new_thrust = players_data[name].thrust
 	if new_thrust ~= old_thrust then
 		-- Delete old HUD
-		local old_hud = players_data[name].thrust_hud
-		if old_hud ~= nil then
-			player:hud_remove(old_hud)
-			players_data[name].thrust_hud = nil
-		end
+		delete_old_hud(player, "thrust")
 		-- Add new HUD
 		if new_thrust == nil then
 			players_data[name].thrust_hud = nil
@@ -52,11 +57,7 @@ function rocket.update_hud(player)
 	local old_danger = players_data[name].visible_danger
 	if new_danger ~= old_danger then
 		-- Delete old HUD
-		local old_hud = players_data[name].danger_hud
-		if old_hud ~= nil then
-			player:hud_remove(old_hud)
-			players_data[name].danger_hud = nil
-		end
+		delete_old_hud(player, "danger")
 		-- Add new HUD
 		if new_danger == nil then
 			players_data[name].danger_hud = nil
@@ -86,16 +87,8 @@ function rocket.update_hud(player)
 	end
 	if new_fuel ~= old_fuel then
 		-- Delete old HUD
-		local old_outline_hud = players_data[name].fuel_outline_hud
-		if old_outline_hud ~= nil then
-			player:hud_remove(old_outline_hud)
-			players_data[name].fuel_outline_hud = nil
-		end
-		local old_bar_hud = players_data[name].fuel_bar_hud
-		if old_bar_hud ~= nil then
-			player:hud_remove(old_bar_hud)
-			players_data[name].fuel_bar_hud = nil
-		end
+		delete_old_hud(player, "fuel_outline")
+		delete_old_hud(player, "fuel_bar")
 		-- Add new HUD
 		if new_fuel ~= nil then
 			if new_fuel <= 0 then
