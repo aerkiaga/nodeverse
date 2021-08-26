@@ -30,14 +30,14 @@ and the same region on a planet with some seed. Entry format is:
     seed        planet seed; each seed represents a unique planet
     walled      (optional) builds stone walls around the mapped area
 ]]--
-planet_mappings = {
-}
+planetgen.planet_mappings = {}
+local planet_mappings = planetgen.planet_mappings
 
 --[[
 Maps planet IDs (keys) to actual planet metadata tables (values).
 ]]--
-planet_dictionary = {
-}
+planetgen.planet_dictionary = {}
+local planet_dictionary = planetgen.planet_dictionary
 
 local function clear_planet_mapping_area(mapping)
     local minp = {x=mapping.minp.x, y=mapping.minp.y, z=mapping.minp.z}
@@ -60,15 +60,14 @@ local function planet_from_mapping(mapping)
 end
 
 -- API
-local function add_planet_mapping(mapping)
+function planetgen.add_planet_mapping(mapping)
     local planet = planet_from_mapping(mapping)
     table.insert(planet_mappings, mapping)
     return #planet_mappings
 end
-planetgen.add_planet_mapping = add_planet_mapping
 
 -- API
-local function remove_planet_mapping(index)
+function planetgen.remove_planet_mapping(index)
     local planet = planet_from_mapping(mapping)
     planet.num_mappings = planet.num_mappings - 1
     if planet.num_mappings == 0 then
@@ -76,22 +75,20 @@ local function remove_planet_mapping(index)
     end
     table.remove(planet_mappings, index)
 end
-planetgen.remove_planet_mapping = remove_planet_mapping
 
 local generator_dirty_flag = false
 
 -- API
-local function set_dirty_flag()
+function planetgen.set_dirty_flag()
     generator_dirty_flag = true
 end
-planetgen.set_dirty_flag = set_dirty_flag
 
 -- API
-local function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
+function planetgen.generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
     local max = math.max
     local min = math.min
 
-    set_dirty_flag()
+    planetgen.set_dirty_flag()
     local planet = planet_from_mapping(mapping)
     local offset = mapping.offset
     pass_elevation(minp, maxp, area, offset, A, A2, planet)
@@ -151,7 +148,7 @@ local function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
                     end
 
                     -- Apply random texture rotation to all supported nodes
-                    local rot = random_yrot_nodes[Ai]
+                    local rot = planetgen.random_yrot_nodes[Ai]
                     local param2 = 0
                     if rot ~= nil then
                         local hash = pos_x*313 + pos_y*477 + pos_z*327
@@ -175,7 +172,6 @@ local function generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
         end -- for
     end -- for
 end
-planetgen.generate_planet_chunk = generate_planet_chunk
 
 local function split_not_generated_boxes(not_generated_boxes, minp, maxp)
     --[[
@@ -250,10 +246,9 @@ end
 local on_not_generated_callback = nil
 
 -- API
-local function register_on_not_generated(callback)
+function planetgen.register_on_not_generated(callback)
     on_not_generated_callback = callback
 end
-planetgen.register_on_not_generated = register_on_not_generated
 
 --[[
 # ENTRY POINT
@@ -291,7 +286,7 @@ local function mapgen_callback(minp, maxp, blockseed)
             z=min(maxp.z, mapping.maxp.z)
         }
         if commonmax.x >= commonmin.x and commonmax.y >= commonmin.y and commonmax.z >= commonmin.z then
-            generate_planet_chunk(commonmin, commonmax, area, A, A1, A2, mapping)
+            planetgen.generate_planet_chunk(commonmin, commonmax, area, A, A1, A2, mapping)
             not_generated_boxes = split_not_generated_boxes(not_generated_boxes, commonmin, commonmax)
         end
     end
@@ -316,7 +311,7 @@ end
 
 minetest.register_on_generated(mapgen_callback)
 
-register_on_not_generated(nil)
+planetgen.register_on_not_generated(nil)
 
 -- Nodes defined only to avoid errors from mapgens
 
@@ -353,7 +348,7 @@ See 'generate_planet_chunk' in this file. Sensible values are:
 Here, add random texture rotation around Y axis to dummy stone block
 ]]--
 
-random_yrot_nodes = {
+planetgen.random_yrot_nodes = {
     [minetest.get_content_id('planetgen:stone')] = 4
 }
 
