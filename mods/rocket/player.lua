@@ -170,7 +170,9 @@ rocket.rocket_to_player = function(player, pos)
     )
     player:set_physics_override {
         speed = 1,
+		jump = 1,
         gravity = 1,
+		sneak = true
     }
 
     --Move to rocket landing position
