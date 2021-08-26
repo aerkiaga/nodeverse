@@ -19,7 +19,7 @@ player_api.register_model("rocket_player.obj", {
 })
 
 -- Turn a player into a rocket
-rocket.player_to_rocket = function (player, pos)
+function rocket.player_to_rocket(player, pos)
     player:set_physics_override {
         speed = 0,
 		jump = 0,
@@ -35,7 +35,7 @@ rocket.player_to_rocket = function (player, pos)
 end
 
 --Turn a rocket player back into a player
-rocket.rocket_to_player = function(player, pos)
+function rocket.rocket_to_player(player, pos)
 	local name = player:get_player_name()
     player_api.player_attached[name] = false
     player_api.set_model(player, "character.b3d")
@@ -69,7 +69,7 @@ rocket.rocket_to_player = function(player, pos)
 	players_data[name].thrust = nil
 end
 
-rocket.particles = function(pos, vel, dtime)
+function rocket.particles(pos, vel, dtime)
 	local maxtime = dtime
 	local offset = 0
 	if vel.y < 0 then

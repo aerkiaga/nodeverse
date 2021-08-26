@@ -1,6 +1,6 @@
 local players_data = rocket.players_data
 
-rocket.update_hud = function (player)
+function rocket.update_hud(player)
 	local name = player:get_player_name()
 	if players_data[name] == nil then
 		return
