@@ -144,7 +144,9 @@ end
 rocket.player_to_rocket = function (player, pos)
     player:set_physics_override {
         speed = 0,
+		jump = 0,
         gravity = 1,
+		sneak = false
     }
 	player:set_pos(pos)
     player_api.set_model(player, "rocket_player.obj")
