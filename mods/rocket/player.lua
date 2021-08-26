@@ -115,7 +115,7 @@ rocket.update_hud = function (player)
 		end
 		-- Add new HUD
 		if new_fuel ~= nil then
-			if new_fuel == 0 then
+			if new_fuel <= 0 then
 				players_data[name].fuel_bar_hud = nil
 			else
 				players_data[name].fuel_bar_hud = player:hud_add {
@@ -222,14 +222,15 @@ local function rocket_physics(dtime, player, name)
 	local pos = player:get_pos()
 	local vel = player:get_velocity()
 	local physics = player:get_physics_override()
+	local current_fuel = players_data[name].fuel
 	local spent_fuel = 0
-	if controls.jump then
+	if controls.jump and current_fuel > 0 then
 		physics.speed = 5
 	    physics.gravity = -1
 		players_data[name].thrust = "full"
 		spent_fuel = 1 * dtime
 	    rocket.particles(pos, vel, dtime)
-	elseif controls.sneak then
+	elseif controls.sneak and current_fuel > 0 then
 		physics.speed = 2
 		physics.gravity = 0
 		players_data[name].thrust = "low"
@@ -245,7 +246,7 @@ local function rocket_physics(dtime, player, name)
 		players_data[name].thrust = nil
 	end
 	player:set_physics_override(physics)
-	players_data[name].fuel = players_data[name].fuel - spent_fuel
+	players_data[name].fuel = current_fuel - spent_fuel
 
 	local vel = player:get_velocity()
 
