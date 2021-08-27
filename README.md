@@ -11,8 +11,8 @@ grass and snow. Planets of different colors, rockier, more hilly or flat, richer
 in oceans, arid, frozen, volcanic, and with or without living organisms are
 generated. World generation features oceans, caves, deserts and craters.
 
-The player can fly using a rocket that they start with. No further interaction
-has been added yet.
+The player can fly using a rocket that they start with. They have a limited
+amount of fuel to fly the furthest they can.
 
 ## Mods
 This is a list of the components that make up this game. Each of these mods can
