@@ -191,16 +191,31 @@ local function rocket_respawn_player(player)
 	rocket.update_hud(player)
 end
 
+local function record_string(player, value, category)
+	local r = string.format("%d", value)
+	local name = player:get_player_name()
+	local current_pr = players_data[name]["pr_" .. category]
+	if current_pr == nil or current_pr < value then
+		players_data[name]["pr_" .. category] = value
+		r = minetest.colorize("#FFFF00", "*" .. r .. "*")
+	end
+	return r
+end
+
 local function rocket_die_player(player)
 	local name = player:get_player_name()
 	local pos = player:get_pos()
 	local horizontal = math.sqrt(pos.x^2 + pos.z^2)
 	local vertical = math.abs(pos.y)
 	local total = math.sqrt(horizontal^2 + vertical^2)
+	horizontal = record_string(player, horizontal, "horizontal")
+	vertical = record_string(player, vertical, "vertical")
+	total = record_string(player, total, "total")
 	local message = string.format(
-	minetest.colorize("#FFFF00", "Distance flown")
-	.. ":\nHorizontal\t%d\nVertical\t%d\nTotal\t%d",
-	horizontal, vertical, total)
+		minetest.colorize("#FFFF00", "Distance flown:")
+		.. "\nHorizontal\t%s\nVertical\t%s\nTotal\t%s",
+		horizontal, vertical, total
+	)
 	minetest.chat_send_player(name, message)
 end
 
