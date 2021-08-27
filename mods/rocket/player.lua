@@ -191,5 +191,19 @@ local function rocket_respawn_player(player)
 	rocket.update_hud(player)
 end
 
+local function rocket_die_player(player)
+	local name = player:get_player_name()
+	local pos = player:get_pos()
+	local horizontal = math.sqrt(pos.x^2 + pos.z^2)
+	local vertical = math.abs(pos.y)
+	local total = math.sqrt(horizontal^2 + vertical^2)
+	local message = string.format(
+	minetest.colorize("#FFFF00", "Distance flown")
+	.. ":\nHorizontal\t%d\nVertical\t%d\nTotal\t%d",
+	horizontal, vertical, total)
+	minetest.chat_send_player(name, message)
+end
+
 minetest.register_on_joinplayer(rocket_join_player)
 minetest.register_on_respawnplayer(rocket_respawn_player)
+minetest.register_on_dieplayer(rocket_die_player)
