@@ -239,7 +239,9 @@ local function rocket_die_player(player)
 	.. "\nHorizontal\t" .. horizontal
 	.. "\nVertical\t" .. vertical
 	.. "\nTotal\t" .. total
-	--minetest.chat_send_player(name, message)
+	if not is_being_server_record and #players_data > 1 then
+		minetest.chat_send_player(name, message)
+	end
 end
 
 minetest.register_on_joinplayer(rocket_join_player)
