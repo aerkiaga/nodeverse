@@ -83,39 +83,14 @@ function planetgen.set_dirty_flag()
     generator_dirty_flag = true
 end
 
--- API
-function planetgen.generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
-    local max = math.max
-    local min = math.min
-
-    planetgen.set_dirty_flag()
-    local planet = planet_from_mapping(mapping)
-    local offset = mapping.offset
-    planetgen.pass_elevation(minp, maxp, area, offset, A, A2, planet)
-
-    local minpx, minpy, minpz = minp.x, minp.y, minp.z
-    local maxpx, maxpy, maxpz = maxp.x, maxp.y, maxp.z
+local function pass_final(minp_abs, maxp_abs, area, offset, A, A1, A2, mapping)
+    local minpx, minpy, minpz = minp_abs.x, minp_abs.y, minp_abs.z
+    local maxpx, maxpy, maxpz = maxp_abs.x, maxp_abs.y, maxp_abs.z
     local minp_x = mapping.minp.x
     local minp_z = mapping.minp.z
     local maxp_x = mapping.maxp.x
     local maxp_z = mapping.maxp.z
-    if planet.caveness > 2^(-3) then
-        local new_minp = minp
-        local new_maxp = maxp
-        if mapping.walled then
-            new_minp = {
-                x=max(minpx, minp_x+1),
-                y=minpy,
-                z=max(minpz, minp_z+1)
-            }
-            new_maxp = {
-                x=min(maxpx, maxp_x-1),
-                y=maxpy,
-                z=min(maxpz, maxp_z-1)
-            }
-        end
-        planetgen.pass_caves(new_minp, new_maxp, area, offset, A, A2, planet)
-    end
+    local planet = planet_from_mapping(mapping)
 
     local is_walled = mapping.walled
     local is_scorching = (planet.atmosphere == "scorching")
@@ -171,6 +146,36 @@ function planetgen.generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
             end -- for
         end -- for
     end -- for
+end
+
+-- API
+function planetgen.generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
+    local max = math.max
+    local min = math.min
+
+    planetgen.set_dirty_flag()
+    local planet = planet_from_mapping(mapping)
+    local offset = mapping.offset
+    planetgen.pass_elevation(minp, maxp, area, offset, A, A2, planet)
+
+    if planet.caveness > 2^(-3) then
+        local new_minp = minp
+        local new_maxp = maxp
+        if mapping.walled then
+            new_minp = {
+                x=max(minp.x, mapping.minp.x+1),
+                y=minp.y,
+                z=max(minp.z, mapping.minp.z+1)
+            }
+            new_maxp = {
+                x=min(maxp.x, mapping.maxp.x-1),
+                y=maxp.y,
+                z=min(maxp.z, mapping.maxp.z-1)
+            }
+        end
+        planetgen.pass_caves(new_minp, new_maxp, area, offset, A, A2, planet)
+    end
+    pass_final(minp, maxp, area, offset, A, A1, A2, mapping)
 end
 
 local function split_not_generated_boxes(not_generated_boxes, minp, maxp)
