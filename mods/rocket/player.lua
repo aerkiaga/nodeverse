@@ -194,7 +194,7 @@ local function rocket_respawn_player(player)
 	rocket.update_hud(player)
 end
 
-local is_being_server_record = false
+local server_record_string = ""
 
 local function record_string(player, value, category)
 	local r = string.format("%d", value)
@@ -205,15 +205,14 @@ local function record_string(player, value, category)
 		server_records["sr_" .. category] = value
 		server_records["name_" .. category] = name
 		local header = ""
-		if not is_being_server_record then
-			header = minetest.colorize("#FFFF00", "## New record! ##") .. "\n"
-			is_being_server_record = true
+		if server_record_string == "" then
+			header = minetest.colorize("#FFFF00", "## New record! ##")
 		end
 		local message = header
-		.. category .. "\t"
+		.. "\n" .. category .. "\t"
 		.. minetest.colorize("#FF0000", r)
 		.. "\t by " .. name
-		minetest.chat_send_all(message)
+		server_record_string = server_record_string .. message
 		r = minetest.colorize("#FF0000", "*" .. r .. "*")
 	end
 	if current_pr == nil or current_pr < value then
@@ -231,7 +230,7 @@ local function rocket_die_player(player)
 	local horizontal = math.sqrt(pos.x^2 + pos.z^2)
 	local vertical = math.abs(pos.y)
 	local total = math.sqrt(horizontal^2 + vertical^2)
-	is_being_server_record = false
+	server_record_string = ""
 	horizontal = record_string(player, horizontal, "horizontal")
 	vertical = record_string(player, vertical, "vertical")
 	total = record_string(player, total, "total")
@@ -239,8 +238,9 @@ local function rocket_die_player(player)
 	.. "\nHorizontal\t" .. horizontal
 	.. "\nVertical\t" .. vertical
 	.. "\nTotal\t" .. total
-	if not is_being_server_record and #players_data > 1 then
-		minetest.chat_send_player(name, message)
+	minetest.chat_send_player(name, message)
+	if server_record_string ~= "" and #players_data > 1 then
+		minetest.chat_send_all(server_record_string)
 	end
 end
 
