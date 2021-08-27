@@ -15,7 +15,7 @@
 
 import sys, re, math
 
-re_line = re.compile(r"(\w+) (\d+)")
+re_line = re.compile(r"([a-zA-Z0-9_.]+) (\d+)")
 
 data = {}
 
@@ -41,7 +41,7 @@ for line in sys.stdin:
             }
         data[name]["count"] += 1
         data[name]["total"] += time
-print("NAME" + (32-4)*" " + "COUNT" + (12-5)*" " +\
+print("NAME" + (48-4)*" " + "COUNT" + (12-5)*" " +\
 "AVERAGE" + (12-7)*" " + "TOTAL" + (12-5)*" " + "...")
 data = sorted(data.items(), key=lambda x: x[1]["total"], reverse=True)
 for name, stats in data:

@@ -20,7 +20,7 @@ profile_end = 'profile_end("{}") -- auto-generated\n'
 
 import os, re
 
-re_function = re.compile(r"^(local )?function ([a-zA-Z_.]+)")
+re_function = re.compile(r"^(local )?function ([a-zA-Z0-9_.]+)")
 cwd = os.getcwd()
 for filename in os.listdir(cwd):
     if filename.endswith(".lua"):
