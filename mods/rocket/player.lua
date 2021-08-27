@@ -147,12 +147,11 @@ local function rocket_physics(dtime, player, name)
 	    pos.y = pos.y - 1
 	    local node = minetest.get_node(pos)
 	    pos.y = pos.y + 1
-	    if minetest.registered_nodes[node.name].walkable
-		and math.abs(vel.y) < 1.5 then
+	    if minetest.registered_nodes[node.name].walkable then
 	        rocket.rocket_to_player(player, pos)
 	    end
 	else
-	    if vel.y > 2 then
+	    if vel.y > 4 then
 	        players_data[name].is_lifted_off = true
 	    end
 	end
@@ -226,6 +225,8 @@ end
 
 local function rocket_die_player(player)
 	local name = player:get_player_name()
+
+	rocket.rocket_to_player(player)
 	local pos = player:get_pos()
 	local horizontal = math.sqrt(pos.x^2 + pos.z^2)
 	local vertical = math.abs(pos.y)
