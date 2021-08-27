@@ -20,7 +20,7 @@ profile_end = 'profile_end("{}") -- auto-generated\n'
 
 import os, re
 
-re_function = re.compile(r"^function ([a-zA-Z_.]+)")
+re_function = re.compile(r"^(local )?function ([a-zA-Z_.]+)")
 cwd = os.getcwd()
 for filename in os.listdir(cwd):
     if filename.endswith(".lua"):
@@ -72,7 +72,7 @@ for filename in os.listdir(cwd):
 
                 match = re_function.match(line)
                 if match is not None:
-                    function_name = match.group(1)
+                    function_name = match.group(2)
                 if not defined and function_name is not None and line.find(")") >= 0:
                     output_lines.append("    " + profile_start.format(function_name))
                     defined = True
