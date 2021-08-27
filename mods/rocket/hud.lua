@@ -1,5 +1,7 @@
 local players_data = rocket.players_data
 
+local base_position = {x=0.05, y=0.07}
+
 local function delete_old_hud(player, hud_name)
 	local name = player:get_player_name()
 	local old_hud = players_data[name][hud_name .. "_hud"]
@@ -29,7 +31,7 @@ function rocket.update_hud(player)
 		elseif new_thrust == "full" then
 			players_data[name].thrust_hud = player:hud_add {
 				hud_elem_type = "image",
-				position = {x=0.1, y=0.1},
+				position = base_position,
 				scale = {x=4, y=4},
 				text = "icon_full_thrust.png",
 				alignment = {x=1, y=1},
@@ -38,7 +40,7 @@ function rocket.update_hud(player)
 		elseif new_thrust == "low" then
 			players_data[name].thrust_hud = player:hud_add {
 				hud_elem_type = "image",
-				position = {x=0.1, y=0.1},
+				position = base_position,
 				scale = {x=4, y=4},
 				text = "icon_low_thrust.png",
 				alignment = {x=1, y=1},
@@ -64,7 +66,7 @@ function rocket.update_hud(player)
 		elseif new_danger == "crash" then
 			players_data[name].danger_hud = player:hud_add {
 				hud_elem_type = "image",
-				position = {x=0.1, y=0.1},
+				position = base_position,
 				scale = {x=4, y=4},
 				text = "icon_crash_danger.png",
 				alignment = {x=1, y=1},
@@ -96,7 +98,7 @@ function rocket.update_hud(player)
 			else
 				players_data[name].fuel_bar_hud = player:hud_add {
 					hud_elem_type = "image",
-					position = {x=0.1, y=0.1},
+					position = base_position,
 					scale = {x=4*new_fuel/78, y=4.5},
 					text = "icon_fuel_bar.png",
 					alignment = {x=1, y=1},
@@ -105,7 +107,7 @@ function rocket.update_hud(player)
 			end
 			players_data[name].fuel_outline_hud = player:hud_add {
 				hud_elem_type = "image",
-				position = {x=0.1, y=0.1},
+				position = base_position,
 				scale = {x=4, y=4},
 				text = "icon_fuel_outline.png",
 				alignment = {x=1, y=1},
