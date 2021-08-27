@@ -8,6 +8,9 @@
 rocket.players_data = {}
 local players_data = rocket.players_data
 
+rocket.server_records = {}
+local server_records = rocket.server_records
+
 -- Default player appearance
 player_api.register_model("rocket_player.obj", {
 	animation_speed = 0,
@@ -191,13 +194,33 @@ local function rocket_respawn_player(player)
 	rocket.update_hud(player)
 end
 
+local is_being_server_record = false
+
 local function record_string(player, value, category)
 	local r = string.format("%d", value)
 	local name = player:get_player_name()
 	local current_pr = players_data[name]["pr_" .. category]
+	local current_sr = server_records["sr_" .. category]
+	if current_sr == nil or current_sr < value then
+		server_records["sr_" .. category] = value
+		server_records["name_" .. category] = name
+		local header = ""
+		if not is_being_server_record then
+			header = minetest.colorize("#FFFF00", "## New record! ##") .. "\n"
+			is_being_server_record = true
+		end
+		local message = header
+		.. category .. "\t"
+		.. minetest.colorize("#FF0000", r)
+		.. "\t by " .. name
+		minetest.chat_send_all(message)
+		r = minetest.colorize("#FF0000", "*" .. r .. "*")
+	end
 	if current_pr == nil or current_pr < value then
 		players_data[name]["pr_" .. category] = value
-		r = minetest.colorize("#FFFF00", "*" .. r .. "*")
+		if current_sr ~= nil and current_sr >= value then
+			r = minetest.colorize("#FFFF00", "*" .. r .. "*")
+		end
 	end
 	return r
 end
@@ -208,15 +231,15 @@ local function rocket_die_player(player)
 	local horizontal = math.sqrt(pos.x^2 + pos.z^2)
 	local vertical = math.abs(pos.y)
 	local total = math.sqrt(horizontal^2 + vertical^2)
+	is_being_server_record = false
 	horizontal = record_string(player, horizontal, "horizontal")
 	vertical = record_string(player, vertical, "vertical")
 	total = record_string(player, total, "total")
-	local message = string.format(
-		minetest.colorize("#FFFF00", "Distance flown:")
-		.. "\nHorizontal\t%s\nVertical\t%s\nTotal\t%s",
-		horizontal, vertical, total
-	)
-	minetest.chat_send_player(name, message)
+	local message = minetest.colorize("#FFFF00", "Distance flown:")
+	.. "\nHorizontal\t" .. horizontal
+	.. "\nVertical\t" .. vertical
+	.. "\nTotal\t" .. total
+	--minetest.chat_send_player(name, message)
 end
 
 minetest.register_on_joinplayer(rocket_join_player)
