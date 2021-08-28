@@ -1,3 +1,6 @@
 [submodule "mods/Autobox"]
 	path = mods/Autobox
 	url = https://github.com/ExeVirus/Autobox
+[submodule "mods/player_api"]
+	path = mods/player_api
+	url = https://github.com/minetest-game/player_api
