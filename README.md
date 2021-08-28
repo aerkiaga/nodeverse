@@ -1,5 +1,7 @@
 # Nodeverse
 
+![Screenshot](screenshot.jpg)
+
 This is a procedurally generated space exploration game, inspired by No Man's
 Sky and other similar titles, but built around voxel mechanics. It features an
 immensely large universe with a never-ending variety of planets to explore.
