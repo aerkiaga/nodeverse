@@ -82,10 +82,10 @@ function rocket.update_hud(player)
 		new_fuel = nil
 	end
 	if new_fuel ~= nil then
-		new_fuel = math.floor(new_fuel*78/100)
+		new_fuel = math.floor(new_fuel*78/100) + 1
 	end
 	if old_fuel ~= nil then
-		old_fuel = math.floor(old_fuel*78/100)
+		old_fuel = math.floor(old_fuel*78/100) + 1
 	end
 	if new_fuel ~= old_fuel then
 		-- Delete old HUD
