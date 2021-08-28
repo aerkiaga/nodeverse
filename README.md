@@ -6,6 +6,11 @@ This is a procedurally generated space exploration game, inspired by No Man's
 Sky and other similar titles, but built around voxel mechanics. It features an
 immensely large universe with a never-ending variety of planets to explore.
 
+It is still in very early development, but a simple proof-of-concept game has
+been built on top of the code to make it playable. Since this is an
+[early](https://semver.org/#spec-item-4) release version, it is expected that
+any following versions will make breaking changes to the core game.
+
 ## Status
 An infinite cloud of floating planets is created. Blocks include stone, gravel,
 dust, sediment, water, hydrocarbon, lava, grass soil, grass, dry grass, tall
