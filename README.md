@@ -29,7 +29,7 @@ be used by itself, as long as its dependencies are satisfied.
 Name | Dependencies | Description
 ---- | ------------ | -----------
 `planetgen` | None | Generates planet terrain. See its `README.md` for instructions on advanced usage.
-`rocket` | `autobox`, `player_api` | Adds a rocket to fly to many other planets, as well as a simple score system.
+`nv_rocket` | `autobox`, `player_api` | Adds a rocket to fly to many other planets, as well as a simple score system.
 
 ## TODO
  * Add minerals and ores
