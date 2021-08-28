@@ -160,7 +160,10 @@ end
  # ENTRY POINT
 ]]--
 
+local elevation_ground_buffer = {}
+
 function planetgen.pass_elevation(minp_abs, maxp_abs, area, offset, A, A2, planet)
+    local r = elevation_ground_buffer
     local Perlin_2d_ocean_elevation = PerlinWrapper({offset=0, scale=0.5, spread={x=500, y=500}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
     local Perlin_2d_mountain_roughness = PerlinWrapper({offset=0, scale=0.5, spread={x=300, y=300}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
     local Perlin_2d_mountain_elevation = PerlinWrapper({offset=0, scale=0.5, spread={x=100, y=100}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
@@ -175,6 +178,7 @@ function planetgen.pass_elevation(minp_abs, maxp_abs, area, offset, A, A2, plane
             local x = x_abs + offset.x
             local ground_comp = {}
             local ground = 0
+            local k = (z_abs - minp_abs.z)*(maxp_abs.x - minp_abs.x + 1) + x_abs - minp_abs.x + 1
 
             -- Use land/ocean elevation as initial ground level
             ground_comp.ocean_elevation = Perlin_2d_ocean_elevation:get_2d({x=x, y=z})
@@ -202,6 +206,9 @@ function planetgen.pass_elevation(minp_abs, maxp_abs, area, offset, A, A2, plane
                 x_abs, minp_abs.y, maxp_abs.y, z_abs, area,
                 offset, G, ground, ground_comp, planet, A
             )
+
+            r[k] = ground
         end
     end
+    return r
 end
