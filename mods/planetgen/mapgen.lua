@@ -101,6 +101,8 @@ local function pass_final(
     local offset_x, offset_y, offset_z = offset.x, offset.y, offset.z
     local fast_int_hash = fast_int_hash
 
+    local G = PcgRandom(5683749)
+
     for z_abs=minpz, maxpz do
         for x_abs=minpx, maxpx do
             local k = (z_abs - minpz)*(maxpx - minpx + 1) + x_abs - minpx + 1
@@ -135,7 +137,7 @@ local function pass_final(
                         local param2 = 0
                         if rot ~= nil then
                             local hash = pos_x*313 + pos_y*477 + pos_z*327
-                            param2 = fast_int_hash(hash) % rot
+                            param2 = G:next() % rot
                             if rot == 2 then
                                 param2 = param2 * 2
                             end
