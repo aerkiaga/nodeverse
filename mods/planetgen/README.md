@@ -13,4 +13,4 @@ guide you through the code.
 
 ## License
 All code is released under the GNU GPL-3.0 license, and all assets are released
-under the CC-BY-SA license.
+under the CC-BY-SA-4.0 license.
