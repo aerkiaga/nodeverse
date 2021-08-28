@@ -145,7 +145,9 @@ local function caves_gen_block(
                 or Ai == planet.node_types.sediment
                 or Ai == planet.node_types.liquid then else
                     local threshold = caves_threshold_buffer[k]
-                    if Ai == planet.node_types.grass
+                    if Ai == planet.node_types.snow then
+                        threshold = threshold - 0.1
+                    elseif Ai == planet.node_types.grass
                     or Ai == planet.node_types.dry_grass
                     or Ai == planet.node_types.tall_grass then
                         threshold = threshold - 0.2
