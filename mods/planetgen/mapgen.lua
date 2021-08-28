@@ -6,6 +6,7 @@ Included files:
     nodetypes.lua       Registers custom nodes for a new planet
     pass_elevation.lua  First pass: terrain elevation and layers, oceans
     pass_caves.lua      Second pass: caves
+    pass_final.lua      Final pass: random rotation, lighting, colors...
 
  # INDEX
     ENTRY POINT
@@ -20,6 +21,7 @@ dofile(minetest.get_modpath("planetgen") .. "/meta.lua")
 dofile(minetest.get_modpath("planetgen") .. "/nodetypes.lua")
 dofile(minetest.get_modpath("planetgen") .. "/pass_elevation.lua")
 dofile(minetest.get_modpath("planetgen") .. "/pass_caves.lua")
+dofile(minetest.get_modpath("planetgen") .. "/pass_final.lua")
 
 --[[
 Contains a list of all current mappings between chunk coordinate rectangles
@@ -83,71 +85,6 @@ function planetgen.set_dirty_flag()
     generator_dirty_flag = true
 end
 
-local function pass_final(minp_abs, maxp_abs, area, offset, A, A1, A2, mapping)
-    local minpx, minpy, minpz = minp_abs.x, minp_abs.y, minp_abs.z
-    local maxpx, maxpy, maxpz = maxp_abs.x, maxp_abs.y, maxp_abs.z
-    local minp_x = mapping.minp.x
-    local minp_z = mapping.minp.z
-    local maxp_x = mapping.maxp.x
-    local maxp_z = mapping.maxp.z
-    local planet = planet_from_mapping(mapping)
-
-    local is_walled = mapping.walled
-    local is_scorching = (planet.atmosphere == "scorching")
-    local node_air = minetest.CONTENT_AIR
-    local offset_x, offset_y, offset_z = offset.x, offset.y, offset.z
-    local fast_int_hash = fast_int_hash
-    for z_abs=minpz, maxpz do
-        for y_abs=minpy, maxpy do
-            for x_abs=minpx, maxpx do
-                local i = area:index(x_abs, y_abs, z_abs)
-                local Ai = A[i]
-                if Ai ~= node_air then
-                    local pos_x = x_abs + offset_x
-                    local pos_y = y_abs + offset_y
-                    local pos_z = z_abs + offset_z
-
-                    -- Generate walls around mappings
-                    if is_walled and (
-                        x_abs == minp_x or x_abs == maxp_x
-                        or z_abs == minp_z or z_abs == maxp_z
-                    ) then
-                        A[i] = planet.node_types.stone
-                    end
-
-                    -- Apply lighting
-                    if is_scorching and Ai == planet.node_types.liquid then
-                        A1[i] = 128
-                    else
-                        A1[i] = 15
-                    end
-
-                    -- Apply random texture rotation to all supported nodes
-                    local rot = planetgen.random_yrot_nodes[Ai]
-                    local param2 = 0
-                    if rot ~= nil then
-                        local hash = pos_x*313 + pos_y*477 + pos_z*327
-                        param2 = fast_int_hash(hash) % rot
-                        if rot == 2 then
-                            param2 = param2 * 2
-                        end
-                    end
-
-                    -- Apply 'colorfacedir' color to all supported nodes
-                    -- TODO: support 'color' and 'colorwallmounted' colors
-                    local color = planet.color_dictionary[Ai]
-                    if color ~= nil then
-                        color = color * 0x20
-                        param2 = param2 + color
-                    end
-
-                    A2[i] = param2
-                end -- if
-            end -- for
-        end -- for
-    end -- for
-end
-
 -- API
 function planetgen.generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
     local max = math.max
@@ -156,7 +93,9 @@ function planetgen.generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
     planetgen.set_dirty_flag()
     local planet = planet_from_mapping(mapping)
     local offset = mapping.offset
-    planetgen.pass_elevation(minp, maxp, area, offset, A, A2, planet)
+    local ground_buffer = planetgen.pass_elevation(
+        minp, maxp, area, offset, A, A2, planet
+    )
 
     if planet.caveness > 2^(-3) then
         local new_minp = minp
@@ -175,7 +114,7 @@ function planetgen.generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
         end
         planetgen.pass_caves(new_minp, new_maxp, area, offset, A, A2, planet)
     end
-    pass_final(minp, maxp, area, offset, A, A1, A2, mapping)
+    planetgen.pass_final(minp, maxp, area, offset, A, A1, A2, mapping, planet, ground_buffer)
 end
 
 local function split_not_generated_boxes(not_generated_boxes, minp, maxp)
