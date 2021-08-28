@@ -35,7 +35,7 @@ function rocket.update_hud(player)
 				scale = {x=4, y=4},
 				text = "icon_full_thrust.png",
 				alignment = {x=1, y=1},
-				offset = {x=0, y=80}
+				offset = {x=0, y=60}
 			}
 		elseif new_thrust == "low" then
 			players_data[name].thrust_hud = player:hud_add {
@@ -44,7 +44,7 @@ function rocket.update_hud(player)
 				scale = {x=4, y=4},
 				text = "icon_low_thrust.png",
 				alignment = {x=1, y=1},
-				offset = {x=0, y=80}
+				offset = {x=0, y=60}
 			}
 		end
 		players_data[name].visible_thrust = new_thrust
@@ -70,7 +70,7 @@ function rocket.update_hud(player)
 				scale = {x=4, y=4},
 				text = "icon_crash_danger.png",
 				alignment = {x=1, y=1},
-				offset = {x=80, y=80}
+				offset = {x=80, y=60}
 			}
 		end
 		players_data[name].visible_danger = new_danger
