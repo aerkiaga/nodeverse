@@ -1,8 +1,12 @@
 --
--- Hand init.lua
+-- Copied code of init.lua from the Hand mod
 --
 -- Adds the default MTG hand tool to the game
 --
+
+-- Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+-- This file was released under GNU LGPL-2.1
+-- As part of this mod, it is re-released under GNU GPL-3.0
 
 minetest.override_item("", {
 	wield_scale = {x=1,y=1,z=2.5},
