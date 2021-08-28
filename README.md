@@ -1,4 +1,5 @@
 # Nodeverse
+[![ContentDB](https://content.minetest.net/packages/aerkiaga/nodeverse/shields/downloads/)](https://content.minetest.net/packages/aerkiaga/nodeverse/)
 
 ![Screenshot](screenshot.jpg)
 
