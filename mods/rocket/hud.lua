@@ -1,3 +1,10 @@
+--[[
+This file controls how data is persented to the player in the HUD.
+
+# INDEX
+	ENTRY POINT
+]]--
+
 local players_data = rocket.players_data
 
 local base_position = {x=0.05, y=0.07}
@@ -10,6 +17,10 @@ local function delete_old_hud(player, hud_name)
 		players_data[name][hud_name .. "_hud"] = nil
 	end
 end
+
+--[[
+ # ENTRY POINT
+]]--
 
 function rocket.update_hud(player)
 	local name = player:get_player_name()

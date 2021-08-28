@@ -1,9 +1,10 @@
---
--- Player as a Rocket
---
--- This file defines functions for turning the player into a rocket, applying decent rocket
--- physics, and allowing them to turn back into a player
---
+--[[
+This file defines functions for turning the player into a rocket, applying
+decent rocket physics, and allowing them to turn back into a player
+
+# INDEX
+	INITIALIZATION
+]]--
 
 rocket.players_data = {}
 local players_data = rocket.players_data
@@ -171,8 +172,6 @@ local function globalstep_callback(dtime)
     end
 end
 
-minetest.register_globalstep(globalstep_callback)
-
 -- Rocket on_join_player
 local function rocket_join_player(player, last_login)
 	local name = player:get_player_name()
@@ -245,6 +244,11 @@ local function rocket_die_player(player)
 	end
 end
 
+--[[
+ # INITIALIZATION
+]]
+
+minetest.register_globalstep(globalstep_callback)
 minetest.register_on_joinplayer(rocket_join_player)
 minetest.register_on_respawnplayer(rocket_respawn_player)
 minetest.register_on_dieplayer(rocket_die_player)

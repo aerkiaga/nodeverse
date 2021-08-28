@@ -1,3 +1,10 @@
+--[[
+This file controls how data is persented to the player in the HUD.
+
+# INDEX
+    INITIALIZATION
+]]--
+
 -- Rightclick definition
 local function rocket_rightclick(pos, node, clicker, itemstack, pointed_thing)
     -- Remove the rocket on the ground
@@ -27,6 +34,10 @@ local rocket_definition = {
 
     on_rightclick = rocket_rightclick,
 }
+
+--[[
+ # INITIALIZATION
+]]--
 
 -- Register with auto-box, allowing multi-node collision-box representations
 autobox.register_node("rocket:rocket", "rocket.box", rocket_definition, true)
