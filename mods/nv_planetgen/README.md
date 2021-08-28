@@ -1,5 +1,5 @@
-# Planetgen
-Planetgen is a Minetest mod that generates multiple areas with completely
+# NV Planetgen
+NV Planetgen is a Minetest mod that generates multiple areas with completely
 different terrain, called 'planets'. These can be located anywhere in the world,
 in any size. While a default setup with small floating planets everywhere is
 provided, it's easy to modify this, as is to control planet generation from

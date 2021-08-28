@@ -1,7 +1,8 @@
 --[[
-Planetgen defines a custom map generator that can map arbitrary areas of planets
-with various seeds into any part of the world. It overrides map generation and
-provides an API to control it from other mods or from within this file.
+NV Planetgen defines a custom map generator that can map arbitrary areas of
+planets with various seeds into any part of the world. It overrides map
+generation and provides an API to control it from other mods or from within this
+file.
 
 Read 'mapgen.lua' to learn how this works. For the API reference, keep reading
 this file. To see or edit the default game setup, search '# GAME SETUP' in your
@@ -18,7 +19,7 @@ a list of all tags in order.
     EXAMPLES
 ]]--
 
-dofile(minetest.get_modpath("planetgen") .. "/mapgen.lua")
+dofile(minetest.get_modpath("nv_planetgen") .. "/mapgen.lua")
 
 --[[
 # API REFERENCE
@@ -27,14 +28,14 @@ offers can be used from this file (see GAME SETUP) and have this mod generate
 custom terrain, or from a different mod to integrate it into a game.
 
 There are two basic ways to use this API. The simplest one is simply to call
-'planetgen.add_planet_mapping()' at startup to place one or more planets at
+'nv_planetgen.add_planet_mapping()' at startup to place one or more planets at
 certain locations in the world. These can be as large as necessary (e.g.
 vertically stacked but filling the world horizontally), and many thousands of
 planets can be created (e.g. 10k floating planets).
 
 The second basic way to use the API is to register a callback function via
-'planetgen.register_on_not_generated()', and within that generate new areas with
-'planetgen.generate_planet_chunk()'. This allows one to generate an infinite
+'nv_planetgen.register_on_not_generated()', and within that generate new areas with
+'nv_planetgen.generate_planet_chunk()'. This allows one to generate an infinite
 world with as many planets as desired, and add or remove planet areas
 programmatically (e.g. to simulate a larger universe).
 
@@ -45,14 +46,14 @@ Coordinate types:
 https://minetest.gitlab.io/minetest/map-terminology-and-coordinates/
 ]]--
 
---[[    planetgen.register_on_not_generated(callback)
+--[[    nv_planetgen.register_on_not_generated(callback)
 Registers a function that will be called whenever an area not mapped to any
 planet has been unsuccessfully generated. This allows to generate the area via
-'planetgen.generate_planet_chunk()', and/or manually generate custom content in
-that area and then call 'planetgen.set_dirty flag()' to acknowledge it.
-'planetgen.add_planet_mapping()' can also be called here to prevent further
+'nv_planetgen.generate_planet_chunk()', and/or manually generate custom content in
+that area and then call 'nv_planetgen.set_dirty flag()' to acknowledge it.
+'nv_planetgen.add_planet_mapping()' can also be called here to prevent further
 calls to the callback for this area, but note that it does not automatically
-call 'planetgen.generate_planet_chunk()'.
+call 'nv_planetgen.generate_planet_chunk()'.
     callback    function (minp, maxp, area, A, A1, A2)
     Will be passed the extents of the unmapped area, as well as objects useful
     for overriding map generation.
@@ -64,7 +65,7 @@ call 'planetgen.generate_planet_chunk()'.
         A2          value returned by Minetest's 'VoxelManip:get_param2_data()'
 ]]
 
---[[    planetgen.add_planet_mapping(mapping)
+--[[    nv_planetgen.add_planet_mapping(mapping)
 Adds a mapping from a rectangular chunk-aligned region of the world to some
 region in a "planet" with a certain seed, so that it generates terrain from that
 planet upon following generation attemps. 'mapping' is a table containing:
@@ -80,14 +81,14 @@ registrations.
     Returns planet mapping index.
 ]]--
 
---[[    planetgen.remove_planet_mapping(index)
+--[[    nv_planetgen.remove_planet_mapping(index)
 Removes a planet mapping from the list. Further attempts to generate the area
 will result in the 'on not generated' callback being called if registered (see
-'planetgen.register_on_not_generated()').
-    index       mapping index returned by 'planetgen.add_planet'
+'nv_planetgen.register_on_not_generated()').
+    index       mapping index returned by 'nv_planetgen.add_planet'
 ]]--
 
---[[    planetgen.generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
+--[[    nv_planetgen.generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
 Uses the map generation code provided by this mod to generate planet terrain
 within an area. The generated area will be the intersection of the boxes
 delimited by [minp .. maxp] and [mapping.minp .. mapping.maxp].
@@ -97,13 +98,13 @@ delimited by [minp .. maxp] and [mapping.minp .. mapping.maxp].
     A           value from 'on not generated' callback or 'VoxelArea:get_data()'
     A1          value from 'on not generated' callback or 'VoxelArea:get_light_data()'
     A2          value from 'on not generated' callback or 'VoxelArea:get_param2_data()'
-    mapping     see 'planetgen.add_planet_mapping()' for format
+    mapping     see 'nv_planetgen.add_planet_mapping()' for format
 ]]
 
---[[    planetgen.set_dirty_flag(callback)
+--[[    nv_planetgen.set_dirty_flag(callback)
 Must be called when generating custom terrain directly via the 'on not
 generated' callback. It is not necessary to call it if the new area is generated
-using 'planetgen.generate_planet_chunk()' or if no terrain is generated.
+using 'nv_planetgen.generate_planet_chunk()' or if no terrain is generated.
 ]]
 
 --[[
@@ -177,7 +178,7 @@ local function new_area_callback(minp, maxp, area, A, A1, A2)
                         planet_mapping.offset = {x=0, y=-planet_pos.y, z=0}
                         planet_mapping.seed = seed + n
                         planet_mapping.walled = true
-                        planetgen.generate_planet_chunk(
+                        nv_planetgen.generate_planet_chunk(
                             common_minp2, common_maxp2, area, A, A1, A2, planet_mapping
                         )
                     end
@@ -187,10 +188,10 @@ local function new_area_callback(minp, maxp, area, A, A1, A2)
     end
 end
 
-planetgen.register_on_not_generated(new_area_callback)
+nv_planetgen.register_on_not_generated(new_area_callback)
 
 -- Add starting planet
-planetgen.add_planet_mapping {
+nv_planetgen.add_planet_mapping {
     minp = {
         x=-math.floor(planet_size/2),
         y=-2*planet_size,
@@ -220,7 +221,7 @@ local function example_infinite_callback(minp, maxp, area, A, A1, A2)
         offset = {x=0, y=0, z=0},
         seed = 0
     }
-    planetgen.generate_planet_chunk(
+    nv_planetgen.generate_planet_chunk(
         minp, maxp, area, A, A1, A2, planet_mapping
     )
 end

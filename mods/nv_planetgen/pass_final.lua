@@ -10,7 +10,7 @@ and correct colors.
  # ENTRY POINT
 ]]--
 
-function planetgen.pass_final(
+function nv_planetgen.pass_final(
     minp_abs, maxp_abs, area, offset, A, A1, A2, mapping, planet, ground_buffer
 )
     local minpx, minpy, minpz = minp_abs.x, minp_abs.y, minp_abs.z
@@ -59,7 +59,7 @@ function planetgen.pass_final(
                         end
 
                         -- Apply random texture rotation to all supported nodes
-                        local rot = planetgen.random_yrot_nodes[Ai]
+                        local rot = nv_planetgen.random_yrot_nodes[Ai]
                         local param2 = 0
                         if rot ~= nil then
                             local hash = pos_x*313 + pos_y*477 + pos_z*327

@@ -14,14 +14,14 @@ Included files:
 --]]
 
 -- Namespace for all the API functions
-planetgen = {}
+nv_planetgen = {}
 
-dofile(minetest.get_modpath("planetgen") .. "/util.lua")
-dofile(minetest.get_modpath("planetgen") .. "/meta.lua")
-dofile(minetest.get_modpath("planetgen") .. "/nodetypes.lua")
-dofile(minetest.get_modpath("planetgen") .. "/pass_elevation.lua")
-dofile(minetest.get_modpath("planetgen") .. "/pass_caves.lua")
-dofile(minetest.get_modpath("planetgen") .. "/pass_final.lua")
+dofile(minetest.get_modpath("nv_planetgen") .. "/util.lua")
+dofile(minetest.get_modpath("nv_planetgen") .. "/meta.lua")
+dofile(minetest.get_modpath("nv_planetgen") .. "/nodetypes.lua")
+dofile(minetest.get_modpath("nv_planetgen") .. "/pass_elevation.lua")
+dofile(minetest.get_modpath("nv_planetgen") .. "/pass_caves.lua")
+dofile(minetest.get_modpath("nv_planetgen") .. "/pass_final.lua")
 
 --[[
 Contains a list of all current mappings between chunk coordinate rectangles
@@ -32,14 +32,14 @@ and the same region on a planet with some seed. Entry format is:
     seed        planet seed; each seed represents a unique planet
     walled      (optional) builds stone walls around the mapped area
 ]]--
-planetgen.planet_mappings = {}
-local planet_mappings = planetgen.planet_mappings
+nv_planetgen.planet_mappings = {}
+local planet_mappings = nv_planetgen.planet_mappings
 
 --[[
 Maps planet IDs (keys) to actual planet metadata tables (values).
 ]]--
-planetgen.planet_dictionary = {}
-local planet_dictionary = planetgen.planet_dictionary
+nv_planetgen.planet_dictionary = {}
+local planet_dictionary = nv_planetgen.planet_dictionary
 
 local function clear_planet_mapping_area(mapping)
     local minp = {x=mapping.minp.x, y=mapping.minp.y, z=mapping.minp.z}
@@ -51,7 +51,7 @@ local function planet_from_mapping(mapping)
     local planet = planet_dictionary[mapping.seed]
     if planet == nil then
         planet = generate_planet_metadata(mapping.seed)
-        planetgen.choose_planet_nodes_and_colors(planet)
+        nv_planetgen.choose_planet_nodes_and_colors(planet)
         planet_dictionary[mapping.seed] = planet
         planet.seed = mapping.seed
         planet.num_mappings = 1
@@ -62,14 +62,14 @@ local function planet_from_mapping(mapping)
 end
 
 -- API
-function planetgen.add_planet_mapping(mapping)
+function nv_planetgen.add_planet_mapping(mapping)
     local planet = planet_from_mapping(mapping)
     table.insert(planet_mappings, mapping)
     return #planet_mappings
 end
 
 -- API
-function planetgen.remove_planet_mapping(index)
+function nv_planetgen.remove_planet_mapping(index)
     local planet = planet_from_mapping(mapping)
     planet.num_mappings = planet.num_mappings - 1
     if planet.num_mappings == 0 then
@@ -81,19 +81,19 @@ end
 local generator_dirty_flag = false
 
 -- API
-function planetgen.set_dirty_flag()
+function nv_planetgen.set_dirty_flag()
     generator_dirty_flag = true
 end
 
 -- API
-function planetgen.generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
+function nv_planetgen.generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
     local max = math.max
     local min = math.min
 
-    planetgen.set_dirty_flag()
+    nv_planetgen.set_dirty_flag()
     local planet = planet_from_mapping(mapping)
     local offset = mapping.offset
-    local ground_buffer = planetgen.pass_elevation(
+    local ground_buffer = nv_planetgen.pass_elevation(
         minp, maxp, area, offset, A, A2, planet
     )
 
@@ -112,9 +112,9 @@ function planetgen.generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
                 z=min(maxp.z, mapping.maxp.z-1)
             }
         end
-        planetgen.pass_caves(new_minp, new_maxp, area, offset, A, A2, planet)
+        nv_planetgen.pass_caves(new_minp, new_maxp, area, offset, A, A2, planet)
     end
-    planetgen.pass_final(minp, maxp, area, offset, A, A1, A2, mapping, planet, ground_buffer)
+    nv_planetgen.pass_final(minp, maxp, area, offset, A, A1, A2, mapping, planet, ground_buffer)
 end
 
 local function split_not_generated_boxes(not_generated_boxes, minp, maxp)
@@ -190,7 +190,7 @@ end
 local on_not_generated_callback = nil
 
 -- API
-function planetgen.register_on_not_generated(callback)
+function nv_planetgen.register_on_not_generated(callback)
     on_not_generated_callback = callback
 end
 
@@ -230,7 +230,7 @@ local function mapgen_callback(minp, maxp, blockseed)
             z=min(maxp.z, mapping.maxp.z)
         }
         if commonmax.x >= commonmin.x and commonmax.y >= commonmin.y and commonmax.z >= commonmin.z then
-            planetgen.generate_planet_chunk(commonmin, commonmax, area, A, A1, A2, mapping)
+            nv_planetgen.generate_planet_chunk(commonmin, commonmax, area, A, A1, A2, mapping)
             not_generated_boxes = split_not_generated_boxes(not_generated_boxes, commonmin, commonmax)
         end
     end
@@ -255,11 +255,11 @@ end
 
 minetest.register_on_generated(mapgen_callback)
 
-planetgen.register_on_not_generated(nil)
+nv_planetgen.register_on_not_generated(nil)
 
 -- Nodes defined only to avoid errors from mapgens
 
-minetest.register_node('planetgen:stone', {
+minetest.register_node('nv_planetgen:stone', {
     drawtype = "normal",
     visual_scale = 1.0,
     tiles = {
@@ -268,9 +268,9 @@ minetest.register_node('planetgen:stone', {
     paramtype2 = "facedir",
     place_param2 = 8,
 })
-minetest.register_alias('mapgen_stone', 'planetgen:stone')
+minetest.register_alias('mapgen_stone', 'nv_planetgen:stone')
 
-minetest.register_node('planetgen:water_source', {
+minetest.register_node('nv_planetgen:water_source', {
     drawtype = "liquid",
     visual_scale = 1.0,
     tiles = {
@@ -279,7 +279,7 @@ minetest.register_node('planetgen:water_source', {
     paramtype2 = "facedir",
     place_param2 = 8,
 })
-minetest.register_alias('mapgen_water_source', 'planetgen:water_source')
+minetest.register_alias('mapgen_water_source', 'nv_planetgen:water_source')
 
 --[[
 Dictionary, maps node IDs to random texture rotation modulo.
@@ -292,8 +292,8 @@ See 'generate_planet_chunk' in this file. Sensible values are:
 Here, add random texture rotation around Y axis to dummy stone block
 ]]--
 
-planetgen.random_yrot_nodes = {
-    [minetest.get_content_id('planetgen:stone')] = 4
+nv_planetgen.random_yrot_nodes = {
+    [minetest.get_content_id('nv_planetgen:stone')] = 4
 }
 
-planetgen.register_all_nodes()
+nv_planetgen.register_all_nodes()

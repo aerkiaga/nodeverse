@@ -19,7 +19,7 @@ local function register_color_variants(name, num_variants, random_yrot, color_fn
     common abstract node type.
     name            string      node base name, e.g. 'tall_grass'
     num_variants    number      number of distinct node types to register
-    random_yrot     number      value to be registered at 'planetgen.random_yrot_nodes'
+    random_yrot     number      value to be registered at 'nv_planetgen.random_yrot_nodes'
     color_fn        function (x)
         (optional) Should return a table with 'r', 'g', and 'b' members in the
         range [0 .. 255], that will be passed as color string to 'def_fn'.
@@ -30,7 +30,7 @@ local function register_color_variants(name, num_variants, random_yrot, color_fn
         n           number      index of variant, [1 .. 'num_variants']
         color       string      return value of 'color_fn', converted to string
     ]]--
-    local name = "planetgen:" .. name
+    local name = "nv_planetgen:" .. name
     for n=1, num_variants do
         local variant_name = name
         if num_variants > 1 then
@@ -43,7 +43,7 @@ local function register_color_variants(name, num_variants, random_yrot, color_fn
         end
         local definition = def_fn(n, color)
         minetest.register_node(variant_name, definition)
-        planetgen.random_yrot_nodes[minetest.get_content_id(variant_name)] = random_yrot
+        nv_planetgen.random_yrot_nodes[minetest.get_content_id(variant_name)] = random_yrot
     end
 end
 
@@ -280,8 +280,8 @@ local function register_liquid_nodes()
             walkable = false,
             buildable_to = true,
             liquidtype = "source",
-            liquid_alternative_flowing = "planetgen:flowing_water" .. n,
-    	    liquid_alternative_source = "planetgen:water" .. n,
+            liquid_alternative_flowing = "nv_planetgen:flowing_water" .. n,
+    	    liquid_alternative_source = "nv_planetgen:water" .. n,
             waving = 3,
         } end
     )
@@ -324,8 +324,8 @@ local function register_liquid_nodes()
             walkable = false,
             buildable_to = true,
             liquidtype = "flowing",
-            liquid_alternative_flowing = "planetgen:flowing_water" .. n,
-    	    liquid_alternative_source = "planetgen:water" .. n,
+            liquid_alternative_flowing = "nv_planetgen:flowing_water" .. n,
+    	    liquid_alternative_source = "nv_planetgen:water" .. n,
             waving = 3,
         } end
     )
@@ -369,8 +369,8 @@ local function register_liquid_nodes()
             walkable = false,
             buildable_to = true,
             liquidtype = "source",
-            liquid_alternative_flowing = "planetgen:flowing_hydrocarbon",
-    	    liquid_alternative_source = "planetgen:hydrocarbon",
+            liquid_alternative_flowing = "nv_planetgen:flowing_hydrocarbon",
+    	    liquid_alternative_source = "nv_planetgen:hydrocarbon",
             damage_per_second = 2 * 2,
             waving = 3,
         } end
@@ -413,8 +413,8 @@ local function register_liquid_nodes()
             walkable = false,
             buildable_to = true,
             liquidtype = "flowing",
-            liquid_alternative_flowing = "planetgen:flowing_hydrocarbon",
-    	    liquid_alternative_source = "planetgen:hydrocarbon",
+            liquid_alternative_flowing = "nv_planetgen:flowing_hydrocarbon",
+    	    liquid_alternative_source = "nv_planetgen:hydrocarbon",
             damage_per_second = 2 * 2,
             waving = 3,
         } end
@@ -459,8 +459,8 @@ local function register_liquid_nodes()
             walkable = false,
             buildable_to = true,
             liquidtype = "source",
-            liquid_alternative_flowing = "planetgen:flowing_lava",
-    	    liquid_alternative_source = "planetgen:lava",
+            liquid_alternative_flowing = "nv_planetgen:flowing_lava",
+    	    liquid_alternative_source = "nv_planetgen:lava",
             damage_per_second = 4 * 2,
             waving = 3,
         } end
@@ -503,8 +503,8 @@ local function register_liquid_nodes()
             walkable = false,
             buildable_to = true,
             liquidtype = "flowing",
-            liquid_alternative_flowing = "planetgen:flowing_lava",
-    	    liquid_alternative_source = "planetgen:lava",
+            liquid_alternative_flowing = "nv_planetgen:flowing_lava",
+    	    liquid_alternative_source = "nv_planetgen:lava",
             damage_per_second = 4 * 2,
             waving = 3,
         } end
@@ -644,7 +644,7 @@ can be combined, by creating as many palettes as 'num_variants' and using
 parameter 'n' of 'def_fn' to choose.
 ]]
 
-function planetgen.register_all_nodes()
+function nv_planetgen.register_all_nodes()
     register_base_nodes()
     register_liquid_nodes()
     register_icy_nodes()
@@ -655,23 +655,23 @@ end
  # VARIANT SELECTION
 ]]
 
-function planetgen.choose_planet_nodes_and_colors(planet)
+function nv_planetgen.choose_planet_nodes_and_colors(planet)
     local G = PcgRandom(planet.seed, planet.seed)
     local stone_color = G:next(1, 16)
-    planet.node_types.dust = minetest.get_content_id("planetgen:dust" .. stone_color)
-    planet.node_types.sediment = minetest.get_content_id("planetgen:sediment" .. stone_color)
-    planet.node_types.gravel = minetest.get_content_id("planetgen:gravel" .. stone_color)
-    planet.node_types.stone = minetest.get_content_id("planetgen:stone" .. stone_color)
+    planet.node_types.dust = minetest.get_content_id("nv_planetgen:dust" .. stone_color)
+    planet.node_types.sediment = minetest.get_content_id("nv_planetgen:sediment" .. stone_color)
+    planet.node_types.gravel = minetest.get_content_id("nv_planetgen:gravel" .. stone_color)
+    planet.node_types.stone = minetest.get_content_id("nv_planetgen:stone" .. stone_color)
     if planet.atmosphere == "freezing" then
-        planet.node_types.liquid = minetest.get_content_id("planetgen:hydrocarbon")
+        planet.node_types.liquid = minetest.get_content_id("nv_planetgen:hydrocarbon")
     elseif planet.atmosphere == "scorching" then
-        planet.node_types.liquid = minetest.get_content_id("planetgen:lava")
+        planet.node_types.liquid = minetest.get_content_id("nv_planetgen:lava")
     elseif gen_true_with_probability(G, planet.terrestriality + 0.18) then
-        planet.node_types.liquid = minetest.get_content_id("planetgen:water" .. G:next(1, 24))
+        planet.node_types.liquid = minetest.get_content_id("nv_planetgen:water" .. G:next(1, 24))
     else
-        planet.node_types.liquid = minetest.get_content_id("planetgen:water" .. G:next(25, 32))
+        planet.node_types.liquid = minetest.get_content_id("nv_planetgen:water" .. G:next(25, 32))
     end
-    planet.node_types.snow = minetest.get_content_id("planetgen:snow")
+    planet.node_types.snow = minetest.get_content_id("nv_planetgen:snow")
     local grass_colorN
     if gen_true_with_probability(G, 1/2) then
         grass_colorN = G:next(1, 4)
@@ -680,10 +680,10 @@ function planetgen.choose_planet_nodes_and_colors(planet)
     end
     local grass_colorP = G:next(0, 7)
     local grass_soil_color = 16*(grass_colorN-1) + (stone_color-1) + 1
-    planet.node_types.grass_soil = minetest.get_content_id("planetgen:grass_soil" .. grass_soil_color)
+    planet.node_types.grass_soil = minetest.get_content_id("nv_planetgen:grass_soil" .. grass_soil_color)
     planet.color_dictionary[planet.node_types.grass_soil] = grass_colorP
     local grass_colorT = 8*(grass_colorN-1) + grass_colorP + 1
-    planet.node_types.grass = minetest.get_content_id("planetgen:grass" .. grass_colorT)
-    planet.node_types.dry_grass = minetest.get_content_id("planetgen:dry_grass" .. grass_colorT)
-    planet.node_types.tall_grass = minetest.get_content_id("planetgen:tall_grass" .. grass_colorT)
+    planet.node_types.grass = minetest.get_content_id("nv_planetgen:grass" .. grass_colorT)
+    planet.node_types.dry_grass = minetest.get_content_id("nv_planetgen:dry_grass" .. grass_colorT)
+    planet.node_types.tall_grass = minetest.get_content_id("nv_planetgen:tall_grass" .. grass_colorT)
 end

@@ -179,7 +179,7 @@ end
  # ENTRY POINT
 ]]--
 
-function planetgen.pass_caves(minp_abs, maxp_abs, area, offset, A, A2, planet)
+function nv_planetgen.pass_caves(minp_abs, maxp_abs, area, offset, A, A2, planet)
     --local noise = caves_init_noise(planet)
     local noise = caves_init_noise(planet)
 
