@@ -19,7 +19,7 @@ local function caves_check_block(sides)
     return num_openings > 1
 end
 
-caves_def_threshold_buffer = {}
+local caves_def_threshold_buffer = {}
 
 local function caves_init_def_threshold_buffer()
     local k = 1
@@ -46,9 +46,9 @@ local function caves_init_def_threshold_buffer()
     end
 end
 
-caves_threshold_buffer = {}
+local caves_threshold_buffer = {}
 
-caves_const_boxes = {
+local caves_const_boxes = {
     {minp = {x=15, y=0, z=0}, maxp = {x=15, y=15, z=15}}, -- X+
     {minp = {x=0, y=15, z=0}, maxp = {x=15, y=15, z=15}}, -- Y+
     {minp = {x=0, y=0, z=15}, maxp = {x=15, y=15, z=15}}, -- Z+
@@ -88,7 +88,7 @@ local function caves_gen_threshold_buffer(sides)
     end
 end
 
-caves_3d_buffer = {}
+local caves_3d_buffer = {}
 
 local function caves_gen_block(
     block_minp_abs, minp_abs, maxp_abs, offset, area, A, A2, noise, planet

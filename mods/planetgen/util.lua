@@ -16,7 +16,7 @@ function table_copy(tab)
     return r
 end
 
-profile_times = {}
+local profile_times = {}
 
 function profile_start(name) --
     profile_times[name] = minetest.get_us_time()
@@ -150,7 +150,7 @@ end
  # NOISE
 ]]
 
-perlin_generators = {}
+local perlin_generators = {}
 
 function PerlinWrapper(noiseparams)
     local generator = nil
@@ -185,7 +185,7 @@ function PerlinWrapper(noiseparams)
     }
 end
 
-perlin_map_generators = {}
+local perlin_map_generators = {}
 
 function PerlinMapWrapper(noiseparams, size)
     local generator = nil
