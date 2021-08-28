@@ -1,0 +1,3 @@
+[submodule "mods/Autobox"]
+	path = mods/Autobox
+	url = https://github.com/ExeVirus/Autobox
