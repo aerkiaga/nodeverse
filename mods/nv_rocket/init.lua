@@ -10,10 +10,10 @@ Included files:
     nodes.lua           Placed rocket node
 ]]--
 
-local rPath = minetest.get_modpath("rocket")
+local rPath = minetest.get_modpath("nv_rocket")
 
 -- Namespace for all the API functions
-rocket = {}
+nv_rocket = {}
 
 dofile(rPath .. "/hand.lua")
 dofile(rPath .. "/player.lua")

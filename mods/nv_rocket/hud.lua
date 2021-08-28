@@ -5,7 +5,7 @@ This file controls how data is persented to the player in the HUD.
 	ENTRY POINT
 ]]--
 
-local players_data = rocket.players_data
+local players_data = nv_rocket.players_data
 
 local base_position = {x=0.05, y=0.07}
 
@@ -22,7 +22,7 @@ end
  # ENTRY POINT
 ]]--
 
-function rocket.update_hud(player)
+function nv_rocket.update_hud(player)
 	local name = player:get_player_name()
 	if players_data[name] == nil then
 		return

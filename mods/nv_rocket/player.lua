@@ -6,11 +6,11 @@ decent rocket physics, and allowing them to turn back into a player
 	INITIALIZATION
 ]]--
 
-rocket.players_data = {}
-local players_data = rocket.players_data
+nv_rocket.players_data = {}
+local players_data = nv_rocket.players_data
 
-rocket.server_records = {}
-local server_records = rocket.server_records
+nv_rocket.server_records = {}
+local server_records = nv_rocket.server_records
 
 -- Default player appearance
 player_api.register_model("rocket_player.obj", {
@@ -23,7 +23,7 @@ player_api.register_model("rocket_player.obj", {
 })
 
 -- Turn a player into a rocket
-function rocket.player_to_rocket(player, pos)
+function nv_rocket.player_to_rocket(player, pos)
     player:set_physics_override {
         speed = 0,
 		jump = 0,
@@ -39,7 +39,7 @@ function rocket.player_to_rocket(player, pos)
 end
 
 --Turn a rocket player back into a player
-function rocket.rocket_to_player(player, pos)
+function nv_rocket.rocket_to_player(player, pos)
 	local name = player:get_player_name()
     player_api.player_attached[name] = false
     player_api.set_model(player, "character.b3d")
@@ -64,8 +64,8 @@ function rocket.rocket_to_player(player, pos)
 	player:set_velocity {x=0, y=0, z=0}
 
 	local inventory = player:get_inventory()
-	if not inventory:contains_item("main", "rocket:rocket 1") then
-		inventory:add_item("main", "rocket:rocket 1")
+	if not inventory:contains_item("main", "nv_rocket:rocket 1") then
+		inventory:add_item("main", "nv_rocket:rocket 1")
 	end
 
 	players_data[name].is_rocket = false
@@ -73,7 +73,7 @@ function rocket.rocket_to_player(player, pos)
 	players_data[name].thrust = nil
 end
 
-function rocket.particles(pos, vel, dtime)
+function nv_rocket.particles(pos, vel, dtime)
 	local maxtime = dtime
 	local offset = 0
 	if vel.y < 0 then
@@ -115,16 +115,16 @@ local function rocket_physics(dtime, player, name)
 	    physics.gravity = -1
 		players_data[name].thrust = "full"
 		spent_fuel = 1 * dtime
-	    rocket.particles(pos, vel, dtime)
+	    nv_rocket.particles(pos, vel, dtime)
 	elseif controls.sneak then
 		if players_data[name].is_lifted_off and current_fuel > 0 then
 			physics.speed = 2
 			physics.gravity = 0
 			players_data[name].thrust = "low"
 			spent_fuel = 0.4 * dtime
-		    rocket.particles(pos, vel, dtime)
+		    nv_rocket.particles(pos, vel, dtime)
 		else
-			rocket.rocket_to_player(player)
+			nv_rocket.rocket_to_player(player)
 			physics = nil
 		end
 	else
@@ -149,14 +149,14 @@ local function rocket_physics(dtime, player, name)
 	    local node = minetest.get_node(pos)
 	    pos.y = pos.y + 1
 	    if minetest.registered_nodes[node.name].walkable then
-	        rocket.rocket_to_player(player, pos)
+	        nv_rocket.rocket_to_player(player, pos)
 	    end
 	else
 	    if vel.y > 4 then
 	        players_data[name].is_lifted_off = true
 	    end
 	end
-	rocket.update_hud(player)
+	nv_rocket.update_hud(player)
 end
 
 local function globalstep_callback(dtime)
@@ -181,15 +181,15 @@ local function rocket_join_player(player, last_login)
 		thrust = nil,
 		fuel = 100
 	}
-	rocket.rocket_to_player(player)
-	rocket.update_hud(player)
+	nv_rocket.rocket_to_player(player)
+	nv_rocket.update_hud(player)
 end
 
 local function rocket_respawn_player(player)
 	local name = player:get_player_name()
-	rocket.rocket_to_player(player)
+	nv_rocket.rocket_to_player(player)
 	players_data[name].fuel = 100
-	rocket.update_hud(player)
+	nv_rocket.update_hud(player)
 end
 
 local server_record_string = ""
@@ -225,7 +225,7 @@ end
 local function rocket_die_player(player)
 	local name = player:get_player_name()
 
-	rocket.rocket_to_player(player)
+	nv_rocket.rocket_to_player(player)
 	local pos = player:get_pos()
 	local horizontal = math.sqrt(pos.x^2 + pos.z^2)
 	local vertical = math.abs(pos.y)
