@@ -1,5 +1,8 @@
 function nv_ship_building.is_flying_callback(player)
     -- Player is flying
+    if #(player:get_children()) == 0 then
+        return
+    end
     local dtime = get_dtime()
     local controls = player:get_player_control()
     local vel = player:get_velocity()
@@ -51,6 +54,9 @@ end
 
 function nv_ship_building.is_landed_callback(player)
     -- Player has landed or has not lifted off yet
+    if #(player:get_children()) == 0 then
+        return
+    end
     local vel = player:get_velocity()
     player:add_velocity {x=-vel.x, y=-vel.y, z=-vel.z}
     local controls = player:get_player_control()
@@ -81,6 +87,9 @@ function nv_ship_building.is_landed_callback(player)
 end
 
 local function ship_rightclick_callback(pos, node, clicker, itemstack, pointed_thing)
+    if #(clicker:get_children()) >= 1 then
+        return
+    end
     if nv_ship_building.try_board_ship(pos, clicker) then
         -- Board ship
         set_fall_damage(clicker, 20)
@@ -118,7 +127,34 @@ minetest.register_entity("nv_ship_building:ent_seat", {
 
 local function joinplayer_callback(player, last_login)
     local inventory = player:get_inventory()
-	inventory:add_item("main", "nv_ship_building:seat 1")
+    if not inventory:contains_item("main", "nv_ship_building:seat 1") then
+	   inventory:add_item("main", "nv_ship_building:seat 1")
+    end
+end
+
+local function dieplayer_callback(player, last_login)
+    local inventory = player:get_inventory()
+    if not inventory:contains_item("main", "nv_ship_building:seat 1") then
+	   inventory:add_item("main", "nv_ship_building:seat 1")
+    end
+    local children = player:get_children()
+    if #children >= 1 then
+        set_fall_damage(player, 100)
+        player:set_physics_override {
+            speed = 1,
+            jump = 1,
+            gravity = 1,
+            sneak = true
+        }
+        for index, child in ipairs(children) do
+            local properties = child:get_properties() or {}
+            if true then
+                child:set_detach(player)
+                child:remove()
+            end
+        end
+    end
 end
 
 minetest.register_on_joinplayer(joinplayer_callback)
+minetest.register_on_dieplayer(dieplayer_callback)
