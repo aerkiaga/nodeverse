@@ -1,22 +1,10 @@
-local function get_landing_position(player)
-    local pos = player:get_pos()
-    for y=pos.y, pos.y - 64, -1 do
-        pos.y = y
-        local node = minetest.get_node(pos)
-        if minetest.registered_nodes[node.name].walkable then
-            return pos
-        end
-    end
-    return nil
-end
-
 function nv_ship_building.is_flying_callback(player)
     -- Player is flying
     local dtime = get_dtime()
     local controls = player:get_player_control()
     local vel = player:get_velocity()
     if controls.sneak then
-        local landing_pos = get_landing_position(player)
+        local landing_pos = nv_ship_building.get_landing_position(player)
         if landing_pos ~= nil then
             -- Vertical landing
             landing_pos.y = landing_pos.y + 1
@@ -81,16 +69,8 @@ function nv_ship_building.is_landed_callback(player)
     end
 end
 
-local function try_board_ship(pos, player)
-    minetest.remove_node(pos)
-    local ent_seat = minetest.add_entity(pos, "nv_ship_building:ent_seat")
-    player:set_pos(pos)
-    ent_seat:set_attach(player)
-    return true
-end
-
 local function ship_rightclick_callback(pos, node, clicker, itemstack, pointed_thing)
-    if try_board_ship(pos, clicker) then
+    if nv_ship_building.try_board_ship(pos, clicker) then
         -- Board ship
         set_fall_damage(clicker, 20)
         clicker:set_physics_override {
