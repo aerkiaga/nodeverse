@@ -76,7 +76,6 @@ end
 function nv_rocket.particles(pos, vel, dtime)
 	local maxtime = dtime
 	local offset = 0
-	print(dtime) --D
 	if vel.y < 0 then
 		maxtime = math.min(1, math.min(dtime, -1/vel.y))
 		offset = -vel.y*dtime*2
