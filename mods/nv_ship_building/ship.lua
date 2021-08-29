@@ -18,21 +18,25 @@ function nv_ship_building.try_board_ship(pos, player)
     return true
 end
 
-local function try_place_ship_at(pos)
+local function try_place_ship_at(pos, facing)
+    -- 'facing' values: 0, 1, 2, 3
+    -- +X, +Z, -X, -Z
     local node = minetest.get_node(pos)
     if minetest.registered_nodes[node.name].walkable then
         return false
     end
     minetest.set_node(pos, {
         name = "nv_ship_building:seat",
-        param1 = 0, param2 = 0
+        param1 = 0, param2 = facing
     })
     return true
 end
 
 function nv_ship_building.try_unboard_ship(player)
     local pos = player:get_pos()
-    if try_place_ship_at(pos) then
+    local yaw = player:get_look_horizontal()
+    local facing = math.floor(-2*yaw/math.pi + 0.5) % 4
+    if try_place_ship_at(pos, facing) then
         local children = player:get_children()
         for index, child in ipairs(children) do
             local properties = child:get_properties() or {}
