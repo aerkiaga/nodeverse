@@ -41,6 +41,13 @@ function nv_ship_building.try_unboard_ship(player)
                 child:remove()
             end
         end
+        player:set_local_animation(
+            {x = 0,   y = 79},
+            {x = 168, y = 187},
+            {x = 189, y = 198},
+            {x = 200, y = 219},
+            30
+        )
         return true
     else
         return false

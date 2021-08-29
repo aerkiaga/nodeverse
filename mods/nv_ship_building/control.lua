@@ -72,6 +72,7 @@ function nv_ship_building.is_landed_callback(player)
         minetest.after(0.1, nv_ship_building.is_flying_callback, player)
     elseif controls.up or controls.down or controls.left or controls.right then
         if nv_ship_building.try_unboard_ship(player) then
+            set_fall_damage(player, 100)
             player:set_physics_override {
                 speed = 1,
                 jump = 1,
@@ -99,6 +100,13 @@ local function ship_rightclick_callback(pos, node, clicker, itemstack, pointed_t
             gravity = 1,
             sneak = false
         }
+        clicker:set_local_animation(
+            {x = 81, y = 160},
+            {x = 81, y = 160},
+            {x = 81, y = 160},
+            {x = 81, y = 160},
+            30
+        )
         minetest.after(0.1, nv_ship_building.is_landed_callback, clicker)
     end
 end
@@ -153,6 +161,13 @@ local function dieplayer_callback(player, last_login)
                 child:remove()
             end
         end
+        player:set_local_animation(
+            {x = 0,   y = 79},
+            {x = 168, y = 187},
+            {x = 189, y = 198},
+            {x = 200, y = 219},
+            30
+        )
     end
 end
 
