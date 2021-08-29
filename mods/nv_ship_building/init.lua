@@ -1,13 +1,42 @@
+local prev_globalstep = nil
+
+local function get_dtime()
+    local r
+    local current_time = minetest.get_us_time()
+	if prev_globalstep == nil then
+		r = 0
+	else
+		r = (current_time - prev_globalstep) / 1e+6
+	end
+	prev_globalstep = current_time
+    return r
+end
+
+local function is_flying_callback(player)
+    local dtime = get_dtime()
+    local controls = player:get_player_control()
+    if controls.jump then
+        local vel = player:get_velocity()
+        if vel.y < 25 then
+            print("OK")
+            local y_delta = math.min(25 - vel.y, 15*dtime)
+            player:add_velocity {x=0, y=y_delta, z=0}
+        end
+    end
+    minetest.after(0.02, is_flying_callback, player)
+end
+
 local function is_landed_callback(player)
     local controls = player:get_player_control()
     if controls.jump then
         player:add_velocity {x=0, y=15, z=0}
         player:set_physics_override {
-            speed = 2,
+            speed = 5,
             jump = 0,
-            gravity = 0,
+            gravity = 0.2,
             sneak = false
         }
+        minetest.after(0.1, is_flying_callback, player)
     else
         minetest.after(0.1, is_landed_callback, player)
     end
