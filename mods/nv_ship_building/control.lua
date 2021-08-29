@@ -117,7 +117,8 @@ minetest.register_node("nv_ship_building:seat", {
     sunlight_propagates = true,
     paramtype2 = "facedir",
 
-    tiles = {"rocket.png"},
+    tiles = {"seat.png"},
+    use_texture_alpha = "clip",
     groups = { oddly_breakable_by_hand=3 },
 
     on_rightclick = ship_rightclick_callback,
@@ -127,9 +128,10 @@ minetest.register_entity("nv_ship_building:ent_seat", {
     initial_properties = {
         visual = "cube",
         textures = {
-            "rocket.png", "rocket.png", "rocket.png",
-            "rocket.png", "rocket.png", "rocket.png"
+            "seat.png", "seat.png", "seat.png",
+            "seat.png", "seat.png", "seat.png"
         },
+        use_texture_alpha = true
     },
 })
 
