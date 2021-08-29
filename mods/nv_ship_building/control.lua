@@ -19,7 +19,7 @@ function nv_ship_building.is_flying_callback(player)
                 gravity = 0,
                 sneak = false
             }
-            minetest.after(0.9*target_time, function (player)
+            minetest.after(target_time, function (player)
                 -- Touched ground
                 local vel = player:get_velocity()
                 set_fall_damage(player, 20)
