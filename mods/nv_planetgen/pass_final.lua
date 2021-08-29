@@ -33,6 +33,7 @@ function nv_planetgen.pass_final(
         for x_abs=minpx, maxpx do
             local k = (z_abs - minpz)*(maxpx - minpx + 1) + x_abs - minpx + 1
             local ground = math.floor(ground_buffer[k])
+            ground = math.max(ground, 0)
             local maxpy_new = math.min(maxpy, ground - offset.y + 10)
             if maxpy_new >= minpy then
                 for y_abs=minpy, maxpy_new do
