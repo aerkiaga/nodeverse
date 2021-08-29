@@ -200,9 +200,6 @@ function nv_planetgen.pass_caves(minp_abs, maxp_abs, area, offset, A, A2, planet
                     y=math.min(maxp_abs.y, block_minp.y+15),
                     z=math.min(maxp_abs.z, block_minp.z+15)
                 }
-                --caves_gen_block(
-                    --block_minp, common_minp, common_maxp, area, offset, A, A2, noise, planet
-                --)
                 caves_gen_block(
                     block_minp, common_minp, common_maxp, offset, area, A, A2, noise, planet
                 )
