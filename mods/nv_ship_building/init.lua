@@ -15,10 +15,14 @@ end
 local function is_flying_callback(player)
     local dtime = get_dtime()
     local controls = player:get_player_control()
-    if controls.jump then
-        local vel = player:get_velocity()
+    local vel = player:get_velocity()
+    if controls.sneak then
+        if vel.y > -25 then
+            local y_delta = math.max(-25 - vel.y, -7*dtime)
+            player:add_velocity {x=0, y=y_delta, z=0}
+        end
+    elseif controls.jump then
         if vel.y < 25 then
-            print("OK")
             local y_delta = math.min(25 - vel.y, 15*dtime)
             player:add_velocity {x=0, y=y_delta, z=0}
         end
