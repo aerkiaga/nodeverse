@@ -172,6 +172,33 @@ local function globalstep_callback(dtime)
     end
 end
 
+function nv_rocket.configure_sky(player)
+	player:set_sky {
+		base_color = 0xFF080008,
+		type = "skybox",
+		textures = {
+			"skybox_top.png",
+			"skybox_bottom.png",
+			"skybox_right.png",
+			"skybox_left.png",
+			"skybox_back.png",
+			"skybox_front.png"
+		},
+		clouds = false,
+	}
+	player:set_sun {
+		visible = false,
+		sunrise_visible = false
+	}
+	player:set_moon {
+		visible = false
+	}
+	player:set_stars {
+		visible = false
+	}
+	player:override_day_night_ratio(1)
+end
+
 -- Rocket on_join_player
 local function rocket_join_player(player, last_login)
 	local name = player:get_player_name()
@@ -182,6 +209,7 @@ local function rocket_join_player(player, last_login)
 		fuel = 100
 	}
 	nv_rocket.rocket_to_player(player)
+	nv_rocket.configure_sky(player)
 	nv_rocket.update_hud(player)
 end
 
