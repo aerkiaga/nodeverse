@@ -20,7 +20,7 @@ end
 
 local function get_landing_position(player)
     local pos = player:get_pos()
-    for y=pos.y, pos.y - 32, -1 do
+    for y=pos.y, pos.y - 64, -1 do
         pos.y = y
         local node = minetest.get_node(pos)
         if minetest.registered_nodes[node.name].walkable then
@@ -42,7 +42,13 @@ function is_flying_callback(player)
             local target_vel = -(pos.y - landing_pos.y)/2.0
             set_fall_damage(player, 0)
             player:add_velocity {x=-vel.x, y=-vel.y+target_vel, z=-vel.z}
-            minetest.after(1.5, function (player)
+            player:set_physics_override {
+                speed = 0,
+                jump = 0,
+                gravity = 0,
+                sneak = false
+            }
+            minetest.after(1.9, function (player)
                 local vel = player:get_velocity()
                 set_fall_damage(player, 20)
                 player:add_velocity {x=-vel.x, y=-vel.y, z=-vel.z}
