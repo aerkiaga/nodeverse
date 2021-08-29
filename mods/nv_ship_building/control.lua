@@ -64,6 +64,17 @@ function nv_ship_building.is_landed_callback(player)
             sneak = false
         }
         minetest.after(0.1, nv_ship_building.is_flying_callback, player)
+    elseif controls.up or controls.down or controls.left or controls.right then
+        if nv_ship_building.try_unboard_ship(player) then
+            player:set_physics_override {
+                speed = 1,
+                jump = 1,
+                gravity = 1,
+                sneak = true
+            }
+        else
+            minetest.after(0.1, nv_ship_building.is_landed_callback, player)
+        end
     else
         minetest.after(0.1, nv_ship_building.is_landed_callback, player)
     end
