@@ -1,6 +1,8 @@
 local function seat_rightclick_callback(pos, node, clicker, itemstack, pointed_thing)
     minetest.remove_node(pos)
-    minetest.add_entity(pos, "nv_ship_building:ent_seat")
+    pos.y = pos.y + 1
+    local ent_seat = minetest.add_entity(pos, "nv_ship_building:ent_seat")
+    clicker:set_attach(ent_seat)
 end
 
 minetest.register_node("nv_ship_building:seat", {
@@ -22,7 +24,7 @@ minetest.register_entity("nv_ship_building:ent_seat", {
             "rocket.png", "rocket.png", "rocket.png",
             "rocket.png", "rocket.png", "rocket.png"
         },
-        automatic_rotate = 1.0,
+        --automatic_rotate = 1.0,
     },
 })
 
