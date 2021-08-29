@@ -225,12 +225,12 @@ local function register_base_nodes()
             drawtype = "normal",
             visual_scale = 1.0,
             tiles = {
-                "_stone.png^[colorize:" .. color .. ":32",
-                "_stone.png^[colorize:" .. color .. ":32",
-                "(_stone.png^[transformR180)^[colorize:" .. color .. ":32",
-                "_stone.png^[colorize:" .. color .. ":32",
-                "(_stone.png^[transformR180)^[colorize:" .. color .. ":32",
-                "_stone.png^[colorize:" .. color .. ":32"
+                "stone.png^[colorize:" .. color .. ":32",
+                "stone.png^[colorize:" .. color .. ":32",
+                "(stone.png^[transformR180)^[colorize:" .. color .. ":32",
+                "stone.png^[colorize:" .. color .. ":32",
+                "(stone.png^[transformR180)^[colorize:" .. color .. ":32",
+                "stone.png^[colorize:" .. color .. ":32"
             },
             paramtype2 = "facedir",
             place_param2 = 0
