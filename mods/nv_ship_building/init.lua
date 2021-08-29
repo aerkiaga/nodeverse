@@ -1,8 +1,18 @@
+local function is_landed_callback(ship, player)
+    local controls = player:get_player_control()
+    if controls.jump then
+        ship:add_velocity {x=0, y=5, z=0}
+    else
+        minetest.after(0.1, is_landed_callback, ship, player)
+    end
+end
+
 local function seat_rightclick_callback(pos, node, clicker, itemstack, pointed_thing)
     minetest.remove_node(pos)
     pos.y = pos.y + 1
     local ent_seat = minetest.add_entity(pos, "nv_ship_building:ent_seat")
     clicker:set_attach(ent_seat)
+    minetest.after(0.1, is_landed_callback, ent_seat, clicker)
 end
 
 minetest.register_node("nv_ship_building:seat", {
