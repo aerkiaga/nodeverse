@@ -12,6 +12,12 @@ local function get_dtime()
     return r
 end
 
+local function set_fall_damage(player, amount)
+    local armor = player:get_armor_groups()
+    armor.fall_damage_add_percent = amount - 100
+    player:set_armor_groups(armor)
+end
+
 local function get_landing_position(player)
     local pos = player:get_pos()
     for y=pos.y, pos.y - 32, -1 do
@@ -32,15 +38,23 @@ function is_flying_callback(player)
         local landing_pos = get_landing_position(player)
         if landing_pos ~= nil then
             landing_pos.y = landing_pos.y + 1
-            player:set_pos(landing_pos)
-            player:add_velocity {x=-vel.x, y=-vel.y, z=-vel.z}
-            player:set_physics_override {
-                speed = 0,
-                jump = 0,
-                gravity = 1,
-                sneak = false
-            }
-            minetest.after(0.02, is_landed_callback, player)
+            local pos = player:get_pos()
+            local target_vel = -(pos.y - landing_pos.y)/2.0
+            set_fall_damage(player, 0)
+            player:add_velocity {x=-vel.x, y=-vel.y+target_vel, z=-vel.z}
+            minetest.after(1.5, function (player)
+                local vel = player:get_velocity()
+                set_fall_damage(player, 20)
+                player:add_velocity {x=-vel.x, y=-vel.y, z=-vel.z}
+                player:set_pos(landing_pos)
+                player:set_physics_override {
+                    speed = 0,
+                    jump = 0,
+                    gravity = 1,
+                    sneak = false
+                }
+                minetest.after(0.02, is_landed_callback, player)
+            end, player)
             return
         elseif vel.y > -25 then
             local y_delta = math.max(-25 - vel.y, -7*dtime)
@@ -56,6 +70,8 @@ function is_flying_callback(player)
 end
 
 function is_landed_callback(player)
+    local vel = player:get_velocity()
+    player:add_velocity {x=-vel.x, y=-vel.y, z=-vel.z}
     local controls = player:get_player_control()
     if controls.jump then
         player:add_velocity {x=0, y=15, z=0}
@@ -76,6 +92,7 @@ local function seat_rightclick_callback(pos, node, clicker, itemstack, pointed_t
     local ent_seat = minetest.add_entity(pos, "nv_ship_building:ent_seat")
     clicker:set_pos(pos)
     ent_seat:set_attach(clicker)
+    set_fall_damage(clicker, 20)
     clicker:set_physics_override {
         speed = 0,
         jump = 0,
