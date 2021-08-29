@@ -76,12 +76,13 @@ end
 function nv_rocket.particles(pos, vel, dtime)
 	local maxtime = dtime
 	local offset = 0
+	print(dtime) --D
 	if vel.y < 0 then
-		maxtime = math.min(dtime, -1/vel.y)
+		maxtime = math.min(1, math.min(dtime, -1/vel.y))
 		offset = -vel.y*dtime*2
 	end
     minetest.add_particlespawner {
-        amount = 50 * dtime,
+        amount = math.min(50, 50 * dtime),
         time   = maxtime,
         minpos = {x=pos.x-0.5, y=pos.y-offset, z=pos.z-0.5},
         maxpos = {x=pos.x+0.5, y=pos.y-offset, z=pos.z+0.5},
@@ -152,14 +153,24 @@ local function rocket_physics(dtime, player, name)
 	        nv_rocket.rocket_to_player(player, pos)
 	    end
 	else
-	    if vel.y > 4 then
+	    if vel.y > 5 then
 	        players_data[name].is_lifted_off = true
 	    end
 	end
 	nv_rocket.update_hud(player)
 end
 
+local prev_globalstep = nil
+
 local function globalstep_callback(dtime)
+	local current_time = minetest.get_us_time()
+	if prev_globalstep == nil then
+		dtime = 0
+	else
+		dtime = (current_time - prev_globalstep) / 1e+6
+	end
+	prev_globalstep = current_time
+
     local player_list = minetest.get_connected_players()
     for _, player in pairs(player_list) do
         -- Check if player is rocket
@@ -170,6 +181,8 @@ local function globalstep_callback(dtime)
 			end
         end
     end
+
+	minetest.after(0.02, globalstep_callback, 0)
 end
 
 function nv_rocket.configure_sky(player)
@@ -276,7 +289,9 @@ end
  # INITIALIZATION
 ]]
 
-minetest.register_globalstep(globalstep_callback)
+minetest.after(0.2, globalstep_callback, 0)
+
+--minetest.register_globalstep(globalstep_callback)
 minetest.register_on_joinplayer(rocket_join_player)
 minetest.register_on_respawnplayer(rocket_respawn_player)
 minetest.register_on_dieplayer(rocket_die_player)
