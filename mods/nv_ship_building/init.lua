@@ -12,12 +12,37 @@ local function get_dtime()
     return r
 end
 
-local function is_flying_callback(player)
+local function get_landing_position(player)
+    local pos = player:get_pos()
+    for y=pos.y, pos.y - 32, -1 do
+        pos.y = y
+        local node = minetest.get_node(pos)
+        if minetest.registered_nodes[node.name].walkable then
+            return pos
+        end
+    end
+    return nil
+end
+
+function is_flying_callback(player)
     local dtime = get_dtime()
     local controls = player:get_player_control()
     local vel = player:get_velocity()
     if controls.sneak then
-        if vel.y > -25 then
+        local landing_pos = get_landing_position(player)
+        if landing_pos ~= nil then
+            landing_pos.y = landing_pos.y + 1
+            player:set_pos(landing_pos)
+            player:add_velocity {x=-vel.x, y=-vel.y, z=-vel.z}
+            player:set_physics_override {
+                speed = 0,
+                jump = 0,
+                gravity = 1,
+                sneak = false
+            }
+            minetest.after(0.02, is_landed_callback, player)
+            return
+        elseif vel.y > -25 then
             local y_delta = math.max(-25 - vel.y, -7*dtime)
             player:add_velocity {x=0, y=y_delta, z=0}
         end
@@ -30,7 +55,7 @@ local function is_flying_callback(player)
     minetest.after(0.02, is_flying_callback, player)
 end
 
-local function is_landed_callback(player)
+function is_landed_callback(player)
     local controls = player:get_player_control()
     if controls.jump then
         player:add_velocity {x=0, y=15, z=0}
@@ -48,7 +73,6 @@ end
 
 local function seat_rightclick_callback(pos, node, clicker, itemstack, pointed_thing)
     minetest.remove_node(pos)
-    pos.y = pos.y + 1
     local ent_seat = minetest.add_entity(pos, "nv_ship_building:ent_seat")
     clicker:set_pos(pos)
     ent_seat:set_attach(clicker)
