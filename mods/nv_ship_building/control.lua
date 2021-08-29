@@ -20,7 +20,7 @@ function is_flying_callback(player)
             landing_pos.y = landing_pos.y + 1
             local pos = player:get_pos()
             local target_vel = -(pos.y - landing_pos.y)/2.0
-            set_fall_damage(player, 0)
+            set_fall_damage(player, -1000)
             player:add_velocity {x=-vel.x, y=-vel.y+target_vel, z=-vel.z}
             player:set_physics_override {
                 speed = 0,
@@ -39,7 +39,7 @@ function is_flying_callback(player)
                     gravity = 1,
                     sneak = false
                 }
-                minetest.after(0.02, is_landed_callback, player)
+                minetest.after(0.1, is_landed_callback, player)
             end, player)
             return
         elseif vel.y > -25 then
@@ -64,7 +64,7 @@ function is_landed_callback(player)
         player:set_physics_override {
             speed = 5,
             jump = 0,
-            gravity = 0.2,
+            gravity = 0.1,
             sneak = false
         }
         minetest.after(0.1, is_flying_callback, player)
