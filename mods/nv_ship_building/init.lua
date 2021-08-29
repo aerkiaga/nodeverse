@@ -1,5 +1,6 @@
 local function seat_rightclick_callback(pos, node, clicker, itemstack, pointed_thing)
     minetest.remove_node(pos)
+    minetest.add_entity(pos, "nv_ship_building:ent_seat")
 end
 
 minetest.register_node("nv_ship_building:seat", {
@@ -11,7 +12,18 @@ minetest.register_node("nv_ship_building:seat", {
     tiles = {"rocket.png"},
     groups = { oddly_breakable_by_hand=3 },
 
-    on_rightclick = rocket_rightclick,
+    on_rightclick = seat_rightclick_callback,
+})
+
+minetest.register_entity("nv_ship_building:ent_seat", {
+    initial_properties = {
+        visual = "cube",
+        textures = {
+            "rocket.png", "rocket.png", "rocket.png",
+            "rocket.png", "rocket.png", "rocket.png"
+        },
+        automatic_rotate = 1.0,
+    },
 })
 
 local function joinplayer_callback(player, last_login)
