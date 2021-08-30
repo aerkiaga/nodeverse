@@ -55,3 +55,18 @@ register_node_and_entity("floor", {
     visual = "mesh",
     textures = {"floor.png"},
 })
+
+register_node_and_entity("scaffold", {
+    description = "Scaffold",
+    drawtype = "mesh",
+    sunlight_propagates = true,
+    paramtype2 = "facedir",
+
+    tiles = {"scaffold.png"},
+    use_texture_alpha = "clip",
+    groups = {oddly_breakable_by_hand = 3},
+    mesh = "scaffold.obj",
+
+    visual = "mesh",
+    textures = {"scaffold.png"},
+})
