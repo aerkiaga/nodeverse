@@ -20,7 +20,7 @@ end
 
 local function try_place_ship_at(pos, facing)
     -- 'facing' values: 0, 1, 2, 3
-    -- +X, +Z, -X, -Z
+    -- +Z, +X, -Z, -X
     local node = minetest.get_node(pos)
     if minetest.registered_nodes[node.name].walkable then
         return false
