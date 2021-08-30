@@ -50,7 +50,7 @@ function nv_ship_building.is_flying_callback(player)
             local pos = player:get_pos()
             local target_vel = -14
             local target_time = -(pos.y - landing_pos.y)/target_vel
-            set_fall_damage(player, -1000)
+            set_fall_damage(player, 0)
             player:add_velocity {x=-vel.x, y=-vel.y+target_vel, z=-vel.z}
             player:set_physics_override {
                 speed = 0,
