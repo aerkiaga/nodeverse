@@ -11,8 +11,14 @@ function nv_ships.get_landing_position(player)
 end
 
 function nv_ships.try_board_ship(pos, player)
+    local clicked_node = minetest.get_node(pos)
+    local ent_name = ""
+    for name in string.gmatch(clicked_node.name, "[^:]*:(.*)") do
+        ent_name = "nv_ships:ent_" .. name
+        print(name) --D
+    end
     minetest.remove_node(pos)
-    local ent_seat = minetest.add_entity(pos, "nv_ships:ent_seat")
+    local ent_seat = minetest.add_entity(pos, ent_name)
     player:set_pos(pos)
     ent_seat:set_attach(player)
     return true

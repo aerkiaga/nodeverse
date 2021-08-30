@@ -34,12 +34,24 @@ register_node_and_entity("seat", {
 
     tiles = {"seat.png"},
     use_texture_alpha = "clip",
-    groups = { oddly_breakable_by_hand=3 },
+    groups = {oddly_breakable_by_hand = 3},
     mesh = "seat.obj",
 
     visual = "mesh",
-    textures = {
-        "seat.png", "seat.png", "seat.png",
-        "seat.png", "seat.png", "seat.png"
-    },
+    textures = {"seat.png"},
+})
+
+register_node_and_entity("floor", {
+    description = "Floor",
+    drawtype = "mesh",
+    sunlight_propagates = true,
+    paramtype2 = "facedir",
+
+    tiles = {"floor.png"},
+    use_texture_alpha = "clip",
+    groups = {oddly_breakable_by_hand = 3},
+    mesh = "floor.obj",
+
+    visual = "mesh",
+    textures = {"floor.png"},
 })
