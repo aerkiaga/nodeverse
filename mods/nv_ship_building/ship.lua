@@ -32,27 +32,23 @@ local function try_place_ship_at(pos, facing)
     return true
 end
 
+function nv_ship_building.remove_ship_entity(player)
+    local children = player:get_children()
+    for index, child in ipairs(children) do
+        local properties = child:get_properties() or {}
+        if true then
+            child:set_detach(player)
+            child:remove()
+        end
+    end
+end
+
 function nv_ship_building.try_unboard_ship(player)
     local pos = player:get_pos()
     local yaw = player:get_look_horizontal()
     local facing = math.floor(-2*yaw/math.pi + 0.5) % 4
     if try_place_ship_at(pos, facing) then
-        local children = player:get_children()
-        for index, child in ipairs(children) do
-            local properties = child:get_properties() or {}
-            if true then
-                child:set_detach(player)
-                child:remove()
-            end
-        end
-        player_api.set_model(player, "character.b3d")
-        player:set_local_animation(
-            {x = 0,   y = 79},
-            {x = 168, y = 187},
-            {x = 189, y = 198},
-            {x = 200, y = 219},
-            30
-        )
+        nv_ship_building.remove_ship_entity(player)
         return true
     else
         return false

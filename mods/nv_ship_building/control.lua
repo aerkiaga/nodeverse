@@ -16,6 +16,24 @@ player_api.register_model("character_sitting.b3d", {
 	eye_height = 1.47,
 })
 
+local function make_normal_player(player)
+	set_fall_damage(player, 100)
+	player:set_physics_override {
+		speed = 1,
+		jump = 1,
+		gravity = 1,
+		sneak = true
+	}
+	player_api.set_model(player, "character.b3d")
+	player:set_local_animation(
+		{x = 0,   y = 79},
+		{x = 168, y = 187},
+		{x = 189, y = 198},
+		{x = 200, y = 219},
+		30
+	)
+end
+
 function nv_ship_building.is_flying_callback(player)
     -- Player is flying
     if #(player:get_children()) == 0 then
@@ -90,13 +108,7 @@ function nv_ship_building.is_landed_callback(player)
         minetest.after(0.1, nv_ship_building.is_flying_callback, player)
     elseif controls.up or controls.down or controls.left or controls.right then
         if nv_ship_building.try_unboard_ship(player) then
-            set_fall_damage(player, 100)
-            player:set_physics_override {
-                speed = 1,
-                jump = 1,
-                gravity = 1,
-                sneak = true
-            }
+            make_normal_player(player)
         else
             minetest.after(0.1, nv_ship_building.is_landed_callback, player)
         end
@@ -171,28 +183,8 @@ local function dieplayer_callback(player, last_login)
     end
     local children = player:get_children()
     if #children >= 1 then
-        set_fall_damage(player, 100)
-        player:set_physics_override {
-            speed = 1,
-            jump = 1,
-            gravity = 1,
-            sneak = true
-        }
-        for index, child in ipairs(children) do
-            local properties = child:get_properties() or {}
-            if true then
-                child:set_detach(player)
-                child:remove()
-            end
-        end
-        player_api.set_model(player, "character.b3d")
-        player:set_local_animation(
-            {x = 0,   y = 79},
-            {x = 168, y = 187},
-            {x = 189, y = 198},
-            {x = 200, y = 219},
-            30
-        )
+		nv_ship_building.remove_ship_entity(player)
+        make_normal_player(player)
     end
 end
 
