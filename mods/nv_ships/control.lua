@@ -117,7 +117,7 @@ function nv_ships.is_landed_callback(player)
     end
 end
 
-local function ship_rightclick_callback(pos, node, clicker, itemstack, pointed_thing)
+function nv_ships.ship_rightclick_callback(pos, node, clicker, itemstack, pointed_thing)
     if #(clicker:get_children()) >= 1 then
         return
     end
@@ -141,33 +141,6 @@ local function ship_rightclick_callback(pos, node, clicker, itemstack, pointed_t
         minetest.after(0.1, nv_ships.is_landed_callback, clicker)
     end
 end
-
-minetest.register_node("nv_ships:seat", {
-    description = "Seat",
-    drawtype = "mesh",
-    sunlight_propagates = true,
-    paramtype2 = "facedir",
-
-    tiles = {"seat.png"},
-    use_texture_alpha = "clip",
-    groups = { oddly_breakable_by_hand=3 },
-    mesh = "seat.obj",
-
-    on_rightclick = ship_rightclick_callback,
-})
-
-minetest.register_entity("nv_ships:ent_seat", {
-    initial_properties = {
-        visual = "mesh",
-        textures = {
-            "seat.png", "seat.png", "seat.png",
-            "seat.png", "seat.png", "seat.png"
-        },
-        use_texture_alpha = true,
-        visual_size = {x=10, y=10, z=10},
-        mesh = "seat.obj"
-    },
-})
 
 local function joinplayer_callback(player, last_login)
     local inventory = player:get_inventory()
