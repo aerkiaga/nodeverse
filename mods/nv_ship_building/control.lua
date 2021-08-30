@@ -1,3 +1,21 @@
+-- Default player model, but all animations are the 'sit' animation
+player_api.register_model("character_sitting.b3d", {
+	animation_speed = 30,
+	textures = {"character_sitting.png"},
+	animations = {
+		-- 'Sit' animation, everywhere
+		stand     = {x = 81,  y = 160},
+		lay       = {x = 81,  y = 160},
+		walk      = {x = 81,  y = 160},
+		mine      = {x = 81,  y = 160},
+		walk_mine = {x = 81,  y = 160},
+		sit       = {x = 81,  y = 160},
+	},
+	collisionbox = {-0.3, 0.0, -0.3, 0.3, 1.7, 0.3},
+	stepheight = 0.6,
+	eye_height = 1.47,
+})
+
 function nv_ship_building.is_flying_callback(player)
     -- Player is flying
     if #(player:get_children()) == 0 then
@@ -100,6 +118,7 @@ local function ship_rightclick_callback(pos, node, clicker, itemstack, pointed_t
             gravity = 1,
             sneak = false
         }
+        player_api.set_model(clicker, "character_sitting.b3d")
         clicker:set_local_animation(
             {x = 81, y = 160},
             {x = 81, y = 160},
@@ -166,6 +185,7 @@ local function dieplayer_callback(player, last_login)
                 child:remove()
             end
         end
+        player_api.set_model(player, "character.b3d")
         player:set_local_animation(
             {x = 0,   y = 79},
             {x = 168, y = 187},

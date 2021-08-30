@@ -45,6 +45,7 @@ function nv_ship_building.try_unboard_ship(player)
                 child:remove()
             end
         end
+        player_api.set_model(player, "character.b3d")
         player:set_local_animation(
             {x = 0,   y = 79},
             {x = 168, y = 187},
