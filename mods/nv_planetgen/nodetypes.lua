@@ -282,6 +282,7 @@ local function register_liquid_nodes()
             liquidtype = "source",
             liquid_alternative_flowing = "nv_planetgen:flowing_water" .. n,
     	    liquid_alternative_source = "nv_planetgen:water" .. n,
+            liquid_viscosity = 1,
             waving = 3,
         } end
     )
@@ -326,6 +327,7 @@ local function register_liquid_nodes()
             liquidtype = "flowing",
             liquid_alternative_flowing = "nv_planetgen:flowing_water" .. n,
     	    liquid_alternative_source = "nv_planetgen:water" .. n,
+            liquid_viscosity = 1,
             waving = 3,
         } end
     )
@@ -371,6 +373,7 @@ local function register_liquid_nodes()
             liquidtype = "source",
             liquid_alternative_flowing = "nv_planetgen:flowing_hydrocarbon",
     	    liquid_alternative_source = "nv_planetgen:hydrocarbon",
+            liquid_viscosity = 0,
             damage_per_second = 2 * 2,
             waving = 3,
         } end
@@ -415,6 +418,7 @@ local function register_liquid_nodes()
             liquidtype = "flowing",
             liquid_alternative_flowing = "nv_planetgen:flowing_hydrocarbon",
     	    liquid_alternative_source = "nv_planetgen:hydrocarbon",
+            liquid_viscosity = 0,
             damage_per_second = 2 * 2,
             waving = 3,
         } end
@@ -461,6 +465,7 @@ local function register_liquid_nodes()
             liquidtype = "source",
             liquid_alternative_flowing = "nv_planetgen:flowing_lava",
     	    liquid_alternative_source = "nv_planetgen:lava",
+            liquid_viscosity = 7,
             damage_per_second = 4 * 2,
             waving = 3,
         } end
@@ -505,6 +510,7 @@ local function register_liquid_nodes()
             liquidtype = "flowing",
             liquid_alternative_flowing = "nv_planetgen:flowing_lava",
     	    liquid_alternative_source = "nv_planetgen:lava",
+            liquid_viscosity = 7,
             damage_per_second = 4 * 2,
             waving = 3,
         } end
