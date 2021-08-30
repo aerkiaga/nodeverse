@@ -13,10 +13,10 @@ been built on top of the code to make it playable. Since this is an
 any following versions will make breaking changes to the core game.
 
 ## Status
-An infinite cloud of floating planets is created. Blocks include stone, gravel,
-dust, sediment, water, hydrocarbon, lava, grass soil, grass, dry grass, tall
-grass and snow. Planets of different colors, rockier, more hilly or flat, richer
-in oceans, arid, frozen, volcanic, and with or without living organisms are
+A huge cloud of floating planets is created. Blocks include stone, gravel, dust,
+sediment, water, hydrocarbon, lava, grass soil, grass, dry grass, tall grass and
+snow. Planets of different colors, rockier, more hilly or flat, richer in
+oceans, arid, frozen, volcanic, and with or without living organisms are
 generated. World generation features oceans, caves, deserts and craters.
 
 The player can fly using a rocket that they start with. They have a limited
