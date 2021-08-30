@@ -149,6 +149,12 @@ local function joinplayer_callback(player, last_login)
 	   inventory:add_item("main", "nv_ships:floor 10")
 	   inventory:add_item("main", "nv_ships:scaffold 10")
     end
+	local name = player:get_player_name()
+	if nv_ships.players_list[name] == nil then
+		nv_ships.players_list[name] = {
+			ships = {}
+		}
+	end
 end
 
 local function dieplayer_callback(player, last_login)
