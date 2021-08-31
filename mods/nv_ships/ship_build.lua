@@ -63,6 +63,7 @@ local function try_put_node_in_ship(node, pos, ship)
             return false
         end
         ship.cockpit_pos = rel_pos
+        ship.facing = node.param2 % 4
     end
     -- Place it
     local x_stride = ship.size.x
@@ -183,7 +184,7 @@ function nv_ships.try_add_node(node, pos, placer)
                     x = ship.cockpit_pos.x + ship.pos.x - relative_to.x,
                     y = ship.cockpit_pos.y + ship.pos.y - relative_to.y,
                     z = ship.cockpit_pos.z + ship.pos.z - relative_to.z,
-                }
+                }, ship.facing
             end
         end
         return nil
@@ -223,13 +224,14 @@ function nv_ships.try_add_node(node, pos, placer)
         end
         -- New cockpit position
         local new_cockpit_pos = nil
+        local new_facing = nil
         if n_cockpits == 1 then
-            new_cockpit_pos = find_new_cockpit_pos(new_pos, own_ships_conflicts)
+            new_cockpit_pos, new_facing = find_new_cockpit_pos(new_pos, own_ships_conflicts)
         end
         -- New ship
         local new_ship = {
             owner = name, state = "node", size = new_size, pos = new_pos,
-            cockpit_pos = new_cockpit_pos, A = {}, A2 = {}
+            cockpit_pos = new_cockpit_pos, facing = new_facing, A = {}, A2 = {}
         }
         -- Add nodes from other ships
         for index, conflict in ipairs(own_ships_conflicts) do
@@ -249,7 +251,7 @@ function nv_ships.try_add_node(node, pos, placer)
     else -- ... and case 4
         local new_ship = {
             owner = name, state = "node", size = {x=1, y=1, z=1}, pos = pos,
-            cockpit_pos = nil, A = {}, A2 = {}
+            cockpit_pos = nil, facing = nil, A = {}, A2 = {}
         }
         if try_put_node_in_ship(node, pos, new_ship) then
             new_ship.index = #player_ship_list+1
