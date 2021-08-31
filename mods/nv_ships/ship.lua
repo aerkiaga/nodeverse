@@ -83,9 +83,9 @@ local function map_ship_into_another(source, destination)
     local x_stride = destination.size.x
     local y_stride = destination.size.y
     local k_s = 1
-    for rel_z_d=rel_pos_d.z, source.size.z + rel_pos_d.z do
-        for rel_y_d=rel_pos_d.y, source.size.y + rel_pos_d.y do
-            for rel_x_d=rel_pos_d.x, source.size.x + rel_pos_d.x do
+    for rel_z_d=rel_pos_d.z, rel_pos_d.z + source.size.z - 1 do
+        for rel_y_d=rel_pos_d.y, rel_pos_d.y + source.size.y - 1 do
+            for rel_x_d=rel_pos_d.x, rel_pos_d.x + source.size.x - 1 do
                 local k_d = rel_z_d*y_stride*x_stride + rel_y_d*x_stride + rel_x_d + 1
                 destination.A[k_d] = source.A[k_s]
                 destination.A2[k_d] = source.A2[k_s]

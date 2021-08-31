@@ -33,7 +33,7 @@ minetest.register_chatcommand("ships", {
         and nv_ships.players_list[name].ships ~= nil then
             for index, ship in ipairs(nv_ships.players_list[name].ships) do
                 minetest.chat_send_player(name, string.format(
-                    "  %d. made of %s, size %s at (%s); cockpitpit (%s), data [%d] [%d]",
+                    "  %d. made of %s, size %s at (%s); cockpit (%s), data [%d] [%d]",
                     ship.index, ship.state,
                     pos_to_string(ship.size, "x"),
                     pos_to_string(ship.pos),
