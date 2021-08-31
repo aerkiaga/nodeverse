@@ -34,6 +34,17 @@ function nv_ships.try_board_ship(pos, player)
         return nil
     end
 
+    local function rotate_coordinates(facing, pos)
+        r = {x=10*pos.x, y=10*pos.y, z=10*pos.z}
+        if facing / 2 >= 1 then
+            r = {x=-r.x, y=r.y, z=-r.z}
+        end
+        if facing % 2 == 1 then
+            r = {x=-r.z, y=r.y, z=r.x}
+        end
+        return r
+    end
+
     ----------------------------------------------------------------------------
 
     local name = player:get_player_name()
@@ -58,23 +69,22 @@ function nv_ships.try_board_ship(pos, player)
             local y_cockpit_rel = y_abs - cockpit_pos_abs.y
             for x_abs=ship.pos.x, ship.pos.x + ship.size.x - 1 do
                 local x_cockpit_rel = x_abs - cockpit_pos_abs.x
+                local pos_player_rel = rotate_coordinates(ship.facing, {
+                    x = x_cockpit_rel, y = y_cockpit_rel, z = z_cockpit_rel
+                })
                 local node_id = ship.A[k]
                 local ent_name = nv_ships.node_id_to_ent_name_dict[node_id]
                 if ent_name ~= nil then
                     local pos_abs = {x=x_abs, y=y_abs, z=z_abs}
                     minetest.remove_node(pos_abs)
                     local ent = minetest.add_entity(pos_abs, ent_name)
-                    local pos_cockpit_rel = {
-                        x = 10*x_cockpit_rel,
-                        y = 10*y_cockpit_rel,
-                        z = 10*z_cockpit_rel
-                    }
-                    ent:set_attach(player, "", pos_cockpit_rel, nil, true)
+                    ent:set_attach(player, "", pos_player_rel, nil, true)
                 end
                 k = k + 1
             end
         end
     end
+    ship.state = "entity"
     return true
 end
 
