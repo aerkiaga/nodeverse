@@ -22,3 +22,9 @@ function set_fall_damage(player, amount)
     armor.fall_damage_add_percent = amount - 100
     player:set_armor_groups(armor)
 end
+
+function set_collisionbox(player, collisionbox)
+    local properties = player:get_properties()
+    properties.collisionbox = collisionbox
+    player:set_properties(properties)
+end

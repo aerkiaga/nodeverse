@@ -121,7 +121,8 @@ function nv_ships.ship_rightclick_callback(pos, node, clicker, itemstack, pointe
     if #(clicker:get_children()) >= 1 then
         return
     end
-    if nv_ships.try_board_ship(pos, clicker) then
+	local ship = nv_ships.try_board_ship(pos, clicker)
+    if ship ~= nil then
         -- Board ship
         set_fall_damage(clicker, 20)
         clicker:set_physics_override {
@@ -138,6 +139,7 @@ function nv_ships.ship_rightclick_callback(pos, node, clicker, itemstack, pointe
             {x = 81, y = 160},
             30
         )
+		set_collisionbox(clicker, nv_ships.get_ship_collisionbox(ship))
         minetest.after(0.1, nv_ships.is_landed_callback, clicker)
     end
 end

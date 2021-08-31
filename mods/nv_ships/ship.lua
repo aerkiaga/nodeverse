@@ -44,3 +44,35 @@ function nv_ships.get_landing_position(player)
     end
     return nil
 end
+
+function nv_ships.get_ship_collisionbox(ship)
+    local function rotate_coordinates(facing, coords)
+        r = {x=coords.x, y=coords.y, z=coords.z}
+        if facing / 2 >= 1 then
+            r = {x=-r.x, y=r.y, z=-r.z}
+        end
+        if facing % 2 == 1 then
+            r = {x=-r.z, y=r.y, z=r.x}
+        end
+        return r
+    end
+
+    ----------------------------------------------------------------------------
+
+    local mincoords = {
+        x = -ship.cockpit_pos.x - 0.5,
+        y = -ship.cockpit_pos.y - 0.5,
+        z = -ship.cockpit_pos.z - 0.5
+    }
+    local maxcoords = {
+        x = ship.size.x - ship.cockpit_pos.x - 0.5,
+        y = ship.size.y - ship.cockpit_pos.y - 0.5,
+        z = ship.size.z - ship.cockpit_pos.z - 0.5
+    }
+    mincoords = rotate_coordinates(ship.facing, mincoords)
+    maxcoords = rotate_coordinates(ship.facing, maxcoords)
+    return {
+        mincoords.x, mincoords.y, mincoords.z,
+        maxcoords.x, maxcoords.y, maxcoords.z
+    }
+end

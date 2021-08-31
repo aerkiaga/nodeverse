@@ -34,7 +34,7 @@ function nv_ships.try_board_ship(pos, player)
         return nil
     end
 
-    local function rotate_coordinates(facing, pos)
+    local function to_player_coordinates(facing, pos)
         r = {x=10*pos.x, y=10*pos.y, z=10*pos.z}
         if facing / 2 >= 1 then
             r = {x=-r.x, y=r.y, z=-r.z}
@@ -50,10 +50,10 @@ function nv_ships.try_board_ship(pos, player)
     local name = player:get_player_name()
     local ship = identify_ship(pos, name)
     if ship == nil then
-        return false
+        return nil
     end
     if ship.cockpit_pos == nil then
-        return false
+        return nil
     end
     local cockpit_pos_abs = {
         x = ship.cockpit_pos.x + ship.pos.x,
@@ -69,7 +69,7 @@ function nv_ships.try_board_ship(pos, player)
             local y_cockpit_rel = y_abs - cockpit_pos_abs.y
             for x_abs=ship.pos.x, ship.pos.x + ship.size.x - 1 do
                 local x_cockpit_rel = x_abs - cockpit_pos_abs.x
-                local pos_player_rel = rotate_coordinates(ship.facing, {
+                local pos_player_rel = to_player_coordinates(ship.facing, {
                     x = x_cockpit_rel, y = y_cockpit_rel, z = z_cockpit_rel
                 })
                 local node_id = ship.A[k]
@@ -85,7 +85,7 @@ function nv_ships.try_board_ship(pos, player)
         end
     end
     ship.state = "entity"
-    return true
+    return ship
 end
 
 local function try_place_ship_at(pos, facing)
