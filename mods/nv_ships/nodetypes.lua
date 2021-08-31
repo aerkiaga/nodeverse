@@ -1,3 +1,16 @@
+local function undo_node_placement(node, pos, placer)
+    local inventory = player:get_inventory()
+    inventory:add_item("main", node.name .. " 1")
+    minetest.remove_node(pos)
+end
+
+local function after_place_node_normal(pos, placer, itemstack, pointed_thing)
+    local node = minetest.get_node(pos)
+    if not nv_ships.try_add_node(node, pos, placer) then
+        undo_node_placement(node, pos, placer)
+    end
+end
+
 local function register_node_and_entity(name, def)
     local node_def = {
         description = def.description or "",
@@ -8,6 +21,7 @@ local function register_node_and_entity(name, def)
         use_texture_alpha = def.use_texture_alpha,
         groups = def.groups,
         mesh = def.mesh,
+        after_place_node = after_place_node_normal,
         on_rightclick = nv_ships.ship_rightclick_callback,
     }
     minetest.register_node("nv_ships:" .. name, node_def)

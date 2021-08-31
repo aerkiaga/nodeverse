@@ -15,6 +15,27 @@ Ship format:
     A2          flat array of param2's in ship bounding box (only part of ship)
 ]]--
 
+--[[
+Attempts to add a node to one of the placing player's ships, or start a new one.
+The node is not physically placed in the world, but ships are updated.
+Returns 'true' or 'false' to signal success or failure, respectively.
+]]
+function nv_ships.try_add_node(node, pos, placer)
+    -- Possible scenarios:
+    -- * Player puts node inside bounding box of their ship: always OK
+    -- * Player puts node adjacent to bounding box of their ship
+    --   - Not adjacent to anything else: OK if below size limit
+    --       Simply extend bounding box
+    --   - Adjacent to other players' ship(s): never OK
+    --   - Adjacent to other own ship(s): OK if single cockpit and below limit
+    --       Merge into one ship
+    -- * Player puts node elsewhere
+    --   - No conflicts with other players' ships: always OK
+    --       Create new ship
+    --   - Inside or adjacent to other players' ship(s): never OK
+    return true
+end
+
 function nv_ships.get_landing_position(player)
     local pos = player:get_pos()
     for y=pos.y, pos.y - 64, -1 do
