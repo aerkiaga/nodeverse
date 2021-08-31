@@ -176,7 +176,8 @@ function nv_ships.try_add_node(node, pos, placer)
             for index, conflict in ipairs(own_ships_conflicts) do
                 table.remove(player_ship_list, conflict.ship.index)
             end
-            player_ship_list[#player_ship_list+1] = new_ship
+            new_ship.index = #player_ship_list+1
+            player_ship_list[new_ship.index] = new_ship
             return true
         else
             return false
@@ -187,7 +188,8 @@ function nv_ships.try_add_node(node, pos, placer)
             cockpit_pos = nil, A = {}, A2 = {}
         }
         if try_put_node_in_ship(node, pos, new_ship) then
-            player_ship_list[#player_ship_list+1] = new_ship
+            new_ship.index = #player_ship_list+1
+            player_ship_list[new_ship.index] = new_ship
             return true
         else
             return false
