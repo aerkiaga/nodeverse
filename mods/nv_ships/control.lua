@@ -145,7 +145,7 @@ end
 local function joinplayer_callback(player, last_login)
     local inventory = player:get_inventory()
     if not inventory:contains_item("main", "nv_ships:seat 1") then
-	   inventory:add_item("main", "nv_ships:seat 1")
+	   inventory:add_item("main", "nv_ships:seat 2")
 	   inventory:add_item("main", "nv_ships:floor 10")
 	   inventory:add_item("main", "nv_ships:scaffold 10")
     end

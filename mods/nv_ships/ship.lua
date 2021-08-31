@@ -64,6 +64,14 @@ local function try_put_node_in_ship(node, pos, ship)
         y = pos.y - ship.pos.y,
         z = pos.z - ship.pos.z
     }
+    -- Check node
+    if node.name == "nv_ships:seat" then
+        if ship.cockpit_pos ~= nil then
+            return false
+        end
+        ship.cockpit_pos = rel_pos
+    end
+    -- Place it
     local x_stride = ship.size.x
     local y_stride = ship.size.y
     local k = rel_pos.z*y_stride*x_stride + rel_pos.y*x_stride + rel_pos.x + 1
