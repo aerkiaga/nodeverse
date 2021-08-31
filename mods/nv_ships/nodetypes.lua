@@ -1,13 +1,8 @@
-local function undo_node_placement(node, pos, placer)
-    local inventory = player:get_inventory()
-    inventory:add_item("main", node.name .. " 1")
-    minetest.remove_node(pos)
-end
-
 local function after_place_node_normal(pos, placer, itemstack, pointed_thing)
     local node = minetest.get_node(pos)
     if not nv_ships.try_add_node(node, pos, placer) then
-        undo_node_placement(node, pos, placer)
+        minetest.remove_node(pos)
+        return true -- Don't remove from inventory
     end
 end
 

@@ -7,6 +7,7 @@ nv_ships.players_list = {}
 --[[
 Ship format:
     owner       name of the player that owns this ship
+    index       index of ship in player's ship list
     state       what the ship currently is made of, "entity" or "node"
     size        size in nodes, as xyz vector
     pos         if state == "node", lowest xyz of ship bounding box in world
@@ -16,24 +17,182 @@ Ship format:
 ]]--
 
 --[[
+Returns nil if no conflict, a vector if 'pos' lies within, or adjacent to, the
+box defined by vectors 'box_pos' and 'box_size'. The return vector indicates the
+direction in which 'pos' is adjacent relative to the box (e.g. {x=1, y=0, z=1}),
+or {x=0, y=0, z=0} if 'pos' is within the box.
+]]--
+local function compute_box_conflict(pos, box_pos, box_size)
+    --
+end
+
+-- Tries to put node in world position that happens to be inside ship
+-- Will update ship data as required
+-- Returns 'false' if the node can't be placed, 'true' otherwise
+local function try_put_node_in_ship(node, pos, ship)
+    --
+    return true
+end
+
+-- Takes all node ID and param2 data from a ship and copy it to another
+-- Will take ship position and size into consideration
+local function map_ship_into_another(origin, destination)
+    --
+end
+
+--[[
 Attempts to add a node to one of the placing player's ships, or start a new one.
 The node is not physically placed in the world, but ships are updated.
 Returns 'true' or 'false' to signal success or failure, respectively.
 ]]
 function nv_ships.try_add_node(node, pos, placer)
     -- Possible scenarios:
-    -- * Player puts node inside bounding box of their ship: always OK
-    -- * Player puts node adjacent to bounding box of their ship
+    -- 1 Player puts node inside bounding box of own ship: always OK
+    -- 2 Player puts node inside or adjacent to other players' ship(s): never OK
+    -- 3 Player puts node adjacent to bounding box of own ship
     --   - Not adjacent to anything else: OK if below size limit
     --       Simply extend bounding box
-    --   - Adjacent to other players' ship(s): never OK
     --   - Adjacent to other own ship(s): OK if single cockpit and below limit
-    --       Merge into one ship
-    -- * Player puts node elsewhere
-    --   - No conflicts with other players' ships: always OK
-    --       Create new ship
-    --   - Inside or adjacent to other players' ship(s): never OK
-    return true
+    --       Merge into one single ship
+    -- 4 Player puts node elsewhere: always OK
+    --     Create new ship
+
+    local function find_conflicts(conflicts, pos, ships)
+        for index, ship in ipairs(ships) do
+            if ship.state == "node" then
+                local conflict = compute_box_conflict(pos, ship.pos, ship.size)
+                if conflict ~= nil then
+                    conflicts[#conflicts+1] = {
+                        ship = ship, conflict = conflict
+                    }
+                end
+            end
+        end
+    end
+
+    local function is_inside(conflict)
+        return conflict.x == 0 and conflict.y == 0 and conflict.z == 0
+    end
+
+    local function count_cockpits_up_to_two(conflicts)
+        local n = 0
+        for index, conflict in ipairs(conflicts) do
+            if conflict.ship.cockpit_pos ~= nil then
+                n = n + 1
+                if n >= 2 then
+                    return n
+                end
+            end
+        end
+        return n
+    end
+
+    local function get_merged_bounds(pos, conflicts)
+        local minp = {x=pos.x, y=pos.y, z=pos.z}
+        local maxp = {x=pos.x, y=pos.y, z=pos.z}
+        for index, conflict in ipairs(conflicts) do
+            minp.x = math.min(minp.x, conflict.ship.pos.x)
+            minp.y = math.min(minp.y, conflict.ship.pos.y)
+            minp.z = math.min(minp.z, conflict.ship.pos.z)
+            maxp.x = math.max(maxp.x, conflict.ship.pos.x + conflict.ship.size.x - 1)
+            maxp.y = math.max(maxp.y, conflict.ship.pos.y + conflict.ship.size.y - 1)
+            maxp.z = math.max(maxp.z, conflict.ship.pos.z + conflict.ship.size.z - 1)
+        end
+        local r_pos = minp
+        local r_size = {
+            x = maxp.x - minp.x + 1,
+            y = maxp.x - minp.x + 1,
+            z = maxp.x - minp.x + 1
+        }
+        return r_pos, r_size
+    end
+
+    local function is_acceptable_size(size)
+        return size.x <= 15 and size.y <= 15 and size.y <= 15
+    end
+
+    local function find_new_cockpit_pos(relative_to, conflicts)
+        for index, conflict in ipairs(conflicts) do
+            local ship = conflict.ship
+            if conflict.ship.cockpit_pos ~= nil then
+                return {
+                    x = ship.cockpit_pos.x + ship.pos.x - relative_to.x,
+                    y = ship.cockpit_pos.y + ship.pos.y - relative_to.y,
+                    z = ship.cockpit_pos.z + ship.pos.z - relative_to.z,
+                }
+            end
+        end
+        return nil
+    end
+
+    ----------------------------------------------------------------------------
+
+    local name = placer:get_player_name()
+    local player_ship_list = nv_ships.players_list[name].ships
+    local own_ships_conflicts = {}
+    find_conflicts(own_ships_conflicts, pos, player_ship_list)
+    -- Check case 1
+    if #own_ships_conflicts == 1 and is_inside(own_ships_conflicts[1].conflict) then
+        return try_put_node_in_ship(node, pos, own_ships_conflicts[1].ship)
+    end
+
+    local other_ships_conflicts = {}
+    for name2, player in pairs(nv_ships.players_list) do
+        if name2 ~= name then
+            find_conflicts(other_ships_conflicts, pos, player.ships)
+        end
+    end
+    -- Check case 2
+    if #other_ships_conflicts >= 1 then
+        return false
+    end
+    -- Check case 3 (general code for any number of adjacent ships)
+    if #own_ships_conflicts >= 1 then
+        local n_cockpits = count_cockpits_up_to_two(own_ships_conflicts)
+        if n_cockpits >= 2 then
+            return false
+        end
+        -- New position and size
+        local new_pos, new_size = get_merged_bounds(pos, own_ships_conflicts)
+        if not is_acceptable_size(new_size) then
+            return false
+        end
+        -- New cockpit position
+        local new_cockpit_pos = nil
+        if n_cockpits == 1 then
+            new_cockpit_pos = find_new_cockpit_pos(new_pos, own_ships_conflicts)
+        end
+        -- New ship
+        local new_ship = {
+            owner = name, state = "node", size = new_size, pos = new_pos,
+            cockpit_pos = new_cockpit_pos, A = {}, A2 = {}
+        }
+        -- Add nodes from other ships
+        for index, conflict in ipairs(own_ships_conflicts) do
+            map_ship_into_another(conflict.ship, new_ship)
+        end
+        -- Only now try to put the new node
+        if try_put_node_in_ship(node, pos, new_ship) then
+            for index, conflict in ipairs(own_ships_conflicts) do
+                table.remove(player_ship_list, conflict.ship.index)
+            end
+            player_ship_list[#player_ship_list+1] = new_ship
+            return true
+        else
+            return false
+        end
+    else -- ... and case 4
+        local new_ship = {
+            owner = name, state = "node", size = {x=1, y=1, z=1}, pos = pos,
+            cockpit_pos = nil, A = {}, A2 = {}
+        }
+        if try_put_node_in_ship(node, pos, new_ship) then
+            player_ship_list[#player_ship_list+1] = new_ship
+            return true
+        else
+            return false
+        end
+    end
 end
 
 function nv_ships.get_landing_position(player)
