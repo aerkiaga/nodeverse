@@ -1,3 +1,8 @@
+--[[
+This file defines functions that perform conversion between node and entity
+forms of a ship, as well as some related operations.
+]]--
+
 function nv_ships.try_board_ship(pos, player)
     local function identify_ship(pos, player_name)
         for index, ship in ipairs(nv_ships.players_list[player_name].ships) do
@@ -70,19 +75,6 @@ function nv_ships.try_board_ship(pos, player)
             end
         end
     end
-    return true
-end
-
-function nv_ships.try_board_ship_old(pos, player)
-    local clicked_node = minetest.get_node(pos)
-    local ent_name = ""
-    for name in string.gmatch(clicked_node.name, "[^:]*:(.*)") do
-        ent_name = "nv_ships:ent_" .. name
-    end
-    minetest.remove_node(pos)
-    local ent_seat = minetest.add_entity(pos, ent_name)
-    player:set_pos(pos)
-    ent_seat:set_attach(player)
     return true
 end
 

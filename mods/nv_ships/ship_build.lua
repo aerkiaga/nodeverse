@@ -1,4 +1,15 @@
 --[[
+This file defines worker functions that are called from the node callbacks in
+'nodetypes.lua', and serve two functions. First, they communicate the ability to
+perform certain actions (e.g. whether a certain node can be placed somewhere) by
+means of their return values. Second, they update ship data (see 'ship.lua' for
+more details) according to the changes made to ship nodes.
+
+ # INDEX
+    ADDING NODE
+]]--
+
+--[[
 Returns nil if no conflict, a vector if 'pos' lies within, or adjacent to, the
 box defined by vectors 'box_pos' and 'box_size'. The return vector indicates the
 direction in which 'pos' is adjacent relative to the box (e.g. {x=1, y=0, z=1}),
@@ -93,6 +104,7 @@ local function remove_ship_from_list(ship, list)
 end
 
 --[[
+ # ADDING NODE
 Attempts to add a node to one of the placing player's ships, or start a new one.
 The node is not physically placed in the world, but ships are updated.
 Returns 'true' or 'false' to signal success or failure, respectively.
