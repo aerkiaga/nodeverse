@@ -23,21 +23,76 @@ direction in which 'pos' is adjacent relative to the box (e.g. {x=1, y=0, z=1}),
 or {x=0, y=0, z=0} if 'pos' is within the box.
 ]]--
 local function compute_box_conflict(pos, box_pos, box_size)
-    --
+    local function compute_component_conflict(pos_c, box_pos_c, box_size_c)
+        local box_maxp_c = box_pos_c + box_size_c - 1
+        if pos_c < box_pos_c then
+            if pos_c < box_pos_c - 1 then
+                return nil
+            else
+                return -1
+            end
+        elseif pos_c > box_maxp_c then
+            if pos_c > box_maxp_c + 1 then
+                return nil
+            else
+                return 1
+            end
+        else
+            return 0
+        end
+    end
+
+    ----------------------------------------------------------------------------
+
+    local r = {
+        x = compute_component_conflict(pos.x, box_pos.x, box_size.x),
+        y = compute_component_conflict(pos.y, box_pos.y, box_size.y),
+        z = compute_component_conflict(pos.z, box_pos.z, box_size.z)
+    }
+    if r.x == nil or r.y == nil or r.z == nil then
+        return nil
+    end
+    return r
 end
 
 -- Tries to put node in world position that happens to be inside ship
 -- Will update ship data as required
 -- Returns 'false' if the node can't be placed, 'true' otherwise
 local function try_put_node_in_ship(node, pos, ship)
-    --
+    local rel_pos = {
+        x = pos.x - ship.pos.x,
+        y = pos.y - ship.pos.y,
+        z = pos.z - ship.pos.z
+    }
+    local x_stride = ship.size.x
+    local y_stride = ship.size.y
+    local k = rel_pos.z*y_stride*x_stride + rel_pos.y*x_stride + rel_pos.x + 1
+    ship.A[k] = minetest.registered_nodes[node.name]
+    ship.A2[k] = node.param2
     return true
 end
 
 -- Takes all node ID and param2 data from a ship and copy it to another
 -- Will take ship position and size into consideration
-local function map_ship_into_another(origin, destination)
-    --
+local function map_ship_into_another(source, destination)
+    local rel_pos_d = {
+        x = source.pos.x - destination.pos.x,
+        y = source.pos.y - destination.pos.y,
+        z = source.pos.z - destination.pos.z
+    }
+    local x_stride = destination.size.x
+    local y_stride = destination.size.y
+    local k_s = 1
+    for rel_z_d=rel_pos_d.z, source.size.z + rel_pos_d.z do
+        for rel_y_d=rel_pos_d.y, source.size.y + rel_pos_d.y do
+            for rel_x_d=rel_pos_d.x, source.size.x + rel_pos_d.x do
+                local k_d = rel_z_d*y_stride*x_stride + rel_y_d*x_stride + rel_x_d + 1
+                destination.A[k_d] = source.A[k_s]
+                destination.A2[k_d] = source.A2[k_s]
+                k_s = k_s + 1
+            end
+        end
+    end
 end
 
 --[[
@@ -101,8 +156,8 @@ function nv_ships.try_add_node(node, pos, placer)
         local r_pos = minp
         local r_size = {
             x = maxp.x - minp.x + 1,
-            y = maxp.x - minp.x + 1,
-            z = maxp.x - minp.x + 1
+            y = maxp.y - minp.y + 1,
+            z = maxp.z - minp.z + 1
         }
         return r_pos, r_size
     end
