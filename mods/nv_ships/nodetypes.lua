@@ -6,6 +6,8 @@ local function after_place_node_normal(pos, placer, itemstack, pointed_thing)
     end
 end
 
+nv_ships.node_id_to_ent_name_dict = {}
+
 local function register_node_and_entity(name, def)
     local node_def = {
         description = def.description or "",
@@ -33,6 +35,9 @@ local function register_node_and_entity(name, def)
         mesh = def.mesh
     }
     minetest.register_entity("nv_ships:ent_" .. name, ent_def)
+
+    local node_id = minetest.registered_nodes["nv_ships:" .. name]
+    nv_ships.node_id_to_ent_name_dict[node_id] = "nv_ships:ent_" .. name
 end
 
 register_node_and_entity("seat", {
