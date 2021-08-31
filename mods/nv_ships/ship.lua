@@ -95,6 +95,13 @@ local function map_ship_into_another(source, destination)
     end
 end
 
+local function remove_ship_from_list(ship, list)
+    table.remove(list, ship.index)
+    for index=ship.index, #list do
+        list[index].index = index
+    end
+end
+
 --[[
 Attempts to add a node to one of the placing player's ships, or start a new one.
 The node is not physically placed in the world, but ships are updated.
@@ -229,7 +236,7 @@ function nv_ships.try_add_node(node, pos, placer)
         -- Only now try to put the new node
         if try_put_node_in_ship(node, pos, new_ship) then
             for index, conflict in ipairs(own_ships_conflicts) do
-                table.remove(player_ship_list, conflict.ship.index)
+                remove_ship_from_list(conflict.ship, player_ship_list)
             end
             new_ship.index = #player_ship_list+1
             player_ship_list[new_ship.index] = new_ship
