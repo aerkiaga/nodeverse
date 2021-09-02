@@ -72,7 +72,7 @@ function nv_ships.is_flying_callback(ship, player)
                 }
 				nv_ships.ship_to_node(ship, player)
                 minetest.after(0.1, nv_ships.is_landed_callback, ship, player)
-            end, player)
+            end, ship, player)
             return
         elseif vel.y > -25 then
             -- Fly downwards

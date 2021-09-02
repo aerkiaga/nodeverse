@@ -34,7 +34,7 @@ Ship format:
     A2          flat array of param2's in ship bounding box (only part of ship)
 ]]--
 
-function nv_ships.get_landing_position(player)
+function nv_ships.get_landing_position(ship, player)
     local pos = player:get_pos()
     for y=pos.y, pos.y - 64, -1 do
         pos.y = y
