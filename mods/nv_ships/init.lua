@@ -39,7 +39,7 @@ minetest.register_chatcommand("ships", {
                     pos_to_string(ship.pos),
                     pos_to_string(ship.cockpit_pos),
                     ship.facing or -1,
-                    #ship.A, #ship.A2
+                    #ship.An, #ship.A2
                 ))
             end
         end

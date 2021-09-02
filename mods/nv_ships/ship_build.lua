@@ -69,7 +69,7 @@ local function try_put_node_in_ship(node, pos, ship)
     local x_stride = ship.size.x
     local y_stride = ship.size.y
     local k = rel_pos.z*y_stride*x_stride + rel_pos.y*x_stride + rel_pos.x + 1
-    ship.A[k] = minetest.registered_nodes[node.name]
+    ship.An[k] = node.name
     ship.A2[k] = node.param2
     return true
 end
@@ -89,7 +89,7 @@ local function map_ship_into_another(source, destination)
         for rel_y_d=rel_pos_d.y, rel_pos_d.y + source.size.y - 1 do
             for rel_x_d=rel_pos_d.x, rel_pos_d.x + source.size.x - 1 do
                 local k_d = rel_z_d*y_stride*x_stride + rel_y_d*x_stride + rel_x_d + 1
-                destination.A[k_d] = source.A[k_s]
+                destination.An[k_d] = source.An[k_s]
                 destination.A2[k_d] = source.A2[k_s]
                 k_s = k_s + 1
             end
@@ -231,7 +231,7 @@ function nv_ships.try_add_node(node, pos, placer)
         -- New ship
         local new_ship = {
             owner = name, state = "node", size = new_size, pos = new_pos,
-            cockpit_pos = new_cockpit_pos, facing = new_facing, A = {}, A2 = {}
+            cockpit_pos = new_cockpit_pos, facing = new_facing, An = {}, A2 = {}
         }
         -- Add nodes from other ships
         for index, conflict in ipairs(own_ships_conflicts) do
@@ -251,7 +251,7 @@ function nv_ships.try_add_node(node, pos, placer)
     else -- ... and case 4
         local new_ship = {
             owner = name, state = "node", size = {x=1, y=1, z=1}, pos = pos,
-            cockpit_pos = nil, facing = nil, A = {}, A2 = {}
+            cockpit_pos = nil, facing = nil, An = {}, A2 = {}
         }
         if try_put_node_in_ship(node, pos, new_ship) then
             new_ship.index = #player_ship_list+1

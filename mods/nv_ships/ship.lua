@@ -30,7 +30,7 @@ Ship format:
     pos         if state == "node", lowest xyz of ship bounding box in world
     cockpit_pos relative xyz of cockpit base node, or 'nil' if no cockpit
     facing      copy of param2 value at cockpit base node, modulo 4 (or nil)
-    A           flat array of node IDs in ship bounding box (only part of ship)
+    An          flat array of node names in ship bounding box (only part of ship)
     A2          flat array of param2's in ship bounding box (only part of ship)
 ]]--
 
@@ -100,7 +100,7 @@ function nv_ships.try_board_ship(pos, player)
                     local y_stride = ship.size.y
                     local k = rel_pos.z*y_stride*x_stride + rel_pos.y*x_stride + rel_pos.x + 1
                     -- Check actual node (bounding boxes can overlap, nodes can't!)
-                    if ship.A[k] ~= nil then
+                    if ship.An[k] ~= nil then
                         return ship
                     end
                 end
