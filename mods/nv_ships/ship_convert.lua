@@ -95,8 +95,86 @@ function nv_ships.ship_to_node(ship, player)
         return true
     end
 
+    local function get_apply_rotation(rot)
+        if rot == 0 then
+            return function (x_rel, z_rel)
+                return x_rel, z_rel
+            end
+        elseif rot == 1 then
+            return function (x_rel, z_rel)
+                return z_rel, -x_rel
+            end
+        elseif rot == 2 then
+            return function (x_rel, z_rel)
+                return -x_rel, -z_rel
+            end
+        else
+            return function (x_rel, z_rel)
+                return -z_rel, x_rel
+            end
+        end
+    end
+
+    local function rotate_param2(param2, rot)
+        local facedir = param2 % 2^5
+        local axis = math.floor(facedir / 4)
+        local facing = facedir % 4
+        local new_axis = axis
+        local new_facing = facing
+        if axis == 0 then
+            new_facing = (facing + rot) % 4
+        elseif axis == 5 then
+            new_facing = (facing - rot) % 4
+        else
+            -- TODO: support more axes in 'rotate_param2()'
+        end
+    end
+
     local function rotate_ship_nodes(ship, facing)
-        --
+        -- Closure to rotate coordinates
+        local rot = (facing - ship.facing) % 4
+        local apply_rotation = get_apply_rotation(rot)
+        -- New size
+        if rot % 2 == 1 then
+            new_size = {x=ship.size.z, y=ship.size.y, z=ship.size.x}
+        else
+            new_size = {x=ship.size.x, y=ship.size.y, z=ship.size.z}
+        end
+        -- New cockpit position
+        local new_cockpit_pos = {y=ship.cockpit_pos.y}
+        new_cockpit_pos.x, new_cockpit_pos.z = apply_rotation(
+            ship.cockpit_pos.x - (ship.size.x-1)/2, ship.cockpit_pos.z - (ship.size.z-1)/2
+        )
+        new_cockpit_pos.x = new_cockpit_pos.x + (ship.size.x-1)/2
+        new_cockpit_pos.z = new_cockpit_pos.z + (ship.size.z-1)/2
+        -- New ship nodes
+        local new_An, new_A2 = {}, {}
+        local x_stride = ship.size.x
+        local y_stride = ship.size.y
+        local k = 1
+        for z_rel=0, ship.size.z - 1 do
+            for y_rel=0, ship.size.y - 1 do
+                for x_rel=0, ship.size.x - 1 do
+                    -- Compute output location
+                    local x_out_rel, z_out_rel = apply_rotation(
+                        x_rel - ship.cockpit_pos.x, z_rel - ship.cockpit_pos.z
+                    )
+                    x_out_rel = x_out_rel + new_cockpit_pos.x
+                    z_out_rel = z_out_rel + new_cockpit_pos.z
+                    -- Copy node
+                    local k_out = z_out_rel*y_stride*x_stride + y_rel*x_stride + x_out_rel + 1
+                    new_An[k_out] = ship.An[k]
+                    new_A2[k_out] = rotate_param2(ship.A2[k], rot)
+                    k = k + 1
+                end
+            end
+        end
+        -- Update ship
+        ship.size = new_size
+        ship.cockpit_pos = new_cockpit_pos
+        ship.facing = facing
+        ship.An = new_An
+        ship.A2 = new_A2
     end
 
     ----------------------------------------------------------------------------
