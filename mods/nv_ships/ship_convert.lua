@@ -29,6 +29,9 @@ function nv_ships.ship_to_entity(ship, player)
     if ship == nil then
         return nil
     end
+    if ship.state ~= "node" then
+        return ship
+    end
     if ship.cockpit_pos == nil then
         return nil
     end
@@ -146,6 +149,11 @@ function nv_ships.ship_to_node(ship, player)
         else
             new_size = {x=ship.size.x, y=ship.size.y, z=ship.size.z}
         end
+        local abs_cockpit_pos = { -- is constant
+            x = ship.pos.x + ship.cockpit_pos.x,
+            y = ship.pos.y + ship.cockpit_pos.y,
+            z = ship.pos.z + ship.cockpit_pos.z
+        }
         -- New cockpit position
         local new_cockpit_pos = {y=ship.cockpit_pos.y}
         new_cockpit_pos.x, new_cockpit_pos.z = apply_rotation(
@@ -153,6 +161,12 @@ function nv_ships.ship_to_node(ship, player)
         )
         new_cockpit_pos.x = new_cockpit_pos.x + (new_size.x-1)/2
         new_cockpit_pos.z = new_cockpit_pos.z + (new_size.z-1)/2
+        -- New absolute position
+        local new_pos = {
+            x = abs_cockpit_pos.x - new_cockpit_pos.x,
+            y = abs_cockpit_pos.y - new_cockpit_pos.y,
+            z = abs_cockpit_pos.z - new_cockpit_pos.z
+        }
         -- New ship nodes
         local new_An, new_A2 = {}, {}
         local x_out_stride = new_size.x
@@ -178,6 +192,7 @@ function nv_ships.ship_to_node(ship, player)
         end
         -- Update ship
         ship.size = new_size
+        ship.pos = new_pos
         ship.cockpit_pos = new_cockpit_pos
         ship.facing = facing
         ship.An = new_An
@@ -191,13 +206,13 @@ function nv_ships.ship_to_node(ship, player)
     local yaw = player:get_look_horizontal()
     local facing = math.floor(-2*yaw/math.pi + 0.5) % 4
 
-    rotate_ship_nodes(ship, facing)
-
     ship.pos = {
         x = pos.x - ship.cockpit_pos.x,
         y = pos.y - ship.cockpit_pos.y,
         z = pos.z - ship.cockpit_pos.z
     }
+
+    rotate_ship_nodes(ship, facing)
 
     local k = 1
     for z_abs=ship.pos.z, ship.pos.z + ship.size.z - 1 do
