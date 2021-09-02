@@ -36,6 +36,7 @@ Ship format:
 
 function nv_ships.get_landing_position(ship, player)
     local pos = player:get_pos()
+    pos = {x=math.floor(pos.x+0.5), y=math.floor(pos.y+0.5), z=math.floor(pos.z+0.5)}
     for y=pos.y, pos.y - 64, -1 do
         pos.y = y
         local node = minetest.get_node(pos)
