@@ -116,7 +116,11 @@ function nv_ships.ship_to_node(ship, player)
     end
 
     local function rotate_param2(param2, rot)
+        if param2 == nil then
+            return nil
+        end
         local facedir = param2 % 2^5
+        local other = param2 - facedir
         local axis = math.floor(facedir / 4)
         local facing = facedir % 4
         local new_axis = axis
@@ -128,6 +132,7 @@ function nv_ships.ship_to_node(ship, player)
         else
             -- TODO: support more axes in 'rotate_param2()'
         end
+        return other + 4*new_axis + new_facing
     end
 
     local function rotate_ship_nodes(ship, facing)
@@ -145,12 +150,12 @@ function nv_ships.ship_to_node(ship, player)
         new_cockpit_pos.x, new_cockpit_pos.z = apply_rotation(
             ship.cockpit_pos.x - (ship.size.x-1)/2, ship.cockpit_pos.z - (ship.size.z-1)/2
         )
-        new_cockpit_pos.x = new_cockpit_pos.x + (ship.size.x-1)/2
-        new_cockpit_pos.z = new_cockpit_pos.z + (ship.size.z-1)/2
+        new_cockpit_pos.x = new_cockpit_pos.x + (new_size.x-1)/2
+        new_cockpit_pos.z = new_cockpit_pos.z + (new_size.z-1)/2
         -- New ship nodes
         local new_An, new_A2 = {}, {}
-        local x_stride = ship.size.x
-        local y_stride = ship.size.y
+        local x_out_stride = new_size.x
+        local y_out_stride = new_size.y
         local k = 1
         for z_rel=0, ship.size.z - 1 do
             for y_rel=0, ship.size.y - 1 do
@@ -162,7 +167,8 @@ function nv_ships.ship_to_node(ship, player)
                     x_out_rel = x_out_rel + new_cockpit_pos.x
                     z_out_rel = z_out_rel + new_cockpit_pos.z
                     -- Copy node
-                    local k_out = z_out_rel*y_stride*x_stride + y_rel*x_stride + x_out_rel + 1
+                    local k_out = z_out_rel*y_out_stride*x_out_stride
+                    + y_rel*x_out_stride + x_out_rel + 1
                     new_An[k_out] = ship.An[k]
                     new_A2[k_out] = rotate_param2(ship.A2[k], rot)
                     k = k + 1
