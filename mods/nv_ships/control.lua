@@ -34,7 +34,7 @@ local function make_normal_player(player)
 	)
 end
 
-function nv_ships.is_flying_callback(player)
+function nv_ships.is_flying_callback(ship, player)
     -- Player is flying
     if #(player:get_children()) == 0 then
         return
@@ -43,7 +43,7 @@ function nv_ships.is_flying_callback(player)
     local controls = player:get_player_control()
     local vel = player:get_velocity()
     if controls.sneak then
-        local landing_pos = nv_ships.get_landing_position(player)
+        local landing_pos = nv_ships.get_landing_position(ship, player)
         if landing_pos ~= nil then
             -- Vertical landing
             landing_pos.y = landing_pos.y + 1
@@ -58,7 +58,7 @@ function nv_ships.is_flying_callback(player)
                 gravity = 0,
                 sneak = false
             }
-            minetest.after(target_time, function (player)
+            minetest.after(target_time, function (ship, player)
                 -- Touched ground
                 local vel = player:get_velocity()
                 set_fall_damage(player, 20)
@@ -70,8 +70,9 @@ function nv_ships.is_flying_callback(player)
                     gravity = 1,
                     sneak = false
                 }
-                minetest.after(0.1, nv_ships.is_landed_callback, player)
-            end, player)
+				nv_ships.ship_to_node(ship, player)
+                minetest.after(0.1, nv_ships.is_landed_callback, ship, player)
+            end, ship, player)
             return
         elseif vel.y > -25 then
             -- Fly downwards
@@ -85,19 +86,17 @@ function nv_ships.is_flying_callback(player)
             player:add_velocity {x=0, y=y_delta, z=0}
         end
     end
-    minetest.after(0.02, nv_ships.is_flying_callback, player)
+    minetest.after(0.02, nv_ships.is_flying_callback, ship, player)
 end
 
-function nv_ships.is_landed_callback(player)
+function nv_ships.is_landed_callback(ship, player)
     -- Player has landed or has not lifted off yet
-    if #(player:get_children()) == 0 then
-        return
-    end
     local vel = player:get_velocity()
     player:add_velocity {x=-vel.x, y=-vel.y, z=-vel.z}
     local controls = player:get_player_control()
     if controls.jump then
         -- Lift off
+		nv_ships.ship_to_entity(ship, player)
         player:add_velocity {x=0, y=15, z=0}
         player:set_physics_override {
             speed = 5,
@@ -105,15 +104,16 @@ function nv_ships.is_landed_callback(player)
             gravity = 0.1,
             sneak = false
         }
-        minetest.after(0.1, nv_ships.is_flying_callback, player)
+		set_collisionbox(player, nv_ships.get_ship_collisionbox(ship))
+        minetest.after(0.1, nv_ships.is_flying_callback, ship, player)
     elseif controls.up or controls.down or controls.left or controls.right then
         if nv_ships.try_unboard_ship(player) then
             make_normal_player(player)
         else
-            minetest.after(0.1, nv_ships.is_landed_callback, player)
+            minetest.after(0.1, nv_ships.is_landed_callback, ship, player)
         end
     else
-        minetest.after(0.1, nv_ships.is_landed_callback, player)
+        minetest.after(0.1, nv_ships.is_landed_callback, ship, player)
     end
 end
 
@@ -122,26 +122,26 @@ function nv_ships.ship_rightclick_callback(pos, node, clicker, itemstack, pointe
         return
     end
 	local ship = nv_ships.try_board_ship(pos, clicker)
-    if ship ~= nil then
-        -- Board ship
-        set_fall_damage(clicker, 20)
-        clicker:set_physics_override {
-            speed = 0,
-            jump = 0,
-            gravity = 1,
-            sneak = false
-        }
-        player_api.set_model(clicker, "character_sitting.b3d")
-        clicker:set_local_animation(
-            {x = 81, y = 160},
-            {x = 81, y = 160},
-            {x = 81, y = 160},
-            {x = 81, y = 160},
-            30
-        )
-		set_collisionbox(clicker, nv_ships.get_ship_collisionbox(ship))
-        minetest.after(0.1, nv_ships.is_landed_callback, clicker)
-    end
+	if ship == nil then
+		return
+	end
+    -- Board ship
+    set_fall_damage(clicker, 20)
+    clicker:set_physics_override {
+        speed = 0,
+        jump = 0,
+        gravity = 1,
+        sneak = false
+    }
+    player_api.set_model(clicker, "character_sitting.b3d")
+    clicker:set_local_animation(
+        {x = 81, y = 160},
+        {x = 81, y = 160},
+        {x = 81, y = 160},
+        {x = 81, y = 160},
+        30
+    )
+    minetest.after(0.1, nv_ships.is_landed_callback, ship, clicker)
 end
 
 local function joinplayer_callback(player, last_login)
