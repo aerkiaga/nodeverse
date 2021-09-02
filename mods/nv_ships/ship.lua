@@ -37,14 +37,20 @@ Ship format:
 function nv_ships.get_landing_position(ship, player)
     local pos = player:get_pos()
     pos = {x=math.floor(pos.x+0.5), y=math.floor(pos.y+0.5), z=math.floor(pos.z+0.5)}
+    local found_ground = false
     for y=pos.y, pos.y - 64, -1 do
         pos.y = y
         local node = minetest.get_node(pos)
-        if minetest.registered_nodes[node.name].walkable then
-            return pos
+        local node_def = minetest.registered_nodes[node.name]
+        if node_def.walkable or node_def.drawtype == "liquid" then
+            found_ground = true
+            break
         end
     end
-    return nil
+    if not found_ground then
+        return nil
+    end
+    return pos
 end
 
 function nv_ships.get_ship_collisionbox(ship)
