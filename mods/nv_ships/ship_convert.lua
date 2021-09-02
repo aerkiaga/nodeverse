@@ -62,6 +62,7 @@ function nv_ships.ship_to_entity(ship, player)
         end
     end
     ship.state = "entity"
+    ship.pos = nil
     return ship
 end
 
@@ -186,6 +187,7 @@ function nv_ships.ship_to_node(ship, player)
     ----------------------------------------------------------------------------
 
     local pos = player:get_pos()
+    pos = {x=math.floor(pos.x), y=math.floor(pos.y), z=math.floor(pos.z)}
     local yaw = player:get_look_horizontal()
     local facing = math.floor(-2*yaw/math.pi + 0.5) % 4
 
