@@ -3,12 +3,12 @@ This file defines functions that perform conversion between node and entity
 forms of a ship, as well as some related operations.
 
  # INDEX
-    BOARDING
-    UNBOARDING
+    TO ENTITY
+    TO NODE
 ]]--
 
 --[[
- # BOARDING
+ # TO ENTITY
 ]]--
 
 function nv_ships.ship_to_entity(ship, player)
@@ -91,10 +91,10 @@ function nv_ships.remove_ship_entity(player)
 end
 
 --[[
- # UNBOARDING
+ # TO NODE
 ]]--
 
-function nv_ships.try_unboard_ship(player)
+function nv_ships.ship_to_node(ship, player)
     local pos = player:get_pos()
     local yaw = player:get_look_horizontal()
     local facing = math.floor(-2*yaw/math.pi + 0.5) % 4

@@ -127,3 +127,7 @@ function nv_ships.try_board_ship(pos, player)
     player:set_pos(cockpit_pos_abs)
     return ship
 end
+
+function nv_ships.try_unboard_ship(player)
+    return true
+end
