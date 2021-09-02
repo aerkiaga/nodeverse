@@ -1,39 +1,17 @@
 --[[
 This file defines functions that perform conversion between node and entity
 forms of a ship, as well as some related operations.
+
+ # INDEX
+    BOARDING
+    UNBOARDING
 ]]--
 
-function nv_ships.try_board_ship(pos, player)
-    local function identify_ship(pos, player_name)
-        for index, ship in ipairs(nv_ships.players_list[player_name].ships) do
-            if ship.state == "node" then
-                local ship_maxp = {
-                    x = ship.pos.x + ship.size.x - 1,
-                    y = ship.pos.y + ship.size.y - 1,
-                    z = ship.pos.z + ship.size.z - 1,
-                }
-                -- Check bounding box
-                if ship.pos.x <= pos.x and pos.x <= ship_maxp.x
-                and ship.pos.y <= pos.y and pos.y <= ship_maxp.y
-                and ship.pos.z <= pos.z and pos.z <= ship_maxp.z then
-                    local rel_pos = {
-                        x = pos.x - ship.pos.x,
-                        y = pos.y - ship.pos.y,
-                        z = pos.z - ship.pos.z
-                    }
-                    local x_stride = ship.size.x
-                    local y_stride = ship.size.y
-                    local k = rel_pos.z*y_stride*x_stride + rel_pos.y*x_stride + rel_pos.x + 1
-                    -- Check actual node (bounding boxes can overlap, nodes can't!)
-                    if ship.A[k] ~= nil then
-                        return ship
-                    end
-                end
-            end
-        end
-        return nil
-    end
+--[[
+ # BOARDING
+]]--
 
+function nv_ships.ship_to_entity(ship, player)
     local function to_player_coordinates(facing, pos)
         r = {x=10*pos.x, y=10*pos.y, z=10*pos.z}
         if facing / 2 >= 1 then
@@ -48,7 +26,6 @@ function nv_ships.try_board_ship(pos, player)
     ----------------------------------------------------------------------------
 
     local name = player:get_player_name()
-    local ship = identify_ship(pos, name)
     if ship == nil then
         return nil
     end
@@ -112,6 +89,10 @@ function nv_ships.remove_ship_entity(player)
         end
     end
 end
+
+--[[
+ # UNBOARDING
+]]--
 
 function nv_ships.try_unboard_ship(player)
     local pos = player:get_pos()
