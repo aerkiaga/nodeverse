@@ -46,7 +46,6 @@ function nv_ships.is_flying_callback(ship, player)
         local landing_pos = nv_ships.get_landing_position(ship, player)
         if landing_pos ~= nil then
             -- Vertical landing
-            landing_pos.y = landing_pos.y + 1
             local pos = player:get_pos()
             local target_vel = -14
             local target_time = -(pos.y - landing_pos.y)/target_vel

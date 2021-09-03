@@ -34,9 +34,68 @@ Ship format:
     A2          flat array of param2's in ship bounding box (only part of ship)
 ]]--
 
+--[[
+Given a ship in entity form and a player flying on it, computes a suitable
+landing position below it. This is the position where the cockpit base node
+should lie so that:
+ - No node of the ship overlaps with a walkable or liquid node.
+ - At least one node of the ship is right on top of a walkable or liquid node.
+It can be shown that such a location always exists for every ship and terrain
+vertically below it.
+]]
+
 function nv_ships.get_landing_position(ship, player)
+    local function how_should_move_vertically(ship, pos)
+        local x_stride = ship.size.x
+        local y_stride = ship.size.y
+        local there_is_resting_block = false
+        local ship_pos = {
+            x = pos.x - ship.cockpit_pos.x,
+            y = pos.y - ship.cockpit_pos.y,
+            z = pos.z - ship.cockpit_pos.z
+        }
+        for z_rel=0, ship.size.z-1 do
+            for x_rel=0, ship.size.x-1 do
+                local block_below = false
+                for y_rel=-1, ship.size.y-1 do
+                    local abs_pos = {
+                        x = x_rel + ship_pos.x,
+                        y = y_rel + ship_pos.y,
+                        z = z_rel + ship_pos.z,
+                    }
+                    local world_node = minetest.get_node(abs_pos)
+                    local world_node_def = minetest.registered_nodes[world_node.name]
+                    local ship_node = nil
+                    if y_rel ~= -1 then
+                        local k = z_rel*y_stride*x_stride + y_rel*x_stride + x_rel + 1
+                        ship_node = ship.An[k]
+                    end
+                    if world_node_def.walkable or world_node_def.drawtype == "liquid" then
+                        if ship_node ~= nil then
+                            return 1 -- must move up
+                        end
+                        block_below = true
+                    else
+                        if block_below and ship_node ~= nil then
+                            there_is_resting_block = true
+                        end
+                        block_below = false
+                    end
+                end
+            end
+        end
+        if there_is_resting_block then
+            return 0 -- perfect
+        else
+            return -1 -- move down
+        end
+    end
+
+    ----------------------------------------------------------------------------
+
     local pos = player:get_pos()
     pos = {x=math.floor(pos.x+0.5), y=math.floor(pos.y+0.5), z=math.floor(pos.z+0.5)}
+    -- Move down to the ground
     local found_ground = false
     for y=pos.y, pos.y - 64, -1 do
         pos.y = y
@@ -50,12 +109,21 @@ function nv_ships.get_landing_position(ship, player)
     if not found_ground then
         return nil
     end
+    -- Move up or down until the ship lies nicely on the ground
+    while true do
+        local delta_y = how_should_move_vertically(ship, pos)
+        print(delta_y) --D
+        if delta_y == 0 then
+            break
+        end
+        pos.y = pos.y + delta_y
+    end
     return pos
 end
 
 function nv_ships.get_ship_collisionbox(ship)
     local function rotate_coordinates(facing, coords)
-        r = {x=coords.x, y=coords.y, z=coords.z}
+        local r = {x=coords.x, y=coords.y, z=coords.z}
         if facing / 2 >= 1 then
             r = {x=-r.x, y=r.y, z=-r.z}
         end
