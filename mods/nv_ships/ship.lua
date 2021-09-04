@@ -93,6 +93,10 @@ function nv_ships.get_landing_position(ship, player)
 
     ----------------------------------------------------------------------------
 
+    local yaw = player:get_look_horizontal()
+    local facing = math.floor(-2*yaw/math.pi + 0.5) % 4
+    nv_ships.rotate_ship_nodes(ship, facing)
+    
     local pos = player:get_pos()
     pos = {x=math.floor(pos.x+0.5), y=math.floor(pos.y+0.5), z=math.floor(pos.z+0.5)}
     -- Move down to the ground

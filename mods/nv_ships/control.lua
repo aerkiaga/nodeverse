@@ -69,6 +69,9 @@ function nv_ships.is_flying_callback(ship, player)
                     gravity = 1,
                     sneak = false
                 }
+
+				local new_landing_pos = nv_ships.get_landing_position(ship, player)
+				player:set_pos(new_landing_pos)
 				nv_ships.ship_to_node(ship, player)
                 minetest.after(0.1, nv_ships.is_landed_callback, ship, player)
             end, ship, player)
