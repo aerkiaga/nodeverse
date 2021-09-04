@@ -16,6 +16,22 @@ player_api.register_model("character_sitting.b3d", {
 	eye_height = 1.47,
 })
 
+local current_control_callbacks = {}
+
+local function queue_control_callback(time, callback, ship, player)
+	if not current_control_callbacks[callback] then
+		-- Add only if not duplicated
+		minetest.after(time, function (ship, player)
+			current_control_callbacks[callback] = false
+			callback(ship, player)
+		end, ship, player)
+		current_control_callbacks[callback] = true
+	else
+		-- Timeout for missed callbacks
+		minetest.after(1, function () current_control_callbacks[callback] = false end)
+	end
+end
+
 local function make_normal_player(player)
 	set_fall_damage(player, 100)
 	player:set_physics_override {
@@ -57,7 +73,7 @@ function nv_ships.is_flying_callback(ship, player)
                 gravity = 0,
                 sneak = false
             }
-            minetest.after(target_time, function (ship, player)
+            queue_control_callback(target_time, function (ship, player)
                 -- Touched ground
                 local vel = player:get_velocity()
                 set_fall_damage(player, 20)
@@ -73,7 +89,7 @@ function nv_ships.is_flying_callback(ship, player)
 				local new_landing_pos = nv_ships.get_landing_position(ship, player)
 				player:set_pos(new_landing_pos)
 				nv_ships.ship_to_node(ship, player)
-                minetest.after(0.1, nv_ships.is_landed_callback, ship, player)
+                queue_control_callback(0.1, nv_ships.is_landed_callback, ship, player)
             end, ship, player)
             return
         elseif vel.y > -25 then
@@ -87,8 +103,10 @@ function nv_ships.is_flying_callback(ship, player)
             local y_delta = math.min(25 - vel.y, 15*dtime)
             player:add_velocity {x=0, y=y_delta, z=0}
         end
+		queue_control_callback(0.02, nv_ships.is_flying_callback, ship, player)
+	else
+		queue_control_callback(0.02, nv_ships.is_flying_callback, ship, player)
     end
-    minetest.after(0.02, nv_ships.is_flying_callback, ship, player)
 end
 
 function nv_ships.is_landed_callback(ship, player)
@@ -107,15 +125,15 @@ function nv_ships.is_landed_callback(ship, player)
             sneak = false
         }
 		set_collisionbox(player, nv_ships.get_ship_collisionbox(ship))
-        minetest.after(0.1, nv_ships.is_flying_callback, ship, player)
+        queue_control_callback(0.1, nv_ships.is_flying_callback, ship, player)
     elseif controls.up or controls.down or controls.left or controls.right then
         if nv_ships.try_unboard_ship(player) then
             make_normal_player(player)
         else
-            minetest.after(0.1, nv_ships.is_landed_callback, ship, player)
+            queue_control_callback(0.1, nv_ships.is_landed_callback, ship, player)
         end
     else
-        minetest.after(0.1, nv_ships.is_landed_callback, ship, player)
+        queue_control_callback(0.1, nv_ships.is_landed_callback, ship, player)
     end
 end
 
@@ -143,7 +161,7 @@ function nv_ships.ship_rightclick_callback(pos, node, clicker, itemstack, pointe
         {x = 81, y = 160},
         30
     )
-    minetest.after(0.1, nv_ships.is_landed_callback, ship, clicker)
+    queue_control_callback(0.1, nv_ships.is_landed_callback, ship, clicker)
 end
 
 local function joinplayer_callback(player, last_login)
