@@ -34,12 +34,6 @@ local function make_normal_player(player)
 	)
 end
 
-function nv_ships.is_landing_callback(ship, player)
-	local target_vel = -5
-	local vel = player:get_velocity()
-	--player:add_velocity {x=-vel.x, y=-vel.y+target_vel, z=-vel.z}
-end
-
 function nv_ships.is_flying_callback(ship, player, dtime)
     -- Player is flying
     if #(player:get_children()) == 0 then
@@ -146,8 +140,6 @@ local function master_control_callback()
 			nv_ships.is_landed_callback(ship, player)
 		elseif state == "flying" then
 			nv_ships.is_flying_callback(ship, player, dtime)
-		elseif state == "landing" then
-			nv_ships.is_landing_callback(ship, player)
 		end
 	end
 	if dtime > 0.02 then
