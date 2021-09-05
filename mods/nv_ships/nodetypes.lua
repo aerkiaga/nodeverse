@@ -20,6 +20,7 @@ local function register_node_and_entity(name, def)
         mesh = def.mesh,
         selection_box = def.collision_box,
         collision_box = def.collision_box,
+        groups = def.groups,
         after_place_node = after_place_node_normal,
         on_rightclick = nv_ships.ship_rightclick_callback,
     }
@@ -56,6 +57,9 @@ register_node_and_entity("seat", {
         fixed = {
             {-0.5, -0.5, -0.5, 0.5, 0, 0.5}
         },
+    },
+    groups = {
+        fall_damage_add_percent = -100
     },
 
     visual = "mesh",
