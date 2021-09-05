@@ -77,6 +77,12 @@ register_node_and_entity("floor", {
     use_texture_alpha = "clip",
     groups = {oddly_breakable_by_hand = 3},
     mesh = "floor.obj",
+    collision_box = {
+        type = "fixed",
+        fixed = {
+            {-0.5, -0.5, -0.5, 0.5, -0.25, 0.5}
+        },
+    },
 
     visual = "mesh",
     textures = {"floor.png"},
