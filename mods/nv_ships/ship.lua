@@ -1,7 +1,7 @@
 --[[
 This file defines ships as objects that can be converted between a node form and
 an entity form. Each ship uniquely belongs to a player, and can be built (in
-node form) boarded (entered in node form), lifted off (converted to entity
+node form), boarded (entered in node form), lifted off (converted to entity
 form), flown (in entity form), landed (converted to node form) and unboarded
 (exited in node form).
 Most of this functionality is defined in the files included from here, not in
@@ -9,7 +9,11 @@ this file itself, which only contains functions that relate to flying (see
 'control.lua' for the actual flying code).
 Included files:
     ship_build.lua      Code for building ships
-    ship_convert.lua    Code for boarding/unboarding ships
+    ship_convert.lua    Code for converting ships between node and entity forms
+
+ # INDEX
+    LANDING HELPER
+    BOARDING
 ]]
 
 dofile(minetest.get_modpath("nv_ships") .. "/ship_build.lua")
@@ -37,6 +41,8 @@ Ship format:
 ]]--
 
 --[[
+ # LANDING HELPER
+
 Given a ship in entity form and a player flying on it, computes a suitable
 landing position below it. This is the position where the cockpit base node
 should lie so that:
@@ -159,7 +165,13 @@ function nv_ships.get_ship_collisionbox(ship)
     }
 end
 
+--[[
+ # BOARDING
+]]--
+
 function nv_ships.try_board_ship(pos, player)
+    -- Identify what ship a particular node belongs to
+    -- Must belong to the given player
     local function identify_ship(pos, player_name)
         for index, ship in ipairs(nv_ships.players_list[player_name].ships) do
             if ship.state == "node" then

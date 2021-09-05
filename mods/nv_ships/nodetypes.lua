@@ -1,3 +1,12 @@
+--[[
+It is in this file that all spaceship nodes are defined. Each node type is associated
+with an entity type, following a simple naming scheme (e.g. "nv_ships:seat" vs "nv_ships:ent_seat").
+
+ # INDEX
+    COMMON REGISTRATION
+    NODE TYPES
+]]
+
 local function after_place_node_normal(pos, placer, itemstack, pointed_thing)
     local node = minetest.get_node(pos)
     if not nv_ships.try_add_node(node, pos, placer) then
@@ -5,6 +14,10 @@ local function after_place_node_normal(pos, placer, itemstack, pointed_thing)
         return true -- Don't remove from inventory
     end
 end
+
+--[[
+ # COMMON REGISTRATION
+]]
 
 nv_ships.node_name_to_ent_name_dict = {}
 
@@ -42,6 +55,19 @@ local function register_node_and_entity(name, def)
     nv_ships.node_name_to_ent_name_dict["nv_ships:" .. name] = "nv_ships:ent_" .. name
 end
 
+--[[
+ # NODE TYPES
+Allocated: 3
+1       seat
+1       floor
+1       scaffold
+]]--
+
+-- SEAT
+-- A pilot seat to man the ship
+-- Defines cockpit position and orientation
+-- Required for liftoff
+-- At most one per ship
 register_node_and_entity("seat", {
     description = "Seat",
     drawtype = "mesh",
@@ -67,6 +93,26 @@ register_node_and_entity("seat", {
     textures = {"seat.png"},
 })
 
+-- SCAFFOLD
+-- A full block of scaffolding
+register_node_and_entity("scaffold", {
+    description = "Scaffold",
+    drawtype = "mesh",
+    sunlight_propagates = true,
+    paramtype2 = "facedir",
+
+    tiles = {"scaffold.png"},
+    use_texture_alpha = "clip",
+    groups = {oddly_breakable_by_hand = 3},
+    mesh = "scaffold.obj",
+
+    visual = "mesh",
+    textures = {"scaffold.png"},
+})
+
+-- FLOOR
+-- A thin scaffold floor occupying the bottom 1/4 of the node
+-- Can be walked on easily
 register_node_and_entity("floor", {
     description = "Floor",
     drawtype = "mesh",
@@ -86,19 +132,4 @@ register_node_and_entity("floor", {
 
     visual = "mesh",
     textures = {"floor.png"},
-})
-
-register_node_and_entity("scaffold", {
-    description = "Scaffold",
-    drawtype = "mesh",
-    sunlight_propagates = true,
-    paramtype2 = "facedir",
-
-    tiles = {"scaffold.png"},
-    use_texture_alpha = "clip",
-    groups = {oddly_breakable_by_hand = 3},
-    mesh = "scaffold.obj",
-
-    visual = "mesh",
-    textures = {"scaffold.png"},
 })
