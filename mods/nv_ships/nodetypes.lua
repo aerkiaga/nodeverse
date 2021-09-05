@@ -18,6 +18,8 @@ local function register_node_and_entity(name, def)
         use_texture_alpha = def.use_texture_alpha,
         groups = def.groups,
         mesh = def.mesh,
+        selection_box = def.collision_box,
+        collision_box = def.collision_box,
         after_place_node = after_place_node_normal,
         on_rightclick = nv_ships.ship_rightclick_callback,
     }
@@ -49,6 +51,12 @@ register_node_and_entity("seat", {
     use_texture_alpha = "clip",
     groups = {oddly_breakable_by_hand = 3},
     mesh = "seat.obj",
+    collision_box = {
+        type = "fixed",
+        fixed = {
+            {-0.5, -0.5, -0.5, 0.5, 0, 0.5}
+        },
+    },
 
     visual = "mesh",
     textures = {"seat.png"},
