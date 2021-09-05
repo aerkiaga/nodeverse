@@ -130,6 +130,7 @@ function nv_ships.rotate_ship_nodes(ship, facing)
     end
     local apply_rotation = get_apply_rotation(rot)
     -- New size
+    local new_size
     if rot % 2 == 1 then
         new_size = {x=ship.size.z, y=ship.size.y, z=ship.size.x}
     else
