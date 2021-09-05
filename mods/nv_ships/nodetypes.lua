@@ -59,7 +59,8 @@ register_node_and_entity("seat", {
         },
     },
     groups = {
-        fall_damage_add_percent = -100
+        fall_damage_add_percent = -100,
+        bouncy = 0
     },
 
     visual = "mesh",

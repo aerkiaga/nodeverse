@@ -150,6 +150,9 @@ local function master_control_callback()
 			nv_ships.is_landing_callback(ship, player)
 		end
 	end
+	if dtime > 0.02 then
+		minetest.after(0.02, master_control_callback)
+	end
 end
 
 local function globalstep_callback(dtime)
