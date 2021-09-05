@@ -46,7 +46,9 @@ It can be shown that such a location always exists for every ship and terrain
 vertically below it.
 ]]
 
-function nv_ships.get_landing_position(ship, player)
+function nv_ships.get_landing_position(ship, player, pos)
+    pos = pos or player:get_pos()
+
     local function how_should_move_vertically(ship, pos)
         local x_stride = ship.size.x
         local y_stride = ship.size.y
@@ -99,7 +101,6 @@ function nv_ships.get_landing_position(ship, player)
     local facing = math.floor(-2*yaw/math.pi + 0.5) % 4
     nv_ships.rotate_ship_nodes(ship, facing)
 
-    local pos = player:get_pos()
     pos = {x=math.floor(pos.x+0.5), y=math.floor(pos.y+0.5), z=math.floor(pos.z+0.5)}
     -- Move down to the ground
     local found_ground = false

@@ -82,7 +82,7 @@ function nv_ships.is_flying_callback(ship, player, dtime)
 	                }
 					set_fall_damage(player, 0)
 
-					local new_landing_pos = nv_ships.get_landing_position(ship, player)
+					local new_landing_pos = nv_ships.get_landing_position(ship, player, landing_pos)
 					player:set_pos(new_landing_pos)
 					minetest.after(0.1, function (ship, player)
 						-- Do the actual conversion
