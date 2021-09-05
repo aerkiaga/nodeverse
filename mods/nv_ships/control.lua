@@ -47,8 +47,6 @@ function nv_ships.is_flying_callback(ship, player, dtime)
         if landing_pos ~= nil then
             -- Start vertical landing
             local pos = player:get_pos()
-            local target_vel = -14
-            local target_time = -(pos.y - landing_pos.y)/target_vel
             player:add_velocity {x=-vel.x, y=-vel.y, z=-vel.z}
             player:set_physics_override {
                 speed = 0,
@@ -60,8 +58,12 @@ function nv_ships.is_flying_callback(ship, player, dtime)
 			nv_ships.players_list[name].state = "landing"
             minetest.after(0.1, function (ship, player)
 				-- Actually start moving down
+				local target_vel = -14
+	            local target_time = -(pos.y - landing_pos.y)/target_vel
+				local x_vel = (landing_pos.x - pos.x)*target_time
+				local z_vel = (landing_pos.z - pos.z)*target_time
 				local vel = player:get_velocity()
-                player:add_velocity {x=-vel.x, y=-vel.y+target_vel, z=-vel.z}
+                player:add_velocity {x=-vel.x+x_vel, y=-vel.y+target_vel, z=-vel.z+z_vel}
 				set_fall_damage(player, 0)
 				minetest.after(target_time, function (ship, player)
 	                -- Touched ground
