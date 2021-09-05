@@ -83,10 +83,10 @@ function nv_ships.is_flying_callback(ship, player, dtime)
 					set_fall_damage(player, 0)
 
 					local new_landing_pos = nv_ships.get_landing_position(ship, player, landing_pos)
+					nv_ships.ship_to_node(ship, player, new_landing_pos)
 					player:set_pos(new_landing_pos)
 					minetest.after(0.1, function (ship, player)
 						-- Do the actual conversion
-						nv_ships.ship_to_node(ship, player)
 		                nv_ships.players_list[name].state = "landed"
 						set_fall_damage(player, 20)
 						set_collisionbox(player, {-0.3, 0.0, -0.3, 0.3, 1.7, 0.3})

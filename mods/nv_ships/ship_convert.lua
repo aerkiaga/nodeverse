@@ -191,7 +191,9 @@ end
  # TO NODE
 ]]--
 
-function nv_ships.ship_to_node(ship, player)
+function nv_ships.ship_to_node(ship, player, pos)
+    pos = pos or player:get_pos()
+    
     local function try_place_ship(ship, pos, facing)
         -- 'facing' values: 0, 1, 2, 3
         -- +Z, +X, -Z, -X
@@ -208,7 +210,6 @@ function nv_ships.ship_to_node(ship, player)
 
     ----------------------------------------------------------------------------
 
-    local pos = player:get_pos()
     pos = {x=math.floor(pos.x+0.5), y=math.floor(pos.y+0.5), z=math.floor(pos.z+0.5)}
     local yaw = player:get_look_horizontal()
     local facing = math.floor(-2*yaw/math.pi + 0.5) % 4
