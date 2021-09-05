@@ -122,7 +122,7 @@ function nv_ships.try_add_node(node, pos, placer)
     -- 4 Player puts node elsewhere: always OK
     --     Create new ship
 
-    local function find_conflicts(conflicts, pos, ships)
+    local function find_conflicts(conflicts, ships)
         for index, ship in ipairs(ships) do
             if ship.state == "node" then
                 local conflict = compute_box_conflict(pos, ship.pos, ship.size)
@@ -152,7 +152,7 @@ function nv_ships.try_add_node(node, pos, placer)
         return n
     end
 
-    local function get_merged_bounds(pos, conflicts)
+    local function get_merged_bounds(conflicts)
         local minp = {x=pos.x, y=pos.y, z=pos.z}
         local maxp = {x=pos.x, y=pos.y, z=pos.z}
         for index, conflict in ipairs(conflicts) do
@@ -195,7 +195,7 @@ function nv_ships.try_add_node(node, pos, placer)
     local name = placer:get_player_name()
     local player_ship_list = nv_ships.players_list[name].ships
     local own_ships_conflicts = {}
-    find_conflicts(own_ships_conflicts, pos, player_ship_list)
+    find_conflicts(own_ships_conflicts, player_ship_list)
     -- Check case 1
     if #own_ships_conflicts == 1 and is_inside(own_ships_conflicts[1].conflict) then
         return try_put_node_in_ship(node, pos, own_ships_conflicts[1].ship)
@@ -204,7 +204,7 @@ function nv_ships.try_add_node(node, pos, placer)
     local other_ships_conflicts = {}
     for name2, player in pairs(nv_ships.players_list) do
         if name2 ~= name then
-            find_conflicts(other_ships_conflicts, pos, player.ships)
+            find_conflicts(other_ships_conflicts, player.ships)
         end
     end
     -- Check case 2
@@ -218,7 +218,7 @@ function nv_ships.try_add_node(node, pos, placer)
             return false
         end
         -- New position and size
-        local new_pos, new_size = get_merged_bounds(pos, own_ships_conflicts)
+        local new_pos, new_size = get_merged_bounds(own_ships_conflicts)
         if not is_acceptable_size(new_size) then
             return false
         end

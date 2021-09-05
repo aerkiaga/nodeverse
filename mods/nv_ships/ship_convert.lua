@@ -25,7 +25,6 @@ function nv_ships.ship_to_entity(ship, player)
 
     ----------------------------------------------------------------------------
 
-    local name = player:get_player_name()
     if ship == nil then
         return nil
     end
@@ -108,17 +107,17 @@ function nv_ships.rotate_ship_nodes(ship, facing)
         local facedir = param2 % 2^5
         local other = param2 - facedir
         local axis = math.floor(facedir / 4)
-        local facing = facedir % 4
+        local facing2 = facedir % 4
         local new_axis = axis
-        local new_facing = facing
+        local new_facing2 = facing2
         if axis == 0 then
-            new_facing = (facing + rot) % 4
+            new_facing2 = (facing2 + rot) % 4
         elseif axis == 5 then
-            new_facing = (facing - rot) % 4
+            new_facing2 = (facing2 - rot) % 4
         else
             -- TODO: support more axes in 'rotate_param2()'
         end
-        return other + 4*new_axis + new_facing
+        return other + 4*new_axis + new_facing2
     end
 
     ----------------------------------------------------------------------------
@@ -193,26 +192,14 @@ end
 
 function nv_ships.ship_to_node(ship, player, pos)
     pos = pos or player:get_pos()
-    
-    local function try_place_ship(ship, pos, facing)
-        -- 'facing' values: 0, 1, 2, 3
-        -- +Z, +X, -Z, -X
-        local node = minetest.get_node(pos)
-        if minetest.registered_nodes[node.name].walkable then
-            return false
-        end
-        minetest.set_node(pos, {
-            name = "nv_ships:seat",
-            param1 = 0, param2 = facing
-        })
-        return true
-    end
 
     ----------------------------------------------------------------------------
 
     pos = {x=math.floor(pos.x+0.5), y=math.floor(pos.y+0.5), z=math.floor(pos.z+0.5)}
     local yaw = player:get_look_horizontal()
     local facing = math.floor(-2*yaw/math.pi + 0.5) % 4
+    -- 'facing' values: 0, 1, 2, 3
+    -- +Z, +X, -Z, -X
 
     ship.pos = {
         x = pos.x - ship.cockpit_pos.x,

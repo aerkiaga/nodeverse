@@ -55,7 +55,7 @@ vertically below it.
 function nv_ships.get_landing_position(ship, player, pos)
     pos = pos or player:get_pos()
 
-    local function how_should_move_vertically(ship, pos)
+    local function how_should_move_vertically()
         local x_stride = ship.size.x
         local y_stride = ship.size.y
         local there_is_resting_block = false
@@ -124,7 +124,7 @@ function nv_ships.get_landing_position(ship, player, pos)
     end
     -- Move up or down until the ship lies nicely on the ground
     while true do
-        local delta_y = how_should_move_vertically(ship, pos)
+        local delta_y = how_should_move_vertically()
         if delta_y == 0 then
             break
         end
@@ -170,9 +170,9 @@ end
 ]]--
 
 function nv_ships.try_board_ship(pos, player)
-    -- Identify what ship a particular node belongs to
+    -- Identify what ship the particular node belongs to
     -- Must belong to the given player
-    local function identify_ship(pos, player_name)
+    local function identify_ship(player_name)
         for index, ship in ipairs(nv_ships.players_list[player_name].ships) do
             if ship.state == "node" then
                 local ship_maxp = {
@@ -205,7 +205,7 @@ function nv_ships.try_board_ship(pos, player)
     ----------------------------------------------------------------------------
 
     local name = player:get_player_name()
-    local ship = identify_ship(pos, name)
+    local ship = identify_ship(name)
     if ship == nil then
         return nil
     end
@@ -222,5 +222,6 @@ function nv_ships.try_board_ship(pos, player)
 end
 
 function nv_ships.try_unboard_ship(player)
+    -- TODO: implement nice unboarding mechanism
     return true
 end

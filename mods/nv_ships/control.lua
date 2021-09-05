@@ -48,7 +48,7 @@ local function start_vertical_landing(ship, player, landing_pos)
 	}
 	set_fall_damage(player, 0)
 	nv_ships.players_list[name].state = "landing"
-	minetest.after(0.1, function (ship, player)
+	minetest.after(0.1, function ()
 		-- Actually start moving down
 		local target_vel = -14
 		local target_time = -(pos.y - landing_pos.y)/target_vel
@@ -57,10 +57,10 @@ local function start_vertical_landing(ship, player, landing_pos)
 		local vel = player:get_velocity()
 		player:add_velocity {x=-vel.x+x_vel, y=-vel.y+target_vel, z=-vel.z+z_vel}
 		set_fall_damage(player, 0)
-		minetest.after(target_time, function (ship, player)
+		minetest.after(target_time, function ()
 			-- Touch ground
-			local vel = player:get_velocity()
-			player:add_velocity {x=-vel.x, y=-vel.y, z=-vel.z}
+			local new_vel = player:get_velocity()
+			player:add_velocity {x=-new_vel.x, y=-new_vel.y, z=-new_vel.z}
 			player:set_pos(landing_pos)
 			player:set_physics_override {
 				speed = 0,
@@ -73,14 +73,14 @@ local function start_vertical_landing(ship, player, landing_pos)
 			local new_landing_pos = nv_ships.get_landing_position(ship, player, landing_pos)
 			nv_ships.ship_to_node(ship, player, new_landing_pos)
 			player:set_pos(new_landing_pos)
-			minetest.after(0.1, function (ship, player)
+			minetest.after(0.1, function ()
 				-- Restore player
 				nv_ships.players_list[name].state = "landed"
 				set_fall_damage(player, 20)
 				set_collisionbox(player, {-0.3, 0.0, -0.3, 0.3, 1.7, 0.3})
-			end, ship, player)
-		end, ship, player)
-	end, ship, player)
+			end)
+		end)
+	end)
 end
 
 function nv_ships.is_flying_callback(ship, player, dtime)
@@ -90,7 +90,6 @@ function nv_ships.is_flying_callback(ship, player, dtime)
     end
     local controls = player:get_player_control()
     local vel = player:get_velocity()
-	local name = player:get_player_name()
     if controls.sneak then
         local landing_pos = nv_ships.get_landing_position(ship, player)
         if landing_pos ~= nil then
