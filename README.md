@@ -31,7 +31,8 @@ be used by itself, as long as its dependencies are satisfied.
 Name | Dependencies | Description
 ---- | ------------ | -----------
 `nv_planetgen` | None | Generates planet terrain. See its `README.md` for instructions on advanced usage.
-`nv_ships` | `player_api` | Adds spaceships that can be built from nodes.
+`nv_ships` | `nv_player` | Adds spaceships that can be built from nodes.
+`nv_player` | `player_api` | Adds player models and tools.
 
 ## TODO
  * Add minerals and ores
