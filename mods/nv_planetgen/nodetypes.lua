@@ -529,11 +529,6 @@ local function register_icy_nodes()
             visual_scale = 1.0,
             tiles = {
                 "snow_top.png",
-                "snow_top.png",
-                "snow_side.png^[transformFX",
-                "snow_side.png^[transformFX",
-                "snow_side.png",
-                "snow_side.png"
             },
             paramtype2 = "colorfacedir",
             place_param2 = 8,
