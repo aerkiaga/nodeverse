@@ -596,6 +596,10 @@ local function register_base_floral_nodes()
             sunlight_propagates = true,
             walkable = false,
             buildable_to = true,
+            selection_box = {
+                type = "fixed",
+                fixed = {{-0.5, -0.5, -0.5, 0.5, 0, 0.5}}
+            }
         } end
     )
 
@@ -616,6 +620,10 @@ local function register_base_floral_nodes()
             sunlight_propagates = true,
             walkable = false,
             buildable_to = true,
+            selection_box = {
+                type = "fixed",
+                fixed = {{-0.5, -0.5, -0.5, 0.5, -3/16, 0.5}}
+            }
         } end
     )
 
@@ -636,6 +644,10 @@ local function register_base_floral_nodes()
             sunlight_propagates = true,
             walkable = false,
             buildable_to = true,
+            selection_box = {
+                type = "fixed",
+                fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
+            }
         } end
     )
 end
