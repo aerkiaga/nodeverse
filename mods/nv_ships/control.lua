@@ -1,23 +1,5 @@
--- Default player model, but all animations are the 'sit' animation
-player_api.register_model("character_sitting.b3d", {
-	animation_speed = 30,
-	textures = {"character_sitting.png"},
-	animations = {
-		-- 'Sit' animation, everywhere
-		stand     = {x = 81,  y = 160},
-		lay       = {x = 81,  y = 160},
-		walk      = {x = 81,  y = 160},
-		mine      = {x = 81,  y = 160},
-		walk_mine = {x = 81,  y = 160},
-		sit       = {x = 81,  y = 160},
-	},
-	collisionbox = {-0.3, 0.0, -0.3, 0.3, 1.7, 0.3},
-	stepheight = 0.6,
-	eye_height = 1.47,
-})
-
 local function make_normal_player(player)
-	set_fall_damage(player, 100)
+	nv_player.set_fall_damage(player, 100)
 	player:set_physics_override {
 		speed = 1,
 		jump = 1,
@@ -46,7 +28,7 @@ local function start_vertical_landing(ship, player, landing_pos)
 		gravity = 0,
 		sneak = false
 	}
-	set_fall_damage(player, 0)
+	nv_player.set_fall_damage(player, 0)
 	nv_ships.players_list[name].state = "landing"
 	minetest.after(0.1, function ()
 		-- Actually start moving down
@@ -56,7 +38,7 @@ local function start_vertical_landing(ship, player, landing_pos)
 		local z_vel = (landing_pos.z - pos.z)*target_time
 		local vel = player:get_velocity()
 		player:add_velocity {x=-vel.x+x_vel, y=-vel.y+target_vel, z=-vel.z+z_vel}
-		set_fall_damage(player, 0)
+		nv_player.set_fall_damage(player, 0)
 		minetest.after(target_time, function ()
 			-- Touch ground
 			local new_vel = player:get_velocity()
@@ -68,7 +50,7 @@ local function start_vertical_landing(ship, player, landing_pos)
 				gravity = 1,
 				sneak = false
 			}
-			set_fall_damage(player, 0)
+			nv_player.set_fall_damage(player, 0)
 
 			local new_landing_pos = nv_ships.get_landing_position(ship, player, landing_pos)
 			nv_ships.ship_to_node(ship, player, new_landing_pos)
@@ -76,8 +58,8 @@ local function start_vertical_landing(ship, player, landing_pos)
 			minetest.after(0.1, function ()
 				-- Restore player
 				nv_ships.players_list[name].state = "landed"
-				set_fall_damage(player, 20)
-				set_collisionbox(player, {-0.3, 0.0, -0.3, 0.3, 1.7, 0.3})
+				nv_player.set_fall_damage(player, 20)
+				nv_player.set_collisionbox(player, {-0.3, 0.0, -0.3, 0.3, 1.7, 0.3})
 			end)
 		end)
 	end)
@@ -125,7 +107,7 @@ function nv_ships.is_landed_callback(ship, player)
             gravity = 0.1,
             sneak = false
         }
-		set_collisionbox(player, nv_ships.get_ship_collisionbox(ship))
+		nv_player.set_collisionbox(player, nv_ships.get_ship_collisionbox(ship))
         nv_ships.players_list[name].state = "flying"
     elseif controls.up or controls.down or controls.left or controls.right then
         if nv_ships.try_unboard_ship(player) then
@@ -167,7 +149,7 @@ function nv_ships.ship_rightclick_callback(pos, node, clicker, itemstack, pointe
 		return
 	end
     -- Board ship
-    set_fall_damage(clicker, 20)
+    nv_player.set_fall_damage(clicker, 20)
     clicker:set_physics_override {
         speed = 0,
         jump = 0,

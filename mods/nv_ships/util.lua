@@ -11,20 +11,3 @@ function get_dtime()
 	prev_globalstep = current_time
     return r
 end
-
-function set_fall_damage(player, amount)
-    local armor = player:get_armor_groups()
-    if amount <= 0 then
-        armor.immortal = 1
-    else
-        armor.immortal = nil
-    end
-    armor.fall_damage_add_percent = amount - 100
-    player:set_armor_groups(armor)
-end
-
-function set_collisionbox(player, collisionbox)
-    local properties = player:get_properties()
-    properties.collisionbox = collisionbox
-    player:set_properties(properties)
-end
