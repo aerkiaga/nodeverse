@@ -63,13 +63,13 @@ end
 
 -- API
 function nv_planetgen.add_planet_mapping(mapping)
-    local planet = planet_from_mapping(mapping)
     table.insert(planet_mappings, mapping)
     return #planet_mappings
 end
 
 -- API
 function nv_planetgen.remove_planet_mapping(index)
+    local mapping = planet_mappings[index]
     local planet = planet_from_mapping(mapping)
     planet.num_mappings = planet.num_mappings - 1
     if planet.num_mappings == 0 then
@@ -94,7 +94,7 @@ function nv_planetgen.generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping
     local planet = planet_from_mapping(mapping)
     local offset = mapping.offset
     local ground_buffer = nv_planetgen.pass_elevation(
-        minp, maxp, area, offset, A, A2, planet
+        minp, maxp, area, offset, A, planet
     )
 
     if planet.caveness > 2^(-3) then
@@ -173,7 +173,9 @@ local function split_not_generated_boxes(not_generated_boxes, minp, maxp)
                                 box2.minp.z = box2.minp.z + 1
                                 box2.maxp.z = box2.maxp.z - 1
                             end
-                            if box2.maxp.x >= box2.minp.x and box2.maxp.y >= box2.minp.y and box2.maxp.z >= box2.minp.z then
+                            if box2.maxp.x >= box2.minp.x
+                            and box2.maxp.y >= box2.minp.y
+                            and box2.maxp.z >= box2.minp.z then
                                 tinsert(r, box2)
                             end
                         end

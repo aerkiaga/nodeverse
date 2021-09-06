@@ -30,7 +30,7 @@ local function register_color_variants(name, num_variants, random_yrot, color_fn
         n           number      index of variant, [1 .. 'num_variants']
         color       string      return value of 'color_fn', converted to string
     ]]--
-    local name = "nv_planetgen:" .. name
+    name = "nv_planetgen:" .. name
     for n=1, num_variants do
         local variant_name = name
         if num_variants > 1 then
@@ -281,7 +281,7 @@ local function register_liquid_nodes()
             buildable_to = true,
             liquidtype = "source",
             liquid_alternative_flowing = "nv_planetgen:flowing_water" .. n,
-    	    liquid_alternative_source = "nv_planetgen:water" .. n,
+            liquid_alternative_source = "nv_planetgen:water" .. n,
             liquid_viscosity = 1,
             waving = 3,
         } end
@@ -326,7 +326,7 @@ local function register_liquid_nodes()
             buildable_to = true,
             liquidtype = "flowing",
             liquid_alternative_flowing = "nv_planetgen:flowing_water" .. n,
-    	    liquid_alternative_source = "nv_planetgen:water" .. n,
+            liquid_alternative_source = "nv_planetgen:water" .. n,
             liquid_viscosity = 1,
             waving = 3,
         } end
@@ -372,7 +372,7 @@ local function register_liquid_nodes()
             buildable_to = true,
             liquidtype = "source",
             liquid_alternative_flowing = "nv_planetgen:flowing_hydrocarbon",
-    	    liquid_alternative_source = "nv_planetgen:hydrocarbon",
+            liquid_alternative_source = "nv_planetgen:hydrocarbon",
             liquid_viscosity = 0,
             damage_per_second = 2 * 2,
             waving = 3,
@@ -417,7 +417,7 @@ local function register_liquid_nodes()
             buildable_to = true,
             liquidtype = "flowing",
             liquid_alternative_flowing = "nv_planetgen:flowing_hydrocarbon",
-    	    liquid_alternative_source = "nv_planetgen:hydrocarbon",
+            liquid_alternative_source = "nv_planetgen:hydrocarbon",
             liquid_viscosity = 0,
             damage_per_second = 2 * 2,
             waving = 3,
@@ -464,7 +464,7 @@ local function register_liquid_nodes()
             buildable_to = true,
             liquidtype = "source",
             liquid_alternative_flowing = "nv_planetgen:flowing_lava",
-    	    liquid_alternative_source = "nv_planetgen:lava",
+            liquid_alternative_source = "nv_planetgen:lava",
             liquid_viscosity = 7,
             damage_per_second = 4 * 2,
             waving = 3,
@@ -509,7 +509,7 @@ local function register_liquid_nodes()
             buildable_to = true,
             liquidtype = "flowing",
             liquid_alternative_flowing = "nv_planetgen:flowing_lava",
-    	    liquid_alternative_source = "nv_planetgen:lava",
+            liquid_alternative_source = "nv_planetgen:lava",
             liquid_viscosity = 7,
             damage_per_second = 4 * 2,
             waving = 3,

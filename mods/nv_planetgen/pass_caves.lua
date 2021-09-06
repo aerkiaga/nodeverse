@@ -143,7 +143,9 @@ local function caves_gen_block(
 
                 if Ai == minetest.CONTENT_AIR
                 or Ai == planet.node_types.sediment
-                or Ai == planet.node_types.liquid then else
+                or Ai == planet.node_types.liquid then
+                    -- do nothing
+                else
                     local threshold = caves_threshold_buffer[k]
                     if Ai == planet.node_types.snow then
                         threshold = threshold - 0.1

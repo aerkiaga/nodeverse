@@ -25,7 +25,6 @@ function nv_planetgen.pass_final(
     local is_scorching = (planet.atmosphere == "scorching")
     local node_air = minetest.CONTENT_AIR
     local offset_x, offset_y, offset_z = offset.x, offset.y, offset.z
-    local fast_int_hash = fast_int_hash
 
     local G = PcgRandom(5683749)
 
@@ -63,7 +62,6 @@ function nv_planetgen.pass_final(
                         local rot = nv_planetgen.random_yrot_nodes[Ai]
                         local param2 = 0
                         if rot ~= nil then
-                            local hash = pos_x*313 + pos_y*477 + pos_z*327
                             param2 = G:next() % rot
                             if rot == 2 then
                                 param2 = param2 * 2

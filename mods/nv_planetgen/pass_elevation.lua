@@ -14,7 +14,7 @@ local function elevation_compute_craters(x, z, planet)
     local chunk_x = floor(x/80)
     local chunk_z = floor(z/80)
     local hash = chunk_x + chunk_z*0x1000
-    local hash = int_hash(hash)
+    hash = int_hash(hash)
     local G = PcgRandom(planet.seed, hash)
     local num_craters = floor(gen_linear_sum(G, 0, 2, 3))
 
@@ -36,7 +36,7 @@ local function elevation_compute_craters(x, z, planet)
     return r
 end
 
-local function elevation_compute_soil_layer(G, y, ground, ground_comp, planet)
+local function elevation_compute_soil_layer(y, ground_comp, planet)
     if planet.has_oceans and (ground_comp.ocean_elevation + ground_comp.mountain_elevation
     + ground_comp.mountain_roughness + y/20 < -0.4 or y < -1) then
         if planet.atmosphere ~= "scorching" then
@@ -69,7 +69,7 @@ local function elevation_compute_soil_layer(G, y, ground, ground_comp, planet)
     end
 end
 
-local function elevation_compute_cover_layer(G, y, ground, ground_comp, planet)
+local function elevation_compute_cover_layer(G, y, ground_comp, planet)
     local air_weight = 100
     local grass_weight = 0
     local dry_grass_weight = 0
@@ -77,7 +77,7 @@ local function elevation_compute_cover_layer(G, y, ground, ground_comp, planet)
     local snow_weight = 0
     if planet.has_oceans and (ground_comp.ocean_elevation + ground_comp.mountain_elevation
     + ground_comp.mountain_roughness + (y-1)/20 < -0.4 or (y-1) < -1) then
-        --
+        -- do nothing
     elseif planet.life ~= "dead" then
         if planet.atmosphere == "hot" then
             if planet.has_oceans and ground_comp.ocean_elevation
@@ -145,11 +145,11 @@ local function elevation_gen_node_column(
         elseif y < math.floor(ground) then
             A[i] = planet.node_types.gravel -- Intermediate layer
         elseif y == math.floor(ground) then
-            A[i] = elevation_compute_soil_layer(G, y, ground, ground_comp, planet)
+            A[i] = elevation_compute_soil_layer(y, ground_comp, planet)
         elseif planet.has_oceans and y < 0 then
             A[i] = planet.node_types.liquid -- Ocean
         elseif y == math.floor(ground) + 1 then
-            A[i] = elevation_compute_cover_layer(G, y, ground, ground_comp, planet)
+            A[i] = elevation_compute_cover_layer(G, y, ground_comp, planet)
         else
             A[i] = minetest.CONTENT_AIR -- Atmosphere
         end
@@ -162,14 +162,24 @@ end
 
 local elevation_ground_buffer = {}
 
-function nv_planetgen.pass_elevation(minp_abs, maxp_abs, area, offset, A, A2, planet)
+function nv_planetgen.pass_elevation(minp_abs, maxp_abs, area, offset, A, planet)
     local r = elevation_ground_buffer
-    local Perlin_2d_ocean_elevation = PerlinWrapper({offset=0, scale=0.5, spread={x=500, y=500}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
-    local Perlin_2d_mountain_roughness = PerlinWrapper({offset=0, scale=0.5, spread={x=300, y=300}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
-    local Perlin_2d_mountain_elevation = PerlinWrapper({offset=0, scale=0.5, spread={x=100, y=100}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
-    local Perlin_2d_terrain_roughness = PerlinWrapper({offset=0, scale=0.5, spread={x=16, y=16}, seed=planet.seed, octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"})
-    local is_wall_z = false
-    local is_wall_x = false
+    local Perlin_2d_ocean_elevation = PerlinWrapper({
+        offset=0, scale=0.5, spread={x=500, y=500}, seed=planet.seed,
+        octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"
+    })
+    local Perlin_2d_mountain_roughness = PerlinWrapper({
+        offset=0, scale=0.5, spread={x=300, y=300}, seed=planet.seed,
+        octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"
+    })
+    local Perlin_2d_mountain_elevation = PerlinWrapper({
+        offset=0, scale=0.5, spread={x=100, y=100}, seed=planet.seed,
+        octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"
+    })
+    local Perlin_2d_terrain_roughness = PerlinWrapper({
+        offset=0, scale=0.5, spread={x=16, y=16}, seed=planet.seed,
+        octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"
+    })
     local abs = math.abs
     local fast_int_hash = fast_int_hash
     for z_abs=minp_abs.z, maxp_abs.z do
