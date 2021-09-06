@@ -35,7 +35,6 @@ function int_hash(value)
     return tonumber(minetest.sha1(value):sub(0, 8), 16)
 end
 
-local floor = math.floor
 function fast_int_hash(value)
     value = (value*21129 + 79221) % 27629
     value = (value*65833 + 76932) % 75683

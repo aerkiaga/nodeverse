@@ -215,7 +215,7 @@ nv_planetgen.add_planet_mapping {
 This function generates the same planet in all directions, indefinitely.
 ]]
 local function example_infinite_callback(minp, maxp, area, A, A1, A2)
-    planet_mapping = {
+    local planet_mapping = {
         minp = minp,
         maxp = maxp,
         offset = {x=0, y=0, z=0},
