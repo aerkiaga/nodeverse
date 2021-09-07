@@ -53,6 +53,28 @@ player_api.register_model("character_sitting.b3d", {
     eye_height = 1.47,
 })
 
+function nv_player.reset_model(player)
+    player_api.set_model(player, "character.b3d")
+    player:set_local_animation(
+        {x = 0,   y = 79},
+        {x = 168, y = 187},
+        {x = 189, y = 198},
+        {x = 200, y = 219},
+        30
+    )
+end
+
+function nv_player.sit_model(player)
+    player_api.set_model(player, "character_sitting.b3d")
+    player:set_local_animation(
+        {x = 81, y = 160},
+        {x = 81, y = 160},
+        {x = 81, y = 160},
+        {x = 81, y = 160},
+        30
+    )
+end
+
 --
 -- Copied code of init.lua from the Hand mod
 --
