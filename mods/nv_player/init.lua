@@ -20,7 +20,7 @@ end
 -- Default player model, but all animations are the 'sit' animation
 player_api.register_model("character_sitting.b3d", {
 	animation_speed = 30,
-	textures = {"character_sitting.png"},
+	textures = {"character.png"},
 	animations = {
 		-- 'Sit' animation, everywhere
 		stand     = {x = 81,  y = 160},
