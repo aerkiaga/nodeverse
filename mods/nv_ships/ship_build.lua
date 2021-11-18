@@ -74,6 +74,31 @@ local function try_put_node_in_ship(node, pos, ship)
     return true
 end
 
+-- Tries to change scaffold node to hull node, knowing that
+-- the target node is inside one of the placing player's ships
+-- Will update ship data as required
+-- Returns the new node, or 'nil' if failed.
+local function try_put_hull_in_ship(index, pos, ship)
+    local node = minetest.get_node(pos)
+    local rel_pos = {
+        x = pos.x - ship.pos.x,
+        y = pos.y - ship.pos.y,
+        z = pos.z - ship.pos.z
+    }
+    local x_stride = ship.size.x
+    local y_stride = ship.size.y
+    local k = rel_pos.z*y_stride*x_stride + rel_pos.y*x_stride + rel_pos.x + 1
+    -- Check node and place it
+    local allowed_nodes = {
+        ["nv_ships:scaffold"] = true,
+    }
+    if allowed_nodes[node.name] ~= nil then
+        ship.An[k] = ship.An[k] .. "_hull"
+        return {name=ship.An[k], param1=8, param2=ship.A2[k]}
+    end
+    return nil
+end
+
 -- Takes all node ID and param2 data from a ship and copies it to another
 -- Will take ship position and size into consideration
 local function map_ship_into_another(source, destination)
@@ -104,6 +129,23 @@ local function remove_ship_from_list(ship, list)
     end
 end
 
+local function find_conflicts(conflicts, pos, ships)
+    for index, ship in ipairs(ships) do
+        if ship.state == "node" then
+            local conflict = compute_box_conflict(pos, ship.pos, ship.size)
+            if conflict ~= nil then
+                conflicts[#conflicts+1] = {
+                    ship = ship, conflict = conflict
+                }
+            end
+        end
+    end
+end
+
+local function is_inside(conflict)
+    return conflict.x == 0 and conflict.y == 0 and conflict.z == 0
+end
+
 --[[
  # ADDING NODE
 Attempts to add a node to one of the placing player's ships, or start a new one.
@@ -121,23 +163,6 @@ function nv_ships.try_add_node(node, pos, placer)
     --       Merge into one single ship
     -- 4 Player puts node elsewhere: always OK
     --     Create new ship
-
-    local function find_conflicts(conflicts, ships)
-        for index, ship in ipairs(ships) do
-            if ship.state == "node" then
-                local conflict = compute_box_conflict(pos, ship.pos, ship.size)
-                if conflict ~= nil then
-                    conflicts[#conflicts+1] = {
-                        ship = ship, conflict = conflict
-                    }
-                end
-            end
-        end
-    end
-
-    local function is_inside(conflict)
-        return conflict.x == 0 and conflict.y == 0 and conflict.z == 0
-    end
 
     local function count_cockpits_up_to_two(conflicts)
         local n = 0
@@ -195,7 +220,7 @@ function nv_ships.try_add_node(node, pos, placer)
     local name = placer:get_player_name()
     local player_ship_list = nv_ships.players_list[name].ships
     local own_ships_conflicts = {}
-    find_conflicts(own_ships_conflicts, player_ship_list)
+    find_conflicts(own_ships_conflicts, pos, player_ship_list)
     -- Check case 1
     if #own_ships_conflicts == 1 and is_inside(own_ships_conflicts[1].conflict) then
         return try_put_node_in_ship(node, pos, own_ships_conflicts[1].ship)
@@ -204,7 +229,7 @@ function nv_ships.try_add_node(node, pos, placer)
     local other_ships_conflicts = {}
     for name2, player in pairs(nv_ships.players_list) do
         if name2 ~= name then
-            find_conflicts(other_ships_conflicts, player.ships)
+            find_conflicts(other_ships_conflicts, pos, player.ships)
         end
     end
     -- Check case 2
@@ -261,4 +286,21 @@ function nv_ships.try_add_node(node, pos, placer)
             return false
         end
     end
+end
+
+--[[
+ # ADDING HULL
+Attempts to turn a scaffold-related block from one of the player's ships into a
+hull block, depending on the passed hull color index.
+Returns the new node, or 'nil' if failed.
+]]
+function nv_ships.try_add_hull(node, pos, placer, index)
+    local name = placer:get_player_name()
+    local player_ship_list = nv_ships.players_list[name].ships
+    local own_ships_conflicts = {}
+    find_conflicts(own_ships_conflicts, pos, player_ship_list)
+    if #own_ships_conflicts == 1 and is_inside(own_ships_conflicts[1].conflict) then
+        return try_put_hull_in_ship(index, pos, own_ships_conflicts[1].ship)
+    end
+    return nil
 end

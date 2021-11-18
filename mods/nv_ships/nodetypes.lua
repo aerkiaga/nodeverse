@@ -109,6 +109,23 @@ register_node_and_entity("scaffold", {
     textures = {"scaffold.png"},
 })
 
+-- SCAFFOLD HULL
+-- A full block of ship hull
+register_node_and_entity("scaffold_hull", {
+    description = "Scaffold hull",
+    drawtype = "mesh",
+    sunlight_propagates = false,
+    paramtype2 = "colorfacedir",
+
+    tiles = {"scaffold_hull.png"},
+    use_texture_alpha = "opaque",
+    groups = {oddly_breakable_by_hand = 3},
+    mesh = "scaffold.obj",
+
+    visual = "mesh",
+    textures = {"scaffold_hull.png"},
+})
+
 -- FLOOR
 -- A thin scaffold floor occupying the bottom 1/4 of the node
 -- Can be walked on easily

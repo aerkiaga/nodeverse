@@ -6,6 +6,22 @@ This file defines items that are not associated with a particular nodetype.
     ITEM TYPES
 ]]
 
+local function on_place_hull_plate(itemstack, placer, pointed_thing)
+    if pointed_thing.type ~= "node" then
+        return nil -- Don't remove from inventory
+    end
+    local pos = pointed_thing.under
+    local node = minetest.get_node(pos)
+    local name = itemstack:get_name()
+    local index = tonumber(string.sub(name, string.len("nv_ships:hull_plate")+1))
+    local new_node = nv_ships.try_add_hull(node, pos, placer, index)
+    if new_node ~= nil then
+        minetest.set_node(pos, new_node)
+        itemstack:take_item(1)
+        return itemstack
+    end
+end
+
 --[[
  # COMMON REGISTRATION
 ]]
@@ -27,6 +43,7 @@ local function register_item_colors(name, def)
             inventory_image = def.inventory_image,
             inventory_overlay = def.inventory_overlay,
             color = default_palette[n],
+            on_place = on_place_hull_plate,
         }
         minetest.register_craftitem("nv_ships:" .. name .. n, item_def)
     end
