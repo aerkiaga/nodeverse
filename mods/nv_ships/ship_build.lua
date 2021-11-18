@@ -111,6 +111,11 @@ local function try_remove_node_from_ship(node, pos, ship)
         y = pos.y - ship.pos.y,
         z = pos.z - ship.pos.z
     }
+    -- Check node
+    if node.name == "nv_ships:seat" then
+        ship.cockpit_pos = nil
+        ship.facing = node.param2 % 4
+    end
     -- Remove it
     local x_stride = ship.size.x
     local y_stride = ship.size.y
