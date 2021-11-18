@@ -8,6 +8,7 @@ more details) according to the changes made to ship nodes.
  # INDEX
     ADDING NODE
     ADDING HULL
+    REMOVING NODE
 ]]--
 
 --[[
@@ -100,6 +101,30 @@ local function try_put_hull_in_ship(index, pos, ship)
     return nil
 end
 
+-- Tries to remove node from world position that happens to be inside ship
+-- Or turn hull node into non-hull node
+-- Will update ship data as required
+-- Returns 'false' if the node can't be removed, 'true' otherwise
+local function try_remove_node_from_ship(node, pos, ship)
+    local rel_pos = {
+        x = pos.x - ship.pos.x,
+        y = pos.y - ship.pos.y,
+        z = pos.z - ship.pos.z
+    }
+    -- Remove it
+    local x_stride = ship.size.x
+    local y_stride = ship.size.y
+    local k = rel_pos.z*y_stride*x_stride + rel_pos.y*x_stride + rel_pos.x + 1
+    ship.An[k] = nil
+    -- Check if hull
+    local start = string.find(node.name, "_hull%d*")
+    if start ~= nil then
+        local new_name = string.sub(node.name, 0, start-1)
+        ship.An[k] = new_name
+    end
+    return true
+end
+
 -- Takes all node ID and param2 data from a ship and copies it to another
 -- Will take ship position and size into consideration
 local function map_ship_into_another(source, destination)
@@ -153,7 +178,7 @@ Attempts to add a node to one of the placing player's ships, or start a new one.
 The node is not physically placed in the world, but ships are updated.
 Returns 'true' or 'false' to signal success or failure, respectively.
 ]]
-function nv_ships.try_add_node(node, pos, placer)
+function nv_ships.try_add_node(node, pos, player)
     -- Possible scenarios:
     -- 1 Player puts node inside bounding box of own ship: always OK
     -- 2 Player puts node inside or adjacent to other players' ship(s): never OK
@@ -218,7 +243,7 @@ function nv_ships.try_add_node(node, pos, placer)
 
     ----------------------------------------------------------------------------
 
-    local name = placer:get_player_name()
+    local name = player:get_player_name()
     local player_ship_list = nv_ships.players_list[name].ships
     local own_ships_conflicts = {}
     find_conflicts(own_ships_conflicts, pos, player_ship_list)
@@ -295,13 +320,44 @@ Attempts to turn a scaffold-related block from one of the player's ships into a
 hull block, depending on the passed hull color index.
 Returns the new node, or 'nil' if failed.
 ]]
-function nv_ships.try_add_hull(node, pos, placer, index)
-    local name = placer:get_player_name()
+function nv_ships.try_add_hull(node, pos, player, index)
+    local name = player:get_player_name()
     local player_ship_list = nv_ships.players_list[name].ships
     local own_ships_conflicts = {}
     find_conflicts(own_ships_conflicts, pos, player_ship_list)
     if #own_ships_conflicts == 1 and is_inside(own_ships_conflicts[1].conflict) then
         return try_put_hull_in_ship(index, pos, own_ships_conflicts[1].ship)
+    end
+    return nil
+end
+
+--[[
+ # REMOVING NODE
+]]
+
+function nv_ships.can_dig_node(pos, player)
+    local name = player:get_player_name()
+    local player_ship_list = nv_ships.players_list[name].ships
+    local own_ships_conflicts = {}
+    find_conflicts(own_ships_conflicts, pos, player_ship_list)
+    if #own_ships_conflicts == 1 and is_inside(own_ships_conflicts[1].conflict) then
+        return true
+    end
+    return false
+end
+
+--[[
+Attempts to remove a node that should belong to one of the player's ships
+If the node is a hull node, it is replaced with its non-hull equivalent
+Returns the new node, or 'nil' if failed.
+]]
+function nv_ships.try_remove_node(node, pos, player, index)
+    local name = player:get_player_name()
+    local player_ship_list = nv_ships.players_list[name].ships
+    local own_ships_conflicts = {}
+    find_conflicts(own_ships_conflicts, pos, player_ship_list)
+    if #own_ships_conflicts == 1 and is_inside(own_ships_conflicts[1].conflict) then
+        return try_remove_node_from_ship(node, pos, own_ships_conflicts[1].ship)
     end
     return nil
 end

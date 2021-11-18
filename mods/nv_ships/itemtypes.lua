@@ -36,10 +36,16 @@ local function register_item_colors(name, def)
         "#2F939B", "#6DEE1D", "#287C00", "#F7F920", "#D86128",
         "#683B0C", "#C11D26", "#F9A3A5", "#D10082", "#4C007F",
     }
+    local color_names = {
+        "White", "Grey", "Dark grey", "Black", "Blue",
+        "Cyan", "Green", "Dark green", "Yellow", "Orange",
+        "Brown", "Red", "Pink", "Magenta", "Violet",
+    }
     for n=1, 15 do
+        local description = (color_names[n] or "") .. " " .. def.uncolored_description
         local item_def = {
-            description = def.description or "",
-            short_description = def.short_description or "",
+            description = description,
+            short_description = description,
             inventory_image = def.inventory_image,
             inventory_overlay = def.inventory_overlay,
             color = default_palette[n],
@@ -56,8 +62,8 @@ Allocated: 2
 ]]
 
 register_item_colors("hull_plate", {
-    description = "Hull plate",
-    short_description = "Hull plate",
+    uncolored_description = "hull plate",
+    short_description = "hull plate",
     inventory_image = "hull_plate.png",
     inventory_overlay = "hull_plate_overlay.png",
 })

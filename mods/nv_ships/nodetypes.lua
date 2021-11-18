@@ -15,6 +15,25 @@ local function after_place_node_normal(pos, placer, itemstack, pointed_thing)
     end
 end
 
+local function can_dig_normal(pos, player)
+    if player == nil then
+        return false
+    end
+    return nv_ships.can_dig_node(pos, player)
+end
+
+local function after_dig_node_normal(pos, oldnode, oldmetadata, digger)
+    if not nv_ships.try_remove_node(oldnode, pos, digger) then
+        minetest.set_node(pos, oldnode)
+        return
+    end
+    local start = string.find(oldnode.name, "_hull%d*")
+    if start ~= nil then
+        local new_name = string.sub(oldnode.name, 0, start-1)
+        minetest.set_node(pos, {name=new_name, param1=oldnode.param1, param2=oldnode.param2})
+    end
+end
+
 --[[
  # COMMON REGISTRATION
 ]]
@@ -34,7 +53,10 @@ local function register_node_and_entity(name, def)
         mesh = def.mesh,
         selection_box = def.collision_box,
         collision_box = def.collision_box,
+        drop = def.drop,
         after_place_node = after_place_node_normal,
+        after_dig_node = after_dig_node_normal,
+        can_dig = can_dig_normal,
         on_rightclick = nv_ships.ship_rightclick_callback,
     }
     minetest.register_node("nv_ships:" .. name, node_def)
@@ -61,7 +83,7 @@ local function register_node_and_entity(name, def)
     nv_ships.node_name_to_ent_name_dict["nv_ships:" .. name] = "nv_ships:ent_" .. name
 end
 
-local function register_colored_node_and_entity(name, def)
+local function register_hull_node_and_entity(name, def)
     local default_palette = {
         "#EDEDED", "#9B9B9B", "#4A4A4A", "#212121", "#284E9B",
         "#2F939B", "#6DEE1D", "#287C00", "#F7F920", "#D86128",
@@ -69,7 +91,7 @@ local function register_colored_node_and_entity(name, def)
     }
     for n=1, 15 do
         local colored_def = {
-            description = def.description or "",
+            description = def.description,
             drawtype = def.drawtype,
             sunlight_propagates = def.sunlight_propagates,
             paramtype2 = def.paramtype2,
@@ -79,16 +101,17 @@ local function register_colored_node_and_entity(name, def)
             mesh = def.mesh,
             selection_box = def.collision_box,
             collision_box = def.collision_box,
-            after_place_node = after_place_node_normal,
+            after_place_node = def.after_place_node,
             on_rightclick = nv_ships.ship_rightclick_callback,
 
             visual = def.visual,
             textures = def.textures,
-            use_texture_alpha = ent_use_texture_alpha,
-            visual_size = {x=10, y=10, z=10},
+            use_texture_alpha = def.use_texture_alpha,
+            visual_size = def.visual_size,
             mesh = def.mesh,
 
             color = default_palette[n],
+            drop = "nv_ships:hull_plate" .. n,
         }
         register_node_and_entity(name .. n, colored_def)
     end
@@ -151,7 +174,7 @@ register_node_and_entity("scaffold", {
 
 -- SCAFFOLD HULL
 -- A full block of ship hull
-register_colored_node_and_entity("scaffold_hull", {
+register_hull_node_and_entity("scaffold_hull", {
     description = "Scaffold hull",
     drawtype = "mesh",
     sunlight_propagates = false,
