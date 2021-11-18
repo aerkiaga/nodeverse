@@ -7,6 +7,7 @@ more details) according to the changes made to ship nodes.
 
  # INDEX
     ADDING NODE
+    ADDING HULL
 ]]--
 
 --[[
@@ -93,7 +94,7 @@ local function try_put_hull_in_ship(index, pos, ship)
         ["nv_ships:scaffold"] = true,
     }
     if allowed_nodes[node.name] ~= nil then
-        ship.An[k] = ship.An[k] .. "_hull"
+        ship.An[k] = ship.An[k] .. "_hull" .. index
         return {name=ship.An[k], param1=8, param2=ship.A2[k]}
     end
     return nil

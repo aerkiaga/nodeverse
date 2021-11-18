@@ -28,6 +28,7 @@ local function register_node_and_entity(name, def)
         sunlight_propagates = def.sunlight_propagates,
         paramtype2 = def.paramtype2,
         tiles = def.tiles,
+        color = def.color,
         use_texture_alpha = def.use_texture_alpha,
         groups = def.groups,
         mesh = def.mesh,
@@ -42,9 +43,15 @@ local function register_node_and_entity(name, def)
     if def.use_texture_alpha == "blend" then
         ent_use_texture_alpha = true
     end
+    local colorized_textures = table.copy(def.textures)
+    if def.color ~= nil then
+        for n=1, #colorized_textures do
+            colorized_textures[n] = colorized_textures[n] .. "^[multiply:" .. def.color
+        end
+    end
     local ent_def = {
         visual = def.visual,
-        textures = def.textures,
+        textures = colorized_textures,
         use_texture_alpha = ent_use_texture_alpha,
         visual_size = {x=10, y=10, z=10},
         mesh = def.mesh
@@ -52,6 +59,39 @@ local function register_node_and_entity(name, def)
     minetest.register_entity("nv_ships:ent_" .. name, ent_def)
 
     nv_ships.node_name_to_ent_name_dict["nv_ships:" .. name] = "nv_ships:ent_" .. name
+end
+
+local function register_colored_node_and_entity(name, def)
+    local default_palette = {
+        "#EDEDED", "#9B9B9B", "#4A4A4A", "#212121", "#284E9B",
+        "#2F939B", "#6DEE1D", "#287C00", "#F7F920", "#D86128",
+        "#683B0C", "#C11D26", "#F9A3A5", "#D10082", "#4C007F",
+    }
+    for n=1, 15 do
+        local colored_def = {
+            description = def.description or "",
+            drawtype = def.drawtype,
+            sunlight_propagates = def.sunlight_propagates,
+            paramtype2 = def.paramtype2,
+            tiles = def.tiles,
+            use_texture_alpha = def.use_texture_alpha,
+            groups = def.groups,
+            mesh = def.mesh,
+            selection_box = def.collision_box,
+            collision_box = def.collision_box,
+            after_place_node = after_place_node_normal,
+            on_rightclick = nv_ships.ship_rightclick_callback,
+
+            visual = def.visual,
+            textures = def.textures,
+            use_texture_alpha = ent_use_texture_alpha,
+            visual_size = {x=10, y=10, z=10},
+            mesh = def.mesh,
+
+            color = default_palette[n],
+        }
+        register_node_and_entity(name .. n, colored_def)
+    end
 end
 
 --[[
@@ -111,7 +151,7 @@ register_node_and_entity("scaffold", {
 
 -- SCAFFOLD HULL
 -- A full block of ship hull
-register_node_and_entity("scaffold_hull", {
+register_colored_node_and_entity("scaffold_hull", {
     description = "Scaffold hull",
     drawtype = "mesh",
     sunlight_propagates = false,
