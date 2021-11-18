@@ -124,6 +124,15 @@ local function map_ship_into_another(source, destination)
     end
 end
 
+local function remove_ship_from_list(ship, list)
+    table.remove(list, ship.index)
+    for index=ship.index, #list do
+        list[index].index = index
+    end
+end
+
+-- Tries to shrink the ship bounding box as much as possible
+-- while preserving all nodes contained inside it
 local function shrink_ship_to_content(ship)
     local min_plane_is_empty = {x=true, y=true, z=true}
     local max_plane_is_empty = {x=true, y=true, z=true}
@@ -167,6 +176,11 @@ local function shrink_ship_to_content(ship)
     ship.pos = new_ship.pos
     ship.An = new_ship.An
     ship.A2 = new_ship.A2
+
+    if ship.size.x <= 0 or ship.size.y <= 0 or ship.size.z <= 0 then
+        local list = nv_ships.players_list[ship.owner].ships
+        remove_ship_from_list(ship, list)
+    end
 end
 
 -- Tries to remove node from world position that happens to be inside ship
@@ -198,13 +212,6 @@ local function try_remove_node_from_ship(node, pos, ship)
     -- Resize as needed
     shrink_ship_to_content(ship)
     return true
-end
-
-local function remove_ship_from_list(ship, list)
-    table.remove(list, ship.index)
-    for index=ship.index, #list do
-        list[index].index = index
-    end
 end
 
 local function find_conflicts(conflicts, pos, ships)
