@@ -74,7 +74,7 @@ local function try_put_node_in_ship(node, pos, ship)
     return true
 end
 
--- Takes all node ID and param2 data from a ship and copy it to another
+-- Takes all node ID and param2 data from a ship and copies it to another
 -- Will take ship position and size into consideration
 local function map_ship_into_another(source, destination)
     local rel_pos_d = {
