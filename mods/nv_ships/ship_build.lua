@@ -101,6 +101,74 @@ local function try_put_hull_in_ship(index, pos, ship)
     return nil
 end
 
+-- Takes all node ID and param2 data from a ship and copies it to another
+-- Will take ship position and size into consideration
+local function map_ship_into_another(source, destination)
+    local rel_pos_d = {
+        x = source.pos.x - destination.pos.x,
+        y = source.pos.y - destination.pos.y,
+        z = source.pos.z - destination.pos.z
+    }
+    local x_stride = destination.size.x
+    local y_stride = destination.size.y
+    local k_s = 1
+    for rel_z_d=rel_pos_d.z, rel_pos_d.z + source.size.z - 1 do
+        for rel_y_d=rel_pos_d.y, rel_pos_d.y + source.size.y - 1 do
+            for rel_x_d=rel_pos_d.x, rel_pos_d.x + source.size.x - 1 do
+                local k_d = rel_z_d*y_stride*x_stride + rel_y_d*x_stride + rel_x_d + 1
+                destination.An[k_d] = source.An[k_s]
+                destination.A2[k_d] = source.A2[k_s]
+                k_s = k_s + 1
+            end
+        end
+    end
+end
+
+local function shrink_ship_to_content(ship)
+    local min_plane_is_empty = {x=true, y=true, z=true}
+    local max_plane_is_empty = {x=true, y=true, z=true}
+    local x_stride = ship.size.x
+    local y_stride = ship.size.y
+    local k = 1
+    for rel_z=0, ship.size.z - 1 do
+        for rel_y=0, ship.size.y - 1 do
+            for rel_x=0, ship.size.x - 1 do
+                if ship.An[k] ~= nil then
+                    if rel_x == 0 then min_plane_is_empty.x = false end
+                    if rel_y == 0 then min_plane_is_empty.y = false end
+                    if rel_z == 0 then min_plane_is_empty.z = false end
+                    if rel_x == ship.size.x - 1 then max_plane_is_empty.x = false end
+                    if rel_y == ship.size.y - 1 then max_plane_is_empty.y = false end
+                    if rel_z == ship.size.z - 1 then max_plane_is_empty.z = false end
+                end
+                k = k + 1
+            end
+        end
+    end
+    -- Operate on a temporary new ship
+    local new_ship = {
+        owner = ship.owner, state = "node", size = table.copy(ship.size), pos = table.copy(ship.pos),
+        cockpit_pos = ship.cockpit_pos, facing = ship.facing, An = {}, A2 = {}
+    }
+    if min_plane_is_empty.x then new_ship.size.x = new_ship.size.x - 1 end
+    if min_plane_is_empty.y then new_ship.size.y = new_ship.size.y - 1 end
+    if min_plane_is_empty.z then new_ship.size.z = new_ship.size.z - 1 end
+    if min_plane_is_empty.x then new_ship.pos.x = new_ship.pos.x + 1 end
+    if min_plane_is_empty.y then new_ship.pos.y = new_ship.pos.y + 1 end
+    if min_plane_is_empty.z then new_ship.pos.z = new_ship.pos.z + 1 end
+    if max_plane_is_empty.x then new_ship.size.x = new_ship.size.x - 1 end
+    if max_plane_is_empty.y then new_ship.size.y = new_ship.size.y - 1 end
+    if max_plane_is_empty.z then new_ship.size.z = new_ship.size.z - 1 end
+
+    map_ship_into_another(ship, new_ship)
+
+    -- Copy to input ship
+    ship.size = new_ship.size
+    ship.pos = new_ship.pos
+    ship.An = new_ship.An
+    ship.A2 = new_ship.A2
+end
+
 -- Tries to remove node from world position that happens to be inside ship
 -- Or turn hull node into non-hull node
 -- Will update ship data as required
@@ -127,30 +195,9 @@ local function try_remove_node_from_ship(node, pos, ship)
         local new_name = string.sub(node.name, 0, start-1)
         ship.An[k] = new_name
     end
+    -- Resize as needed
+    shrink_ship_to_content(ship)
     return true
-end
-
--- Takes all node ID and param2 data from a ship and copies it to another
--- Will take ship position and size into consideration
-local function map_ship_into_another(source, destination)
-    local rel_pos_d = {
-        x = source.pos.x - destination.pos.x,
-        y = source.pos.y - destination.pos.y,
-        z = source.pos.z - destination.pos.z
-    }
-    local x_stride = destination.size.x
-    local y_stride = destination.size.y
-    local k_s = 1
-    for rel_z_d=rel_pos_d.z, rel_pos_d.z + source.size.z - 1 do
-        for rel_y_d=rel_pos_d.y, rel_pos_d.y + source.size.y - 1 do
-            for rel_x_d=rel_pos_d.x, rel_pos_d.x + source.size.x - 1 do
-                local k_d = rel_z_d*y_stride*x_stride + rel_y_d*x_stride + rel_x_d + 1
-                destination.An[k_d] = source.An[k_s]
-                destination.A2[k_d] = source.A2[k_s]
-                k_s = k_s + 1
-            end
-        end
-    end
 end
 
 local function remove_ship_from_list(ship, list)
