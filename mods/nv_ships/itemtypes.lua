@@ -2,8 +2,13 @@
 This file defines items that are not associated with a particular nodetype.
 
  # INDEX
+    CALLBACKS
     COMMON REGISTRATION
     ITEM TYPES
+]]
+
+--[[
+ # CALLBACKS
 ]]
 
 local function on_place_hull_plate(itemstack, placer, pointed_thing)

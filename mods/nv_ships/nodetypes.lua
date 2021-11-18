@@ -3,8 +3,13 @@ It is in this file that all spaceship nodes are defined. Each node type is assoc
 with an entity type, following a simple naming scheme (e.g. "nv_ships:seat" vs "nv_ships:ent_seat").
 
  # INDEX
+    CALLBACKS
     COMMON REGISTRATION
     NODE TYPES
+]]
+
+--[[
+ # CALLBACKS
 ]]
 
 local function after_place_node_normal(pos, placer, itemstack, pointed_thing)
