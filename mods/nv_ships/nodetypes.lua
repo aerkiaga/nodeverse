@@ -128,6 +128,7 @@ Allocated: 3
 1       seat
 1       floor
 1       scaffold
+15      scaffold_hull
 ]]--
 
 -- SEAT

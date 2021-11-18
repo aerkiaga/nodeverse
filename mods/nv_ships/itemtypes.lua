@@ -63,7 +63,7 @@ end
 --[[
  # ITEM TYPES
 Allocated: 2
-2       hull_plate
+15      hull_plate
 ]]
 
 register_item_colors("hull_plate", {
