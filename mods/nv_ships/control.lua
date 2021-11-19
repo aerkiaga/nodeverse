@@ -55,6 +55,11 @@ local function start_vertical_landing(ship, player, landing_pos)
             nv_ships.ship_to_node(ship, player, new_landing_pos)
             player:set_pos(new_landing_pos)
             minetest.sound_stop(nv_ships.players_list[name].sound)
+            minetest.sound_play({
+                name = "touch_ground", gain = 0.5, pitch = 1
+            }, {
+                object = player, gain = 1, max_hear_distance = 10, loop = false
+            }, true)
             minetest.after(0.1, function ()
                 -- Restore player
                 nv_ships.players_list[name].state = "landed"
@@ -112,7 +117,7 @@ function nv_ships.is_landed_callback(ship, player)
         minetest.sound_play({
             name = "liftoff", gain = 0.5, pitch = 1
         }, {
-            object = player, gain = 0.25, max_hear_distance = 10, loop = false
+            object = player, gain = 0.4, max_hear_distance = 10, loop = false
         }, true)
         nv_ships.players_list[name].sound = minetest.sound_play({
             name = "engine", gain = 0.5, pitch = 1

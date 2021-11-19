@@ -1,6 +1,5 @@
-// The sound of an engine winding down
-// Engine noise with a further two tones at perfect octave swiping down
-// The higher tone is more spread out, while the lower tone is cleaner
+// The sound of a spaceship gently impacting into the ground
+// A short burst of low-frequency noise that quickly decays
 
 // communication
 public class Global {

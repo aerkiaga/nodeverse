@@ -21,3 +21,4 @@ record_file() {
 record_file liftoff
 record_file engine
 record_file landing
+record_file touch_ground
