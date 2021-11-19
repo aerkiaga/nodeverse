@@ -13,10 +13,10 @@ Noise noise => BPF band => OneZero zero => LPF low => dac;
 
 // parameters
 200 => band.freq;
-5 => band.Q;
+10 => band.Q;
 0 => zero.b0;
 10 => zero.b1;
-1500 => low.freq;
+1000 => low.freq;
 
 // control loop
 now + Global.duration => time end;

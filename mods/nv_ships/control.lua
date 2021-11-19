@@ -23,6 +23,7 @@ local function start_vertical_landing(ship, player, landing_pos)
     }
     nv_player.set_fall_damage(player, 0)
     nv_ships.players_list[name].state = "landing"
+    minetest.sound_stop(nv_ships.players_list[name].sound)
     minetest.after(0.1, function ()
         -- Actually start moving down
         local target_vel = -14
@@ -102,6 +103,11 @@ function nv_ships.is_landed_callback(ship, player)
         }
         nv_player.set_collisionbox(player, nv_ships.get_ship_collisionbox(ship))
         nv_ships.players_list[name].state = "flying"
+        nv_ships.players_list[name].sound = minetest.sound_play({
+            name = "engine", gain = 0.5, pitch = 1
+        }, {
+            object = player, gain = 0.25, max_hear_distance = 10, loop = true
+        }, false)
     elseif controls.up or controls.down or controls.left or controls.right then
         if nv_ships.try_unboard_ship(player) then
             make_normal_player(player)

@@ -24,6 +24,7 @@ A table of players, indexed by name. Each value contains the following fields:
     ships       List of ships owned by player; see below for format
     state       Either 'nil', "landed", "flying" or "landing"
     cur_ship    If 'state' is not 'nil', this is the ship boarded by the player
+    sound       Handle to the ship sound currently playing
 ]]--
 nv_ships.players_list = {}
 
