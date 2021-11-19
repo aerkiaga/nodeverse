@@ -12,10 +12,10 @@
 # from the ChucK scripts present in the same directory
 
 record_file() {
-    chuck -s "$1.ck" "compose.ck" "rec.ck:$1.wav:20" &&
+    chuck -s "$1.ck" "rec.ck:$1.wav" &&
     (echo "(FFMPeg) Converting to OGG"
     ffmpeg -y -v warning -i "$1.wav" "$1.ogg"
     rm "$1.wav")
 }
 
-record_file example
+record_file engine
