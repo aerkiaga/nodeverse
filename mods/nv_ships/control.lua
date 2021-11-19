@@ -24,6 +24,11 @@ local function start_vertical_landing(ship, player, landing_pos)
     nv_player.set_fall_damage(player, 0)
     nv_ships.players_list[name].state = "landing"
     minetest.sound_stop(nv_ships.players_list[name].sound)
+    nv_ships.players_list[name].sound = minetest.sound_play({
+        name = "landing", gain = 0.5, pitch = 1
+    }, {
+        object = player, gain = 0.25, max_hear_distance = 10, loop = false
+    }, false)
     minetest.after(0.1, function ()
         -- Actually start moving down
         local target_vel = -14
@@ -49,6 +54,7 @@ local function start_vertical_landing(ship, player, landing_pos)
             local new_landing_pos = nv_ships.get_landing_position(ship, player, landing_pos)
             nv_ships.ship_to_node(ship, player, new_landing_pos)
             player:set_pos(new_landing_pos)
+            minetest.sound_stop(nv_ships.players_list[name].sound)
             minetest.after(0.1, function ()
                 -- Restore player
                 nv_ships.players_list[name].state = "landed"
