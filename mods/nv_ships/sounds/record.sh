@@ -18,5 +18,6 @@ record_file() {
     rm "$1.wav")
 }
 
+record_file liftoff
 record_file engine
 record_file landing

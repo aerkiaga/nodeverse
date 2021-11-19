@@ -20,11 +20,11 @@ noise => TwoPole two_sweep2 => Gain gain_sweep2 => dac;
 0 => zero.b0;
 10 => zero.b1;
 1000 => low.freq;
-0.99 => two_sweep.radius;
-900 => two_sweep.freq;
-1 => two_sweep2.radius;
 1800 => two_sweep.freq;
+0.99 => two_sweep.radius;
 0.02 => gain_sweep.gain;
+900 => two_sweep2.freq;
+1 => two_sweep2.radius;
 0.0001 => gain_sweep2.gain;
 
 // control loop

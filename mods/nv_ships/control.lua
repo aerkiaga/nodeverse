@@ -109,6 +109,11 @@ function nv_ships.is_landed_callback(ship, player)
         }
         nv_player.set_collisionbox(player, nv_ships.get_ship_collisionbox(ship))
         nv_ships.players_list[name].state = "flying"
+        minetest.sound_play({
+            name = "liftoff", gain = 0.5, pitch = 1
+        }, {
+            object = player, gain = 0.25, max_hear_distance = 10, loop = false
+        }, true)
         nv_ships.players_list[name].sound = minetest.sound_play({
             name = "engine", gain = 0.5, pitch = 1
         }, {
