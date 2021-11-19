@@ -8,7 +8,13 @@
  - New, simpler flying mechanics, with vertical liftoff and landing.
  - Custom spacesuit player texture.
  - Four distinct sound effects for spaceship maneuvering.
+
+### Changed
+ - Adjusted viscosity of liquids.
+ - Grass now has a more reasonable bounding box.
+
 ### Removed
+ - Mods `nv_rocket` and `autobox`.
  - Default "lunar lander" mini-game.
  - Default rocket mechanics, including item and model.
  - Custom sky texture.
