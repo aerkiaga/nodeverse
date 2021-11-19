@@ -158,12 +158,12 @@ local function register_base_nodes()
             drawtype = "normal",
             visual_scale = 1.0,
             tiles = {
-                "dust.png^[colorize:" .. color .. ":64",
-                "dust2.png^[colorize:" .. color .. ":64",
-                "dust.png^[colorize:" .. color .. ":64",
-                "dust2.png^[colorize:" .. color .. ":64",
-                "dust2.png^[colorize:" .. color .. ":64",
-                "dust.png^[colorize:" .. color .. ":64"
+                "nv_dust.png^[colorize:" .. color .. ":64",
+                "nv_dust2.png^[colorize:" .. color .. ":64",
+                "nv_dust.png^[colorize:" .. color .. ":64",
+                "nv_dust2.png^[colorize:" .. color .. ":64",
+                "nv_dust2.png^[colorize:" .. color .. ":64",
+                "nv_dust.png^[colorize:" .. color .. ":64"
             },
             paramtype2 = "colorfacedir",
             place_param2 = 0,
@@ -181,12 +181,12 @@ local function register_base_nodes()
             drawtype = "normal",
             visual_scale = 1.0,
             tiles = {
-                "sediment.png^[colorize:" .. color .. ":48",
-                "sediment2.png^[colorize:" .. color .. ":48",
-                "sediment.png^[colorize:" .. color .. ":48",
-                "sediment2.png^[colorize:" .. color .. ":48",
-                "sediment2.png^[colorize:" .. color .. ":48",
-                "sediment.png^[colorize:" .. color .. ":48"
+                "nv_sediment.png^[colorize:" .. color .. ":48",
+                "nv_sediment2.png^[colorize:" .. color .. ":48",
+                "nv_sediment.png^[colorize:" .. color .. ":48",
+                "nv_sediment2.png^[colorize:" .. color .. ":48",
+                "nv_sediment2.png^[colorize:" .. color .. ":48",
+                "nv_sediment.png^[colorize:" .. color .. ":48"
             },
             paramtype2 = "colorfacedir",
             place_param2 = 0,
@@ -203,12 +203,12 @@ local function register_base_nodes()
             drawtype = "normal",
             visual_scale = 1.0,
             tiles = {
-                "gravel.png^[colorize:" .. color .. ":48",
-                "gravel.png^[colorize:" .. color .. ":48",
-                "(gravel.png^[transformR180)^[colorize:" .. color .. ":48",
-                "(gravel.png^[transformR90)^[colorize:" .. color .. ":48",
-                "(gravel.png^[transformR270)^[colorize:" .. color .. ":48",
-                "gravel.png^[colorize:" .. color .. ":48",
+                "nv_gravel.png^[colorize:" .. color .. ":48",
+                "nv_gravel.png^[colorize:" .. color .. ":48",
+                "(nv_gravel.png^[transformR180)^[colorize:" .. color .. ":48",
+                "(nv_gravel.png^[transformR90)^[colorize:" .. color .. ":48",
+                "(nv_gravel.png^[transformR270)^[colorize:" .. color .. ":48",
+                "nv_gravel.png^[colorize:" .. color .. ":48",
             },
             paramtype2 = "colorfacedir",
             place_param2 = 0,
@@ -225,12 +225,12 @@ local function register_base_nodes()
             drawtype = "normal",
             visual_scale = 1.0,
             tiles = {
-                "stone.png^[colorize:" .. color .. ":32",
-                "stone.png^[colorize:" .. color .. ":32",
-                "(stone.png^[transformR180)^[colorize:" .. color .. ":32",
-                "stone.png^[colorize:" .. color .. ":32",
-                "(stone.png^[transformR180)^[colorize:" .. color .. ":32",
-                "stone.png^[colorize:" .. color .. ":32"
+                "nv_stone.png^[colorize:" .. color .. ":32",
+                "nv_stone.png^[colorize:" .. color .. ":32",
+                "(nv_stone.png^[transformR180)^[colorize:" .. color .. ":32",
+                "nv_stone.png^[colorize:" .. color .. ":32",
+                "(nv_stone.png^[transformR180)^[colorize:" .. color .. ":32",
+                "nv_stone.png^[colorize:" .. color .. ":32"
             },
             paramtype2 = "facedir",
             place_param2 = 0
@@ -251,7 +251,7 @@ local function register_liquid_nodes()
             visual_scale = 1.0,
             tiles = {
                 {
-                    name = "water_animation.png^[opacity:180",
+                    name = "nv_water_animation.png^[opacity:180",
                     backface_culling = false,
                     animation = {
                         type = "vertical_frames",
@@ -261,7 +261,7 @@ local function register_liquid_nodes()
                     }
                 },
                 {
-                    name = "water_animation.png^[opacity:180",
+                    name = "nv_water_animation.png^[opacity:180",
                     backface_culling = true,
                     animation = {
                         type = "vertical_frames",
@@ -293,10 +293,10 @@ local function register_liquid_nodes()
         function (n, color) return {
             drawtype = "flowingliquid",
             visual_scale = 1.0,
-            tiles = {"water.png"},
+            tiles = {"nv_water.png"},
             special_tiles = {
                 {
-                    name = "water_animation.png^[opacity:180",
+                    name = "nv_water_animation.png^[opacity:180",
                     backface_culling = false,
                     animation = {
                         type = "vertical_frames",
@@ -306,7 +306,7 @@ local function register_liquid_nodes()
                     }
                 },
                 {
-                    name = "water_animation.png^[opacity:180",
+                    name = "nv_water_animation.png^[opacity:180",
                     backface_culling = true,
                     animation = {
                         type = "vertical_frames",
@@ -343,7 +343,7 @@ local function register_liquid_nodes()
             visual_scale = 1.0,
             tiles = {
                 {
-                    name = "hydrocarbon_animation.png^[opacity:180",
+                    name = "nv_hydrocarbon_animation.png^[opacity:180",
                     backface_culling = false,
                     animation = {
                         type = "vertical_frames",
@@ -353,7 +353,7 @@ local function register_liquid_nodes()
                     }
                 },
                 {
-                    name = "hydrocarbon_animation.png^[opacity:180",
+                    name = "nv_hydrocarbon_animation.png^[opacity:180",
                     backface_culling = true,
                     animation = {
                         type = "vertical_frames",
@@ -385,10 +385,10 @@ local function register_liquid_nodes()
         function (n, color) return {
             drawtype = "flowingliquid",
             visual_scale = 1.0,
-            tiles = {"hydrocarbon.png"},
+            tiles = {"nv_hydrocarbon.png"},
             special_tiles = {
                 {
-                    name = "hydrocarbon_animation.png^[opacity:180",
+                    name = "nv_hydrocarbon_animation.png^[opacity:180",
                     backface_culling = false,
                     animation = {
                         type = "vertical_frames",
@@ -398,7 +398,7 @@ local function register_liquid_nodes()
                     }
                 },
                 {
-                    name = "hydrocarbon_animation.png^[opacity:180",
+                    name = "nv_hydrocarbon_animation.png^[opacity:180",
                     backface_culling = true,
                     animation = {
                         type = "vertical_frames",
@@ -435,7 +435,7 @@ local function register_liquid_nodes()
             visual_scale = 1.0,
             tiles = {
                 {
-                    name = "lava_animation.png",
+                    name = "nv_lava_animation.png",
                     backface_culling = false,
                     animation = {
                         type = "vertical_frames",
@@ -445,7 +445,7 @@ local function register_liquid_nodes()
                     }
                 },
                 {
-                    name = "lava_animation.png",
+                    name = "nv_lava_animation.png",
                     backface_culling = true,
                     animation = {
                         type = "vertical_frames",
@@ -477,10 +477,10 @@ local function register_liquid_nodes()
         function (n, color) return {
             drawtype = "flowingliquid",
             visual_scale = 1.0,
-            tiles = {"lava.png"},
+            tiles = {"nv_lava.png"},
             special_tiles = {
                 {
-                    name = "lava_animation.png",
+                    name = "nv_lava_animation.png",
                     backface_culling = false,
                     animation = {
                         type = "vertical_frames",
@@ -490,7 +490,7 @@ local function register_liquid_nodes()
                     }
                 },
                 {
-                    name = "lava_animation.png",
+                    name = "nv_lava_animation.png",
                     backface_culling = true,
                     animation = {
                         type = "vertical_frames",
@@ -528,7 +528,7 @@ local function register_icy_nodes()
             drawtype = "nodebox",
             visual_scale = 1.0,
             tiles = {
-                "snow_top.png",
+                "nv_snow_top.png",
             },
             paramtype2 = "colorfacedir",
             place_param2 = 8,
@@ -554,23 +554,23 @@ local function register_base_floral_nodes()
             drawtype = "normal",
             visual_scale = 1.0,
             tiles = {
-                {name = "grass_soil_top.png"},
-                {name = "dust.png^[colorize:" .. color .. ":64", color = "white"},
-                {name = "dust2.png^[colorize:" .. color .. ":64", color = "white"},
-                {name = "dust.png^[colorize:" .. color .. ":64", color = "white"},
-                {name = "dust2.png^[colorize:" .. color .. ":64", color = "white"},
-                {name = "dust2.png^[colorize:" .. color .. ":64", color = "white"}
+                {name = "nv_grass_soil_top.png"},
+                {name = "nv_dust.png^[colorize:" .. color .. ":64", color = "white"},
+                {name = "nv_dust2.png^[colorize:" .. color .. ":64", color = "white"},
+                {name = "nv_dust.png^[colorize:" .. color .. ":64", color = "white"},
+                {name = "nv_dust2.png^[colorize:" .. color .. ":64", color = "white"},
+                {name = "nv_dust2.png^[colorize:" .. color .. ":64", color = "white"}
             },
             overlay_tiles = {
                 "",
                 "",
-                {name = "grass_soil_side.png"},
-                {name = "grass_soil_side.png^[transformFX"},
-                {name = "grass_soil_side.png^[transformFX"},
-                {name = "grass_soil_side.png"}
+                {name = "nv_grass_soil_side.png"},
+                {name = "nv_grass_soil_side.png^[transformFX"},
+                {name = "nv_grass_soil_side.png^[transformFX"},
+                {name = "nv_grass_soil_side.png"}
             },
             paramtype2 = "colorfacedir",
-            palette = "palette_grass" .. math.floor((n-1) / 16) + 1 .. ".png",
+            palette = "nv_palette_grass" .. math.floor((n-1) / 16) + 1 .. ".png",
             place_param2 = 8,
         } end
     )
@@ -584,7 +584,7 @@ local function register_base_floral_nodes()
             drawtype = "plantlike",
             visual_scale = 1.0,
             tiles = {
-                {name = "grass.png", color = color},
+                {name = "nv_grass.png", color = color},
             },
             paramtype2 = "degrotate",
             place_param2 = 0,
@@ -608,7 +608,7 @@ local function register_base_floral_nodes()
             drawtype = "plantlike",
             visual_scale = 1.0,
             tiles = {
-                {name = "grass_dry.png", color = color},
+                {name = "nv_grass_dry.png", color = color},
             },
             paramtype2 = "degrotate",
             place_param2 = 0,
@@ -632,7 +632,7 @@ local function register_base_floral_nodes()
             drawtype = "plantlike",
             visual_scale = 1.0,
             tiles = {
-                {name = "grass_tall.png", color = color},
+                {name = "nv_grass_tall.png", color = color},
             },
             paramtype2 = "degrotate",
             place_param2 = 0,

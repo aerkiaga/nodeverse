@@ -265,7 +265,7 @@ minetest.register_node('nv_planetgen:stone', {
     drawtype = "normal",
     visual_scale = 1.0,
     tiles = {
-        "stone.png"
+        "nv_stone.png"
     },
     paramtype2 = "facedir",
     place_param2 = 8,
@@ -276,7 +276,7 @@ minetest.register_node('nv_planetgen:water_source', {
     drawtype = "liquid",
     visual_scale = 1.0,
     tiles = {
-        "water.png"
+        "nv_water.png"
     },
     paramtype2 = "facedir",
     place_param2 = 8,

@@ -2,7 +2,7 @@
 ; Copy it into your '~/.config/GIMP/<version>/scripts/' directory
 ; Then, use it from GIMP as File -> Create -> Planetgen Palette Atlas
 ; It will create all palettes automatically as a single image
-; Finally, export the atlas to this directory as 'atlas.png'
+; Finally, export the atlas to this directory as 'nv_atlas.png'
 ; See 'split.sh' for following steps
 
 ; Some of the functions in this script should match equivalent ones in

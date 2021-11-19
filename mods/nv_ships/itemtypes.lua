@@ -69,6 +69,6 @@ Allocated: 2
 register_item_colors("hull_plate", {
     uncolored_description = "hull plate",
     short_description = "hull plate",
-    inventory_image = "hull_plate.png",
-    inventory_overlay = "hull_plate_overlay.png",
+    inventory_image = "nv_hull_plate.png",
+    inventory_overlay = "nv_hull_plate_overlay.png",
 })

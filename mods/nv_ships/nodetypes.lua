@@ -142,7 +142,7 @@ register_node_and_entity("seat", {
     sunlight_propagates = true,
     paramtype2 = "facedir",
 
-    tiles = {"seat.png"},
+    tiles = {"nv_seat.png"},
     use_texture_alpha = "clip",
     groups = {
         oddly_breakable_by_hand = 3,
@@ -158,7 +158,7 @@ register_node_and_entity("seat", {
     },
 
     visual = "mesh",
-    textures = {"seat.png"},
+    textures = {"nv_seat.png"},
 })
 
 -- SCAFFOLD
@@ -169,13 +169,13 @@ register_node_and_entity("scaffold", {
     sunlight_propagates = true,
     paramtype2 = "facedir",
 
-    tiles = {"scaffold.png"},
+    tiles = {"nv_scaffold.png"},
     use_texture_alpha = "clip",
     groups = {oddly_breakable_by_hand = 3},
     mesh = "scaffold.obj",
 
     visual = "mesh",
-    textures = {"scaffold.png"},
+    textures = {"nv_scaffold.png"},
 })
 
 -- SCAFFOLD HULL
@@ -186,13 +186,13 @@ register_hull_node_and_entity("scaffold_hull", {
     sunlight_propagates = false,
     paramtype2 = "colorfacedir",
 
-    tiles = {"scaffold_hull.png"},
+    tiles = {"nv_scaffold_hull.png"},
     use_texture_alpha = "opaque",
     groups = {oddly_breakable_by_hand = 3},
     mesh = "scaffold.obj",
 
     visual = "mesh",
-    textures = {"scaffold_hull.png"},
+    textures = {"nv_scaffold_hull.png"},
 })
 
 -- FLOOR
@@ -204,7 +204,7 @@ register_node_and_entity("floor", {
     sunlight_propagates = true,
     paramtype2 = "facedir",
 
-    tiles = {"floor.png"},
+    tiles = {"nv_floor.png"},
     use_texture_alpha = "clip",
     groups = {oddly_breakable_by_hand = 3},
     mesh = "floor.obj",
@@ -216,5 +216,5 @@ register_node_and_entity("floor", {
     },
 
     visual = "mesh",
-    textures = {"floor.png"},
+    textures = {"nv_floor.png"},
 })

@@ -20,7 +20,7 @@ end
 -- Default player appearance
 player_api.register_model("character.b3d", {
     animation_speed = 30,
-    textures = {"spacesuit.png"},
+    textures = {"nv_spacesuit.png"},
     animations = {
         -- Standard animations.
         stand     = {x = 0,   y = 79},
@@ -38,7 +38,7 @@ player_api.register_model("character.b3d", {
 -- Default player model, but all animations are the 'sit' animation
 player_api.register_model("character_sitting.b3d", {
     animation_speed = 30,
-    textures = {"spacesuit.png"},
+    textures = {"nv_spacesuit.png"},
     animations = {
         -- 'Sit' animation, everywhere
         stand     = {x = 81,  y = 160},
