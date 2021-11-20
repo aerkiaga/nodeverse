@@ -153,7 +153,7 @@ register_node_and_entity("seat", {
         fall_damage_add_percent = -100,
         bouncy = 0
     },
-    mesh = "seat.obj",
+    mesh = "nv_seat.obj",
     collision_box = {
         type = "fixed",
         fixed = {
@@ -176,7 +176,7 @@ register_node_and_entity("scaffold", {
     tiles = {"nv_scaffold.png"},
     use_texture_alpha = "clip",
     groups = {oddly_breakable_by_hand = 3},
-    mesh = "scaffold.obj",
+    mesh = "nv_scaffold.obj",
 
     visual = "mesh",
     textures = {"nv_scaffold.png"},
@@ -193,7 +193,7 @@ register_hull_node_and_entity("scaffold_hull", {
     tiles = {"nv_scaffold_hull.png"},
     use_texture_alpha = "opaque",
     groups = {oddly_breakable_by_hand = 3},
-    mesh = "scaffold.obj",
+    mesh = "nv_scaffold.obj",
 
     visual = "mesh",
     textures = {"nv_scaffold_hull.png"},
@@ -211,7 +211,7 @@ register_node_and_entity("floor", {
     tiles = {"nv_floor.png"},
     use_texture_alpha = "clip",
     groups = {oddly_breakable_by_hand = 3},
-    mesh = "floor.obj",
+    mesh = "nv_floor.obj",
     collision_box = {
         type = "fixed",
         fixed = {
@@ -235,7 +235,7 @@ register_node_and_entity("landing_leg", {
     tiles = {"nv_landing_leg.png"},
     use_texture_alpha = "clip",
     groups = {oddly_breakable_by_hand = 3},
-    mesh = "landing_leg.obj",
+    mesh = "nv_landing_leg.obj",
     collision_box = {
         type = "fixed",
         fixed = {

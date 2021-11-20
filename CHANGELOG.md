@@ -12,7 +12,7 @@
 ### Changed
  - Adjusted viscosity of liquids.
  - Grass now has an improved bounding box.
- - Textures are namespaced to improve compatibility with other mods.
+ - All media are namespaced to improve compatibility with other mods.
 
 ### Removed
  - Mods `nv_rocket` and `autobox`.

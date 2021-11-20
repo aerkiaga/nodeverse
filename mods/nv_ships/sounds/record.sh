@@ -18,7 +18,7 @@ record_file() {
     rm "$1.wav")
 }
 
-record_file liftoff
-record_file engine
-record_file landing
-record_file touch_ground
+record_file nv_liftoff
+record_file nv_engine
+record_file nv_landing
+record_file nv_touch_ground
