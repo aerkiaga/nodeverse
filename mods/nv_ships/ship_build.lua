@@ -122,6 +122,12 @@ local function map_ship_into_another(source, destination)
             end
         end
     end
+    -- Clear trailing elements
+    local length = destination.size.x*destination.size.y*destination.size.z
+    for k_d=length+1, #destination.An do
+        destination.An[k_d] = nil
+        destination.A2[k_d] = nil
+    end
 end
 
 local function remove_ship_from_list(ship, list)
@@ -131,9 +137,17 @@ local function remove_ship_from_list(ship, list)
     end
 end
 
+local function init_ship_nodes(ship)
+    for k=0, ship.size.x*ship.size.y*ship.size.z do
+        ship.An[k] = ""
+        ship.A2[k] = 0
+    end
+end
+
 -- Tries to shrink the ship bounding box as much as possible
 -- while preserving all nodes contained inside it
 local function shrink_ship_to_content(ship)
+    print(#ship.An, #ship.A2) --D
     local min_plane_is_empty = {x=true, y=true, z=true}
     local max_plane_is_empty = {x=true, y=true, z=true}
     local x_stride = ship.size.x
@@ -142,7 +156,7 @@ local function shrink_ship_to_content(ship)
     for rel_z=0, ship.size.z - 1 do
         for rel_y=0, ship.size.y - 1 do
             for rel_x=0, ship.size.x - 1 do
-                if ship.An[k] ~= nil then
+                if ship.An[k] ~= "" then
                     if rel_x == 0 then min_plane_is_empty.x = false end
                     if rel_y == 0 then min_plane_is_empty.y = false end
                     if rel_z == 0 then min_plane_is_empty.z = false end
@@ -159,6 +173,10 @@ local function shrink_ship_to_content(ship)
         owner = ship.owner, state = "node", size = table.copy(ship.size), pos = table.copy(ship.pos),
         cockpit_pos = ship.cockpit_pos, facing = ship.facing, An = {}, A2 = {}
     }
+    init_ship_nodes(new_ship)
+    print("Shrinking") --D
+    print(dump(min_plane_is_empty))
+    print(dump(max_plane_is_empty))
     if min_plane_is_empty.x then new_ship.size.x = new_ship.size.x - 1 end
     if min_plane_is_empty.y then new_ship.size.y = new_ship.size.y - 1 end
     if min_plane_is_empty.z then new_ship.size.z = new_ship.size.z - 1 end
@@ -169,7 +187,13 @@ local function shrink_ship_to_content(ship)
     if max_plane_is_empty.y then new_ship.size.y = new_ship.size.y - 1 end
     if max_plane_is_empty.z then new_ship.size.z = new_ship.size.z - 1 end
 
+    print(#ship.An, #ship.A2)
+
     map_ship_into_another(ship, new_ship)
+
+    print(#ship.An, #ship.A2)
+    print(#new_ship.An, #new_ship.A2)
+    print(dump(new_ship.An))
 
     -- Copy to input ship
     ship.size = new_ship.size
@@ -202,7 +226,7 @@ local function try_remove_node_from_ship(node, pos, ship)
     local x_stride = ship.size.x
     local y_stride = ship.size.y
     local k = rel_pos.z*y_stride*x_stride + rel_pos.y*x_stride + rel_pos.x + 1
-    ship.An[k] = nil
+    ship.An[k] = ""
     -- Check if hull
     local start = string.find(node.name, "_hull%d*")
     if start ~= nil then
@@ -343,6 +367,7 @@ function nv_ships.try_add_node(node, pos, player)
             owner = name, state = "node", size = new_size, pos = new_pos,
             cockpit_pos = new_cockpit_pos, facing = new_facing, An = {}, A2 = {}
         }
+        init_ship_nodes(new_ship)
         -- Add nodes from other ships
         for index, conflict in ipairs(own_ships_conflicts) do
             map_ship_into_another(conflict.ship, new_ship)
@@ -363,6 +388,7 @@ function nv_ships.try_add_node(node, pos, player)
             owner = name, state = "node", size = {x=1, y=1, z=1}, pos = pos,
             cockpit_pos = nil, facing = nil, An = {}, A2 = {}
         }
+        init_ship_nodes(new_ship)
         if try_put_node_in_ship(node, pos, new_ship) then
             new_ship.index = #player_ship_list+1
             player_ship_list[new_ship.index] = new_ship

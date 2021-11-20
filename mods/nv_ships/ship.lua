@@ -194,7 +194,7 @@ function nv_ships.try_board_ship(pos, player)
                     local y_stride = ship.size.y
                     local k = rel_pos.z*y_stride*x_stride + rel_pos.y*x_stride + rel_pos.x + 1
                     -- Check actual node (bounding boxes can overlap, nodes can't!)
-                    if ship.An[k] ~= nil then
+                    if ship.An[k] ~= nil and ship.An[k] ~= "" then
                         return ship
                     end
                 end

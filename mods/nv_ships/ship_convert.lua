@@ -217,7 +217,7 @@ function nv_ships.ship_to_node(ship, player, pos)
             for x_abs=ship.pos.x, ship.pos.x + ship.size.x - 1 do
                 local pos_abs = {x=x_abs, y=y_abs, z=z_abs}
                 local node_name = ship.An[k]
-                if node_name ~= nil then
+                if node_name ~= "" then
                     local node_param2 = ship.A2[k]
                     minetest.add_node(pos_abs, {
                         name = node_name,
