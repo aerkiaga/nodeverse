@@ -3,7 +3,7 @@
 ### Added
  - Mods `nv_ships` and `nv_player`.
  - Ability to build ships out of nodes and fly them.
- - Seat, scaffold and floor nodes.
+ - Seat, scaffold, floor and landing leg nodes.
  - Colored spaceship hull, can be applied to ship nodes.
  - New, simpler flying mechanics, with vertical liftoff and landing.
  - Custom spacesuit player texture.
