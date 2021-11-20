@@ -85,7 +85,11 @@ local function register_node_and_entity(name, def)
     }
     minetest.register_entity("nv_ships:ent_" .. name, ent_def)
 
-    nv_ships.node_name_to_ent_name_dict["nv_ships:" .. name] = "nv_ships:ent_" .. name
+    if def.nv_no_entity then
+        nv_ships.node_name_to_ent_name_dict["nv_ships:" .. name] = ""
+    else
+        nv_ships.node_name_to_ent_name_dict["nv_ships:" .. name] = "nv_ships:ent_" .. name
+    end
 end
 
 local function register_hull_node_and_entity(name, def)
@@ -217,4 +221,30 @@ register_node_and_entity("floor", {
 
     visual = "mesh",
     textures = {"nv_floor.png"},
+})
+
+-- LANDING LEG
+-- A retractable landing leg for spacecraft
+-- Has no entity form
+register_node_and_entity("landing_leg", {
+    description = "Landing leg",
+    drawtype = "mesh",
+    sunlight_propagates = true,
+    paramtype2 = "facedir",
+
+    tiles = {"nv_landing_leg.png"},
+    use_texture_alpha = "clip",
+    groups = {oddly_breakable_by_hand = 3},
+    mesh = "landing_leg.obj",
+    collision_box = {
+        type = "fixed",
+        fixed = {
+            {-0.25, -0.5, -0.25, 0.25, 0.5, 0.25}
+        },
+    },
+
+    visual = "mesh",
+    textures = {"nv_landing_leg.png"},
+
+    nv_no_entity = true,
 })

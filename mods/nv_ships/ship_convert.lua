@@ -56,8 +56,10 @@ function nv_ships.ship_to_entity(ship, player)
                 if ent_name ~= nil then
                     local pos_abs = {x=x_abs, y=y_abs, z=z_abs}
                     minetest.remove_node(pos_abs)
-                    local ent = minetest.add_entity(pos_abs, ent_name)
-                    ent:set_attach(player, "", pos_player_rel, nil, true)
+                    if ent_name ~= "" then
+                        local ent = minetest.add_entity(pos_abs, ent_name)
+                        ent:set_attach(player, "", pos_player_rel, nil, true)
+                    end
                 end
                 k = k + 1
             end
