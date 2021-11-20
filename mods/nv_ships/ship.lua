@@ -82,7 +82,7 @@ function nv_ships.get_landing_position(ship, player, pos)
                         ship_node = ship.An[k]
                     end
                     if world_node_def.walkable or world_node_def.drawtype == "liquid" then
-                        if ship_node ~= nil then
+                        if ship_node ~= nil and ship_node ~= "" then
                             return 1 -- must move up
                         end
                         block_below = true
@@ -194,7 +194,7 @@ function nv_ships.try_board_ship(pos, player)
                     local y_stride = ship.size.y
                     local k = rel_pos.z*y_stride*x_stride + rel_pos.y*x_stride + rel_pos.x + 1
                     -- Check actual node (bounding boxes can overlap, nodes can't!)
-                    if ship.An[k] ~= nil and ship.An[k] ~= "" then
+                    if ship.An[k] ~= "" then
                         return ship
                     end
                 end
