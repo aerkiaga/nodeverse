@@ -6,7 +6,7 @@
  - Seat, scaffold, floor and landing leg nodes.
  - Colored spaceship hull, can be applied to ship nodes.
  - New, simpler flying mechanics, with vertical liftoff and landing.
- - Custom spacesuit player texture.
+ - Custom spacesuit player skin.
  - Four distinct sound effects for spaceship maneuvering.
 
 ### Changed
@@ -28,8 +28,8 @@
 Cherry-picked changes and fixes from the 0.2.x branch.
 
 ### Changed
-- Adjusted viscosity of liquids.
-- Grass now has an improved bounding box.
+ - Adjusted viscosity of liquids.
+ - Grass now has an improved bounding box.
 
 ### Fixed
  - Fix ocean borders with no walls.
