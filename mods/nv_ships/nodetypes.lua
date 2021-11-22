@@ -110,6 +110,7 @@ local function register_hull_node_and_entity(name, def)
             mesh = def.mesh,
             selection_box = def.collision_box,
             collision_box = def.collision_box,
+            drop = def.drop,
             after_place_node = def.after_place_node,
             on_rightclick = nv_ships.ship_rightclick_callback,
 
@@ -252,7 +253,7 @@ register_node_and_entity("landing_leg", {
 })
 
 -- GLASS FACE
--- Cuts a node-shaped space in half
+-- A glass square cutting a node-shaped space in half
 -- Should be unobtainable
 -- TODO: add glass pane item to make it visible in inventory
 -- TODO: handle side faces being visible with multiple connected panes
@@ -272,6 +273,7 @@ register_node_and_entity("glass_face", {
             {-0.5, -0.5, -0.0625, 0.5, 0.5, 0.06}
         },
     },
+    drop = "nv_ships:glass_pane",
 
     visual = "mesh",
     textures = {"nv_glass.png"},

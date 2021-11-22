@@ -27,6 +27,13 @@ local function on_place_hull_plate(itemstack, placer, pointed_thing)
     end
 end
 
+local function on_place_glass_pane(itemstack, placer, pointed_thing)
+    local pos = pointed_thing.above
+    minetest.item_place_node(ItemStack("nv_ships:glass_face 1"), placer, pointed_thing)
+    itemstack:take_item(1)
+    return itemstack
+end
+
 --[[
  # COMMON REGISTRATION
 ]]
@@ -54,7 +61,7 @@ local function register_item_colors(name, def)
             inventory_image = def.inventory_image,
             inventory_overlay = def.inventory_overlay,
             color = default_palette[n],
-            on_place = on_place_hull_plate,
+            on_place = def.on_place,
         }
         minetest.register_craftitem("nv_ships:" .. name .. n, item_def)
     end
@@ -68,7 +75,14 @@ Allocated: 2
 
 register_item_colors("hull_plate", {
     uncolored_description = "hull plate",
-    short_description = "hull plate",
     inventory_image = "nv_hull_plate.png",
     inventory_overlay = "nv_hull_plate_overlay.png",
+    on_place = on_place_hull_plate,
+})
+
+minetest.register_craftitem("nv_ships:glass_pane", {
+    description = "Glass pane",
+    short_description = "Glass pane",
+    inventory_image = "nv_glass_pane.png",
+    on_place = on_place_glass_pane,
 })
