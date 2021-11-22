@@ -133,6 +133,7 @@ Allocated: 3
 1       floor
 1       scaffold
 15      scaffold_hull
+1       landing_leg
 ]]--
 
 -- SEAT
@@ -141,7 +142,7 @@ Allocated: 3
 -- Required for liftoff
 -- At most one per ship
 register_node_and_entity("seat", {
-    description = "Seat",
+    description = "Pilot seat",
     drawtype = "mesh",
     sunlight_propagates = true,
     paramtype2 = "facedir",
@@ -168,7 +169,7 @@ register_node_and_entity("seat", {
 -- SCAFFOLD
 -- A full block of scaffolding
 register_node_and_entity("scaffold", {
-    description = "Scaffold",
+    description = "Ship scaffold",
     drawtype = "mesh",
     sunlight_propagates = true,
     paramtype2 = "facedir",
@@ -184,6 +185,7 @@ register_node_and_entity("scaffold", {
 
 -- SCAFFOLD HULL
 -- A full block of ship hull
+-- Shouldn't be obtainable
 register_hull_node_and_entity("scaffold_hull", {
     description = "Scaffold hull",
     drawtype = "mesh",
@@ -203,7 +205,7 @@ register_hull_node_and_entity("scaffold_hull", {
 -- A thin scaffold floor occupying the bottom 1/4 of the node
 -- Can be walked on easily
 register_node_and_entity("floor", {
-    description = "Floor",
+    description = "Ship floor",
     drawtype = "mesh",
     sunlight_propagates = true,
     paramtype2 = "facedir",
@@ -247,4 +249,32 @@ register_node_and_entity("landing_leg", {
     textures = {"nv_landing_leg.png"},
 
     nv_no_entity = true,
+})
+
+-- GLASS FACE
+-- Cuts a node-shaped space in half
+-- Should be unobtainable
+-- TODO: add glass pane item to make it visible in inventory
+-- TODO: handle side faces being visible with multiple connected panes
+register_node_and_entity("glass_face", {
+    description = "Glass face",
+    drawtype = "mesh",
+    sunlight_propagates = true,
+    paramtype2 = "facedir",
+
+    tiles = {"nv_glass.png"},
+    use_texture_alpha = "blend",
+    groups = {oddly_breakable_by_hand = 3},
+    mesh = "nv_glass_face.obj",
+    collision_box = {
+        type = "fixed",
+        fixed = {
+            {-0.5, -0.5, -0.0625, 0.5, 0.5, 0.06}
+        },
+    },
+
+    visual = "mesh",
+    textures = {"nv_glass.png"},
+
+    nv_no_entity = false,
 })
