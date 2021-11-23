@@ -255,7 +255,6 @@ register_node_and_entity("landing_leg", {
 -- GLASS FACE
 -- A glass square cutting a node-shaped space in half
 -- Should be unobtainable
--- TODO: add glass pane item to make it visible in inventory
 -- TODO: handle side faces being visible with multiple connected panes
 register_node_and_entity("glass_face", {
     description = "Glass face",
@@ -270,7 +269,34 @@ register_node_and_entity("glass_face", {
     collision_box = {
         type = "fixed",
         fixed = {
-            {-0.5, -0.5, -0.0625, 0.5, 0.5, 0.06}
+            {-0.5, -0.5, -0.0625, 0.5, 0.5, 0.0625}
+        },
+    },
+    drop = "nv_ships:glass_pane",
+
+    visual = "mesh",
+    textures = {"nv_glass.png"},
+
+    nv_no_entity = false,
+})
+
+-- GLASS FACE
+-- Two perpendicular glass rectangles separating a quadrant of a node
+-- Should be unobtainable
+register_node_and_entity("glass_edge", {
+    description = "Glass edge",
+    drawtype = "mesh",
+    sunlight_propagates = true,
+    paramtype2 = "facedir",
+
+    tiles = {"nv_glass.png"},
+    use_texture_alpha = "blend",
+    groups = {oddly_breakable_by_hand = 3},
+    mesh = "nv_glass_edge.obj",
+    collision_box = {
+        type = "fixed",
+        fixed = {
+            {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}
         },
     },
     drop = "nv_ships:glass_pane",
