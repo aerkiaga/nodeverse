@@ -280,7 +280,7 @@ register_node_and_entity("glass_face", {
     nv_no_entity = false,
 })
 
--- GLASS FACE
+-- GLASS EDGE
 -- Two perpendicular glass rectangles separating a quadrant of a node
 -- Should be unobtainable
 register_node_and_entity("glass_edge", {
@@ -293,6 +293,33 @@ register_node_and_entity("glass_edge", {
     use_texture_alpha = "blend",
     groups = {oddly_breakable_by_hand = 3},
     mesh = "nv_glass_edge.obj",
+    collision_box = {
+        type = "fixed",
+        fixed = {
+            {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}
+        },
+    },
+    drop = "nv_ships:glass_pane",
+
+    visual = "mesh",
+    textures = {"nv_glass.png"},
+
+    nv_no_entity = false,
+})
+
+-- GLASS VERTEX
+-- Three perpendicular glass squares separating an octant of a node
+-- Should be unobtainable
+register_node_and_entity("glass_vertex", {
+    description = "Glass vertex",
+    drawtype = "mesh",
+    sunlight_propagates = true,
+    paramtype2 = "facedir",
+
+    tiles = {"nv_glass.png"},
+    use_texture_alpha = "blend",
+    groups = {oddly_breakable_by_hand = 3},
+    mesh = "nv_glass_vertex.obj",
     collision_box = {
         type = "fixed",
         fixed = {
