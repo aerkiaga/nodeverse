@@ -1,3 +1,7 @@
+--[[
+TODO: explain all this code
+]]
+
 local function make_normal_player(player)
     nv_player.set_fall_damage(player, 100)
     player:set_physics_override {

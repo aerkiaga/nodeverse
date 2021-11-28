@@ -9,6 +9,7 @@ this file itself, which only contains functions that relate to flying (see
 'control.lua' for the actual flying code).
 Included files:
     ship_build.lua      Code for building ships
+    ship_check.lua      Code for scanning and checking ship nodes
     ship_convert.lua    Code for converting ships between node and entity forms
 
  # INDEX
@@ -17,6 +18,7 @@ Included files:
 ]]
 
 dofile(minetest.get_modpath("nv_ships") .. "/ship_build.lua")
+dofile(minetest.get_modpath("nv_ships") .. "/ship_check.lua")
 dofile(minetest.get_modpath("nv_ships") .. "/ship_convert.lua")
 
 --[[

@@ -73,6 +73,7 @@ local function try_put_node_in_ship(node, pos, ship)
     local k = rel_pos.z*y_stride*x_stride + rel_pos.y*x_stride + rel_pos.x + 1
     ship.An[k] = node.name
     ship.A2[k] = node.param2
+    nv_ships.global_check_ship(ship)
     return true
 end
 
@@ -96,6 +97,7 @@ local function try_put_hull_in_ship(index, pos, ship)
     }
     if allowed_nodes[node.name] ~= nil then
         ship.An[k] = ship.An[k] .. "_hull" .. index
+        nv_ships.global_check_ship(ship)
         return {name=ship.An[k], param1=8, param2=ship.A2[k]}
     end
     return nil
@@ -142,6 +144,7 @@ local function init_ship_nodes(ship)
         ship.An[k] = ""
         ship.A2[k] = 0
     end
+    nv_ships.global_check_ship(ship)
 end
 
 -- Tries to shrink the ship bounding box as much as possible
@@ -225,6 +228,7 @@ local function try_remove_node_from_ship(node, pos, ship)
     end
     -- Resize as needed
     shrink_ship_to_content(ship)
+    nv_ships.global_check_ship(ship)
     return true
 end
 
