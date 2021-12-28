@@ -115,6 +115,16 @@ local function rocket_physics(dtime, player, name)
 	    physics.gravity = -1
 		players_data[name].thrust = "full"
 		spent_fuel = 1 * dtime
+		if minetest.registered_nodes[
+			minetest.get_node(pos).name
+		].drawtype == "liquid" then
+			while minetest.registered_nodes[
+				minetest.get_node(pos).name
+			].drawtype == "liquid" do
+				pos = {x = pos.x, y = pos.y + 1, z = pos.z}
+			end
+			player:set_pos(pos)
+		end
 	    nv_rocket.particles(pos, vel, dtime)
 	elseif controls.sneak then
 		if players_data[name].is_lifted_off and current_fuel > 0 then
