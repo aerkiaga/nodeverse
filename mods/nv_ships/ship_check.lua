@@ -11,6 +11,8 @@ whether the ship is appropriately built and should be allowed to take off.
 
 --[[
  # GLOBAL CHECK
+
+Entry point for all the functions in this file.
 ]]--
 
 function nv_ships.global_check_ship(ship)
