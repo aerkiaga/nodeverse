@@ -11,6 +11,7 @@
 
 ### Changed
  - Adjusted viscosity of liquids.
+ - Made water non-pointable.
  - Grass now has an improved bounding box.
  - All media are namespaced to improve compatibility with other mods.
 
@@ -24,16 +25,18 @@
  - Fix ocean borders with no walls.
  - Fix snow side texture.
 
-## [0.1.5] - unreleased
-Cherry-picked changes and fixes from the 0.2.x branch.
+## [0.1.5] - 28-12-2021
+Includes cherry-picked changes and fixes from the 0.2.x branch.
 
 ### Changed
  - Adjusted viscosity of liquids.
+ - Made water non-pointable.
  - Grass now has an improved bounding box.
 
 ### Fixed
  - Fix ocean borders with no walls.
  - Fix snow side texture.
+ - Fix inability to lift off from inside liquids.
 
 ## [0.1.4] - 29-08-2021
 ### Performance
