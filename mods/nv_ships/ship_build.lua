@@ -132,6 +132,8 @@ local function map_ship_into_another(source, destination)
     end
 end
 
+-- Removes a ship from its owner's ship list and updates all indices
+-- Note that it will not work with any other list, only the owner's
 local function remove_ship_from_list(ship, list)
     table.remove(list, ship.index)
     for index=ship.index, #list do
@@ -139,6 +141,8 @@ local function remove_ship_from_list(ship, list)
     end
 end
 
+-- Initializes nodes of a ship to an empty, default value
+-- Requires that the ship's size be known
 local function init_ship_nodes(ship)
     for k=0, ship.size.x*ship.size.y*ship.size.z do
         ship.An[k] = ""
@@ -232,6 +236,12 @@ local function try_remove_node_from_ship(node, pos, ship)
     return true
 end
 
+-- Gets a node position ('pos') and tries to find all instances where the node
+-- is inside, or adjacent to, one of the given ships' bounding box. Appends all
+-- found conflicts to 'conflicts', as tables containing 'ship' and 'conflict':
+-- the ship which bounding box is in conflict, and a vector indicating the
+-- relative position of 'pos' with it (all zero for inside, one coordinate set
+-- to 1 for adjacent to a face, etc. See 'compute_box_conflict()').
 local function find_conflicts(conflicts, pos, ships)
     for index, ship in ipairs(ships) do
         if ship.state == "node" then
@@ -267,6 +277,7 @@ function nv_ships.try_add_node(node, pos, player)
     -- 4 Player puts node elsewhere: always OK
     --     Create new ship
 
+    -- Count number of cockpits across all ships in a conflict list
     local function count_cockpits_up_to_two(conflicts)
         local n = 0
         for index, conflict in ipairs(conflicts) do
@@ -280,6 +291,8 @@ function nv_ships.try_add_node(node, pos, player)
         return n
     end
 
+    -- Get position and size that would result from merging the bounding boxes
+    -- of all ships in 'conflicts' into a single bounding box
     local function get_merged_bounds(conflicts)
         local minp = {x=pos.x, y=pos.y, z=pos.z}
         local maxp = {x=pos.x, y=pos.y, z=pos.z}
@@ -300,10 +313,21 @@ function nv_ships.try_add_node(node, pos, player)
         return r_pos, r_size
     end
 
+    -- Check if a certain size is appropriate for a spaceship
+    -- Maximum size is arbitrarily set to 15x15x15; while the code should be
+    -- able to handle much more than that, it's useful to have a maximum so:
+    -- * Players can build hangars, landing platforms, etc. for other people's
+    --   ships, regardless of their size.
+    -- * Server-wide performance issues are harder to trigger by just building
+    --   very large ships.
+    -- * It's harder to completely enclose someone else's ship with one's own.
+    --   Although this could be worked around more gracefully (TODO).
     local function is_acceptable_size(size)
         return size.x <= 15 and size.y <= 15 and size.y <= 15
     end
 
+    -- Find the one cockpit among all ships in 'conflicts', and return its
+    -- position relative to 'relative_to'
     local function find_new_cockpit_pos(relative_to, conflicts)
         for index, conflict in ipairs(conflicts) do
             local ship = conflict.ship
@@ -324,7 +348,7 @@ function nv_ships.try_add_node(node, pos, player)
     local player_ship_list = nv_ships.players_list[name].ships
     local own_ships_conflicts = {}
     find_conflicts(own_ships_conflicts, pos, player_ship_list)
-    -- Check case 1
+    -- Check case 1 (inside bounding box of own ship)
     if #own_ships_conflicts == 1 and is_inside(own_ships_conflicts[1].conflict) then
         return try_put_node_in_ship(node, pos, own_ships_conflicts[1].ship)
     end
@@ -335,20 +359,23 @@ function nv_ships.try_add_node(node, pos, player)
             find_conflicts(other_ships_conflicts, pos, player.ships)
         end
     end
-    -- Check case 2
+    -- Check case 2 (inside or adjacent to other players' ships)
     if #other_ships_conflicts >= 1 then
         return false
     end
-    -- Check case 3 (general code for any number of adjacent ships)
+    -- Check case 3 (adjacent to (any number of) own ship(s))
+    -- Those ships will be merged into a single ship
+    -- TODO: don't allow merging when that would overlap another player's ship
+    -- TODO: unmerge ships when removing nodes in appropriate locations
     if #own_ships_conflicts >= 1 then
         local n_cockpits = count_cockpits_up_to_two(own_ships_conflicts)
         if n_cockpits >= 2 then
-            return false
+            return false -- Can't have more than one cockpit in final result
         end
         -- New position and size
         local new_pos, new_size = get_merged_bounds(own_ships_conflicts)
         if not is_acceptable_size(new_size) then
-            return false
+            return false -- Can't exceed acceptable size limits
         end
         -- New cockpit position
         local new_cockpit_pos = nil
@@ -356,18 +383,19 @@ function nv_ships.try_add_node(node, pos, player)
         if n_cockpits == 1 then
             new_cockpit_pos, new_facing = find_new_cockpit_pos(new_pos, own_ships_conflicts)
         end
-        -- New ship
+        -- Create new, empty ship
         local new_ship = {
             owner = name, state = "node", size = new_size, pos = new_pos,
             cockpit_pos = new_cockpit_pos, facing = new_facing, An = {}, A2 = {}
         }
         init_ship_nodes(new_ship)
-        -- Add nodes from other ships
+        -- Add nodes from other ships into merged ship
         for index, conflict in ipairs(own_ships_conflicts) do
             map_ship_into_another(conflict.ship, new_ship)
         end
         -- Only now try to put the new node
         if try_put_node_in_ship(node, pos, new_ship) then
+            -- Succeeded, commit the merge
             for index, conflict in ipairs(own_ships_conflicts) do
                 remove_ship_from_list(conflict.ship, player_ship_list)
             end
@@ -377,13 +405,15 @@ function nv_ships.try_add_node(node, pos, player)
         else
             return false
         end
-    else -- ... and case 4
+    else -- ... and case 4 (away from any existing ships)
+        -- A new ship will be created
         local new_ship = {
             owner = name, state = "node", size = {x=1, y=1, z=1}, pos = pos,
             cockpit_pos = nil, facing = nil, An = {}, A2 = {}
         }
         init_ship_nodes(new_ship)
         if try_put_node_in_ship(node, pos, new_ship) then
+            -- Node placement succeeded, commit single-node ship
             new_ship.index = #player_ship_list+1
             player_ship_list[new_ship.index] = new_ship
             return true
