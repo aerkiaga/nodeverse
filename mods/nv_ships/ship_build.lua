@@ -204,6 +204,167 @@ local function shrink_ship_to_content(ship)
     end
 end
 
+local function try_split_ship_by_node(pos, ship)
+
+    -- Returns whether the particular quadrant plane contains any node
+    local function try_plane(X, Y, Z)
+        local rel_pos = {
+            x = pos.x - ship.pos.x,
+            y = pos.y - ship.pos.y,
+            z = pos.z - ship.pos.z
+        }
+        local min_z = rel_pos.z
+        if Z == -1 then min_z = 0 end
+        local min_y = rel_pos.y
+        if Y == -1 then min_y = 0 end
+        local min_x = rel_pos.x
+        if X == -1 then min_x = 0 end
+        local max_z = rel_pos.z
+        if Z == 1 then max_z = ship.size.z - 1 end
+        local max_y = rel_pos.y
+        if Y == 1 then max_y = ship.size.y - 1 end
+        local max_x = rel_pos.x
+        if X == 1 then max_x = ship.size.x - 1 end
+        local x_stride = ship.size.x
+        local y_stride = ship.size.y
+        for rel_z=min_z, max_z do
+            for rel_y=min_y, max_y do
+                for rel_x=min_x, max_x do
+                    local k = rel_z*y_stride*x_stride + rel_y*x_stride + rel_x + 1
+                    if ship.An[k] ~= "" then
+                        return true
+                    end
+                end
+            end
+        end
+        return false
+    end
+
+    -- Checks whether two bounding boxes can be merged
+    local function check_merge(bounding_box_a, bounding_box_b, separation_planes)
+        local shared_volume = {
+            min = {
+                x = math.max(bounding_box_a.min.x, bounding_box_b.min.x),
+                y = math.max(bounding_box_a.min.y, bounding_box_b.min.y),
+                z = math.max(bounding_box_a.min.z, bounding_box_b.min.z)
+            },
+            max = {
+                x = math.min(bounding_box_a.max.x, bounding_box_b.max.x),
+                y = math.min(bounding_box_a.max.y, bounding_box_b.max.y),
+                z = math.min(bounding_box_a.max.z, bounding_box_b.max.z)
+            },
+        }
+        if shared_volume.max.x > shared_volume.min.x
+        and shared_volume.max.y > shared_volume.min.y
+        and shared_volume.max.z > shared_volume.min.z then
+            return true -- Bounding boxes overlap, can always merge in this case
+        end
+        if math.abs(shared_volume.max.x - shared_volume.min.x)
+        + math.abs(shared_volume.max.y - shared_volume.min.y)
+        + math.abs(shared_volume.max.z - shared_volume.min.z)
+        == 2 then -- The two boxes share a plane
+            -- If any of the quadrant planes in the contact surface between boxes
+            -- is true in 'separation_planes', return true
+            local min_z = shared_volume.min.z
+            if min_z and shared_volume.max.z == 1 then
+                min_z = 1
+            end
+            local min_y = shared_volume.min.y
+            if min_y == 0 and shared_volume.max.y == 1 then
+                min_y = 1
+            end
+            local min_x = shared_volume.min.x
+            if min_x == 0 and shared_volume.max.x == 1 then
+                min_x = 1
+            end
+            for Z=min_z, shared_volume.max.z, 2 do
+                for Y=min_y, shared_volume.max.y, 2 do
+                    for X=min_x, shared_volume.max.x, 2 do
+                        if separation_planes[X][Y][Z] then
+                            return true
+                        end
+                    end
+                end
+            end
+            -- Fall through
+        end
+        return false
+    end
+
+    ----------------------------------------------------------------------------
+
+    -- All the small quadrant planes separating octants
+    local separation_planes = {
+        [0] = {
+            [-1] = {[-1] = try_plane(0, -1, -1), [1] = try_plane(0, -1, 1)},
+            [1] = {[-1] = try_plane(0, 1, -1), [1] = try_plane(0, 1, 1)}
+        },
+        [-1] = {
+            [0] = {[-1] = try_plane(-1, 0, -1), [1] = try_plane(-1, 0, 1)},
+            [-1] = {[0] = try_plane(-1, -1, 0)},
+            [1] = {[0] = try_plane(-1, 1, 0)}
+        },
+        [1] = {
+            [0] = {[-1] = try_plane(1, 0, -1), [1] = try_plane(1, 0, 1)},
+            [-1] = {[0] = try_plane(1, -1, 0)},
+            [1] = {[0] = try_plane(1, 1, 0)}
+        }
+    }
+    -- The starting bounding boxes are just the 8 octants
+    local bounding_boxes = {
+        {min = {x = -1, y = -1, z = -1}, max = {x = 0, y = 0, z = 0}},
+        {min = {x = -1, y = -1, z = 0}, max = {x = 0, y = 0, z = 1}},
+        {min = {x = -1, y = 0, z = -1}, max = {x = 0, y = 1, z = 0}},
+        {min = {x = -1, y = 0, z = 0}, max = {x = 0, y = 1, z = 1}},
+        {min = {x = 0, y = -1, z = -1}, max = {x = 1, y = 0, z = 0}},
+        {min = {x = 0, y = -1, z = 0}, max = {x = 1, y = 0, z = 1}},
+        {min = {x = 0, y = 0, z = -1}, max = {x = 1, y = 1, z = 0}},
+        {min = {x = 0, y = 0, z = 0}, max = {x = 1, y = 1, z = 1}}
+    }
+    -- Now merge bounding boxes whenever a plane with nodes lies between them
+    local failed_attempts_in_a_row = 0
+    while failed_attempts_in_a_row <= #bounding_boxes do
+        -- Try each element, adding it to the end of the list, until
+        -- all elements have been tried without a single merge
+        local go_on = #bounding_boxes >= 2
+        local did_merge = false
+        repeat -- Repeat until we can't merge anymore
+            did_merge = false
+            local n = 2
+            while n <= #bounding_boxes do -- Attempt merge with all others
+                if check_merge(bounding_boxes[1], bounding_boxes[n], separation_planes) then
+                    did_merge = true
+                    failed_attempts_in_a_row = 0
+                    bounding_boxes[1] = {
+                        min = {
+                            x = math.min(bounding_boxes[1].min.x, bounding_boxes[n].min.x),
+                            y = math.min(bounding_boxes[1].min.y, bounding_boxes[n].min.y),
+                            z = math.min(bounding_boxes[1].min.z, bounding_boxes[n].min.z)
+                        },
+                        max = {
+                            x = math.max(bounding_boxes[1].max.x, bounding_boxes[n].max.x),
+                            y = math.max(bounding_boxes[1].max.y, bounding_boxes[n].max.y),
+                            z = math.max(bounding_boxes[1].max.z, bounding_boxes[n].max.z)
+                        }
+                    }
+                    table.remove(bounding_boxes, n)
+                else
+                    n = n + 1
+                end
+            end
+        until not did_merge
+        -- Move to end of list
+        table.insert(bounding_boxes, table.remove(bounding_boxes, 1))
+        failed_attempts_in_a_row = failed_attempts_in_a_row + 1
+    end
+    -- Construct ships from bounding boxes
+    local output_ships = {}
+    for _, bounding_box in ipairs(bounding_boxes) do
+        --table.insert(output_ships, translate_to_ship(bounding_box))
+    end
+    --return output_ships
+end
+
 -- Tries to remove node from world position that happens to be inside ship
 -- Or turn hull node into non-hull node
 -- Will update ship data as required
@@ -231,6 +392,8 @@ local function try_remove_node_from_ship(node, pos, ship)
         ship.An[k] = new_name
     end
     -- Resize as needed
+    -- TODO: rather than just resizing, the ship should also be split if needed
+    try_split_ship_by_node(pos, ship)
     shrink_ship_to_content(ship)
     nv_ships.global_check_ship(ship)
     return true

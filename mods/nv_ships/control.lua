@@ -205,6 +205,8 @@ local function joinplayer_callback(player, last_login)
 end
 
 local function dieplayer_callback(player, last_login)
+    -- TODO: a player's ship(s) should be summoned to the player's spawn site,
+    -- or the player should spawn at their ship's position
     local name = player:get_player_name()
     local inventory = player:get_inventory()
     if not inventory:contains_item("main", "nv_ships:seat 1") then
