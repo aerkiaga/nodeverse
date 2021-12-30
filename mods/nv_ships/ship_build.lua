@@ -111,13 +111,24 @@ local function map_ship_into_another(source, destination)
         y = source.pos.y - destination.pos.y,
         z = source.pos.z - destination.pos.z
     }
-    local x_stride = destination.size.x
-    local y_stride = destination.size.y
-    local k_s = 1
-    for rel_z_d=rel_pos_d.z, rel_pos_d.z + source.size.z - 1 do
-        for rel_y_d=rel_pos_d.y, rel_pos_d.y + source.size.y - 1 do
-            for rel_x_d=rel_pos_d.x, rel_pos_d.x + source.size.x - 1 do
-                local k_d = rel_z_d*y_stride*x_stride + rel_y_d*x_stride + rel_x_d + 1
+    local min_z = math.max(0, rel_pos_d.z)
+    local min_y = math.max(0, rel_pos_d.y)
+    local min_x = math.max(0, rel_pos_d.x)
+    local max_z = math.min(source.size.z + rel_pos_d.z, destination.size.z) - 1
+    local max_y = math.min(source.size.y + rel_pos_d.y, destination.size.y) - 1
+    local max_x = math.min(source.size.x + rel_pos_d.x, destination.size.x) - 1
+    local x_stride_d = destination.size.x
+    local y_stride_d = destination.size.y
+    local x_stride_s = source.size.x
+    local y_stride_s = source.size.y
+    for rel_z_d=min_z, max_z, 1 do
+        local rel_z_s = rel_z_d - rel_pos_d.z
+        for rel_y_d=min_y, max_y, 1 do
+            local rel_y_s = rel_y_d - rel_pos_d.y
+            for rel_x_d=min_x, max_x, 1 do
+                local rel_x_s = rel_x_d - rel_pos_d.x
+                local k_s = rel_z_s*y_stride_s*x_stride_s + rel_y_s*x_stride_s + rel_x_s + 1
+                local k_d = rel_z_d*y_stride_d*x_stride_d + rel_y_d*x_stride_d + rel_x_d + 1
                 destination.An[k_d] = source.An[k_s]
                 destination.A2[k_d] = source.A2[k_s]
                 k_s = k_s + 1
@@ -134,7 +145,11 @@ end
 
 -- Removes a ship from its owner's ship list and updates all indices
 -- Note that it will not work with any other list, only the owner's
-local function remove_ship_from_list(ship, list)
+local function remove_ship_from_list(ship)
+    local list = nv_ships.players_list[ship.owner].ships
+    if ship.index == nil then
+        return -- Detached ships don't matter
+    end
     table.remove(list, ship.index)
     for index=ship.index, #list do
         list[index].index = index
@@ -148,47 +163,61 @@ local function init_ship_nodes(ship)
         ship.An[k] = ""
         ship.A2[k] = 0
     end
-    nv_ships.global_check_ship(ship)
+    -- nv_ships.global_check_ship(ship)
 end
 
 -- Tries to shrink the ship bounding box as much as possible
 -- while preserving all nodes contained inside it
 local function shrink_ship_to_content(ship)
-    local min_plane_is_empty = {x=true, y=true, z=true}
-    local max_plane_is_empty = {x=true, y=true, z=true}
-    local x_stride = ship.size.x
-    local y_stride = ship.size.y
-    local k = 1
-    for rel_z=0, ship.size.z - 1 do
-        for rel_y=0, ship.size.y - 1 do
-            for rel_x=0, ship.size.x - 1 do
-                if ship.An[k] ~= "" then
-                    if rel_x == 0 then min_plane_is_empty.x = false end
-                    if rel_y == 0 then min_plane_is_empty.y = false end
-                    if rel_z == 0 then min_plane_is_empty.z = false end
-                    if rel_x == ship.size.x - 1 then max_plane_is_empty.x = false end
-                    if rel_y == ship.size.y - 1 then max_plane_is_empty.y = false end
-                    if rel_z == ship.size.z - 1 then max_plane_is_empty.z = false end
-                end
-                k = k + 1
-            end
-        end
-    end
     -- Operate on a temporary new ship
     local new_ship = {
         owner = ship.owner, state = "node", size = table.copy(ship.size), pos = table.copy(ship.pos),
         cockpit_pos = ship.cockpit_pos, facing = ship.facing, An = {}, A2 = {}
     }
+    local did_shrink = false
+    repeat -- Repeat the following until the ship can't be shrunk anymore
+        -- Probably not the best possible way to implement this...
+        did_shrink = false
+        local min_plane_is_empty = {x=true, y=true, z=true}
+        local max_plane_is_empty = {x=true, y=true, z=true}
+        local x_stride = ship.size.x
+        local y_stride = ship.size.y
+        local min_z = new_ship.pos.z - ship.pos.z
+        local min_y = new_ship.pos.y - ship.pos.y
+        local min_x = new_ship.pos.x - ship.pos.x
+        local max_z = min_z + new_ship.size.z - 1
+        local max_y = min_y + new_ship.size.y - 1
+        local max_x = min_x + new_ship.size.x - 1
+        for rel_z=min_z, max_z do
+            for rel_y=min_y, max_y do
+                for rel_x=min_x, max_x do
+                    local k = rel_z*y_stride*x_stride + rel_y*x_stride + rel_x + 1
+                    if ship.An[k] ~= "" then
+                        if rel_x == min_x then min_plane_is_empty.x = false end
+                        if rel_y == min_y then min_plane_is_empty.y = false end
+                        if rel_z == min_z then min_plane_is_empty.z = false end
+                        if rel_x == max_x then max_plane_is_empty.x = false end
+                        if rel_y == max_y then max_plane_is_empty.y = false end
+                        if rel_z == max_z then max_plane_is_empty.z = false end
+                    else
+                    end
+                end
+            end
+        end
+        if min_plane_is_empty.x then new_ship.size.x = new_ship.size.x - 1 did_shrink = true end
+        if min_plane_is_empty.y then new_ship.size.y = new_ship.size.y - 1 did_shrink = true end
+        if min_plane_is_empty.z then new_ship.size.z = new_ship.size.z - 1 did_shrink = true end
+        if new_ship.size.x * new_ship.size.y * new_ship.size.z == 0 then
+            break
+        end
+        if min_plane_is_empty.x then new_ship.pos.x = new_ship.pos.x + 1 did_shrink = true end
+        if min_plane_is_empty.y then new_ship.pos.y = new_ship.pos.y + 1 did_shrink = true end
+        if min_plane_is_empty.z then new_ship.pos.z = new_ship.pos.z + 1 did_shrink = true end
+        if max_plane_is_empty.x then new_ship.size.x = new_ship.size.x - 1 did_shrink = true end
+        if max_plane_is_empty.y then new_ship.size.y = new_ship.size.y - 1 did_shrink = true end
+        if max_plane_is_empty.z then new_ship.size.z = new_ship.size.z - 1 did_shrink = true end
+    until not did_shrink or new_ship.size.x * new_ship.size.y * new_ship.size.z == 0
     init_ship_nodes(new_ship)
-    if min_plane_is_empty.x then new_ship.size.x = new_ship.size.x - 1 end
-    if min_plane_is_empty.y then new_ship.size.y = new_ship.size.y - 1 end
-    if min_plane_is_empty.z then new_ship.size.z = new_ship.size.z - 1 end
-    if min_plane_is_empty.x then new_ship.pos.x = new_ship.pos.x + 1 end
-    if min_plane_is_empty.y then new_ship.pos.y = new_ship.pos.y + 1 end
-    if min_plane_is_empty.z then new_ship.pos.z = new_ship.pos.z + 1 end
-    if max_plane_is_empty.x then new_ship.size.x = new_ship.size.x - 1 end
-    if max_plane_is_empty.y then new_ship.size.y = new_ship.size.y - 1 end
-    if max_plane_is_empty.z then new_ship.size.z = new_ship.size.z - 1 end
 
     map_ship_into_another(ship, new_ship)
 
@@ -199,11 +228,14 @@ local function shrink_ship_to_content(ship)
     ship.A2 = new_ship.A2
 
     if ship.size.x <= 0 or ship.size.y <= 0 or ship.size.z <= 0 then
-        local list = nv_ships.players_list[ship.owner].ships
-        remove_ship_from_list(ship, list)
+        remove_ship_from_list(ship)
     end
 end
 
+--[[
+Given an absolute node position that has been removed from the ship, it tries to
+split the remaining nodes into as many non-adjacent new ships as possible.
+]]--
 local function try_split_ship_by_node(pos, ship)
 
     -- Returns whether the particular quadrant plane contains any node
@@ -291,6 +323,56 @@ local function try_split_ship_by_node(pos, ship)
         return false
     end
 
+    -- Input    Output
+    -- -1       Relative coordinate origin
+    -- 0        Coordinate given as 'pos'
+    -- 1        Corner opposite to origin
+    local function translate_ternary_to_relative(value, component_name)
+        if value == 0 then return pos[component_name] - ship.pos[component_name]
+        elseif value == 1 then return ship.size[component_name] - 1
+        else return 0 end
+    end
+
+    -- Take a fragment of 'ship' as defined by the ternary coordinates in
+    -- 'bounding_box' and make it into a new, fully checked but detached ship.
+    -- Returns 'nil' if there are no nodes in the specified box.
+    local function translate_to_ship(bounding_box)
+        local relative_bounding_box = {
+            min = {
+                x = translate_ternary_to_relative(bounding_box.min.x, "x"),
+                y = translate_ternary_to_relative(bounding_box.min.y, "y"),
+                z = translate_ternary_to_relative(bounding_box.min.z, "z")
+            },
+            max = {
+                x = translate_ternary_to_relative(bounding_box.max.x, "x"),
+                y = translate_ternary_to_relative(bounding_box.max.y, "y"),
+                z = translate_ternary_to_relative(bounding_box.max.z, "z")
+            }
+        }
+        local new_ship = {
+            owner = ship.owner, index = nil, state = "node",
+            size = {
+                x = relative_bounding_box.max.x - relative_bounding_box.min.x + 1,
+                y = relative_bounding_box.max.y - relative_bounding_box.min.y + 1,
+                z = relative_bounding_box.max.z - relative_bounding_box.min.z + 1
+            },
+            pos = {
+                x = ship.pos.x + relative_bounding_box.min.x,
+                y = ship.pos.y + relative_bounding_box.min.y,
+                z = ship.pos.z + relative_bounding_box.min.z
+            },
+            An = {}, A2 = {}
+        }
+        init_ship_nodes(new_ship)
+        map_ship_into_another(ship, new_ship)
+        shrink_ship_to_content(new_ship)
+        if new_ship.size.x * new_ship.size.y * new_ship.size.z == 0 then
+            return nil
+        end
+        nv_ships.global_check_ship(new_ship)
+        return new_ship
+    end
+
     ----------------------------------------------------------------------------
 
     -- All the small quadrant planes separating octants
@@ -360,9 +442,12 @@ local function try_split_ship_by_node(pos, ship)
     -- Construct ships from bounding boxes
     local output_ships = {}
     for _, bounding_box in ipairs(bounding_boxes) do
-        --table.insert(output_ships, translate_to_ship(bounding_box))
+        local new_ship = translate_to_ship(bounding_box)
+        if new_ship ~= nil then
+            table.insert(output_ships, new_ship)
+        end
     end
-    --return output_ships
+    return output_ships
 end
 
 -- Tries to remove node from world position that happens to be inside ship
@@ -391,11 +476,22 @@ local function try_remove_node_from_ship(node, pos, ship)
         local new_name = string.sub(node.name, 0, start-1)
         ship.An[k] = new_name
     end
-    -- Resize as needed
-    -- TODO: rather than just resizing, the ship should also be split if needed
-    try_split_ship_by_node(pos, ship)
-    shrink_ship_to_content(ship)
-    nv_ships.global_check_ship(ship)
+    -- Resize or split as needed, update player's ship list
+    local owner_name = ship.owner
+    local original_index = ship.index
+    local new_ships = try_split_ship_by_node(pos, ship)
+    if #new_ships >= 1 then
+        new_ships[1].index = original_index
+        nv_ships.players_list[owner_name].ships[original_index] = new_ships[1]
+        if #new_ships >= 2 then
+            for n=2, #new_ships do
+                table.insert(nv_ships.players_list[owner_name].ships, new_ships[n])
+                new_ships[n].index = #new_ships
+            end
+        end
+    else
+        remove_ship_from_list(nv_ships.players_list[owner_name].ships[original_index])
+    end
     return true
 end
 
@@ -560,7 +656,7 @@ function nv_ships.try_add_node(node, pos, player)
         if try_put_node_in_ship(node, pos, new_ship) then
             -- Succeeded, commit the merge
             for index, conflict in ipairs(own_ships_conflicts) do
-                remove_ship_from_list(conflict.ship, player_ship_list)
+                remove_ship_from_list(conflict.ship)
             end
             new_ship.index = #player_ship_list+1
             player_ship_list[new_ship.index] = new_ship
