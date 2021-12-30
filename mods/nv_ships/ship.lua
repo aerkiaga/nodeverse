@@ -40,7 +40,6 @@ Ship format:
     An          flat array of node names in ship bounding box (only part of ship)
     A2          flat array of param2's in ship bounding box (only part of ship)
     ----------- The remaining values are calculated in 'ship_check.lua'
-    TODO: actually do this
     cockpit_pos relative xyz of cockpit base node, or 'nil' if no cockpit
     facing      copy of param2 value at cockpit base node, modulo 4 (or nil)
 ]]--

@@ -60,12 +60,8 @@ local function try_put_node_in_ship(node, pos, ship)
         z = pos.z - ship.pos.z
     }
     -- Check node
-    if node.name == "nv_ships:seat" then
-        if ship.cockpit_pos ~= nil then
-            return false
-        end
-        ship.cockpit_pos = rel_pos
-        ship.facing = node.param2 % 4
+    if node.name == "nv_ships:seat" and ship.cockpit_pos ~= nil then
+        return false
     end
     -- Place it
     local x_stride = ship.size.x
@@ -460,12 +456,6 @@ local function try_remove_node_from_ship(node, pos, ship)
         y = pos.y - ship.pos.y,
         z = pos.z - ship.pos.z
     }
-    -- Check node
-    if node.name == "nv_ships:seat" then
-        ship.cockpit_pos = nil
-        ship.facing = node.param2 % 4
-    end
-    -- Remove it
     local x_stride = ship.size.x
     local y_stride = ship.size.y
     local k = rel_pos.z*y_stride*x_stride + rel_pos.y*x_stride + rel_pos.x + 1
@@ -587,6 +577,7 @@ function nv_ships.try_add_node(node, pos, player)
 
     -- Find the one cockpit among all ships in 'conflicts', and return its
     -- position relative to 'relative_to'
+    -- Retained only as a means to check if *any* of the ships has a cockpit
     local function find_new_cockpit_pos(relative_to, conflicts)
         for index, conflict in ipairs(conflicts) do
             local ship = conflict.ship
@@ -625,7 +616,6 @@ function nv_ships.try_add_node(node, pos, player)
     -- Check case 3 (adjacent to (any number of) own ship(s))
     -- Those ships will be merged into a single ship
     -- TODO: don't allow merging when that would overlap another player's ship
-    -- TODO: unmerge ships when removing nodes in appropriate locations
     if #own_ships_conflicts >= 1 then
         local n_cockpits = count_cockpits_up_to_two(own_ships_conflicts)
         if n_cockpits >= 2 then
