@@ -55,6 +55,7 @@ local function register_node_and_entity(name, def)
         color = def.color,
         use_texture_alpha = def.use_texture_alpha,
         groups = def.groups,
+        node_box = def.node_box,
         mesh = def.mesh,
         selection_box = def.collision_box,
         collision_box = def.collision_box,
@@ -258,13 +259,19 @@ register_node_and_entity("landing_leg", {
 -- TODO: handle side faces being visible with multiple connected panes
 register_node_and_entity("glass_face", {
     description = "Glass face",
-    drawtype = "mesh",
+    drawtype = "nodebox",
     sunlight_propagates = true,
     paramtype2 = "facedir",
 
     tiles = {"nv_glass.png"},
     use_texture_alpha = "blend",
     groups = {oddly_breakable_by_hand = 3},
+    node_box = {
+        type = "fixed",
+        fixed = {
+            {-0.5, -0.5, -0.0625, 0.5, 0.5, 0.0625},
+        }
+    },
     mesh = "nv_glass_face.obj",
     collision_box = {
         type = "fixed",
@@ -285,13 +292,20 @@ register_node_and_entity("glass_face", {
 -- Should be unobtainable
 register_node_and_entity("glass_edge", {
     description = "Glass edge",
-    drawtype = "mesh",
+    drawtype = "nodebox",
     sunlight_propagates = true,
     paramtype2 = "facedir",
 
     tiles = {"nv_glass.png"},
     use_texture_alpha = "blend",
     groups = {oddly_breakable_by_hand = 3},
+    node_box = {
+        type = "fixed",
+        fixed = {
+            {-0.0625, -0.5, -0.0625, 0.5, 0.5, 0.0625},
+            {-0.0625, -0.5, 0.0625, 0.0625, 0.5, 0.5}
+        }
+    },
     mesh = "nv_glass_edge.obj",
     collision_box = {
         type = "fixed",
@@ -312,13 +326,21 @@ register_node_and_entity("glass_edge", {
 -- Should be unobtainable
 register_node_and_entity("glass_vertex", {
     description = "Glass vertex",
-    drawtype = "mesh",
+    drawtype = "nodebox",
     sunlight_propagates = true,
     paramtype2 = "facedir",
 
     tiles = {"nv_glass.png"},
     use_texture_alpha = "blend",
     groups = {oddly_breakable_by_hand = 3},
+    node_box = {
+        type = "fixed",
+        fixed = {
+            {-0.0625, 0.0625, -0.0625, 0.5, 0.5, 0.0625},
+            {-0.0625, 0.0625, 0.0625, 0.0625, 0.5, 0.5},
+            {-0.0625, -0.0625, -0.0625, 0.5, 0.0625, 0.5}
+        }
+    },
     mesh = "nv_glass_vertex.obj",
     collision_box = {
         type = "fixed",
