@@ -57,7 +57,7 @@ local function register_node_and_entity(name, def)
         groups = def.groups,
         node_box = def.node_box,
         mesh = def.mesh,
-        selection_box = def.collision_box,
+        selection_box = def.selection_box or def.collision_box,
         collision_box = def.collision_box,
         drop = def.drop,
         after_place_node = after_place_node_normal,
@@ -109,7 +109,7 @@ local function register_hull_node_and_entity(name, def)
             use_texture_alpha = def.use_texture_alpha,
             groups = def.groups,
             mesh = def.mesh,
-            selection_box = def.collision_box,
+            selection_box = def.selection_box or def.collision_box,
             collision_box = def.collision_box,
             drop = def.drop,
             after_place_node = def.after_place_node,
@@ -273,12 +273,6 @@ register_node_and_entity("glass_face", {
         }
     },
     mesh = "nv_glass_face.obj",
-    collision_box = {
-        type = "fixed",
-        fixed = {
-            {-0.5, -0.5, -0.0625, 0.5, 0.5, 0.0625}
-        },
-    },
     drop = "nv_ships:glass_pane",
 
     visual = "mesh",
@@ -307,11 +301,11 @@ register_node_and_entity("glass_edge", {
         }
     },
     mesh = "nv_glass_edge.obj",
-    collision_box = {
+    selection_box = {
         type = "fixed",
         fixed = {
-            {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}
-        },
+            {-0.0625, -0.5, -0.0625, 0.5, 0.5, 0.5}
+        }
     },
     drop = "nv_ships:glass_pane",
 
@@ -342,11 +336,11 @@ register_node_and_entity("glass_vertex", {
         }
     },
     mesh = "nv_glass_vertex.obj",
-    collision_box = {
+    selection_box = {
         type = "fixed",
         fixed = {
-            {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}
-        },
+            {-0.0625, -0.0625, -0.0625, 0.5, 0.5, 0.5}
+        }
     },
     drop = "nv_ships:glass_pane",
 
