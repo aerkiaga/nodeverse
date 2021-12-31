@@ -94,7 +94,7 @@ local function try_put_hull_in_ship(index, pos, ship)
     if allowed_nodes[node.name] ~= nil then
         ship.An[k] = ship.An[k] .. "_hull" .. index
         nv_ships.global_check_ship(ship)
-        return {name=ship.An[k], param1=8, param2=ship.A2[k]}
+        return {name=ship.An[k], param1=240, param2=ship.A2[k]}
     end
     return nil
 end

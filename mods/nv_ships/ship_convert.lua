@@ -221,7 +221,7 @@ function nv_ships.ship_to_node(ship, player, pos)
                     local node_param2 = ship.A2[k]
                     minetest.add_node(pos_abs, {
                         name = node_name,
-                        param1 = 15,
+                        param1 = 240,
                         param2 = node_param2
                     })
                 end

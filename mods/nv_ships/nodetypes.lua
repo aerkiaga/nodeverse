@@ -49,6 +49,7 @@ local function register_node_and_entity(name, def)
     local node_def = {
         description = def.description or "",
         drawtype = def.drawtype,
+        is_ground_content = false,
         sunlight_propagates = def.sunlight_propagates,
         paramtype2 = def.paramtype2,
         tiles = def.tiles,
@@ -103,6 +104,7 @@ local function register_hull_node_and_entity(name, def)
         local colored_def = {
             description = def.description,
             drawtype = def.drawtype,
+            is_ground_content = false,
             sunlight_propagates = def.sunlight_propagates,
             paramtype2 = def.paramtype2,
             tiles = def.tiles,
@@ -264,7 +266,7 @@ register_node_and_entity("glass_face", {
     paramtype2 = "facedir",
 
     tiles = {"nv_glass_fallback.png"},
-    use_texture_alpha = "clip",
+    use_texture_alpha = "opaque",
     groups = {oddly_breakable_by_hand = 3},
     node_box = {
         type = "fixed",
@@ -291,7 +293,7 @@ register_node_and_entity("glass_edge", {
     paramtype2 = "facedir",
 
     tiles = {"nv_glass_fallback.png"},
-    use_texture_alpha = "clip",
+    use_texture_alpha = "opaque",
     groups = {oddly_breakable_by_hand = 3},
     node_box = {
         type = "fixed",
@@ -325,7 +327,7 @@ register_node_and_entity("glass_vertex", {
     paramtype2 = "facedir",
 
     tiles = {"nv_glass_fallback.png"},
-    use_texture_alpha = "clip",
+    use_texture_alpha = "opaque",
     groups = {oddly_breakable_by_hand = 3},
     node_box = {
         type = "fixed",
