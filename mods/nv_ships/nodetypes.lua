@@ -263,8 +263,8 @@ register_node_and_entity("glass_face", {
     sunlight_propagates = true,
     paramtype2 = "facedir",
 
-    tiles = {"nv_glass.png"},
-    use_texture_alpha = "blend",
+    tiles = {"nv_glass_fallback.png"},
+    use_texture_alpha = "clip",
     groups = {oddly_breakable_by_hand = 3},
     node_box = {
         type = "fixed",
@@ -290,8 +290,8 @@ register_node_and_entity("glass_edge", {
     sunlight_propagates = true,
     paramtype2 = "facedir",
 
-    tiles = {"nv_glass.png"},
-    use_texture_alpha = "blend",
+    tiles = {"nv_glass_fallback.png"},
+    use_texture_alpha = "clip",
     groups = {oddly_breakable_by_hand = 3},
     node_box = {
         type = "fixed",
@@ -324,8 +324,8 @@ register_node_and_entity("glass_vertex", {
     sunlight_propagates = true,
     paramtype2 = "facedir",
 
-    tiles = {"nv_glass.png"},
-    use_texture_alpha = "blend",
+    tiles = {"nv_glass_fallback.png"},
+    use_texture_alpha = "clip",
     groups = {oddly_breakable_by_hand = 3},
     node_box = {
         type = "fixed",
