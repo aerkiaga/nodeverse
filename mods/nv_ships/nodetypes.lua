@@ -261,12 +261,16 @@ register_node_and_entity("landing_leg", {
 -- TODO: handle side faces being visible with multiple connected panes
 register_node_and_entity("glass_face", {
     description = "Glass face",
-    drawtype = "nodebox",
+    drawtype = "mesh",
     sunlight_propagates = true,
     paramtype2 = "facedir",
 
-    tiles = {"nv_glass_fallback.png"},
-    use_texture_alpha = "opaque",
+    tiles = {{
+        name = "nv_glass.png",
+        backface_culling = true,
+        align_style = "world"
+    }},
+    use_texture_alpha = "blend",
     groups = {oddly_breakable_by_hand = 3},
     node_box = {
         type = "fixed",
@@ -288,12 +292,16 @@ register_node_and_entity("glass_face", {
 -- Should be unobtainable
 register_node_and_entity("glass_edge", {
     description = "Glass edge",
-    drawtype = "nodebox",
+    drawtype = "mesh",
     sunlight_propagates = true,
     paramtype2 = "facedir",
 
-    tiles = {"nv_glass_fallback.png"},
-    use_texture_alpha = "opaque",
+    tiles = {{
+        name = "nv_glass.png",
+        backface_culling = true,
+        align_style = "world"
+    }},
+    use_texture_alpha = "blend",
     groups = {oddly_breakable_by_hand = 3},
     node_box = {
         type = "fixed",
@@ -322,12 +330,16 @@ register_node_and_entity("glass_edge", {
 -- Should be unobtainable
 register_node_and_entity("glass_vertex", {
     description = "Glass vertex",
-    drawtype = "nodebox",
+    drawtype = "mesh",
     sunlight_propagates = true,
     paramtype2 = "facedir",
 
-    tiles = {"nv_glass_fallback.png"},
-    use_texture_alpha = "opaque",
+    tiles = {{
+        name = "nv_glass.png",
+        backface_culling = true,
+        align_style = "world"
+    }},
+    use_texture_alpha = "blend",
     groups = {oddly_breakable_by_hand = 3},
     node_box = {
         type = "fixed",
