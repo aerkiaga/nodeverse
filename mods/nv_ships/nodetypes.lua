@@ -284,7 +284,7 @@ register_node_and_entity("glass_face", {
     visual = "mesh",
     textures = {"nv_glass.png"},
 
-    nv_no_entity = false,
+    nv_no_entity = true,
 })
 
 -- GLASS EDGE
@@ -322,7 +322,7 @@ register_node_and_entity("glass_edge", {
     visual = "mesh",
     textures = {"nv_glass.png"},
 
-    nv_no_entity = false,
+    nv_no_entity = true,
 })
 
 -- GLASS VERTEX
@@ -361,5 +361,5 @@ register_node_and_entity("glass_vertex", {
     visual = "mesh",
     textures = {"nv_glass.png"},
 
-    nv_no_entity = false,
+    nv_no_entity = true,
 })
