@@ -108,18 +108,18 @@ function nv_ships.rotate_ship_nodes(ship, facing)
         end
         local facedir = param2 % 2^5
         local other = param2 - facedir
-        local axis = math.floor(facedir / 4)
-        local facing2 = facedir % 4
-        local new_axis = axis
-        local new_facing2 = facing2
-        if axis == 0 then
-            new_facing2 = (facing2 + rot) % 4
-        elseif axis == 5 then
-            new_facing2 = (facing2 - rot) % 4
-        else
-            -- TODO: support more axes in 'rotate_param2()'
+        local next_rotation_table = {
+            [0] = 1, [1] = 2, [2] = 3, [3] = 0,
+            [4] = 13, [6] = 15,
+            [8] = 17, [10] = 19,
+            [13] = 10, [15] = 8,
+            [17] = 6, [19] = 4,
+            [20] = 23, [21] = 20, [22] = 21, [23] = 22
+        } -- TODO: support all possible rotations in 'rotate_param2()'
+        for n=1, rot do
+            facedir = next_rotation_table[facedir] or 0
         end
-        return other + 4*new_axis + new_facing2
+        return other + facedir
     end
 
     ----------------------------------------------------------------------------
