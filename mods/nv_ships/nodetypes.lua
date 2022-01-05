@@ -51,6 +51,7 @@ local function register_node_and_entity(name, def)
         drawtype = def.drawtype,
         is_ground_content = false,
         sunlight_propagates = def.sunlight_propagates,
+        paramtype = def.paramtype,
         paramtype2 = def.paramtype2,
         tiles = def.tiles,
         color = def.color,
@@ -106,6 +107,7 @@ local function register_hull_node_and_entity(name, def)
             drawtype = def.drawtype,
             is_ground_content = false,
             sunlight_propagates = def.sunlight_propagates,
+            paramtype = def.paramtype,
             paramtype2 = def.paramtype2,
             tiles = def.tiles,
             use_texture_alpha = def.use_texture_alpha,
@@ -149,6 +151,7 @@ register_node_and_entity("seat", {
     description = "Pilot seat",
     drawtype = "mesh",
     sunlight_propagates = true,
+    paramtype = "light",
     paramtype2 = "facedir",
 
     tiles = {"nv_seat.png"},
@@ -176,6 +179,7 @@ register_node_and_entity("scaffold", {
     description = "Ship scaffold",
     drawtype = "mesh",
     sunlight_propagates = true,
+    paramtype = "light",
     paramtype2 = "facedir",
 
     tiles = {"nv_scaffold.png"},
@@ -194,6 +198,7 @@ register_hull_node_and_entity("scaffold_hull", {
     description = "Scaffold hull",
     drawtype = "mesh",
     sunlight_propagates = false,
+    paramtype = "light",
     paramtype2 = "colorfacedir",
 
     tiles = {"nv_scaffold_hull.png"},
@@ -212,6 +217,7 @@ register_node_and_entity("floor", {
     description = "Ship floor",
     drawtype = "mesh",
     sunlight_propagates = true,
+    paramtype = "light",
     paramtype2 = "facedir",
 
     tiles = {"nv_floor.png"},
@@ -236,6 +242,7 @@ register_node_and_entity("landing_leg", {
     description = "Landing leg",
     drawtype = "mesh",
     sunlight_propagates = true,
+    paramtype = "light",
     paramtype2 = "facedir",
 
     tiles = {"nv_landing_leg.png"},
@@ -263,6 +270,7 @@ register_node_and_entity("glass_face", {
     description = "Glass face",
     drawtype = "mesh",
     sunlight_propagates = true,
+    paramtype = "light",
     paramtype2 = "facedir",
 
     tiles = {{
@@ -294,6 +302,7 @@ register_node_and_entity("glass_edge", {
     description = "Glass edge",
     drawtype = "mesh",
     sunlight_propagates = true,
+    paramtype = "light",
     paramtype2 = "facedir",
 
     tiles = {{
@@ -332,6 +341,7 @@ register_node_and_entity("glass_vertex", {
     description = "Glass vertex",
     drawtype = "mesh",
     sunlight_propagates = true,
+    paramtype = "light",
     paramtype2 = "facedir",
 
     tiles = {{
