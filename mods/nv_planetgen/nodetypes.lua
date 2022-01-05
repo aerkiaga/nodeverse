@@ -165,6 +165,7 @@ local function register_base_nodes()
                 "dust2.png^[colorize:" .. color .. ":64",
                 "dust.png^[colorize:" .. color .. ":64"
             },
+            paramtype = "light",
             paramtype2 = "colorfacedir",
             place_param2 = 0,
         } end
@@ -188,6 +189,7 @@ local function register_base_nodes()
                 "sediment2.png^[colorize:" .. color .. ":48",
                 "sediment.png^[colorize:" .. color .. ":48"
             },
+            paramtype = "light",
             paramtype2 = "colorfacedir",
             place_param2 = 0,
         } end
@@ -210,6 +212,7 @@ local function register_base_nodes()
                 "(gravel.png^[transformR270)^[colorize:" .. color .. ":48",
                 "gravel.png^[colorize:" .. color .. ":48",
             },
+            paramtype = "light",
             paramtype2 = "colorfacedir",
             place_param2 = 0,
         } end
@@ -232,6 +235,7 @@ local function register_base_nodes()
                 "(stone.png^[transformR180)^[colorize:" .. color .. ":32",
                 "stone.png^[colorize:" .. color .. ":32"
             },
+            paramtype = "light",
             paramtype2 = "facedir",
             place_param2 = 0
         } end
@@ -532,6 +536,7 @@ local function register_icy_nodes()
             tiles = {
                 "snow_top.png",
             },
+            paramtype = "light",
             paramtype2 = "colorfacedir",
             place_param2 = 8,
             walkable = false,
@@ -571,6 +576,7 @@ local function register_base_floral_nodes()
                 {name = "grass_soil_side.png^[transformFX"},
                 {name = "grass_soil_side.png"}
             },
+            paramtype = "light",
             paramtype2 = "colorfacedir",
             palette = "palette_grass" .. math.floor((n-1) / 16) + 1 .. ".png",
             place_param2 = 8,
@@ -588,6 +594,7 @@ local function register_base_floral_nodes()
             tiles = {
                 {name = "grass.png", color = color},
             },
+            paramtype = "light",
             paramtype2 = "degrotate",
             place_param2 = 0,
             sunlight_propagates = true,
@@ -612,6 +619,7 @@ local function register_base_floral_nodes()
             tiles = {
                 {name = "grass_dry.png", color = color},
             },
+            paramtype = "light",
             paramtype2 = "degrotate",
             place_param2 = 0,
             sunlight_propagates = true,
@@ -636,6 +644,7 @@ local function register_base_floral_nodes()
             tiles = {
                 {name = "grass_tall.png", color = color},
             },
+            paramtype = "light",
             paramtype2 = "degrotate",
             place_param2 = 0,
             sunlight_propagates = true,
