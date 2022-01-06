@@ -22,7 +22,7 @@ development have been ported to the 0.1.x versions.
  - Default rocket mechanics, including item and model.
  - Custom sky texture.
 
-## [0.1.6] - unreleased
+## [0.1.6] - 06-01-2022
 ### Fixed
  - Fix some nodes appearing to generate shadows.
  - Fix spurious grass or snow nodes.
