@@ -1,5 +1,9 @@
 # Changelog
 ## [0.2.0] - unreleased
+This is a major release; it breaks compatibility with existing worlds and adds
+many new features to the game. Most fixes and small changes made during its
+development have been ported to the 0.1.x versions.
+
 ### Added
  - Mods `nv_ships` and `nv_player`.
  - Ability to build ships out of nodes and fly them.
@@ -10,9 +14,6 @@
  - Four distinct sound effects for spaceship maneuvering.
 
 ### Changed
- - Adjusted viscosity of liquids.
- - Made water non-pointable.
- - Grass now has an improved bounding box.
  - All media are namespaced to improve compatibility with other mods.
 
 ### Removed
@@ -21,13 +22,12 @@
  - Default rocket mechanics, including item and model.
  - Custom sky texture.
 
+## [0.1.6] - unreleased
 ### Fixed
- - Fix ocean borders with no walls.
- - Fix snow side texture.
+ - Fix some nodes appearing to generate shadows.
+ - Fix Autobox path capitalization.
 
 ## [0.1.5] - 28-12-2021
-Includes cherry-picked changes and fixes from the 0.2.x branch.
-
 ### Changed
  - Adjusted viscosity of liquids.
  - Made water non-pointable.
@@ -39,6 +39,9 @@ Includes cherry-picked changes and fixes from the 0.2.x branch.
  - Fix inability to lift off from inside liquids.
 
 ## [0.1.4] - 29-08-2021
+Development on 0.2.x has started. Subsequent 0.1.x versions will be released to
+backport fixes and small changes.
+
 ### Performance
  - Optimized globalstep mechanism.
 
