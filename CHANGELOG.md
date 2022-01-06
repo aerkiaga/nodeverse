@@ -25,6 +25,7 @@ development have been ported to the 0.1.x versions.
 ## [0.1.6] - unreleased
 ### Fixed
  - Fix some nodes appearing to generate shadows.
+ - Fix spurious grass or snow nodes.
  - Fix Autobox path capitalization.
 
 ## [0.1.5] - 28-12-2021
