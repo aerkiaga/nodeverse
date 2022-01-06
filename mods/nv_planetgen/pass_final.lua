@@ -54,10 +54,6 @@ function nv_planetgen.pass_final(
                         -- Apply lighting
                         if is_scorching and Ai == planet.node_types.liquid then
                             A1[i] = 136
-                        elseif Ai == planet.node_types.grass
-                        or Ai == planet.node_types.dry_grass
-                        or Ai == planet.node_types.tall_grass then
-                            A1[i] = 255
                         else
                             A1[i] = 0
                         end
