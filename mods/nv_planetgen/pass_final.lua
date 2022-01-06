@@ -53,9 +53,9 @@ function nv_planetgen.pass_final(
 
                         -- Apply lighting
                         if is_scorching and Ai == planet.node_types.liquid then
-                            A1[i] = 136
+                            A1[i] = 143
                         else
-                            A1[i] = 0
+                            A1[i] = 15
                         end
 
                         -- Apply random texture rotation to all supported nodes
