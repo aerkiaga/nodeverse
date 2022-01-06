@@ -69,10 +69,11 @@ function gen_weighted(generator, options)
     local value = gen_linear(generator, 0, total_weight)
     for i, v in pairs(options) do
         value = value - v
-        if value <= 0 then
+        if value < 0 then
             return i
         end
     end
+    return #options
 end
 
 --[[
