@@ -52,14 +52,14 @@ function nv_planetgen.pass_final(
                         end
 
                         -- Apply lighting
-                        if is_scorching and Ai == planet.node_types.liquid then
+                        if is_scorching and A[i] == planet.node_types.liquid then
                             A1[i] = 143
                         else
                             A1[i] = 15
                         end
 
                         -- Apply random texture rotation to all supported nodes
-                        local rot = nv_planetgen.random_yrot_nodes[Ai]
+                        local rot = nv_planetgen.random_yrot_nodes[A[i]]
                         local param2 = 0
                         if rot ~= nil then
                             param2 = G:next() % rot
@@ -70,7 +70,7 @@ function nv_planetgen.pass_final(
 
                         -- Apply 'colorfacedir' color to all supported nodes
                         -- TODO: support 'color' and 'colorwallmounted' colors
-                        local color = planet.color_dictionary[Ai]
+                        local color = planet.color_dictionary[A[i]]
                         if color ~= nil then
                             color = color * 0x20
                             param2 = param2 + color
