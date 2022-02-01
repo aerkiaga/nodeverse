@@ -170,7 +170,7 @@ local function register_base_nodes()
             place_param2 = 0,
             sounds = {
                 footstep = {
-                    name = "nv_step_dust", gain = 0.5, pitch = 1
+                    name = "nv_step_dust", gain = 0.3, pitch = 1
                 }
             }
         } end
@@ -199,7 +199,7 @@ local function register_base_nodes()
             place_param2 = 0,
             sounds = {
                 footstep = {
-                    name = "nv_step_sediment", gain = 0.5, pitch = 1
+                    name = "nv_step_sediment", gain = 0.3, pitch = 1
                 }
             }
         } end
@@ -250,7 +250,7 @@ local function register_base_nodes()
             place_param2 = 0,
             sounds = {
                 footstep = {
-                    name = "nv_step_stone", gain = 0.5, pitch = 1
+                    name = "nv_step_stone", gain = 0.3, pitch = 1
                 }
             }
         } end
@@ -601,7 +601,7 @@ local function register_base_floral_nodes()
             place_param2 = 8,
             sounds = {
                 footstep = {
-                    name = "nv_step_grass_soil", gain = 0.5, pitch = 1
+                    name = "nv_step_grass_soil", gain = 0.3, pitch = 1
                 }
             }
         } end
