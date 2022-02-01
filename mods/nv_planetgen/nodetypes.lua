@@ -563,12 +563,16 @@ local function register_icy_nodes()
             paramtype = "light",
             paramtype2 = "colorfacedir",
             place_param2 = 8,
-            walkable = false,
+            walkable = true,
             buildable_to = true,
             leveled = 16,
             node_box = {
                 type = "leveled",
                 fixed = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}
+            },
+            collision_box = {
+                type = "fixed",
+                fixed = {-0.5, -0.5, -0.5, 0.5, -0.4, 0.5}
             },
             sounds = {
                 footstep = {

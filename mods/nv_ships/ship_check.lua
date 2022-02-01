@@ -35,8 +35,6 @@ local function compute_values_for_glass_node(neighbors)
     end
 
     -- axis 1 is y, 2 is z, 3 is x; rotations follow right-hand rule
-    -- facedir follows some obscure and underspecified geometry,
-    -- so all values were obtained experimentally...
     local function axis_and_rotation_to_facedir(xrot, yrot)
         -- OTHER STUFF (for reference)
         --      rotation
