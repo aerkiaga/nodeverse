@@ -247,7 +247,12 @@ local function register_base_nodes()
             },
             paramtype = "light",
             paramtype2 = "facedir",
-            place_param2 = 0
+            place_param2 = 0,
+            sounds = {
+                footstep = {
+                    name = "nv_step_stone", gain = 1.0, pitch = 1
+                }
+            }
         } end
     )
 end

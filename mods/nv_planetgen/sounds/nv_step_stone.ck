@@ -6,25 +6,27 @@ public class Global {
     static dur duration;
 }
 
-0.3::second => Global.duration;
+0.1::second => Global.duration;
 
 // patch
 Noise noise => LPF low => HPF high => Envelope env => dac;
 
 // parameters
-2000 => low.freq;
-500 => high.freq;
-0.07::second => env.duration;
+500 => low.freq;
+200 => high.freq;
+3.0 => dac.gain;
+0::second => env.duration;
 env.keyOn();
 
 // control loop
+now => time start;
 now + Global.duration => time end;
-true => int env_key;
 while(now < end) {
-    0.1::second => now;
-    if(end - now < 0.2::second & env_key) {
-        false => env_key;
-        0.2::second => env.duration;
+    0.01::second => now;
+    if(now - start > 0.02::second) {
+        300 => low.freq;
+        1.0 => dac.gain;
+        0.07::second => env.duration;
         env.keyOff();
     }
 }
