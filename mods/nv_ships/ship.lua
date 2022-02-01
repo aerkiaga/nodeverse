@@ -226,6 +226,89 @@ function nv_ships.try_board_ship(pos, player)
 end
 
 function nv_ships.try_unboard_ship(player)
-    -- TODO: implement nice unboarding mechanism
+    local name = player:get_player_name()
+    local ship = nv_ships.players_list[name].cur_ship
+    local player_pos = player:get_pos()
+    local ship_min_pos = ship.pos
+    local ship_max_pos = {
+        x = ship_min_pos.x + ship.size.x - 1,
+        y = ship_min_pos.y + ship.size.y - 1,
+        z = ship_min_pos.z + ship.size.z - 1
+    }
+    local best_pos = nil
+    local best_distance = 9999
+    local best_is_liquid = true
+    local best_is_ship = true
+    local x_stride = ship.size.x
+    local y_stride = ship.size.y
+    for current_z = ship_min_pos.z - 3, ship_max_pos.z + 3 do
+        for current_x = ship_min_pos.x - 3, ship_max_pos.x + 3 do
+            local vertical_space = 0
+            for current_y = ship_max_pos.y + 3, ship_min_pos.y - 4, -1 do
+                local abs_pos = {
+                    x = current_x,
+                    y = current_y,
+                    z = current_z
+                }
+                local world_node = minetest.get_node(abs_pos)
+                local world_node_def = minetest.registered_nodes[world_node.name]
+
+                -- Stepping on liquid nodes has lowest priority
+                local candidate_is_liquid = (world_node_def.drawtype == "liquid")
+                if candidate_is_liquid and not best_is_liquid then
+                    break
+                end
+
+                if world_node_def.walkable or world_node_def.drawtype == "liquid" then
+                    if vertical_space >= 2 then
+                        -- Stepping on ship nodes has lower priority
+                        local candidate_is_ship = false
+                        local rel_pos = {
+                            x = current_x - ship_min_pos.x,
+                            y = current_y - ship_min_pos.y,
+                            z = current_z - ship_min_pos.z
+                        }
+                        if rel_pos.x >= 0 and rel_pos.x <= ship.size.x
+                        and rel_pos.y >= 0 and rel_pos.y <= ship.size.y
+                        and rel_pos.z >= 0 and rel_pos.z <= ship.size.z then
+                            local k = rel_pos.z*y_stride*x_stride + rel_pos.y*x_stride + rel_pos.x + 1
+                            local ship_node = ship.An[k]
+                            candidate_is_ship = (ship_node ~= "")
+                        end
+                        if candidate_is_ship and not best_is_ship then
+                            break
+                        end
+
+                        -- The nearest position is chosen
+                        local candidate_pos = {
+                            x = current_x,
+                            y = current_y + 1,
+                            z = current_z
+                        }
+                        local candidate_distance = math.sqrt(
+                            (current_x - player_pos.x)^2
+                            + (current_y - player_pos.y)^2
+                            + (current_z - player_pos.z)^2
+                        )
+                        if candidate_distance >= best_distance
+                        and not (best_is_liquid and not candidate_is_liquid) then
+                            break
+                        end
+                        best_pos = candidate_pos
+                        best_distance = candidate_distance
+                        best_is_liquid = candidate_is_liquid
+                        best_is_ship = candidate_is_ship or candidate_is_liquid
+                    end
+                    break
+                else
+                    vertical_space = vertical_space + 1
+                end
+            end
+        end
+    end
+    if best_pos == nil then
+        return false
+    end
+    player:set_pos(best_pos)
     return true
 end

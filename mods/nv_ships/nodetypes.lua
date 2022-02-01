@@ -53,6 +53,7 @@ local function register_node_and_entity(name, def)
         sunlight_propagates = def.sunlight_propagates,
         paramtype = def.paramtype,
         paramtype2 = def.paramtype2,
+        walkable = def.walkable or true,
         tiles = def.tiles,
         color = def.color,
         use_texture_alpha = def.use_texture_alpha,
@@ -67,6 +68,7 @@ local function register_node_and_entity(name, def)
         can_dig = can_dig_normal,
         on_rightclick = nv_ships.ship_rightclick_callback,
     }
+    node_def.groups.nv_ships = 1
     minetest.register_node("nv_ships:" .. name, node_def)
 
     local ent_use_texture_alpha = false
@@ -109,6 +111,7 @@ local function register_hull_node_and_entity(name, def)
             sunlight_propagates = def.sunlight_propagates,
             paramtype = def.paramtype,
             paramtype2 = def.paramtype2,
+            walkable = def.walkable or true,
             tiles = def.tiles,
             use_texture_alpha = def.use_texture_alpha,
             groups = def.groups,
