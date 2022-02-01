@@ -19,6 +19,8 @@ record_file() {
 }
 
 record_file nv_step_dust
+record_file nv_step_dust.0
 record_file nv_step_grass_soil
+record_file nv_step_grass_soil.0
 record_file nv_step_sediment
 record_file nv_step_stone
