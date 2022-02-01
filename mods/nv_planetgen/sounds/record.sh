@@ -23,5 +23,6 @@ record_file nv_step_dust.0
 record_file nv_step_grass_soil
 record_file nv_step_grass_soil.0
 record_file nv_step_sediment
+record_file nv_step_sediment.0
 record_file nv_step_snow
 record_file nv_step_stone
