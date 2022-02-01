@@ -12,9 +12,11 @@ development have been ported to the 0.1.x versions.
  - New, simpler flying mechanics, with vertical liftoff and landing.
  - Custom spacesuit player skin.
  - Four distinct sound effects for spaceship maneuvering.
+ - Twelve different footstep sound effects.
 
 ### Changed
  - All media are namespaced to improve compatibility with other mods.
+ - Bump maximum supported Minetest version to 5.5.
 
 ### Removed
  - Mods `nv_rocket` and `autobox`.
