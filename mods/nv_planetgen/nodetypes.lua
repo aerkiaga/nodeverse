@@ -565,6 +565,11 @@ local function register_icy_nodes()
                 type = "leveled",
                 fixed = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}
             },
+            sounds = {
+                footstep = {
+                    name = "nv_step_snow", gain = 0.3, pitch = 1
+                }
+            }
         } end
     )
 end
