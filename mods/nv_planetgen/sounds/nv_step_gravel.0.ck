@@ -1,5 +1,5 @@
-// The muffled sound of a rocket engine
-// Has a peak at 200 Hz and low- and mid-frequency noise
+// The sound of footsteps on tiny rock fragments (variant)
+// Has a noise band from 150 - 1300 Hz
 
 // communication
 public class Global {
