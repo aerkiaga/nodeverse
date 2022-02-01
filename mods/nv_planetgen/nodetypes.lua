@@ -250,7 +250,7 @@ local function register_base_nodes()
             place_param2 = 0,
             sounds = {
                 footstep = {
-                    name = "nv_step_stone", gain = 0.3, pitch = 1
+                    name = "nv_step_stone", gain = 0.5, pitch = 1
                 }
             }
         } end

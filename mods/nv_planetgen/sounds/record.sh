@@ -26,3 +26,4 @@ record_file nv_step_sediment
 record_file nv_step_sediment.0
 record_file nv_step_snow
 record_file nv_step_stone
+record_file nv_step_stone.0
