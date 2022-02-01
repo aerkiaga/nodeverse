@@ -22,6 +22,13 @@ development have been ported to the 0.1.x versions.
  - Default rocket mechanics, including item and model.
  - Custom sky texture.
 
+## [0.1.7] - 31-01-2022
+### Fixed
+ - Fix badly rotated stone nodes in walls.
+
+### Changed
+ - Bump maximum supported Minetest version to 5.5.
+
 ## [0.1.6] - 06-01-2022
 ### Fixed
  - Fix some nodes appearing to generate shadows.
