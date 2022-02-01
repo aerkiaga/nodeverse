@@ -168,6 +168,11 @@ local function register_base_nodes()
             paramtype = "light",
             paramtype2 = "colorfacedir",
             place_param2 = 0,
+            sounds = {
+                footstep = {
+                    name = "nv_step_dust", gain = 0.7, pitch = 1
+                }
+            }
         } end
     )
     -- SEDIMENT
@@ -192,6 +197,11 @@ local function register_base_nodes()
             paramtype = "light",
             paramtype2 = "colorfacedir",
             place_param2 = 0,
+            sounds = {
+                footstep = {
+                    name = "nv_step_sediment", gain = 0.5, pitch = 1
+                }
+            }
         } end
     )
     -- GRAVEL
@@ -584,6 +594,11 @@ local function register_base_floral_nodes()
             paramtype2 = "colorfacedir",
             palette = "nv_palette_grass" .. math.floor((n-1) / 16) + 1 .. ".png",
             place_param2 = 8,
+            sounds = {
+                footstep = {
+                    name = "nv_step_grass_soil", gain = 0.7, pitch = 1
+                }
+            }
         } end
     )
     -- GRASS
