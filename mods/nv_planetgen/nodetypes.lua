@@ -225,6 +225,11 @@ local function register_base_nodes()
             paramtype = "light",
             paramtype2 = "colorfacedir",
             place_param2 = 0,
+            sounds = {
+                footstep = {
+                    name = "nv_step_gravel", gain = 0.5, pitch = 1
+                }
+            }
         } end
     )
     -- STONE
