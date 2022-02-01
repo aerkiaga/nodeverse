@@ -280,7 +280,7 @@ register_node_and_entity("glass_face", {
     }},
     use_texture_alpha = "blend",
     groups = {oddly_breakable_by_hand = 3},
-    node_box = {
+    collision_box = {
         type = "fixed",
         fixed = {
             {-0.5, -0.5, -0.0625, 0.5, 0.5, 0.0625},
@@ -312,20 +312,15 @@ register_node_and_entity("glass_edge", {
     }},
     use_texture_alpha = "blend",
     groups = {oddly_breakable_by_hand = 3},
-    node_box = {
+    collision_box = {
         type = "fixed",
         fixed = {
-            {-0.0625, -0.5, -0.0625, 0.5, 0.5, 0.0625},
-            {-0.0625, -0.5, 0.0625, 0.0625, 0.5, 0.5}
+            {0.0625, -0.5, -0.0625, 0.5, 0.5, 0.0625},
+            {-0.0625, -0.5, 0.0625, 0.0625, 0.5, 0.5},
+            {-0.0625, -0.5, -0.0625, 0.0625, 0.5, 0.0625},
         }
     },
     mesh = "nv_glass_edge.obj",
-    selection_box = {
-        type = "fixed",
-        fixed = {
-            {-0.0625, -0.5, -0.0625, 0.5, 0.5, 0.5}
-        }
-    },
     drop = "nv_ships:glass_pane",
 
     visual = "mesh",
@@ -351,21 +346,19 @@ register_node_and_entity("glass_vertex", {
     }},
     use_texture_alpha = "blend",
     groups = {oddly_breakable_by_hand = 3},
-    node_box = {
+    collision_box = {
         type = "fixed",
         fixed = {
-            {-0.0625, 0.0625, -0.0625, 0.5, 0.5, 0.0625},
+            {0.0625, 0.0625, -0.0625, 0.5, 0.5, 0.0625},
             {-0.0625, 0.0625, 0.0625, 0.0625, 0.5, 0.5},
-            {-0.0625, -0.0625, -0.0625, 0.5, 0.0625, 0.5}
+            {0.0625, -0.0625, 0.0625, 0.5, 0.0625, 0.5},
+            {-0.0625, 0.0625, -0.0625, 0.0625, 0.5, 0.0625},
+            {-0.0625, -0.0625, 0.0625, 0.0625, 0.0625, 0.5},
+            {0.0625, -0.0625, -0.0625, 0.5, 0.0625, 0.0625},
+            {-0.0625, -0.0625, -0.0625, 0.0625, 0.0625, 0.0625},
         }
     },
     mesh = "nv_glass_vertex.obj",
-    selection_box = {
-        type = "fixed",
-        fixed = {
-            {-0.0625, -0.0625, -0.0625, 0.5, 0.5, 0.5}
-        }
-    },
     drop = "nv_ships:glass_pane",
 
     visual = "mesh",
