@@ -201,6 +201,17 @@ local function joinplayer_callback(player, last_login)
         nv_ships.players_list[name] = {
             ships = {}
         }
+        nv_ships.load_player_state(player)
+    end
+end
+
+local function leaveplayer_callback(player, timed_out)
+    nv_ships.store_player_state(player)
+end
+
+local function shutdown_callback()
+    for player_index, player in ipairs(minetest.get_connected_players()) do
+        nv_ships.store_player_state(player)
     end
 end
 
@@ -222,4 +233,6 @@ end
 
 minetest.register_globalstep(globalstep_callback)
 minetest.register_on_joinplayer(joinplayer_callback)
+minetest.register_on_leaveplayer(leaveplayer_callback)
 minetest.register_on_dieplayer(dieplayer_callback)
+minetest.register_on_shutdown(shutdown_callback)
