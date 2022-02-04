@@ -42,8 +42,22 @@ Serialized ship format:
     a+9     vs18?   absolute position of ship origin (see 'ships.lua')
     a+18    vu12?   relative position of cockpit (see 'ships.lua')
     a+24    u6?     cockpit (and ship) facing direction (see 'ships.lua')
-
--- TODO: explain format
+    a+25    u12     number of distinct node types, entries in node type table
+    a+27    u6      reserved, should be 0
+    Following this is the node type table, with entries following this format:
+    ent+0   u12     node type name length
+    ent+2   u18     node type name offset
+    ent+7   u6      reserved
+    After these entries, node type names of variable length:
+    off+0   string  node name corresponding to one ship node type
+    Then, node type data, as an array of inividual bytes:
+    byte+0  u6      interpretation depends on range
+        0 - 31      Node type name index
+        32 - 47     Use this value - 32 as high bits, append next byte
+        48 - 63     This number of empty ("") nodes
+    And, finally, and array of 'param2' values for non-empty nodes, in order
+    val+0   u12     param2 value for the corresponding node
+    Remember, only non-empty nodes get a value in this array, others are omitted
 ]]
 
 local function encode_u12(array, value)

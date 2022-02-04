@@ -59,9 +59,6 @@ minetest.register_chatcommand("ships", {
         if nv_ships.players_list[name] ~= nil
         and nv_ships.players_list[name].ships ~= nil then
             for index, ship in ipairs(nv_ships.players_list[name].ships) do
-                print("It's okay")
-                print(ship.size)
-                print(ship.size.x)
                 minetest.chat_send_player(name, string.format(
                     "  %d. made of %s, size %s at (%s); cockpit (%s), facing %d, data [%d] [%d]",
                     ship.index, ship.state,
