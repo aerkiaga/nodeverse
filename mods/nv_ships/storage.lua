@@ -100,6 +100,18 @@ local function check_parse_u12(lh, ch)
     return nil
 end
 
+local function check_parse_u18(lmh, ch)
+    if lh.low == nil then
+        lh.low = base64_decode(ch)
+    elseif lh.mid == nil then
+        lh.mid = base64_decode(ch)
+    elseif lh.high == nil then
+        lh.high = base64_decode(ch)
+        return 64*lh.high + lh.low
+    end
+    return nil
+end
+
 local function check_parse_vu12(lh, ch)
     if lh.low == nil then
         lh.low = {}
