@@ -4,6 +4,14 @@ The data is stored in `PlayerMetaRef` objects; although it isn't stated in any
 document, the source code leads me to believe that those objects don't get sent
 to the clients, so they should be an efficient solution.
 
+# INDEX
+   ENCODING
+   DECODING
+   SERIALIZATION
+   DESERIALIZATION
+   LOADING
+   STORING
+
 Database format:
     key                         description
     nv_ships:state              'state' field in player table (see 'ships.lua')
@@ -60,6 +68,10 @@ Serialized ship format:
     Remember, only non-empty nodes get a value in this array, others are omitted
 ]]
 
+--[[
+ # ENCODING
+]]--
+
 local function encode_u12(array, value)
     table.insert(array, base64_encode(value % 64))
     table.insert(array, base64_encode(math.floor(value / 64)))
@@ -74,39 +86,9 @@ local function encode_s18(array, value)
     table.insert(array, base64_encode(math.floor(value / 2048) + 32 * sign))
 end
 
-local function serialize_ship(ship)
-    local array = {}
-    table.insert(array, "0") -- length
-    encode_u12(array, #ship.owner)
-    table.insert(array, ship.owner)
-    encode_u12(array, ship.index)
-    table.insert(array, string.sub(ship.state, 1, 1))
-    encode_u12(array, ship.size.x)
-    encode_u12(array, ship.size.y)
-    encode_u12(array, ship.size.z)
-    if ship.pos == nil then
-        table.insert(array, "_________")
-    else
-        encode_s18(array, ship.pos.x)
-        encode_s18(array, ship.pos.y)
-        encode_s18(array, ship.pos.z)
-    end
-    if ship.cockpit_pos == nil then
-        table.insert(array, "______")
-    else
-        encode_u12(array, ship.cockpit_pos.x)
-        encode_u12(array, ship.cockpit_pos.y)
-        encode_u12(array, ship.cockpit_pos.z)
-    end
-    if ship.facing == nil then
-        table.insert(array, "_")
-    else
-        table.insert(array, base64_encode(ship.facing))
-    end
-    --TODO: serialize An
-    --TODO: serialize A2
-    return table.concat(array) or ""
-end
+--[[
+ # DECODING
+]]--
 
 local function check_parse_u12(lh, ch)
     if lh.low == nil then
@@ -176,6 +158,48 @@ local function check_parse_vs18(lmh, ch)
     end
     return nil
 end
+
+--[[
+ # SERIALIZATION
+]]--
+
+local function serialize_ship(ship)
+    local array = {}
+    table.insert(array, "0") -- length
+    encode_u12(array, #ship.owner)
+    table.insert(array, ship.owner)
+    encode_u12(array, ship.index)
+    table.insert(array, string.sub(ship.state, 1, 1))
+    encode_u12(array, ship.size.x)
+    encode_u12(array, ship.size.y)
+    encode_u12(array, ship.size.z)
+    if ship.pos == nil then
+        table.insert(array, "_________")
+    else
+        encode_s18(array, ship.pos.x)
+        encode_s18(array, ship.pos.y)
+        encode_s18(array, ship.pos.z)
+    end
+    if ship.cockpit_pos == nil then
+        table.insert(array, "______")
+    else
+        encode_u12(array, ship.cockpit_pos.x)
+        encode_u12(array, ship.cockpit_pos.y)
+        encode_u12(array, ship.cockpit_pos.z)
+    end
+    if ship.facing == nil then
+        table.insert(array, "_")
+    else
+        table.insert(array, base64_encode(ship.facing))
+    end
+    --TODO: serialize An
+    --TODO: serialize A2
+    return table.concat(array) or ""
+end
+
+--[[
+ # DESERIALIZATION
+]]--
 
 local function deserialize_ship(data)
     local version = nil
@@ -254,6 +278,10 @@ local function deserialize_ship(data)
     }
 end
 
+--[[
+ # LOADING
+]]--
+
 function nv_ships.load_player_state(player)
     local name = player:get_player_name()
     local meta = player:get_meta()
@@ -283,6 +311,10 @@ function nv_ships.load_player_state(player)
         player_data.cur_ship = player_data.ships[player_cur_ship_index]
     end
 end
+
+--[[
+ # STORING
+]]--
 
 function nv_ships.store_player_state(player)
     local name = player:get_player_name()
