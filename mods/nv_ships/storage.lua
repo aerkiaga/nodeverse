@@ -54,15 +54,15 @@ Serialized ship format:
     a+27    u6      reserved, should be 0
     Following this is the node type table, with entries following this format:
     ent+0   u12     node type name length
-    ent+2   u18     node type name offset
-    ent+7   u6      reserved
+    ent+2   u18     node type name offset in node type name list
+    ent+7   u6      reserved, should be 0
     After these entries, node type names of variable length:
     off+0   string  node name corresponding to one ship node type
     Then, node type data, as an array of inividual bytes:
     byte+0  u6      interpretation depends on range
         0 - 31      Node type name index
-        32 - 47     Use this value - 32 as high bits, append next byte
-        48 - 63     This number of empty ("") nodes
+        32 - 47     Use this minus 32 as the 4 high bits, append next byte as u6
+        48 - 63     This number minus 47 of empty ("") nodes
     And, finally, and array of 'param2' values for non-empty nodes, in order
     val+0   u12     param2 value for the corresponding node
     Remember, only non-empty nodes get a value in this array, others are omitted
@@ -75,6 +75,12 @@ Serialized ship format:
 local function encode_u12(array, value)
     table.insert(array, base64_encode(value % 64))
     table.insert(array, base64_encode(math.floor(value / 64)))
+end
+
+local function encode_u18(array, value)
+    table.insert(array, base64_encode(value % 64))
+    table.insert(array, base64_encode(math.floor(value / 64) % 64))
+    table.insert(array, base64_encode(math.floor(value / 2048)))
 end
 
 local function encode_s18(array, value)
@@ -175,6 +181,60 @@ end
  # SERIALIZATION
 ]]--
 
+local function serialize_ship_nodes(array, ship)
+    --TODO: implement this
+    local node_type_list = {}
+    local name_to_index_map = {}
+    local name_strings_array = {}
+    local name_data_array = {}
+    local param2_array = {}
+
+    local max_index = -1
+    local next_name_offset = 0
+    local empty_in_a_row = 0
+    local ship_volume = ship.size.x * ship.size.y * ship.size.z
+    for k = 1, ship_volume do
+        local name = ship.An[k]
+        if name == "" then
+            empty_in_a_row = empty_in_a_row + 1
+        end
+        if empty_in_a_row == 16 or
+            (empty_in_a_row > 0 and (name ~= "" or k == ship_volume)) then
+            table.insert(name_data_array, base64_encode(empty_in_a_row + 47))
+        end
+        if name ~= "" then
+            local index = name_to_index_map[name]
+            if index == nil then
+                max_index = max_index + 1
+                index = max_index
+                name_to_index_map[name] = index
+                node_type_list[index] = name
+                -- Node type name table
+                encode_u12(array, #name)
+                encode_u18(array, next_name_offset)
+                next_name_offset = next_name_offset + #name
+                table.insert(array, base64_encode(0))
+                -- Node type strings
+                table.insert(name_strings_array, name)
+            end
+            if index < 32 then
+                table.insert(name_data_array, base64_encode(index))
+            else
+                local high_bits = math.floor(index / 64)
+                local low_bits = index % 64
+                table.insert(name_data_array, base64_encode(high_bits + 32))
+                table.insert(name_data_array, base64_encode(low_bits))
+            end
+            local param2 = ship.A2[k]
+            encode_u12(param2_array, param2)
+        end
+    end
+
+    table.insert(array, table.concat(name_strings_array))
+    table.insert(array, table.concat(name_data_array))
+    table.insert(array, table.concat(param2_array))
+end
+
 local function serialize_ship(ship)
     local array = {}
     table.insert(array, "0") -- length
@@ -204,8 +264,7 @@ local function serialize_ship(ship)
     else
         table.insert(array, base64_encode(ship.facing))
     end
-    --TODO: serialize An
-    --TODO: serialize A2
+    serialize_ship_nodes(array, ship)
     return table.concat(array) or ""
 end
 
