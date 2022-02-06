@@ -100,6 +100,23 @@ function nv_ships.is_flying_callback(ship, player, dtime)
     end
 end
 
+local function set_flying_state(ship, player)
+    local name = player:get_player_name()
+    player:set_physics_override {
+        speed = 5,
+        jump = 0,
+        gravity = 0.1,
+        sneak = false
+    }
+    nv_player.set_collisionbox(player, nv_ships.get_ship_collisionbox(ship))
+    nv_ships.players_list[name].state = "flying"
+    nv_ships.players_list[name].sound = minetest.sound_play({
+        name = "nv_engine", gain = 0.5, pitch = 1
+    }, {
+        object = player, gain = 0.25, max_hear_distance = 10, loop = true
+    }, false)
+end
+
 function nv_ships.is_landed_callback(ship, player)
     -- Player has landed or has not lifted off yet
     local vel = player:get_velocity()
@@ -110,24 +127,13 @@ function nv_ships.is_landed_callback(ship, player)
         -- Lift off
         nv_ships.ship_to_entity(ship, player)
         player:add_velocity {x=0, y=15, z=0}
-        player:set_physics_override {
-            speed = 5,
-            jump = 0,
-            gravity = 0.1,
-            sneak = false
-        }
-        nv_player.set_collisionbox(player, nv_ships.get_ship_collisionbox(ship))
-        nv_ships.players_list[name].state = "flying"
         minetest.sound_play({
             name = "nv_liftoff", gain = 0.5, pitch = 1
         }, {
             object = player, gain = 0.4, max_hear_distance = 10, loop = false
         }, true)
-        nv_ships.players_list[name].sound = minetest.sound_play({
-            name = "nv_engine", gain = 0.5, pitch = 1
-        }, {
-            object = player, gain = 0.25, max_hear_distance = 10, loop = true
-        }, false)
+        set_flying_state(ship, player)
+
     elseif controls.up or controls.down or controls.left or controls.right then
         if nv_ships.try_unboard_ship(player) then
             make_normal_player(player)
@@ -202,15 +208,24 @@ local function joinplayer_callback(player, last_login)
             ships = {}
         }
         nv_ships.load_player_state(player)
+        local current_ship = nv_ships.players_list[name].cur_ship
+        if current_ship ~= nil and current_ship.state == "entity" then
+            nv_ships.ship_to_entity(current_ship, player, false)
+            if nv_ships.players_list[name].state == "flying" then
+                set_flying_state(current_ship, player)
+            end
+        end
     end
 end
 
 local function leaveplayer_callback(player, timed_out)
+    nv_ships.remove_ship_entity(player)
     nv_ships.store_player_state(player)
 end
 
 local function shutdown_callback()
     for player_index, player in ipairs(minetest.get_connected_players()) do
+        nv_ships.remove_ship_entity(player)
         nv_ships.store_player_state(player)
     end
 end

@@ -39,6 +39,14 @@ local function after_dig_node_normal(pos, oldnode, oldmetadata, digger)
     end
 end
 
+local function entity_on_step(self, dtime, moveresult)
+    -- Sometimes these entities will not get removed normally
+    -- Credit to MisterE for this workaround
+    if self.object:get_attach() == nil then
+        self.object:remove()
+    end
+end
+
 --[[
  # COMMON REGISTRATION
 ]]
@@ -82,11 +90,14 @@ local function register_node_and_entity(name, def)
         end
     end
     local ent_def = {
-        visual = def.visual,
-        textures = colorized_textures,
-        use_texture_alpha = ent_use_texture_alpha,
-        visual_size = {x=10, y=10, z=10},
-        mesh = def.mesh
+        initial_properties = {
+            visual = def.visual,
+            textures = colorized_textures,
+            use_texture_alpha = ent_use_texture_alpha,
+            visual_size = {x=10, y=10, z=10},
+            mesh = def.mesh
+        },
+        on_step = entity_on_step
     }
     minetest.register_entity("nv_ships:ent_" .. name, ent_def)
 
