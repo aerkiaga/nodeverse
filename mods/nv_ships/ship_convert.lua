@@ -11,7 +11,9 @@ forms of a ship, as well as some related operations.
  # TO ENTITY
 ]]--
 
-function nv_ships.ship_to_entity(ship, player)
+function nv_ships.ship_to_entity(ship, player, remove)
+    if remove == nil then remove = true end
+
     local function to_player_coordinates(facing, pos)
         local r = {x=10*pos.x, y=10*pos.y, z=10*pos.z}
         if facing / 2 >= 1 then
@@ -28,11 +30,17 @@ function nv_ships.ship_to_entity(ship, player)
     if ship == nil then
         return nil
     end
-    if ship.state ~= "node" then
-        return ship
-    end
     if ship.cockpit_pos == nil then
         return nil
+    end
+    if ship.state == "entity" then
+        local player_pos = player:get_pos()
+        local pos_abs = {
+            x = player_pos.x - ship.cockpit_pos.x,
+            y = player_pos.y - ship.cockpit_pos.y,
+            z = player_pos.z - ship.cockpit_pos.z
+        }
+        ship.pos = pos_abs
     end
     local cockpit_pos_abs = {
         x = ship.cockpit_pos.x + ship.pos.x,
@@ -55,7 +63,9 @@ function nv_ships.ship_to_entity(ship, player)
                 local ent_name = nv_ships.node_name_to_ent_name_dict[node_name]
                 if ent_name ~= nil then
                     local pos_abs = {x=x_abs, y=y_abs, z=z_abs}
-                    minetest.remove_node(pos_abs)
+                    if remove then
+                        minetest.remove_node(pos_abs)
+                    end
                     if ent_name ~= "" then
                         local ent = minetest.add_entity(pos_abs, ent_name)
                         ent:set_attach(player, "", pos_player_rel, nil, true)

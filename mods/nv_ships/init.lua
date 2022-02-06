@@ -9,6 +9,7 @@ Included files:
     util.lua            Utility functions for callbacks and player manipulation
     ship.lua            Wrapper around ship objects: building and conversion
     control.lua         Code to connect user input with ship behavior
+    storage.lua         Persistent storage methods for all ship data
     nodetypes.lua       Defines all node types that can be used in ships
     itemtypes.lua       Defines item types that are not directy placeable
 
@@ -22,6 +23,7 @@ nv_ships = {}
 dofile(minetest.get_modpath("nv_ships") .. "/util.lua")
 dofile(minetest.get_modpath("nv_ships") .. "/ship.lua")
 dofile(minetest.get_modpath("nv_ships") .. "/control.lua")
+dofile(minetest.get_modpath("nv_ships") .. "/storage.lua")
 dofile(minetest.get_modpath("nv_ships") .. "/nodetypes.lua")
 dofile(minetest.get_modpath("nv_ships") .. "/itemtypes.lua")
 
@@ -68,5 +70,16 @@ minetest.register_chatcommand("ships", {
                 ))
             end
         end
+    end
+})
+
+-- Register a debug command: /debug
+minetest.register_chatcommand("debug", {
+    params = "",
+    description = "Debug",
+    func = function (name, param)
+        local player = minetest.get_player_by_name(name)
+        nv_ships.store_player_state(player)
+        nv_ships.load_player_state(player)
     end
 })
