@@ -107,13 +107,13 @@ local function check_parse_u12(lh, ch)
 end
 
 local function check_parse_u18(lmh, ch)
-    if lh.low == nil then
-        lh.low = base64_decode(ch)
-    elseif lh.mid == nil then
-        lh.mid = base64_decode(ch)
-    elseif lh.high == nil then
-        lh.high = base64_decode(ch)
-        return 64*lh.high + lh.low
+    if lmh.low == nil then
+        lmh.low = base64_decode(ch)
+    elseif lmh.mid == nil then
+        lmh.mid = base64_decode(ch)
+    elseif lmh.high == nil then
+        lmh.high = base64_decode(ch)
+        return 64*lmh.high + lmh.low
     end
     return nil
 end
@@ -182,7 +182,6 @@ end
 ]]--
 
 local function serialize_ship_nodes(array, ship)
-    --TODO: implement this
     local node_type_list = {}
     local name_to_index_map = {}
     local name_strings_array = {}
@@ -264,6 +263,18 @@ local function serialize_ship(ship)
     else
         table.insert(array, base64_encode(ship.facing))
     end
+    local node_types_set = {}
+    for k = 1, ship.size.x * ship.size.y * ship.size.z do
+        node_types_set[ship.An[k]] = true
+    end
+    local node_types = 0
+    for key, _ in pairs(node_types_set) do
+        if key ~= "" then
+            node_types = node_types + 1
+        end
+    end
+    encode_u12(array, node_types)
+    table.insert(array, base64_encode(0))
     serialize_ship_nodes(array, ship)
     return table.concat(array) or ""
 end
@@ -271,6 +282,97 @@ end
 --[[
  # DESERIALIZATION
 ]]--
+
+local function deserialize_ship_nodes(ship, data, node_types)
+    local name_strings_start = node_types * 6
+    local name_data_start = 1
+
+    -- Node types
+    local parsed_node_types = 0
+    local index_to_name_map = {}
+    local current_index = 0
+    local current_name_length_lh, current_name_length = {}, nil
+    local current_name_offset_lmh, current_name_offset = {}, nil
+    for ch in data:gmatch(".") do
+        if current_name_length == nil then
+            current_name_length = check_parse_u12(current_name_length_lh, ch)
+        elseif current_name_offset == nil then
+            current_name_offset = check_parse_u18(current_name_offset_lmh, ch)
+            if current_name_offset ~= nil then
+                local absolute_offset = name_strings_start + current_name_offset
+                local end_offset = absolute_offset + current_name_length - 1
+                name_data_start = math.max(name_data_start, end_offset + 2)
+                local name = data:sub(absolute_offset + 1, end_offset + 1)
+                index_to_name_map[current_index] = name
+                current_index = current_index + 1
+            end
+        else -- one extra byte
+            if current_index >= node_types then
+                break
+            else
+                current_name_length_lh, current_name_length = {}, nil
+                current_name_offset_lmh, current_name_offset = {}, nil
+            end
+        end
+    end
+
+    -- Node names (An)
+    local ship_volume = ship.size.x * ship.size.y * ship.size.z
+    local param2_data_start = name_data_start
+    local k = 1
+    local is_continuation = false
+    local high_bits
+    for ch in data:sub(name_data_start, -1):gmatch(".") do
+        local value = base64_decode(ch)
+        param2_data_start = param2_data_start + 1
+        if is_continuation then
+            local index = 64*high_bits + value
+            ship.An[k] = index_to_name_map[index]
+            is_continuation = false
+            k = k + 1
+        elseif value < 32 then
+            ship.An[k] = index_to_name_map[value]
+            k = k + 1
+        elseif value < 48 then
+            high_bits = value - 32
+            is_continuation = true
+        else
+            local count = value - 47
+            for n = 1, count do
+                ship.An[k] = ""
+                k = k + 1
+            end
+        end
+        if k > ship_volume then
+            break
+        end
+    end
+
+    -- Node param2 (A2)
+    k = 1
+    local param2_lh, param2 = {}, nil
+    for ch in data:sub(param2_data_start, -1):gmatch(".") do
+        param2 = check_parse_u12(param2_lh, ch)
+        if param2 ~= nil then
+            while ship.An[k] == "" do
+                ship.A2[k] = 0
+                k = k + 1
+                if k > ship_volume then
+                    break
+                end
+            end
+            if k > ship_volume then
+                break
+            end
+            ship.A2[k] = param2
+            k = k + 1
+            if k > ship_volume then
+                break
+            end
+            param2_lh, param2 = {}, nil
+        end
+    end
+end
 
 local function deserialize_ship(data)
     local version = nil
@@ -283,6 +385,7 @@ local function deserialize_ship(data)
     local pos_lmh, pos = {}, nil
     local cockpit_pos_lh, cockpit_pos = {}, nil
     local facing = nil
+    local node_types_lh, node_types = {}, nil
     local header_length = 0
     local ignore = 0
     for ch in data:gmatch(".") do
@@ -328,15 +431,18 @@ local function deserialize_ship(data)
             else
                 facing = base64_decode(ch)
             end
+        elseif node_types == nil then
+            node_types = check_parse_u12(node_types_lh, ch)
         else
+            -- one extra byte
             break
         end
-        --TODO: finish implementation
     end
     if pos.x == nil then pos = nil end
     if cockpit_pos.x == nil then cockpit_pos = nil end
     if facing == -1 then facing = nil end
-    return {
+
+    local ship = {
         owner = owner,
         index = index,
         state = state,
@@ -347,6 +453,10 @@ local function deserialize_ship(data)
         cockpit_pos = cockpit_pos,
         facing = facing
     }
+
+    deserialize_ship_nodes(ship, data:sub(header_length + 1, -1), node_types)
+
+    return ship
 end
 
 --[[
@@ -412,7 +522,4 @@ function nv_ships.store_player_state(player)
     local status = meta:from_table({
         fields = written_table
     })
-
-    meta = player:get_meta() --D
-    local read_table = meta:to_table().fields
 end
