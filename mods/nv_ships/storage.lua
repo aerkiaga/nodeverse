@@ -113,7 +113,7 @@ local function check_parse_u18(lmh, ch)
         lmh.mid = base64_decode(ch)
     elseif lmh.high == nil then
         lmh.high = base64_decode(ch)
-        return 64*lmh.high + lmh.low
+        return 4096*lmh.high + 64*lmh.mid + lmh.low
     end
     return nil
 end
@@ -277,7 +277,6 @@ local function serialize_ship(ship)
     encode_u12(array, node_types)
     table.insert(array, base64_encode(0))
     serialize_ship_nodes(array, ship)
-    print(table.concat(array)) --D
     return table.concat(array) or ""
 end
 
