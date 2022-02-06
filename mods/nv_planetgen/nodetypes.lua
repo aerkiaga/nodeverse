@@ -605,9 +605,9 @@ local function register_base_floral_nodes()
                 "",
                 "",
                 {name = "nv_grass_soil_side.png"},
+                {name = "nv_grass_soil_side2.png^[transformFX"},
                 {name = "nv_grass_soil_side.png^[transformFX"},
-                {name = "nv_grass_soil_side.png^[transformFX"},
-                {name = "nv_grass_soil_side.png"}
+                {name = "nv_grass_soil_side2.png"}
             },
             paramtype = "light",
             paramtype2 = "colorfacedir",
