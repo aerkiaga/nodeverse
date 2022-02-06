@@ -200,6 +200,7 @@ local function serialize_ship_nodes(array, ship)
         if empty_in_a_row == 16 or
             (empty_in_a_row > 0 and (name ~= "" or k == ship_volume)) then
             table.insert(name_data_array, base64_encode(empty_in_a_row + 47))
+            empty_in_a_row = 0
         end
         if name ~= "" then
             local index = name_to_index_map[name]
@@ -276,6 +277,7 @@ local function serialize_ship(ship)
     encode_u12(array, node_types)
     table.insert(array, base64_encode(0))
     serialize_ship_nodes(array, ship)
+    print(table.concat(array)) --D
     return table.concat(array) or ""
 end
 
