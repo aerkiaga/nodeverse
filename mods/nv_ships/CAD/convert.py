@@ -39,6 +39,8 @@ for n1 in range(len(triangles)):
         polys_to_tris.append([])
         polys_to_tris[-1].append(n1)
     for n2 in range(n1 + 1, len(triangles)):
+        if tris_to_polys[n2] == tris_to_polys[n1]:
+            continue
         if len(set(triangles[n1]).intersection(set(triangles[n2]))) == 2:
             candidate_quad = tuple(set(triangles[n1]).union(set(triangles[n2])))
             M = tuple(map(lambda x: \
@@ -48,8 +50,18 @@ for n1 in range(len(triangles)):
                 for n in range(0, 3) \
             ])
             if abs(det) < 0.0001:
-                tris_to_polys[n2] = tris_to_polys[n1]
-                polys_to_tris[tris_to_polys[n1]].append(n2)
+                if tris_to_polys[n2] is not None:
+                    removed_p = tris_to_polys[n2]
+                    for t in polys_to_tris[removed_p]:
+                        tris_to_polys[t] = tris_to_polys[n1]
+                        polys_to_tris[tris_to_polys[n1]].append(t)
+                    del polys_to_tris[removed_p]
+                    for t_list in polys_to_tris[removed_p :]:
+                        for t in t_list:
+                            tris_to_polys[t] -= 1
+                else:
+                    tris_to_polys[n2] = tris_to_polys[n1]
+                    polys_to_tris[tris_to_polys[n1]].append(n2)
 
 poly_minima = []
 poly_maxima = []
