@@ -84,7 +84,7 @@ for n in range(len(polys_to_tris)):
     bestfit = None
     for x in range(0, maxcoords[0] * 16 + 1, 1):
         for y in range(0, maxcoords[1] * 16 + 1, 1):
-            if not bestfit or math.hypot(x, y) < math.hypot(*bestfit):
+            if not bestfit or max(x, y) < max(*bestfit):
                 fits = True
                 for uvrect in uvrectangles:
                     if uvrect[0][0] + uvrect[1][0] > x and uvrect[0][0] < x + sides[0] \
