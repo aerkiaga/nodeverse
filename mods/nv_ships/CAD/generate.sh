@@ -8,6 +8,8 @@
 # This script will generate appropriate Wavefront OBJ model files
 # from the OpenSCAD scripts present in the same directory
 
+# Note that it might take some time to complete.
+
 generate_file() {
     echo "Reading $1.scad"
     (
@@ -18,4 +20,4 @@ generate_file() {
     rm "$1.stl"
 }
 
-generate_file test
+generate_file nv_control_panel

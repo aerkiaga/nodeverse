@@ -30,32 +30,45 @@ for triangle in triangles:
             global_vertex_indices[vertex] = len(vertices)
             vertices.append(vertex)
 
-rectangles = []
+tris_to_polys = [None for n in range(len(triangles))]
+polys_to_tris = []
+
 for n1 in range(len(triangles)):
+    if tris_to_polys[n1] is None:
+        tris_to_polys[n1] = len(polys_to_tris)
+        polys_to_tris.append([])
+        polys_to_tris[-1].append(n1)
     for n2 in range(n1 + 1, len(triangles)):
         if len(set(triangles[n1]).intersection(set(triangles[n2]))) == 2:
-            candidate = tuple(set(triangles[n1]).union(set(triangles[n2])))
+            candidate_quad = tuple(set(triangles[n1]).union(set(triangles[n2])))
             M = tuple(map(lambda x: \
-                tuple(map(lambda y: y[0] - y[1], zip(x, candidate[0]))), candidate[1:] \
+                tuple(map(lambda y: y[0] - y[1], zip(x, candidate_quad[0]))), candidate_quad[1:] \
             ))
             det = sum([M[0][n%3]*(M[1][(n+1)%3]*M[2][(n+2)%3] - M[1][(n+2)%3]*M[2][(n+1)%3]) \
                 for n in range(0, 3) \
             ])
             if abs(det) < 0.0001:
-                rectangles.append(candidate)
+                tris_to_polys[n2] = tris_to_polys[n1]
+                polys_to_tris[tris_to_polys[n1]].append(n2)
+
+poly_minima = []
+poly_maxima = []
+for polygon in polys_to_tris:
+    poly_minima.append((1000, 1000, 1000))
+    poly_maxima.append((-1000, -1000, -1000))
+    for t in polygon:
+        for vertex in triangles[t]:
+            poly_minima[-1] = tuple(map(lambda x: min(x[0], x[1]), zip(poly_minima[-1], vertex)))
+            poly_maxima[-1] = tuple(map(lambda x: max(x[0], x[1]), zip(poly_maxima[-1], vertex)))
 
 maxcoords = (0, 0)
 uvrectangles = []
-uvmap = []
 excludedindices = []
-for rectangle in rectangles:
-    M = tuple(map(lambda x: \
-        tuple(map(lambda y: y[0] - y[1], zip(x, rectangle[0]))), rectangle[1:] \
-    ))
-    lengths = tuple(map(lambda x: math.hypot(*x), M))
-    excludedindex = lengths.index(max(lengths)) + 1
-    indices = [0] + list({1, 2, 3} - {excludedindex})
-    sides = (int(16 * lengths[indices[1] - 1]), int(16 * lengths[indices[2] - 1]))
+for n in range(len(polys_to_tris)):
+    vector = tuple(map(lambda x: x[0] - x[1], zip(poly_maxima[n], poly_minima[n])))
+    excludedindex = vector.index(0)
+    indices = list({0, 1, 2} - {excludedindex})
+    sides = (round(16 * vector[indices[0]]), round(16 * vector[indices[1]]))
     bestfit = None
     for x in range(0, maxcoords[0] * 16 + 1, 1):
         for y in range(0, maxcoords[1] * 16 + 1, 1):
@@ -72,31 +85,41 @@ for rectangle in rectangles:
                     ))
                     bestfit = (x, y)
     uvrectangles.append((bestfit, sides))
-    uvmaprect = [0, 0, 0, 0]
-    uvmaprect[indices[0]] = bestfit
-    uvmaprect[indices[1]] = (bestfit[0] + sides[0], bestfit[1])
-    uvmaprect[indices[2]] = (bestfit[0], bestfit[1] + sides[1])
-    uvmaprect[excludedindex] = (bestfit[0] + sides[0], bestfit[1] + sides[1])
-    uvmap.append(uvmaprect)
     excludedindices.append(excludedindex)
 
-maxside = max([max(list(map(lambda x: max(x[n]), uvmap))) for n in range(4)])
+endcoords = list(map(lambda x: tuple(map(sum, zip(x[0], x[1]))), uvrectangles))
+maxside = max([max(coord) for coord in endcoords])
 maxside = 2 ** math.ceil(math.log2(maxside))
-uvmap = list(map(lambda x: tuple(map(lambda y: tuple(map(lambda z: z/maxside, y)), x)), uvmap))
+
+uvmap = []
+tris = []
+for p in range(len(polys_to_tris)):
+    base_3d = poly_minima[p]
+    size_3d = tuple(map(lambda x: x[0] - x[1], zip(poly_maxima[p], poly_minima[p])))
+    excluded_index = size_3d.index(0)
+    base_3d = tuple([base_3d[n] for n in {0, 1, 2} - {excluded_index}])
+    size_3d = tuple([size_3d[n] for n in {0, 1, 2} - {excluded_index}])
+    base_uv = uvrectangles[p][0]
+    size_uv = uvrectangles[p][1]
+    transform = lambda x: tuple(map(lambda y:
+        ((y[0] - y[1]) * y[4] / y[2] + y[3]) / maxside,
+        zip(x, base_3d, size_3d, base_uv, size_uv)
+    ))
+    for t in polys_to_tris[p]:
+        tris.append(triangles[t])
+        for vertex in triangles[t]:
+            vertex = tuple([vertex[n] for n in {0, 1, 2} - {excluded_index}])
+            uvmap.append(transform(vertex))
 
 print("{0} x {0}".format(maxside))
 
 with open(sys.argv[1] + ".obj", "wt") as file:
     for vertex in vertices:
         file.write("v {} {} {}\n".format(*vertex))
-    for uv in uvmap:
-        for vt in uv:
-            file.write("vt {} {}\n".format(*vt))
-    for n in range(len(rectangles)):
-        for i in {1, 2, 3} - {excludedindices[n]}:
-            file.write("f {0}/{3} {1}/{4} {2}/{5}\n".format(
-                *map(lambda x: global_vertex_indices[x] + 1, \
-                    [rectangles[n][k] for k in {0, i, excludedindices[n]}] \
-                ),
-                *[4 * n + m + 1 for m in {0, i, excludedindices[n]}]
-            ))
+    for vt in uvmap:
+        file.write("vt {} {}\n".format(*vt))
+    for n in range(len(tris)):
+        file.write("f {0}/{3} {1}/{4} {2}/{5}\n".format(
+            *map(lambda x: global_vertex_indices[x] + 1, tris[n]),
+            *[3 * n + m + 1 for m in {0, 1, 2}]
+        ))
