@@ -187,6 +187,35 @@ register_node_and_entity("seat", {
     textures = {"nv_seat.png"},
 })
 
+-- CONTROL PANEL
+-- A control panel lying right in front of the pilot.
+-- Required for liftoff
+register_node_and_entity("control_panel", {
+    description = "Control panel",
+    drawtype = "mesh",
+    sunlight_propagates = true,
+    paramtype = "light",
+    paramtype2 = "facedir",
+
+    tiles = {"nv_control_panel.png"},
+    use_texture_alpha = "clip",
+    groups = {
+        oddly_breakable_by_hand = 3,
+        fall_damage_add_percent = -100,
+        bouncy = 0
+    },
+    mesh = "nv_control_panel.obj",
+    collision_box = {
+        type = "fixed",
+        fixed = {
+            {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}
+        },
+    },
+
+    visual = "mesh",
+    textures = {"nv_control_panel.png"},
+})
+
 -- SCAFFOLD
 -- A full block of scaffolding
 register_node_and_entity("scaffold", {
