@@ -53,14 +53,23 @@ end
 
 nv_ships.node_name_to_ent_name_dict = {}
 
-local function colorize_tiles(tiles, color)
+local function colorize_tiles(tiles, overlay_tiles, color)
+    r = {}
     for n=1, #(tiles or {}) do
         if type(tiles[n]) == "string" then
             tiles[n] = {name = tiles[n]}
         end
-        tiles[n].color = color
+        if overlay_tiles ~= nil and type(overlay_tiles[n]) == "string" then
+            overlay_tiles[n] = {name = overlay_tiles[n]}
+        end
+        if overlay_tiles ~= nil then
+            r[n] = "(" .. tiles[n].name .. "^[multiply:" .. color .. ")^" .. overlay_tiles[n].name
+        else
+            r[n] = tiles[n].name .. "^[multiply:" .. color
+        end
+        print(r[n])
     end
-    return tiles
+    return r
 end
 
 local function register_node_and_entity(name, def)
@@ -94,16 +103,10 @@ local function register_node_and_entity(name, def)
     if def.use_texture_alpha == "blend" then
         ent_use_texture_alpha = true
     end
-    local colorized_textures = table.copy(def.textures)
-    if def.color ~= nil then
-        for n=1, #colorized_textures do
-            colorized_textures[n] = colorized_textures[n] .. "^[multiply:" .. def.color
-        end
-    end
     local ent_def = {
         initial_properties = {
-            visual = def.visual,
-            textures = colorized_textures,
+            visual = "mesh",
+            textures = def.tiles,
             use_texture_alpha = ent_use_texture_alpha,
             visual_size = {x=10, y=10, z=10},
             mesh = def.mesh
@@ -134,8 +137,7 @@ local function register_hull_node_and_entity(name, def)
             paramtype = def.paramtype,
             paramtype2 = def.paramtype2,
             walkable = def.walkable or true,
-            tiles = colorize_tiles(def.tiles, default_palette[n]),
-            overlay_tiles = def.overlay_tiles,
+            tiles = colorize_tiles(def.tiles, def.overlay_tiles, default_palette[n]),
             use_texture_alpha = def.use_texture_alpha,
             groups = def.groups,
             mesh = def.mesh,
@@ -145,8 +147,7 @@ local function register_hull_node_and_entity(name, def)
             after_place_node = def.after_place_node,
             on_rightclick = nv_ships.ship_rightclick_callback,
 
-            visual = def.visual,
-            textures = def.textures,
+            visual = "mesh",
             use_texture_alpha = def.use_texture_alpha,
             visual_size = def.visual_size,
             mesh = def.mesh,
@@ -197,9 +198,6 @@ register_node_and_entity("seat", {
             {-0.5, -0.5, -0.5, 0.5, 0, 0.5}
         },
     },
-
-    visual = "mesh",
-    textures = {"nv_seat.png"},
 })
 
 -- CONTROL PANEL
@@ -226,9 +224,6 @@ register_node_and_entity("control_panel", {
             {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}
         },
     },
-
-    visual = "mesh",
-    textures = {"nv_control_panel.png"},
 })
 
 -- CONTROL PANEL HULL
@@ -249,9 +244,6 @@ register_hull_node_and_entity("control_panel_hull", {
         bouncy = 0
     },
     mesh = "nv_control_panel.obj",
-
-    visual = "mesh",
-    textures = {"nv_control_panel_hull.png"},
 })
 
 -- SCAFFOLD
@@ -267,9 +259,6 @@ register_node_and_entity("scaffold", {
     use_texture_alpha = "clip",
     groups = {oddly_breakable_by_hand = 3},
     mesh = "nv_scaffold.obj",
-
-    visual = "mesh",
-    textures = {"nv_scaffold.png"},
 })
 
 -- SCAFFOLD HULL
@@ -286,9 +275,6 @@ register_hull_node_and_entity("scaffold_hull", {
     use_texture_alpha = "opaque",
     groups = {oddly_breakable_by_hand = 3},
     mesh = "nv_scaffold.obj",
-
-    visual = "mesh",
-    textures = {"nv_scaffold_hull.png"},
 })
 
 -- FLOOR
@@ -311,9 +297,6 @@ register_node_and_entity("floor", {
             {-0.5, -0.5, -0.5, 0.5, -0.25, 0.5}
         },
     },
-
-    visual = "mesh",
-    textures = {"nv_floor.png"},
 })
 
 -- LANDING LEG
@@ -336,9 +319,6 @@ register_node_and_entity("landing_leg", {
             {-0.25, -0.5, -0.25, 0.25, 0.5, 0.25}
         },
     },
-
-    visual = "mesh",
-    textures = {"nv_landing_leg.png"},
 
     nv_no_entity = true,
 })
@@ -370,9 +350,6 @@ register_node_and_entity("glass_face", {
     mesh = "nv_glass_face.obj",
     drop = "nv_ships:glass_pane",
 
-    visual = "mesh",
-    textures = {"nv_glass.png"},
-
     nv_no_entity = true,
 })
 
@@ -403,9 +380,6 @@ register_node_and_entity("glass_edge", {
     },
     mesh = "nv_glass_edge.obj",
     drop = "nv_ships:glass_pane",
-
-    visual = "mesh",
-    textures = {"nv_glass.png"},
 
     nv_no_entity = true,
 })
@@ -441,9 +415,6 @@ register_node_and_entity("glass_vertex", {
     },
     mesh = "nv_glass_vertex.obj",
     drop = "nv_ships:glass_pane",
-
-    visual = "mesh",
-    textures = {"nv_glass.png"},
 
     nv_no_entity = true,
 })
