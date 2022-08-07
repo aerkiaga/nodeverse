@@ -189,7 +189,35 @@ register_node_and_entity("seat", {
     groups = {
         oddly_breakable_by_hand = 3,
         fall_damage_add_percent = -100,
-        bouncy = 0
+        bouncy = 0,
+        pilot_seat = 1,
+    },
+    mesh = "nv_seat.obj",
+    collision_box = {
+        type = "fixed",
+        fixed = {
+            {-0.5, -0.5, -0.5, 0.5, 0, 0.5}
+        },
+    },
+})
+
+-- SEAT HULL
+-- A pilot seat covered in colored hull plates
+register_hull_node_and_entity("seat_hull", {
+    description = "Pilot seat",
+    drawtype = "mesh",
+    sunlight_propagates = true,
+    paramtype = "light",
+    paramtype2 = "facedir",
+
+    tiles = {"nv_seat_hull.png"},
+    overlay_tiles = {"nv_seat_hull_overlay.png"},
+    use_texture_alpha = "clip",
+    groups = {
+        oddly_breakable_by_hand = 3,
+        fall_damage_add_percent = -100,
+        bouncy = 0,
+        pilot_seat = 1,
     },
     mesh = "nv_seat.obj",
     collision_box = {
@@ -288,6 +316,28 @@ register_node_and_entity("floor", {
     paramtype2 = "facedir",
 
     tiles = {"nv_floor.png"},
+    use_texture_alpha = "clip",
+    groups = {oddly_breakable_by_hand = 3},
+    mesh = "nv_floor.obj",
+    collision_box = {
+        type = "fixed",
+        fixed = {
+            {-0.5, -0.5, -0.5, 0.5, -0.25, 0.5}
+        },
+    },
+})
+
+-- FLOOR
+-- A floor covered in colored hull plates
+register_hull_node_and_entity("floor_hull", {
+    description = "Ship floor",
+    drawtype = "mesh",
+    sunlight_propagates = true,
+    paramtype = "light",
+    paramtype2 = "facedir",
+
+    tiles = {"nv_floor_hull.png"},
+    overlay_tiles = {"nv_floor_hull_overlay.png"},
     use_texture_alpha = "clip",
     groups = {oddly_breakable_by_hand = 3},
     mesh = "nv_floor.obj",

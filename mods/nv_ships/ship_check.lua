@@ -131,7 +131,7 @@ function nv_ships.global_check_ship(ship)
         for rel_y=0, ship.size.y - 1 do
             for rel_x=0, ship.size.x - 1 do
                 -- If a pilot seat is found, assign a cockpit to the ship
-                if ship.An[k] == "nv_ships:seat" then
+                if minetest.get_item_group(ship.An[k], "pilot_seat") > 0 then
                     ship.cockpit_pos = {
                         x = rel_x, y = rel_y, z = rel_z
                     }
