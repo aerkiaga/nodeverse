@@ -53,6 +53,16 @@ end
 
 nv_ships.node_name_to_ent_name_dict = {}
 
+local function colorize_tiles(tiles, color)
+    for n=1, #(tiles or {}) do
+        if type(tiles[n]) == "string" then
+            tiles[n] = {name = tiles[n]}
+        end
+        tiles[n].color = color
+    end
+    return tiles
+end
+
 local function register_node_and_entity(name, def)
     local node_def = {
         description = def.description or "",
@@ -63,6 +73,7 @@ local function register_node_and_entity(name, def)
         paramtype2 = def.paramtype2,
         walkable = def.walkable or true,
         tiles = def.tiles,
+        overlay_tiles = def.overlay_tiles,
         color = def.color,
         use_texture_alpha = def.use_texture_alpha,
         groups = def.groups,
@@ -123,7 +134,8 @@ local function register_hull_node_and_entity(name, def)
             paramtype = def.paramtype,
             paramtype2 = def.paramtype2,
             walkable = def.walkable or true,
-            tiles = def.tiles,
+            tiles = colorize_tiles(def.tiles, default_palette[n]),
+            overlay_tiles = def.overlay_tiles,
             use_texture_alpha = def.use_texture_alpha,
             groups = def.groups,
             mesh = def.mesh,
@@ -139,17 +151,20 @@ local function register_hull_node_and_entity(name, def)
             visual_size = def.visual_size,
             mesh = def.mesh,
 
-            color = default_palette[n],
+            --color = default_palette[n],
             drop = "nv_ships:hull_plate" .. n,
         }
+        print(colored_def.overlay_tiles)
         register_node_and_entity(name .. n, colored_def)
     end
 end
 
 --[[
  # NODE TYPES
-Allocated: 3
+Allocated: 35
 1       seat
+1       control_panel
+15      control_panel_hull
 1       floor
 1       scaffold
 15      scaffold_hull
@@ -214,6 +229,29 @@ register_node_and_entity("control_panel", {
 
     visual = "mesh",
     textures = {"nv_control_panel.png"},
+})
+
+-- CONTROL PANEL HULL
+-- A control panel block covered in hull panels.
+register_hull_node_and_entity("control_panel_hull", {
+    description = "Control panel hull",
+    drawtype = "mesh",
+    sunlight_propagates = true,
+    paramtype = "light",
+    paramtype2 = "colorfacedir",
+
+    tiles = {"nv_control_panel_hull.png"},
+    overlay_tiles = {"nv_control_panel_hull_overlay.png"},
+    use_texture_alpha = "clip",
+    groups = {
+        oddly_breakable_by_hand = 3,
+        fall_damage_add_percent = -100,
+        bouncy = 0
+    },
+    mesh = "nv_control_panel.obj",
+
+    visual = "mesh",
+    textures = {"nv_control_panel_hull.png"},
 })
 
 -- SCAFFOLD

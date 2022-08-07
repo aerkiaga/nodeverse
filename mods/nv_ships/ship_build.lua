@@ -90,6 +90,7 @@ local function try_put_hull_in_ship(index, pos, ship)
     -- Check node and place it
     local allowed_nodes = {
         ["nv_ships:scaffold"] = true,
+        ["nv_ships:control_panel"] = true,
     }
     if allowed_nodes[node.name] ~= nil then
         ship.An[k] = ship.An[k] .. "_hull" .. index
