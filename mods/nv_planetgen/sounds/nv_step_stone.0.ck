@@ -14,14 +14,14 @@ Noise noise => LPF low => HPF high => Envelope env => dac;
 // parameters
 200 => low.freq;
 70 => high.freq;
-3.0 => dac.gain;
+2.0 => dac.gain;
 0.01::second => env.duration;
 env.keyOn();
 
 // control loop
 now => time start;
 now + Global.duration => time end;
-while(now - start < 0.02::second) {
+while(now - start < 0.03::second) {
     0.01::second => now;
 }
 

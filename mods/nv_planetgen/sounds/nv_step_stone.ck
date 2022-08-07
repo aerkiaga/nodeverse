@@ -12,9 +12,9 @@ public class Global {
 Noise noise => LPF low => HPF high => Envelope env => dac;
 
 // parameters
-300 => low.freq;
+200 => low.freq;
 100 => high.freq;
-3.0 => dac.gain;
+2.0 => dac.gain;
 0.02::second => env.duration;
 env.keyOn();
 
