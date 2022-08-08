@@ -218,7 +218,7 @@ function nv_ships.ship_to_node(ship, player, pos)
     -- 'facing' values: 0, 1, 2, 3
     -- +Z, +X, -Z, -X
 
-    cockpit_pos = ship.cockpit_pos or {x=0, y=0, z=0}
+    local cockpit_pos = ship.cockpit_pos or {x=0, y=0, z=0}
     ship.pos = {
         x = pos.x - ship.cockpit_pos.x,
         y = pos.y - ship.cockpit_pos.y,

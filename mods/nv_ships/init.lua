@@ -60,9 +60,12 @@ otherwise to the lowest coordinate node.
     ship        a ship object; ownership makes no difference to this function
     player      if present, the entity form will be removed from this player
     pos         location at which to place the ship
+By not providing a 'player', a new structure can be introduced.
 ]]
 
 --[[    nv_ships.remove_ship_entity(player)
+Detach and remove any attached entities from a player.
+    player      player to remove ship entity from
 ]]
 
 --[[    nv_ships.rotate_ship_nodes(ship, facing)
@@ -72,6 +75,30 @@ the world are not updated.
     facing      new 'facing' value for the ship; 0 to 4 are valid
 This function ought to be called before turning a ship into its node form, so
 that the new nodes align with the existing entities.
+]]
+
+--[[    nv_ships.serialize_ship(ship)
+Returns a string representing the given ship object in its current state.
+    ship        ship object to serialize
+]]
+
+--[[    nv_ships.deserialize_ship(data)
+Returns a ship object created from the string passed as data.
+    data        a string obtained from nv_ships.serialize_ship()
+]]
+
+--[[    nv_ships.load_player_state(player)
+Loads a player's state, in order to resume whatever activity the player was
+carrying out. This includes loading all their ships from disk.
+Actually placing the ship in entity form and flying it if required is a
+responsibility of the caller, however.
+    player      player which data to load from disk
+]]
+
+--[[    nv_ships.store_player_state(player)
+Saves a player's state, so it can be resumed with a call to
+nv_ships.load_player_state().
+    player      player which data to write to disk
 ]]
 
 --[[

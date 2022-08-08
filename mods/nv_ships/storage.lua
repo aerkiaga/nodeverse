@@ -235,7 +235,7 @@ local function serialize_ship_nodes(array, ship)
     table.insert(array, table.concat(param2_array))
 end
 
-local function serialize_ship(ship)
+function nv_ships.serialize_ship(ship)
     local array = {}
     table.insert(array, "0") -- length
     encode_u12(array, #ship.owner)
@@ -375,7 +375,7 @@ local function deserialize_ship_nodes(ship, data, node_types)
     end
 end
 
-local function deserialize_ship(data)
+function nv_ships.deserialize_ship(data)
     local version = nil
     local owner_length_lh, owner_length = {}, nil
     local owner_array = {}
