@@ -484,7 +484,7 @@ function nv_ships.load_player_state(player)
     player_data.ships = {}
     for ship_index = 1, ship_count do
         local ship = read_table["nv_ships:ship" .. ship_index]
-        player_data.ships[ship_index] = deserialize_ship(ship)
+        player_data.ships[ship_index] = nv_ships.deserialize_ship(ship)
     end
 
     local player_cur_ship_index = read_table["nv_ships:cur_ship_index"] or 0
@@ -515,7 +515,8 @@ function nv_ships.store_player_state(player)
     written_table["nv_ships:cur_ship_index"] = player_cur_ship_index
 
     for index, ship in ipairs(player_data.ships) do
-        written_table["nv_ships:ship" .. index] = serialize_ship(ship)
+        written_table["nv_ships:ship" .. index] = nv_ships.serialize_ship(ship)
+        print(written_table["nv_ships:ship" .. index])
     end
 
     written_table["nv_ships:ship_count"] = #(player_data.ships)

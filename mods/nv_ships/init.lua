@@ -101,6 +101,11 @@ nv_ships.load_player_state().
     player      player which data to write to disk
 ]]
 
+--[[    nv_ships.set_default_ship(data)
+Set the default starting ship for new players.
+    data        serialized representation of the ship
+]]
+
 --[[
  # DEBUG CODE
 ]]

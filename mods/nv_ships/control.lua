@@ -187,28 +187,30 @@ function nv_ships.ship_rightclick_callback(pos, node, clicker, itemstack, pointe
     nv_ships.players_list[name].cur_ship = ship
 end
 
+-- Serialized default ship for new players
+local default_ship = nil
+
+function nv_ships.set_default_ship(data)
+    default_ship = data
+end
+
 local function joinplayer_callback(player, last_login)
     local name = player:get_player_name()
     local inventory = player:get_inventory()
-    if not inventory:contains_item("main", "nv_ships:seat 1") then
-       inventory:add_item("main", "nv_ships:seat 2")
-       inventory:add_item("main", "nv_ships:floor 10")
-       inventory:add_item("main", "nv_ships:scaffold 10")
-       inventory:add_item("main", "nv_ships:landing_leg 3")
-       inventory:add_item("main", "nv_ships:glass_pane 5")
-       inventory:add_item("main", "nv_ships:glass_edge 5")
-       inventory:add_item("main", "nv_ships:glass_vertex 5")
-       inventory:add_item("main", "nv_ships:hull_plate5 10")
-       inventory:add_item("main", "nv_ships:hull_plate6 10")
-       inventory:add_item("main", "nv_ships:hull_plate1 10")
-       inventory:add_item("main", "nv_ships:hull_plate4 10")
-       inventory:add_item("main", "nv_ships:control_panel 1")
-    end
-    if nv_ships.players_list[name] == nil then
+    if nv_ships.players_list[name] == nil then        
         nv_ships.players_list[name] = {
             ships = {}
         }
         nv_ships.load_player_state(player)
+        if #nv_ships.players_list[name].ships == 0 and default_ship ~= nil then
+            local ship = nv_ships.deserialize_ship(default_ship)
+            nv_ships.players_list[name].ships = {ship}
+            nv_ships.players_list[name].cur_ship = ship
+            nv_ships.players_list[name].state = "flying"
+            ship.owner = name
+            ship.index = 0
+            ship.state = "entity"
+        end
         local current_ship = nv_ships.players_list[name].cur_ship
         if current_ship ~= nil and current_ship.state == "entity" then
             nv_ships.ship_to_entity(current_ship, player, false)

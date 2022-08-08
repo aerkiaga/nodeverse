@@ -67,7 +67,6 @@ local function colorize_tiles(tiles, overlay_tiles, color)
         else
             r[n] = tiles[n].name .. "^[multiply:" .. color
         end
-        print(r[n])
     end
     return r
 end
@@ -155,7 +154,6 @@ local function register_hull_node_and_entity(name, def)
             --color = default_palette[n],
             drop = "nv_ships:hull_plate" .. n,
         }
-        print(colored_def.overlay_tiles)
         register_node_and_entity(name .. n, colored_def)
     end
 end
