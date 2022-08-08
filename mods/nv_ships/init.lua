@@ -14,6 +14,7 @@ Included files:
     itemtypes.lua       Defines item types that are not directy placeable
 
  # INDEX
+    API REFERENCE
     DEBUG CODE
 ]]--
 
@@ -26,6 +27,52 @@ dofile(minetest.get_modpath("nv_ships") .. "/control.lua")
 dofile(minetest.get_modpath("nv_ships") .. "/storage.lua")
 dofile(minetest.get_modpath("nv_ships") .. "/nodetypes.lua")
 dofile(minetest.get_modpath("nv_ships") .. "/itemtypes.lua")
+
+--[[
+# API REFERENCE
+Ships is a versatile structure building and ownership API featuring the ability
+to construct and pilot moving structures.
+
+At the moment, much of the functionality required by the game Nodeverse is
+hardcoded. However, an API is still exposed and documented here.
+]]--
+
+--[[    nv_ships.nv_ships.ship_to_entity(ship, player, remove)
+Spawns the ship in its entity form around a player. This involves attaching
+many smaller entities, resembling the ship's nodes, to the player.
+In order for this to be carried out, the ship needs to have a cockpit position,
+that is, a node within it where the player will be seated.
+    ship        a ship object; ownership makes no difference to this function
+    player      player that the ship will be placed around
+    remove      whether to remove any actual ship nodes; true by default
+Note that 'remove' is only meaningful if the ship is being converted from node
+form into entity form. By setting this to false, a new ship can be introduced
+into the world.
+]]
+
+--[[    nv_ships.ship_to_node(ship, player, pos)
+Spawns the ship in its node form around a world position. This involves copying
+nodes stored in the ship object to the world.
+Additionally, nv_ships.remove_ship_entity() will be called on 'player',
+if provided. This is to facilitate operations such as landing.
+The ship is placed at 'pos', relative to its cockpit position if present;
+otherwise to the lowest coordinate node.
+    ship        a ship object; ownership makes no difference to this function
+    player      if present, the entity form will be removed from this player
+    pos         location at which to place the ship
+]]
+
+--[[    nv_ships.remove_ship_entity(player)
+]]
+
+--[[    nv_ships.rotate_ship_nodes(ship, facing)
+Rotates the nodes in a ship object. Note that the actual nodes or entities in
+the world are not updated.
+    ship        any ship object, which nodes are rotated in-place
+    facing      new 'facing' value for the ship; 0 to 4 are valid
+This function ought to be called before turning a ship into its node form, so
+that the new nodes align with the existing entities.
+]]
 
 --[[
  # DEBUG CODE

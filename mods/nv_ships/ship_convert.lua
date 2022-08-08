@@ -11,6 +11,11 @@ forms of a ship, as well as some related operations.
  # TO ENTITY
 ]]--
 
+--[[
+Given a ship object, will attach entities corresponding to its nodes around 'player'.
+If 'remove' is true, the current ship, made of nodes, will be removed from the world.
+This function will fail if the ship has no cockpit.
+]]
 function nv_ships.ship_to_entity(ship, player, remove)
     if remove == nil then remove = true end
 
@@ -213,6 +218,7 @@ function nv_ships.ship_to_node(ship, player, pos)
     -- 'facing' values: 0, 1, 2, 3
     -- +Z, +X, -Z, -X
 
+    cockpit_pos = ship.cockpit_pos or {x=0, y=0, z=0}
     ship.pos = {
         x = pos.x - ship.cockpit_pos.x,
         y = pos.y - ship.cockpit_pos.y,
@@ -240,5 +246,7 @@ function nv_ships.ship_to_node(ship, player, pos)
         end
     end
     ship.state = "node"
-    nv_ships.remove_ship_entity(player)
+    if player then
+        nv_ships.remove_ship_entity(player)
+    end
 end
