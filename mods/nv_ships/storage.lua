@@ -516,7 +516,6 @@ function nv_ships.store_player_state(player)
 
     for index, ship in ipairs(player_data.ships) do
         written_table["nv_ships:ship" .. index] = nv_ships.serialize_ship(ship)
-        print(written_table["nv_ships:ship" .. index])
     end
 
     written_table["nv_ships:ship_count"] = #(player_data.ships)
