@@ -210,6 +210,32 @@ register_hull_variants("seat", {
     },
 })
 
+-- DARK SEAT
+-- A glowing pilot seat
+register_hull_variants("dark_seat", {
+    description = "Dark pilot seat",
+    drawtype = "mesh",
+    sunlight_propagates = true,
+    paramtype = "light",
+    paramtype2 = "facedir",
+
+    nv_texture = "nv_seat_dark",
+    use_texture_alpha = "clip",
+    groups = {
+        oddly_breakable_by_hand = 3,
+        fall_damage_add_percent = -100,
+        bouncy = 0,
+        pilot_seat = 1,
+    },
+    mesh = "nv_seat.obj",
+    collision_box = {
+        type = "fixed",
+        fixed = {
+            {-0.5, -0.5, -0.5, 0.5, 0, 0.5}
+        },
+    },
+})
+
 -- CONTROL PANEL
 -- A control panel lying right in front of the pilot.
 register_hull_variants("control_panel", {
