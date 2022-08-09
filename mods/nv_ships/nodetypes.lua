@@ -93,6 +93,7 @@ local function register_node_and_entity(name, def)
         after_place_node = after_place_node_normal,
         after_dig_node = after_dig_node_normal,
         can_dig = can_dig_normal,
+        on_punch = def.on_punch,
         on_rightclick = nv_ships.ship_rightclick_callback,
     }
     node_def.groups.nv_ships = 1
@@ -144,6 +145,7 @@ local function register_hull_node_and_entity(name, def)
             collision_box = def.collision_box,
             drop = def.drop,
             after_place_node = def.after_place_node,
+            on_punch = def.on_punch,
             on_rightclick = nv_ships.ship_rightclick_callback,
 
             visual = "mesh",
@@ -171,14 +173,17 @@ end
 
 --[[
  # NODE TYPES
-Allocated: 35
-1       seat
-1       control_panel
-15      control_panel_hull
-1       floor
-1       scaffold
-15      scaffold_hull
+Allocated: 84
+16      seat
+16      dark_seat
+16      control_panel
+16      floor
+16      scaffold
+16      scaffold_edge
 1       landing_leg
+1       glass_face
+1       glass_edge
+1       glass_vertex
 ]]--
 
 -- SEAT
@@ -274,6 +279,55 @@ register_hull_variants("scaffold", {
     use_texture_alpha = "clip",
     groups = {oddly_breakable_by_hand = 3},
     mesh = "nv_scaffold.obj",
+    
+    on_punch = function(pos, node, puncher, pointed_thing)
+        if node.name ~= "nv_ships:scaffold" then
+            return
+        end
+        local ship = nv_ships.get_owned_ship_at(pos, puncher)
+        if ship ~= nil then
+            print("punch")
+            nv_ships.set_ship_node({name = "nv_ships:scaffold_edge", param2 = 0}, pos, ship)
+        end
+    end,
+})
+
+-- SCAFFOLD EDGE
+-- A block of scaffolding rounded at one edge
+-- Not obtainable as item
+register_hull_variants("scaffold_edge", {
+    description = "Ship scaffold edge",
+    drawtype = "mesh",
+    sunlight_propagates = true,
+    paramtype = "light",
+    paramtype2 = "facedir",
+
+    nv_texture = "nv_scaffold_edge",
+    use_texture_alpha = "clip",
+    groups = {oddly_breakable_by_hand = 3},
+    mesh = "nv_scaffold_edge.obj",
+    
+    drop = "nv_ships:scaffold",
+    on_punch = function(pos, node, puncher, pointed_thing)
+        if node.name ~= "nv_ships:scaffold_edge" then
+            return
+        end
+        local ship = nv_ships.get_owned_ship_at(pos, puncher)
+        if ship ~= nil then
+            if node.param2 == 14 then
+                nv_ships.set_ship_node({name = "nv_ships:scaffold", param2 = 0}, pos, ship)
+            else
+                local rotation_table = {
+                    [0] = 1, [1] = 2, [2] = 3, [3] = 4,
+                    [4] = 12, [12] = 7, [7] = 13, [13] = 5,
+                    [5] = 15, [15] = 6, [6] = 14
+                }
+                nv_ships.set_ship_node({
+                    name = "nv_ships:scaffold_edge", param2 = rotation_table[node.param2]
+                }, pos, ship)
+            end
+        end
+    end,
 })
 
 -- FLOOR

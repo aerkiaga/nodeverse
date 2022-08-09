@@ -21,3 +21,4 @@ generate_file() {
 }
 
 generate_file nv_control_panel
+generate_file nv_scaffold_edge
