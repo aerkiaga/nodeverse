@@ -576,7 +576,7 @@ local function register_icy_nodes()
             },
             sounds = {
                 footstep = {
-                    name = "nv_step_snow", gain = 0.2, pitch = 1
+                    name = "nv_step_snow", gain = 0.15, pitch = 1
                 }
             }
         } end

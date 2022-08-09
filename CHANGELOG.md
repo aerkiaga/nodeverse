@@ -8,10 +8,10 @@ development have been ported to the 0.1.x versions.
  - Mods `nv_game`, `nv_ships` and `nv_player`.
  - A new mini-game about finding ship parts inside piñatas.
  - Ability to build ships out of nodes and fly them.
- - Seat, dark seat, control panel, scaffold, floor, glass pane and landing leg
- nodes.
+ - Eight node varieties to build a ship with.
  - Colored spaceship hull, can be applied to ship nodes.
  - New, simpler flying mechanics, with vertical liftoff and landing.
+ - A small ship to start the game with.
  - Custom spacesuit player skin.
  - Four distinct sound effects for spaceship maneuvering.
  - Twelve different footstep sound effects.
