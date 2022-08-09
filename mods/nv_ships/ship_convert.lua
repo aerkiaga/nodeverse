@@ -30,6 +30,26 @@ function nv_ships.ship_to_entity(ship, player, remove)
         return r
     end
 
+    local function to_entity_rotation(param2, facing)
+        local rotation_table = {
+            [0] = {x=0, y=0, z=0},      [1] = {x=0, y=90, z=0},
+            [2] = {x=0, y=180, z=0},    [3] = {x=0, y=270, z=0},
+            [4] = {x=90, y=0, z=0},     [5] = {x=90, y=0, z=90},
+            [6] = {x=90, y=0, z=180},   [7] = {x=90, y=0, z=270},
+            [8] = {x=270, y=0, z=0},    [9] = {x=270, y=0, z=270},
+            [10] = {x=270, y=0, z=180}, [11] = {x=270, y=0, z=90},
+            [12] = {x=0, y=0, z=270},   [13] = {x=0, y=90, z=270},
+            [14] = {x=0, y=180, z=270}, [15] = {x=0, y=270, z=270},
+            [16] = {x=0, y=0, z=90},    [17] = {x=0, y=90, z=90},
+            [18] = {x=0, y=180, z=90},  [19] = {x=0, y=270, z=90},
+            [20] = {x=0, y=0, z=180},   [21] = {x=0, y=90, z=180},
+            [22] = {x=0, y=180, z=180}, [23] = {x=0, y=270, z=180},
+        }
+        local r = rotation_table[param2]
+        r.y = r.y - facing * 90
+        return r
+    end
+
     ----------------------------------------------------------------------------
 
     if ship == nil then
@@ -71,9 +91,10 @@ function nv_ships.ship_to_entity(ship, player, remove)
                     if remove then
                         minetest.remove_node(pos_abs)
                     end
+                    local rotation = to_entity_rotation(ship.A2[k], ship.facing)
                     if ent_name ~= "" then
                         local ent = minetest.add_entity(pos_abs, ent_name)
-                        ent:set_attach(player, "", pos_player_rel, nil, true)
+                        ent:set_attach(player, "", pos_player_rel, rotation, true)
                     end
                 end
                 k = k + 1
