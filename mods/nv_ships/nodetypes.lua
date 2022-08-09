@@ -54,7 +54,7 @@ end
 nv_ships.node_name_to_ent_name_dict = {}
 
 local function colorize_tiles(tiles, overlay_tiles, color)
-    r = {}
+    local r = {}
     for n=1, #(tiles or {}) do
         if type(tiles[n]) == "string" then
             tiles[n] = {name = tiles[n]}
