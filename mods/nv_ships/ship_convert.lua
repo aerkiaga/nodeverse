@@ -146,12 +146,12 @@ function nv_ships.rotate_ship_nodes(ship, facing)
         local other = param2 - facedir
         local next_rotation_table = {
             [0] = 1, [1] = 2, [2] = 3, [3] = 0,
-            [4] = 13, [6] = 15,
-            [8] = 17, [10] = 19,
-            [13] = 10, [15] = 8,
-            [17] = 6, [19] = 4,
+            [4] = 13, [5] = 14, [6] = 15, [7] = 12,
+            [8] = 17, [9] = 18, [10] = 19, [11] = 16,
+            [12] = 9, [13] = 10, [14] = 1, [15] = 8,
+            [16] = 5, [17] = 6, [18] = 7, [19] = 4,
             [20] = 23, [21] = 20, [22] = 21, [23] = 22
-        } -- TODO: support all possible rotations in 'rotate_param2()'
+        }
         for n=1, rot do
             facedir = next_rotation_table[facedir] or 0
         end

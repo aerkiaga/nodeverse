@@ -215,6 +215,8 @@ local function joinplayer_callback(player, last_login)
             ship.index = 1
             ship.state = "entity"
             --player:get_inventory():add_item("main", "nv_ships:scaffold 1")
+            local current_pos = player:get_pos()
+            player:set_pos(vector.new(current_pos.x, current_pos.y + 10, current_pos.z))
         end
         local current_ship = nv_ships.players_list[name].cur_ship
         if current_ship ~= nil and current_ship.state == "entity" then
