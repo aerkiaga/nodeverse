@@ -12,6 +12,25 @@ Here are defined any nodes required by the Nodeverse game at the top level.
 
 local loot_table = {
     ["nv_ships:seat"] = 10,
+    ["nv_ships:control_panel"] = 10,
+    ["nv_ships:floor 3"] = 3,
+    ["nv_ships:scaffold 2"] = 1,
+    ["nv_ships:landing_leg"] = 5,
+    ["nv_ships:hull_plate1 5"] = 10,
+    ["nv_ships:hull_plate2 5"] = 10,
+    ["nv_ships:hull_plate3 5"] = 10,
+    ["nv_ships:hull_plate4 5"] = 10,
+    ["nv_ships:hull_plate5 5"] = 10,
+    ["nv_ships:hull_plate6 5"] = 10,
+    ["nv_ships:hull_plate7 5"] = 10,
+    ["nv_ships:hull_plate8 5"] = 10,
+    ["nv_ships:hull_plate9 5"] = 10,
+    ["nv_ships:hull_plate10 5"] = 10,
+    ["nv_ships:hull_plate11 5"] = 10,
+    ["nv_ships:hull_plate12 5"] = 10,
+    ["nv_ships:hull_plate13 5"] = 10,
+    ["nv_ships:hull_plate14 5"] = 10,
+    ["nv_ships:hull_plate15 5"] = 10,
 }
 
 local function compute_pinata_loot_table()
@@ -31,7 +50,7 @@ local function compute_pinata_loot_table()
         r[index] = {}
         r[index].items = {name}
         r[index].rarity = rarity
-        print(name .. " " .. rarity)
+        index = index + 1
     end
     return {
         max_items = 1,
