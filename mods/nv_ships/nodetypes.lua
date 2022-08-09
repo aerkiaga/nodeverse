@@ -158,6 +158,17 @@ local function register_hull_node_and_entity(name, def)
     end
 end
 
+local function register_hull_variants(name, def)
+    local def2 = table.copy(def)
+    def2.tiles = {def.nv_texture .. ".png"}
+    def2.overlay_tiles = nil
+    register_node_and_entity(name, def2)
+    local def3 = table.copy(def)
+    def3.tiles = {def.nv_texture .. "_hull.png"}
+    def3.overlay_tiles = {def.nv_texture .. "_hull_overlay.png"}
+    register_hull_node_and_entity(name .. "_hull", def3)
+end
+
 --[[
  # NODE TYPES
 Allocated: 35
@@ -175,41 +186,14 @@ Allocated: 35
 -- Defines cockpit position and orientation
 -- Required for liftoff
 -- At most one per ship
-register_node_and_entity("seat", {
+register_hull_variants("seat", {
     description = "Pilot seat",
     drawtype = "mesh",
     sunlight_propagates = true,
     paramtype = "light",
     paramtype2 = "facedir",
 
-    tiles = {"nv_seat.png"},
-    use_texture_alpha = "clip",
-    groups = {
-        oddly_breakable_by_hand = 3,
-        fall_damage_add_percent = -100,
-        bouncy = 0,
-        pilot_seat = 1,
-    },
-    mesh = "nv_seat.obj",
-    collision_box = {
-        type = "fixed",
-        fixed = {
-            {-0.5, -0.5, -0.5, 0.5, 0, 0.5}
-        },
-    },
-})
-
--- SEAT HULL
--- A pilot seat covered in colored hull plates
-register_hull_node_and_entity("seat_hull", {
-    description = "Pilot seat",
-    drawtype = "mesh",
-    sunlight_propagates = true,
-    paramtype = "light",
-    paramtype2 = "facedir",
-
-    tiles = {"nv_seat_hull.png"},
-    overlay_tiles = {"nv_seat_hull_overlay.png"},
+    nv_texture = "nv_seat",
     use_texture_alpha = "clip",
     groups = {
         oddly_breakable_by_hand = 3,
@@ -228,15 +212,14 @@ register_hull_node_and_entity("seat_hull", {
 
 -- CONTROL PANEL
 -- A control panel lying right in front of the pilot.
--- Required for liftoff
-register_node_and_entity("control_panel", {
+register_hull_variants("control_panel", {
     description = "Control panel",
     drawtype = "mesh",
     sunlight_propagates = true,
     paramtype = "light",
     paramtype2 = "facedir",
 
-    tiles = {"nv_control_panel.png"},
+    nv_texture = "nv_control_panel",
     use_texture_alpha = "clip",
     groups = {
         oddly_breakable_by_hand = 3,
@@ -252,53 +235,17 @@ register_node_and_entity("control_panel", {
     },
 })
 
--- CONTROL PANEL HULL
--- A control panel block covered in hull panels.
-register_hull_node_and_entity("control_panel_hull", {
-    description = "Control panel hull",
-    drawtype = "mesh",
-    sunlight_propagates = true,
-    paramtype = "light",
-    paramtype2 = "colorfacedir",
-
-    tiles = {"nv_control_panel_hull.png"},
-    overlay_tiles = {"nv_control_panel_hull_overlay.png"},
-    use_texture_alpha = "clip",
-    groups = {
-        oddly_breakable_by_hand = 3,
-        fall_damage_add_percent = -100,
-        bouncy = 0
-    },
-    mesh = "nv_control_panel.obj",
-})
-
 -- SCAFFOLD
 -- A full block of scaffolding
-register_node_and_entity("scaffold", {
+register_hull_variants("scaffold", {
     description = "Ship scaffold",
     drawtype = "mesh",
     sunlight_propagates = true,
     paramtype = "light",
     paramtype2 = "facedir",
 
-    tiles = {"nv_scaffold.png"},
+    nv_texture = "nv_scaffold",
     use_texture_alpha = "clip",
-    groups = {oddly_breakable_by_hand = 3},
-    mesh = "nv_scaffold.obj",
-})
-
--- SCAFFOLD HULL
--- A full block of ship hull
--- Shouldn't be obtainable
-register_hull_node_and_entity("scaffold_hull", {
-    description = "Scaffold hull",
-    drawtype = "mesh",
-    sunlight_propagates = false,
-    paramtype = "light",
-    paramtype2 = "colorfacedir",
-
-    tiles = {"nv_scaffold_hull.png"},
-    use_texture_alpha = "opaque",
     groups = {oddly_breakable_by_hand = 3},
     mesh = "nv_scaffold.obj",
 })
@@ -306,36 +253,14 @@ register_hull_node_and_entity("scaffold_hull", {
 -- FLOOR
 -- A thin scaffold floor occupying the bottom 1/4 of the node
 -- Can be walked on easily
-register_node_and_entity("floor", {
+register_hull_variants("floor", {
     description = "Ship floor",
     drawtype = "mesh",
     sunlight_propagates = true,
     paramtype = "light",
     paramtype2 = "facedir",
 
-    tiles = {"nv_floor.png"},
-    use_texture_alpha = "clip",
-    groups = {oddly_breakable_by_hand = 3},
-    mesh = "nv_floor.obj",
-    collision_box = {
-        type = "fixed",
-        fixed = {
-            {-0.5, -0.5, -0.5, 0.5, -0.25, 0.5}
-        },
-    },
-})
-
--- FLOOR
--- A floor covered in colored hull plates
-register_hull_node_and_entity("floor_hull", {
-    description = "Ship floor",
-    drawtype = "mesh",
-    sunlight_propagates = true,
-    paramtype = "light",
-    paramtype2 = "facedir",
-
-    tiles = {"nv_floor_hull.png"},
-    overlay_tiles = {"nv_floor_hull_overlay.png"},
+    nv_texture = "nv_floor",
     use_texture_alpha = "clip",
     groups = {oddly_breakable_by_hand = 3},
     mesh = "nv_floor.obj",

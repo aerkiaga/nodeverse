@@ -31,6 +31,7 @@ local loot_table = {
     ["nv_ships:hull_plate13 5"] = 10,
     ["nv_ships:hull_plate14 5"] = 10,
     ["nv_ships:hull_plate15 5"] = 10,
+    ["nv_ships:glass_pane 4"] = 4,
 }
 
 local function compute_pinata_loot_table()
