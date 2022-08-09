@@ -483,7 +483,7 @@ local function try_remove_node_from_ship(node, pos, ship)
         if #new_ships >= 2 then
             for n=2, #new_ships do
                 table.insert(nv_ships.players_list[owner_name].ships, new_ships[n])
-                new_ships[n].index = #new_ships
+                new_ships[n].index = #nv_ships.players_list[owner_name].ships
             end
         end
     else

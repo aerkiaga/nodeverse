@@ -208,7 +208,7 @@ local function joinplayer_callback(player, last_login)
             nv_ships.players_list[name].cur_ship = ship
             nv_ships.players_list[name].state = "flying"
             ship.owner = name
-            ship.index = 0
+            ship.index = 1
             ship.state = "entity"
             --player:get_inventory():add_item("main", "nv_ships:scaffold 1")
         end
