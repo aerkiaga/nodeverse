@@ -12,10 +12,11 @@ Here are defined any nodes required by the Nodeverse game at the top level.
 
 local loot_table = {
     ["nv_ships:seat"] = 10,
-    ["nv_ships:dark_seat"] = 50,
+    ["nv_ships:dark_seat"] = 30,
     ["nv_ships:control_panel"] = 10,
-    ["nv_ships:floor 3"] = 3,
     ["nv_ships:scaffold 2"] = 1,
+    ["nv_ships:floor 3"] = 3,
+    ["nv_ships:turbo_engine"] = 0.1,
     ["nv_ships:landing_leg"] = 5,
     ["nv_ships:hull_plate1 5"] = 10,
     ["nv_ships:hull_plate2 5"] = 10,

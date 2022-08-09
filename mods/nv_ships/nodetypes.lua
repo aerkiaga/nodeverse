@@ -177,13 +177,14 @@ end
 
 --[[
  # NODE TYPES
-Allocated: 84
+Allocated: 100
 16      seat
 16      dark_seat
 16      control_panel
-16      floor
 16      scaffold
 16      scaffold_edge
+16      floor
+16      turbo_engine
 1       landing_leg
 1       glass_face
 1       glass_edge
@@ -351,6 +352,27 @@ register_hull_variants("floor", {
         type = "fixed",
         fixed = {
             {-0.5, -0.5, -0.5, 0.5, -0.25, 0.5}
+        },
+    },
+})
+
+-- TURBO ENGINE
+-- A turbojet engine to push an airship forward
+register_hull_variants("turbo_engine", {
+    description = "Turbo engine",
+    drawtype = "mesh",
+    sunlight_propagates = true,
+    paramtype = "light",
+    paramtype2 = "facedir",
+
+    nv_texture = "nv_turbo_engine",
+    use_texture_alpha = "clip",
+    groups = {oddly_breakable_by_hand = 3},
+    mesh = "nv_turbo_engine.obj",
+    collision_box = {
+        type = "fixed",
+        fixed = {
+            {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}
         },
     },
 })
