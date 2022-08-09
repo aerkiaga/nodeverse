@@ -98,14 +98,7 @@ end
 local function try_put_hull_in_ship(index, pos, ship)
     local node = minetest.get_node(pos)
     -- Check node and place it
-    local allowed_nodes = {
-        ["nv_ships:seat"] = true,
-        ["nv_ships:control_panel"] = true,
-        ["nv_ships:scaffold"] = true,
-        ["nv_ships:scaffold_edge"] = true,
-        ["nv_ships:floor"] = true,
-    }
-    if allowed_nodes[node.name] ~= nil then
+    if minetest.get_item_group(node.name, "ship_scaffold") > 0 then
         node.name = node.name .. "_hull" .. index
         nv_ships.set_ship_node(node, pos, ship)
         return node

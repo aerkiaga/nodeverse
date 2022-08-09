@@ -164,10 +164,12 @@ local function register_hull_variants(name, def)
     local def2 = table.copy(def)
     def2.tiles = {def.nv_texture .. ".png"}
     def2.overlay_tiles = nil
+    def2.groups.ship_scaffold = 1
     register_node_and_entity(name, def2)
     local def3 = table.copy(def)
     def3.tiles = {def.nv_texture .. "_hull.png"}
     def3.overlay_tiles = {def.nv_texture .. "_hull_overlay.png"}
+    def2.groups.ship_hull = 1
     register_hull_node_and_entity(name .. "_hull", def3)
 end
 
