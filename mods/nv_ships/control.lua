@@ -202,11 +202,7 @@ local function joinplayer_callback(player, last_login)
             ships = {}
         }
         nv_ships.load_player_state(player)
-        if #nv_ships.players_list[name].ships == 0 and default_ship ~= nil then
-            -- WARNING: if a player destroys all their ships, quits,
-            -- a server restart occurs, and the player joins again,
-            -- a new starting ship will be given, thus duplicating items.
-            -- TODO: fix this
+        if last_login == nil then
             local ship = nv_ships.deserialize_ship(default_ship)
             nv_ships.players_list[name].ships = {ship}
             nv_ships.players_list[name].cur_ship = ship
