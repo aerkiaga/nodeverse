@@ -84,7 +84,8 @@ function nv_ships.get_landing_position(ship, player, pos)
                         local k = z_rel*y_stride*x_stride + y_rel*x_stride + x_rel + 1
                         ship_node = ship.An[k]
                     end
-                    if world_node_def.walkable or world_node_def.drawtype == "liquid" then
+                    if (world_node_def.walkable or world_node_def.drawtype == "liquid")
+                    and (world_node_def.groups.can_replace or 0) == 0 then
                         if ship_node ~= nil and ship_node ~= "" then
                             return 1 -- must move up
                         end

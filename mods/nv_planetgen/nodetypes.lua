@@ -578,7 +578,10 @@ local function register_icy_nodes()
                 footstep = {
                     name = "nv_step_snow", gain = 0.15, pitch = 1
                 }
-            }
+            },
+            groups = {
+                can_replace = 1,
+            },
         } end
     )
 end
