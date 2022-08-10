@@ -24,6 +24,7 @@ local function new_area_callback(minp, maxp, area, A, A1, A2)
     local floor = math.floor
     local minpx, minpy, minpz = minp.x, minp.y, minp.z
     local maxpx, maxpy, maxpz = maxp.x, maxp.y, maxp.z
+    local world_seed = minetest.get_mapgen_setting("seed") % 65536
     -- Iterate over all overlapping block_size * block_size * block_size blocks
     for block_x=minpx - minpx%block_size, maxpx - maxpx%block_size, block_size do
         for block_y=minpy - minpy%block_size, maxpy - maxpy%block_size, block_size do
@@ -40,7 +41,7 @@ local function new_area_callback(minp, maxp, area, A, A1, A2)
                     z=min(maxpz, block_z + block_size - 1)
                 }
                 -- Check overlap with randomly placed planets
-                local seed = block_x + 0x10*block_y + 0x1000*block_z + 464646
+                local seed = block_x + 0x10*block_y + 0x1000*block_z + world_seed
                 local G = PcgRandom(seed, seed)
                 for n=1, planets_per_block do
                     local planet_pos = {
@@ -98,6 +99,26 @@ local function new_area_callback(minp, maxp, area, A, A1, A2)
 end
 
 nv_planetgen.register_on_not_generated(new_area_callback)
+
+-- Remove default starting planet
+nv_planetgen.remove_planet_mapping(1)
+
+-- Add starting planet
+nv_planetgen.add_planet_mapping {
+    minp = {
+        x=-math.floor(planet_size/2),
+        y=-2*planet_size,
+        z=-math.floor(planet_size/2)
+    },
+    maxp = {
+        x=math.floor(planet_size/2),
+        y=2*planet_size,
+        z=math.floor(planet_size/2)
+    },
+    offset = {x=0, y=0, z=0},
+    seed = minetest.get_mapgen_setting("seed") % 65536,
+    walled = true
+}
 
 --[[
  # SHIPS SETUP
