@@ -13,6 +13,7 @@ development have been ported to the 0.1.x versions.
  - New, simpler flying mechanics, with vertical liftoff and landing.
  - A small ship to start the game with.
  - Custom spacesuit player skin.
+ - A title theme, "The Nodeverse awaits"; score included.
  - Four distinct sound effects for spaceship maneuvering.
  - Twelve different footstep sound effects.
 
