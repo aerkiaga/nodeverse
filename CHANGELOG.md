@@ -1,5 +1,5 @@
 # Changelog
-## [0.2.0] - unreleased
+## [0.2.0] - 10-08-2022
 This is a major release; it breaks compatibility with existing worlds and adds
 many new features to the game. Most fixes and small changes made during its
 development have been ported to the 0.1.x versions.
@@ -25,7 +25,6 @@ development have been ported to the 0.1.x versions.
  - Mods `nv_rocket` and `autobox`.
  - Default "lunar lander" mini-game.
  - Default rocket mechanics, including item and model.
- - Custom sky texture.
 
 ## [0.1.7] - 31-01-2022
 ### Fixed
