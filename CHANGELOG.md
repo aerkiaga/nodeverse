@@ -1,4 +1,8 @@
 # Changelog
+## [0.2.1] - 16-08-2022
+### Changed
+ - Update title music with an intro and make the harp quieter.
+
 ## [0.2.0] - 10-08-2022
 This is a major release; it breaks compatibility with existing worlds and adds
 many new features to the game. Most fixes and small changes made during its
