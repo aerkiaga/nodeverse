@@ -1,4 +1,8 @@
 # Changelog
+## [0.2.2] - 25-08-2022
+### Changed
+ - Replace game icon with Zaraz7's new version.
+
 ## [0.2.1] - 16-08-2022
 ### Changed
  - Update title music with an intro and make the harp quieter.
