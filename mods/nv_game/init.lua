@@ -3,7 +3,6 @@ NV Game adds playable content to Nodeverse. It's the top-level mod that depends
 on other NV mods. 
 
  # INDEX
-    MAPGEN SETUP
     SHIPS SETUP
 ]]--
 

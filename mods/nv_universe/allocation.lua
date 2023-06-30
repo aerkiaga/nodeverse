@@ -55,10 +55,27 @@ local planets = {}
  # ALLOCATION
 ]]
 
+-- Unloads an entire layer, forcing it to be re-generated later
+function nv_universe.clear_layer(layer)
+    local limit = layer_limits[layer]
+    minetest.delete_area({
+        x = -32768,
+        y = limit.min,
+        z = -32768
+    }, {
+        x = 32767,
+        y = limit.max,
+        z = 32767
+    })
+end
+
 -- Returns layer index or nil.
 function nv_universe.try_allocate_layer()
     for i, v in ipairs(layer_limits) do
         if not layers[i] or layers[i].n_players <= 0 then
+            if layers[i] then
+                nv_universe.clear_layer(i)
+            end
             return i
         end
     end
