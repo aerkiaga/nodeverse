@@ -1,4 +1,8 @@
 # Changelog
+## [0.2.2] - 30-06-2023
+### Fixed
+ - Fix coordinates above 2048 getting corrupted on save.
+
 ## [0.2.2] - 25-08-2022
 ### Changed
  - Replace game icon with Zaraz7's new version.
