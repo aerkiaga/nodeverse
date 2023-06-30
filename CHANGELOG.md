@@ -1,5 +1,9 @@
 # Changelog
-## [0.2.2] - 30-06-2023
+## [0.2.4] - 30-06-2023
+### Fixed
+ - Bump max supported Minetest version to 5.7.
+
+## [0.2.3] - 30-06-2023
 ### Fixed
  - Fix coordinates above 2048 getting corrupted on save.
 
