@@ -80,7 +80,7 @@ end
 local function encode_u18(array, value)
     table.insert(array, base64_encode(value % 64))
     table.insert(array, base64_encode(math.floor(value / 64) % 64))
-    table.insert(array, base64_encode(math.floor(value / 2048)))
+    table.insert(array, base64_encode(math.floor(value / 4096)))
 end
 
 local function encode_s18(array, value)
@@ -89,7 +89,7 @@ local function encode_s18(array, value)
     value = math.abs(value)
     table.insert(array, base64_encode(value % 64))
     table.insert(array, base64_encode(math.floor(value / 64) % 64))
-    table.insert(array, base64_encode(math.floor(value / 2048) + 32 * sign))
+    table.insert(array, base64_encode(math.floor(value / 4096) + 32 * sign))
 end
 
 --[[
