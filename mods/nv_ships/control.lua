@@ -148,6 +148,9 @@ local function master_control_callback()
     local player_list = minetest.get_connected_players()
     for index, player in ipairs(player_list) do
         local name = player:get_player_name()
+        if nv_ships.players_list[name] == nil then
+            return
+        end
         local state = nv_ships.players_list[name].state
         local ship = nv_ships.players_list[name].cur_ship
         if state == "landed" then
