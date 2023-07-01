@@ -26,6 +26,9 @@ nv_universe.settings = {
 -- Allocates slices of the world to different planets
 dofile(minetest.get_modpath("nv_universe") .. "/allocation.lua")
 
+-- Sets sky parameters according to location
+dofile(minetest.get_modpath("nv_universe") .. "/sky.lua")
+
 --[[
  # PLAYER LIST
 ]]
@@ -61,6 +64,7 @@ local function send_into_space(player)
     nv_universe.players[name].in_space = placing.in_space
     nv_universe.players[name].planet = placing.planet
     player:set_pos(placing.pos)
+    nv_universe.set_space_sky(player, placing.planet)
 end
 
 local function send_into_planet(player)
@@ -81,6 +85,7 @@ local function send_into_planet(player)
     nv_universe.players[name].in_space = placing.in_space
     nv_universe.players[name].planet = placing.planet
     player:set_pos(placing.pos)
+    nv_universe.set_planet_sky(player, placing.planet)
 end
 
 --[[
@@ -128,6 +133,11 @@ local function newplayer_callback(player)
     local name = player:get_player_name()
     nv_universe.players[name] = new_player
     player:set_pos(placing.pos)
+    if placing.in_space then
+        nv_universe.set_space_sky(player, placing.planet)
+    else
+        nv_universe.set_planet_sky(player, placing.planet)
+    end
 end
 
 minetest.register_on_newplayer(newplayer_callback)

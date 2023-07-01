@@ -75,35 +75,7 @@ function nv_player.sit_model(player)
     )
 end
 
-function nv_player.update_sky(player)
-    player:set_sky {
-		base_color = 0xFF080008,
-		type = "skybox",
-		textures = {
-			"nv_skybox_top.png",
-			"nv_skybox_bottom.png",
-			"nv_skybox_right.png",
-			"nv_skybox_left.png",
-			"nv_skybox_back.png",
-			"nv_skybox_front.png"
-		},
-		clouds = false,
-	}
-	player:set_sun {
-		visible = false,
-		sunrise_visible = false
-	}
-	player:set_moon {
-		visible = false
-	}
-	player:set_stars {
-		visible = false
-	}
-	player:override_day_night_ratio(1)
-end
-
 local function joinplayer_callback(player, last_login)
-    nv_player.update_sky(player)
 end
 
 minetest.register_on_joinplayer(joinplayer_callback)
