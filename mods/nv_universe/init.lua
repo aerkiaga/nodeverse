@@ -7,6 +7,7 @@ a GUI to move into another planet.
  # INDEX
     SETTINGS
     PLAYER LIST
+    PLAYER OPERATIONS
     CALLBACKS
 ]]--
 
@@ -18,8 +19,8 @@ nv_universe = {}
 
 nv_universe.settings = {
     starting_planet = nil,
-    layer_height = 500,
-    separator_height = 1000
+    layer_height = 256,
+    separator_height = 512
 }
 
 -- Allocates slices of the world to different planets
@@ -39,6 +40,50 @@ to manage their location within the universe. Format is:
 nv_universe.players = {}
 
 --[[
+ # PLAYER OPERATIONS
+]]
+
+local function send_into_space(player)
+    local name = player:get_player_name()
+    if nv_universe.players[name].in_space then
+        return
+    end
+    local seed = nv_universe.players[name].planet
+    nv_universe.remove_from_planet(seed)
+    local layer = nv_universe.try_allocate_space(seed)
+    if not layer then
+        -- return to planet
+        layer = nv_universe.try_allocate_planet(seed)
+        nv_universe.place_in_layer(layer)
+        return
+    end
+    local placing = nv_universe.place_in_layer(layer)
+    nv_universe.players[name].in_space = placing.in_space
+    nv_universe.players[name].planet = placing.planet
+    player:set_pos(placing.pos)
+end
+
+local function send_into_planet(player)
+    local name = player:get_player_name()
+    if not nv_universe.players[name].in_space then
+        return
+    end
+    local seed = nv_universe.players[name].planet
+    nv_universe.remove_from_space(seed)
+    local layer = nv_universe.try_allocate_planet(seed)
+    if not layer then
+        -- return to planet
+        layer = nv_universe.try_allocate_space(seed)
+        nv_universe.place_in_layer(layer)
+        return
+    end
+    local placing = nv_universe.place_in_layer(layer)
+    nv_universe.players[name].in_space = placing.in_space
+    nv_universe.players[name].planet = placing.planet
+    player:set_pos(placing.pos)
+end
+
+--[[
  # CALLBACKS
 ]]
 
@@ -47,7 +92,23 @@ local function globalstep_callback(dtime)
     for i, player in ipairs(players) do
         local name = player:get_player_name()
         local pos = player:get_pos()
-        --
+        local func = nv_universe.players[name].in_space
+            and nv_universe.get_space_limits
+            or nv_universe.get_planet_limits
+        local limits = func(nv_universe.players[name].planet)
+        if limits ~= nil then
+            if pos.y > limits.max then
+                player:set_pos({x=pos.x, y=limits.max, z=pos.z})
+                if not nv_universe.players[name].in_space then
+                    send_into_space(player)
+                end
+            elseif pos.y < limits.min then
+                player:set_pos({x=pos.x, y=limits.min, z=pos.z})
+                if nv_universe.players[name].in_space then
+                    send_into_planet(player)
+                end
+            end
+        end
     end
 end
 
