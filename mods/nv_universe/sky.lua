@@ -24,6 +24,39 @@ function nv_universe.set_space_sky(player, seed)
 	}
 end
 
+local function system_from_planet(planet)
+	while planet % 7 ~= 0 and planet % 11 ~= 0 and planet % 12 ~= 0 do
+		planet = planet - 1
+	end
+	return planet
+end
+
+local function generate_star(seed)
+	local star = {}
+	local G = PcgRandom(seed, seed)
+	star.temperature = 10^gen_linear(G, 3, 4.5)
+	local star_Y
+	if star.temperature < 2000 then
+		star_Y = 0.3 + 0.7*(star.temperature - 1000)/1000
+	else
+		star_Y = 1
+	end
+	local star_sRGB = nv_universe.YT_to_sRGB {
+		Y = star_Y,
+		T = star.temperature
+	}
+	star.color = string.format("#%02x%02x%02x", star_sRGB.R, star_sRGB.G, star_sRGB.B)
+	return star
+end
+
+local function generate_sun(seed)
+	local sun = {}
+	local star = generate_star(system_from_planet(seed))
+	sun.color = star.color
+	sun.texture = string.format("nv_sun.png^[multiply:%s", sun.color)
+	return sun
+end
+
 local function generate_sky_color(seed)
 	local sky_color = {}
 	local G = PcgRandom(seed, seed)
@@ -41,10 +74,10 @@ local function generate_sky_color(seed)
 		base_T = gen_linear(G, 1000, 20000)
 	elseif meta.atmosphere == "hot" or meta.atmosphere == "reducing" then
 		base_Y = gen_linear(G, 0.7, 1.0)
-		base_T = gen_linear(G, 0, 10000)
+		base_T = gen_linear(G, 200, 10000)
 	elseif meta.atmosphere == "scorching" then
-		base_Y = gen_linear(G, 0, 0.1)
-		base_T = gen_linear(G, 0, 5000)
+		base_Y = gen_linear(G, 0.1, 0.2)
+		base_T = gen_linear(G, 200, 5000)
 	end
 	local day_sky_sRGB = nv_universe.YT_to_sRGB {
 		Y = base_Y, T = base_T
@@ -64,8 +97,10 @@ function nv_universe.set_planet_sky(player, seed)
         clouds = false,
         sky_color = generate_sky_color(seed)
     }
+    local sun = generate_sun(seed)
     player:set_sun {
 		visible = true,
+		texture = sun.texture,
 		sunrise_visible = true
 	}
 	player:set_moon {
