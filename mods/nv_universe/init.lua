@@ -4,6 +4,11 @@ parts of the map to different mapgen settings. If a player exits
 one planet, they are transported into outer space, and can use
 a GUI to move into another planet.
 
+Included files:
+    util.lua            Color management functions
+    allocation.lua      Allocates slices of the world to different planets
+    sky.lua       		Sets sky parameters according to location
+
  # INDEX
     SETTINGS
     PLAYER LIST
@@ -23,10 +28,8 @@ nv_universe.settings = {
     separator_height = 512
 }
 
--- Allocates slices of the world to different planets
+dofile(minetest.get_modpath("nv_universe") .. "/util.lua")
 dofile(minetest.get_modpath("nv_universe") .. "/allocation.lua")
-
--- Sets sky parameters according to location
 dofile(minetest.get_modpath("nv_universe") .. "/sky.lua")
 
 --[[

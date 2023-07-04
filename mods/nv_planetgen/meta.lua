@@ -78,3 +78,5 @@ function generate_planet_metadata(seed)
     })
     return planet
 end
+
+nv_planetgen.generate_planet_metadata = generate_planet_metadata
