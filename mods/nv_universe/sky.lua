@@ -88,19 +88,37 @@ local function generate_sky_color(seed)
 	}
 	sky_color.day_sky = string.format("#%02x%02x%02x", day_sky_sRGB.R, day_sky_sRGB.G, day_sky_sRGB.B)
 	sky_color.day_horizon = string.format("#%02x%02x%02x", day_horizon_sRGB.R, day_horizon_sRGB.G, day_horizon_sRGB.B)
+	local sunrise_sRGB = nv_universe.YT_to_sRGB {
+		Y = 0.9,
+		T = 10^(3.8 + 2 * (3.8 - math.log10(base_T)))
+	}
+	sky_color.sunrise = string.format("#%02x%02x%02x", sunrise_sRGB.R, sunrise_sRGB.G, sunrise_sRGB.B)
+	local dawn_sky_sRGB = nv_universe.YT_to_sRGB {
+		Y = base_Y / 2,
+		T = base_T
+	}
+	sky_color.dawn_sky = string.format("#%02x%02x%02x", dawn_sky_sRGB.R, dawn_sky_sRGB.G, dawn_sky_sRGB.B)
+	local dawn_horizon_sRGB = nv_universe.YT_to_sRGB {
+		Y = base_Y / 1.5,
+		T = (10^(3.8 + 2 * ((3.8 - math.log10(base_T)))) + base_T) / 2
+	}
+	sky_color.dawn_horizon = string.format("#%02x%02x%02x", dawn_horizon_sRGB.R, dawn_horizon_sRGB.G, dawn_horizon_sRGB.B)
 	return sky_color
 end
 
 function nv_universe.set_planet_sky(player, seed)
+	local sky_color = generate_sky_color(seed)
     player:set_sky {
         type = "regular",
         clouds = false,
-        sky_color = generate_sky_color(seed)
+        sky_color = sky_color
     }
     local sun = generate_sun(seed)
+    local sunrise = string.format("(sunrisebg.png^[colorize:#ffffffff:alpha)^[multiply:%s", sky_color.sunrise)
     player:set_sun {
 		visible = true,
 		texture = sun.texture,
+		sunrise = sunrise,
 		sunrise_visible = true
 	}
 	player:set_moon {
