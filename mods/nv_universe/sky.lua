@@ -22,16 +22,17 @@ function nv_universe.set_space_sky(player, seed)
 	player:set_stars {
 		visible = false
 	}
+	nv_universe.configure_menu(player, seed)
 end
 
-local function system_from_planet(planet)
-	while planet % 7 ~= 0 and planet % 11 ~= 0 and planet % 12 ~= 0 do
+function system_from_planet(planet)
+	while planet % 5 ~= 0 and planet % 11 ~= 0 and planet % 12 ~= 0 do
 		planet = planet - 1
 	end
 	return planet
 end
 
-local function generate_star(seed)
+function generate_star(seed)
 	local star = {}
 	local G = PcgRandom(seed, seed)
 	star.temperature = 10^gen_linear(G, 3, 4.5)

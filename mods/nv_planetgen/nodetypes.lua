@@ -723,6 +723,7 @@ end
 function nv_planetgen.choose_planet_nodes_and_colors(planet)
     local G = PcgRandom(planet.seed, planet.seed)
     local stone_color = G:next(1, 16)
+    planet.raw_colors.stone = fnColorStone(stone_color)
     planet.node_types.dust = minetest.get_content_id("nv_planetgen:dust" .. stone_color)
     planet.node_types.sediment = minetest.get_content_id("nv_planetgen:sediment" .. stone_color)
     planet.node_types.gravel = minetest.get_content_id("nv_planetgen:gravel" .. stone_color)
@@ -748,6 +749,7 @@ function nv_planetgen.choose_planet_nodes_and_colors(planet)
     planet.node_types.grass_soil = minetest.get_content_id("nv_planetgen:grass_soil" .. grass_soil_color)
     planet.color_dictionary[planet.node_types.grass_soil] = grass_colorP
     local grass_colorT = 8*(grass_colorN-1) + grass_colorP + 1
+    planet.raw_colors.grass = fnColorGrass(grass_colorT)
     planet.node_types.grass = minetest.get_content_id("nv_planetgen:grass" .. grass_colorT)
     planet.node_types.dry_grass = minetest.get_content_id("nv_planetgen:dry_grass" .. grass_colorT)
     planet.node_types.tall_grass = minetest.get_content_id("nv_planetgen:tall_grass" .. grass_colorT)

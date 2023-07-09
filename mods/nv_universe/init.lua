@@ -8,6 +8,7 @@ Included files:
     util.lua            Color management functions
     allocation.lua      Allocates slices of the world to different planets
     sky.lua       		Sets sky parameters according to location
+    menu.lua			Implements a GUI to travel across the universe
 
  # INDEX
     SETTINGS
@@ -31,6 +32,7 @@ nv_universe.settings = {
 dofile(minetest.get_modpath("nv_universe") .. "/util.lua")
 dofile(minetest.get_modpath("nv_universe") .. "/allocation.lua")
 dofile(minetest.get_modpath("nv_universe") .. "/sky.lua")
+dofile(minetest.get_modpath("nv_universe") .. "/menu.lua")
 
 --[[
  # PLAYER LIST
