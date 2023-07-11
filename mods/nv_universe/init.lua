@@ -93,6 +93,27 @@ local function send_into_planet(player)
     nv_universe.set_planet_sky(player, placing.planet)
 end
 
+function nv_universe.send_to_new_space(player, new_seed)
+    local name = player:get_player_name()
+    if not nv_universe.players[name].in_space then
+        return
+    end
+    local old_seed = nv_universe.players[name].planet
+    nv_universe.remove_from_space(old_seed)
+    local layer = nv_universe.try_allocate_space(new_seed)
+    if not layer then
+        -- return to planet
+        layer = nv_universe.try_allocate_space(old_seed)
+        nv_universe.place_in_layer(layer)
+        return
+    end
+    local placing = nv_universe.place_in_layer(layer)
+    nv_universe.players[name].in_space = placing.in_space
+    nv_universe.players[name].planet = placing.planet
+    player:set_pos(placing.pos)
+    nv_universe.set_space_sky(player, placing.planet)
+end
+
 --[[
  # CALLBACKS
 ]]

@@ -45,11 +45,14 @@ local function create_system(pos, size, system)
 		local planet_color = get_planet_color(planet)
 		local planet_image = string.format([[
 			image[%f,%f;%f,%f;nv_circle.png^[multiply:%s]
+			button[%f,%f;%f,%f;%s;]
 		]],
 			pos.x + i * orbit_size - planet_size / 2, pos.y + size.height / 2 - planet_size / 2,
 			planet_size, planet_size,
-			planet_color
-			--string.format("planet%d", planet)
+			planet_color,
+			pos.x + i * orbit_size - planet_size / 2, pos.y + size.height / 2 - planet_size / 2,
+			planet_size, planet_size,
+			string.format("planet%d", planet)
 		)
 		formspec = formspec .. orbit_image
 		planet_formspec = planet_formspec .. planet_image
@@ -84,3 +87,16 @@ function nv_universe.configure_menu(player, planet)
 	)
 	player:set_inventory_formspec(formspec)
 end
+
+local function player_receive_fields_callback(player, formname, fields)
+	if formname == "" then
+		for field, value in pairs(fields) do
+			if string.sub(field, 1, 6) == "planet" then
+				local new_planet = tonumber(string.sub(field, 7, -1))
+				nv_universe.send_to_new_space(player, new_planet)
+			end
+		end
+	end
+end
+
+minetest.register_on_player_receive_fields(player_receive_fields_callback)
