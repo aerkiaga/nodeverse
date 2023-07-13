@@ -3,8 +3,8 @@ local function get_planets_in_system(system)
 	table.insert(planets, system)
 	system = system + 1
 	while system % 5 ~= 0 and system % 11 ~= 0 and system % 12 ~= 0 do
+	    table.insert(planets, system)
 		system = system + 1
-		table.insert(planets, system)
 	end
 	return planets
 end
