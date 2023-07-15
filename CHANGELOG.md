@@ -1,4 +1,18 @@
 # Changelog
+## [0.3.0] - unreleased
+This is a major release; it breaks compatibility with existing worlds and adds
+many new features to the game. Most fixes and small changes made during its
+development have been ported to the 0.2.x versions.
+
+### Added
+ - Mod `nv_universe`.
+ - Huge planets with their own atmospheric effects.
+ - A GUI to travel across planets.
+ - Support for dynamic shadows.
+
+### Removed
+ - Default "piñata" mini-game.
+
 ## [0.2.4] - 30-06-2023
 ### Fixed
  - Bump max supported Minetest version to 5.7.
