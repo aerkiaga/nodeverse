@@ -107,6 +107,24 @@ local function generate_sky_color(seed)
 	return sky_color
 end
 
+local function generate_sun_scale(seed)
+	local G = PcgRandom(seed, seed)
+	local meta = nv_planetgen.generate_planet_metadata(seed)
+	if meta.atmosphere == "freezing" then
+		return 0.5
+	elseif meta.atmosphere == "vacuum" then
+	    return 0.6
+	elseif meta.atmosphere == "cold" then
+		return 0.7
+	elseif meta.atmosphere == "normal" or meta.atmosphere == "reducing" then
+		return 1
+	elseif meta.atmosphere == "hot" then
+		return 1.4
+	elseif meta.atmosphere == "scorching" then
+		return 1.8
+	end
+end
+
 function nv_universe.set_planet_sky(player, seed)
 	local sky_color = generate_sky_color(seed)
     player:set_sky {
@@ -120,7 +138,8 @@ function nv_universe.set_planet_sky(player, seed)
 		visible = true,
 		texture = sun.texture,
 		sunrise = sunrise,
-		sunrise_visible = true
+		sunrise_visible = true,
+		scale = generate_sun_scale(seed)
 	}
 	player:set_moon {
 		visible = false
