@@ -9,6 +9,51 @@ local function get_planets_in_system(system)
 	return planets
 end
 
+local function get_ordered_planets_in_system(system)
+    local planets = get_planets_in_system(system)
+    local metas = {}
+    for i, seed in ipairs(planets) do
+        table.insert(metas, nv_planetgen.generate_planet_metadata(seed))
+    end
+    local ordered_planets = {}
+    for i, meta in ipairs(metas) do
+        if meta.atmosphere == "freezing" then
+            table.insert(ordered_planets, planets[i])
+        end
+    end
+    for i, meta in ipairs(metas) do
+        if meta.atmosphere == "vacuum" then
+            table.insert(ordered_planets, planets[i])
+        end
+    end
+    for i, meta in ipairs(metas) do
+        if meta.atmosphere == "cold" then
+            table.insert(ordered_planets, planets[i])
+        end
+    end
+    for i, meta in ipairs(metas) do
+        if meta.atmosphere == "normal" then
+            table.insert(ordered_planets, planets[i])
+        end
+    end
+    for i, meta in ipairs(metas) do
+        if meta.atmosphere == "reducing" then
+            table.insert(ordered_planets, planets[i])
+        end
+    end
+    for i, meta in ipairs(metas) do
+        if meta.atmosphere == "hot" then
+            table.insert(ordered_planets, planets[i])
+        end
+    end
+    for i, meta in ipairs(metas) do
+        if meta.atmosphere == "scorching" then
+            table.insert(ordered_planets, planets[i])
+        end
+    end
+    return ordered_planets
+end
+
 local function get_planet_color(planet)
 	local meta = nv_planetgen.generate_planet_metadata(planet)
 	nv_planetgen.choose_planet_nodes_and_colors(meta)
@@ -30,7 +75,7 @@ local function create_system(pos, size, system)
 		size.width, size.height,
 		background_colors[1]
 	)
-	local planets = get_planets_in_system(system)
+	local planets = get_ordered_planets_in_system(system)
 	local orbit_size = size.width / (#planets + 1) / 2
 	local planet_size = 0.2
 	local planet_formspec = ""
