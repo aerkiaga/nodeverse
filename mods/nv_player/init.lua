@@ -83,6 +83,20 @@ local function joinplayer_callback(player, last_login)
         }
     }, 0
     )
+    player:set_lighting {
+        saturation = 1,
+        shadows = {
+            intensity = 0.5
+        },
+        exposure = {
+            luminance_min = -3,
+            luminance_max = -3,
+            exposure_correction = 0,
+            speed_dark_bright = 10,
+            speed_bright_dark = 10,
+            center_weight_power = 1
+        }
+    }
 end
 
 minetest.register_on_joinplayer(joinplayer_callback)
