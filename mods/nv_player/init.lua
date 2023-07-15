@@ -76,6 +76,13 @@ function nv_player.sit_model(player)
 end
 
 local function joinplayer_callback(player, last_login)
+    player:set_minimap_modes({
+        {
+            type = "surface",
+            size = 243
+        }
+    }, 0
+    )
 end
 
 minetest.register_on_joinplayer(joinplayer_callback)
