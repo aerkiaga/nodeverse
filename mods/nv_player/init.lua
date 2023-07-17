@@ -1,5 +1,25 @@
 nv_player = {}
 
+nv_player.players = {}
+
+function nv_player.set_relative_gravity(player, amount)
+    local name = player:get_player_name()
+    local override = player:get_physics_override()
+    if nv_player.players[name] == nil then
+        override.gravity = override.gravity * amount
+    elseif nv_player.players[name] == 0 then
+        override.gravity = amount
+    else
+        override.gravity = override.gravity * amount / nv_player.players[name]
+    end
+    player:set_physics_override(override.gravity)
+    nv_player.players[name] = amount
+end
+
+function nv_player.get_relative_gravity(player)
+    return nv_player.players[player:get_player_name()] or 1
+end
+
 function nv_player.set_fall_damage(player, amount)
     local armor = player:get_armor_groups()
     if amount <= 0 then

@@ -70,6 +70,7 @@ local function send_into_space(player)
     nv_universe.players[name].planet = placing.planet
     player:set_pos(placing.pos)
     nv_universe.set_space_sky(player, placing.planet)
+    nv_player.set_relative_gravity(player, 0)
 end
 
 local function send_into_planet(player)
@@ -91,6 +92,7 @@ local function send_into_planet(player)
     nv_universe.players[name].planet = placing.planet
     player:set_pos(placing.pos)
     nv_universe.set_planet_sky(player, placing.planet)
+    nv_player.set_relative_gravity(player, nv_universe.get_planet_gravity(placing.planet))
 end
 
 function nv_universe.send_to_new_space(player, new_seed)

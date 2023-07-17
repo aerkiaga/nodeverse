@@ -7,7 +7,7 @@ local function make_normal_player(player)
     player:set_physics_override {
         speed = 1,
         jump = 1,
-        gravity = 1,
+        gravity = nv_player.get_relative_gravity(player),
         sneak = true
     }
     nv_player.reset_model(player)
@@ -50,7 +50,7 @@ local function start_vertical_landing(ship, player, landing_pos)
             player:set_physics_override {
                 speed = 0,
                 jump = 0,
-                gravity = 1,
+                gravity = nv_player.get_relative_gravity(player),
                 sneak = false
             }
             nv_player.set_fall_damage(player, 0)
@@ -105,7 +105,7 @@ local function set_flying_state(ship, player)
     player:set_physics_override {
         speed = 5,
         jump = 0,
-        gravity = 0.1,
+        gravity = 0.1 * nv_player.get_relative_gravity(player),
         sneak = false
     }
     nv_player.set_collisionbox(player, nv_ships.get_ship_collisionbox(ship))

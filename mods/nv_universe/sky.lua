@@ -148,3 +148,13 @@ function nv_universe.set_planet_sky(player, seed)
 		visible = true
 	}
 end
+
+function nv_universe.get_planet_gravity(seed)
+    local G = PcgRandom(seed, seed)
+	local meta = nv_planetgen.generate_planet_metadata(seed)
+	if meta.atmosphere == "vacuum" then
+	    return gen_linear(G, 0.2, 0.5)
+	else
+	    return gen_linear(G, 0.7, 1)
+	end
+end
