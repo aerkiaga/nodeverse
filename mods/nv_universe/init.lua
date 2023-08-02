@@ -95,9 +95,17 @@ local function send_into_planet(player)
     nv_player.set_relative_gravity(player, nv_universe.get_planet_gravity(placing.planet))
 end
 
-function nv_universe.send_to_new_space(player, new_seed)
+function nv_universe.check_travel_capability(player, new_seed)
     local name = player:get_player_name()
     if not nv_universe.players[name].in_space then
+        return false
+    end
+    return true
+end
+
+function nv_universe.send_to_new_space(player, new_seed)
+    local name = player:get_player_name()
+    if not nv_universe.check_travel_capability(player, new_seed) then
         return
     end
     local old_seed = nv_universe.players[name].planet
@@ -166,6 +174,8 @@ local function newplayer_callback(player)
     else
         nv_universe.set_planet_sky(player, placing.planet)
     end
+    local formspec = nv_universe.create_planet_formspec(placing.planet)
+	player:set_inventory_formspec(formspec)
 end
 
 minetest.register_on_newplayer(newplayer_callback)

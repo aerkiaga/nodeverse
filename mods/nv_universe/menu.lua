@@ -107,14 +107,14 @@ local function create_system(size, system)
 		local planet_color = get_planet_color(planet)
 		local planet_image = string.format([[
 			image[%f,%f;%f,%f;nv_circle.png^[multiply:%s]
-			button[%f,%f;%f,%f;%s;]
+			button[%f,%f;%f,%f;planet%d;]
 		]],
 			 i * orbit_size - planet_size / 2, size.height / 2 - planet_size / 2,
 			planet_size, planet_size,
 			planet_color,
 			i * orbit_size - planet_size / 2, size.height / 2 - planet_size / 2,
 			planet_size, planet_size,
-			string.format("planet%d", planet)
+			planet
 		)
 		formspec = formspec .. orbit_image
 		planet_formspec = planet_formspec .. planet_image
@@ -266,7 +266,7 @@ local function create_planet_image(planet)
 	)
 end
 
-function nv_universe.create_planet_formspec(planet)
+function nv_universe.create_planet_formspec(planet, can_travel)
     local meta = nv_planetgen.generate_planet_metadata(planet)
     local atmosphere_description
     if meta.atmosphere == "freezing" then
@@ -302,11 +302,24 @@ function nv_universe.create_planet_formspec(planet)
     else
         ocean_description = "Water oceans"
     end
+    local system_button = string.format(
+        "button[1,5;2,1;system%d;View system]",
+        system_from_planet(planet)
+    )
+    local travel_button = ""
+    if can_travel then
+        travel_button = string.format(
+            "button[1,6;2,1;travel%d;TRAVEL HERE]",
+            planet
+        )
+    end
     return string.format(
 		[[
 			formspec_version[2]
 			size[14,8]
 			textarea[0,1;4,4;;%s;]
+			%s
+			%s
 			container[4,0]
 			    image[0,0;7,7;%s]
 			container_end[]
@@ -323,6 +336,8 @@ function nv_universe.create_planet_formspec(planet)
 		    life_description,
 		    ocean_description
 		),
+		system_button,
+		travel_button,
 		create_planet_image(planet)
 	)
 end
@@ -330,11 +345,20 @@ end
 local function player_receive_fields_callback(player, formname, fields)
 	if formname == "" then
 		for field, value in pairs(fields) do
+			if string.sub(field, 1, 6) == "system" then
+				local selected_system = tonumber(string.sub(field, 7, -1))
+				local formspec = nv_universe.create_system_formspec(selected_system)
+				minetest.show_formspec(player:get_player_name(), "", formspec)
+			end
 			if string.sub(field, 1, 6) == "planet" then
 				local selected_planet = tonumber(string.sub(field, 7, -1))
-				local formspec = nv_universe.create_planet_formspec(selected_planet)
+				local can_travel = nv_universe.check_travel_capability(player, selected_planet)
+				local formspec = nv_universe.create_planet_formspec(selected_planet, can_travel)
 				minetest.show_formspec(player:get_player_name(), "", formspec)
-				--nv_universe.send_to_new_space(player, new_planet)
+			end
+			if string.sub(field, 1, 6) == "travel" then
+			    local selected_planet = tonumber(string.sub(field, 7, -1))
+			    nv_universe.send_to_new_space(player, selected_planet)
 			end
 		end
 	end

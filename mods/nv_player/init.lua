@@ -12,7 +12,7 @@ function nv_player.set_relative_gravity(player, amount)
     else
         override.gravity = override.gravity * amount / nv_player.players[name]
     end
-    player:set_physics_override(override.gravity)
+    player:set_physics_override(override)
     nv_player.players[name] = amount
 end
 

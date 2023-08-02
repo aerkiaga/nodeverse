@@ -149,6 +149,8 @@ function nv_universe.set_planet_sky(player, seed)
 	player:set_stars {
 		visible = true
 	}
+	local formspec = nv_universe.create_planet_formspec(seed)
+	player:set_inventory_formspec(formspec)
 end
 
 function nv_universe.get_planet_gravity(seed)
