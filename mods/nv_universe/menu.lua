@@ -61,8 +61,14 @@ local function get_planet_color(planet, use_snow)
 	local land
 	if meta.life ~= "dead" then
 		land = meta.raw_colors.grass
+		land.r = (land.r) / 2
+		land.g = (land.g) / 2
+		land.b = (land.b) / 2
 	else
 		land = meta.raw_colors.stone
+		land.r = (land.r + 128 * 3) / 4
+		land.g = (land.g + 128 * 3) / 4
+		land.b = (land.b + 128 * 3) / 4
 	end
 	if use_snow then
         if meta.atmosphere == "freezing" then
@@ -197,25 +203,105 @@ local function create_planet_image(planet)
     local meta = nv_planetgen.generate_planet_metadata(planet)
     local G = PcgRandom(planet, planet)
     nv_planetgen.choose_planet_nodes_and_colors(meta)
+    local planet_color
+    if meta.atmosphere == "freezing" then
+        planet_color = get_planet_color(planet, true)
+    else
+        planet_color = get_planet_color(planet, false)
+    end
+    local craters
+    if meta.atmosphere == "vacuum" then
+        craters = string.format(
+            "(%s^[resize:128x128)^[mask:nv_circle.png",
+            random_overlay(G, "nv_craters.png")
+        )
+    else
+        craters = "[combine:128x128"
+    end
+    local snows
+    if meta.atmosphere == "cold" then
+        snows = string.format(
+            "(%s^[resize:128x128)^[mask:nv_circle.png",
+            random_overlay(G, "nv_snows.png")
+        )
+    else
+        snows = "[combine:128x128"
+    end
+    local deserts
+    if meta.atmosphere == "hot" then
+        deserts = string.format(
+            "((%s^[colorize:%s:48)^[resize:128x128)^[mask:nv_circle.png",
+            random_overlay(G, "nv_deserts.png"),
+            nv_universe.sRGB_to_string(meta.raw_colors.stone)
+        )
+    else
+        deserts = "[combine:128x128"
+    end
+    local mountains = string.format(
+        "(%s^[resize:128x128)^[mask:nv_circle.png",
+        random_overlay(G, "nv_mountains.png")
+    )
     local oceans
+    local ocean_color = meta.raw_colors.liquid
+    ocean_color.r = ocean_color.r / 2
+    ocean_color.g = ocean_color.g / 2
+    ocean_color.b = ocean_color.b / 2
     if meta.has_oceans then
         oceans = string.format(
             "((%s^[multiply:%s)^[resize:128x128)^[mask:nv_circle.png",
             random_overlay(G, "nv_oceans.png"),
-            nv_universe.sRGB_to_string(meta.raw_colors.liquid)
+            nv_universe.sRGB_to_string(ocean_color)
         )
     else
         oceans = "[combine:128x128"
     end
 	return string.format(
-	    "(nv_circle.png^[multiply:%s)^(%s)",
-	    get_planet_color(planet),
+	    "(((((nv_circle.png^[multiply:%s)^(%s))^(%s))^(%s))^(%s))^(%s)",
+	    planet_color,
+	    snows,
+	    deserts,
+	    mountains,
+	    craters,
 	    oceans
 	)
 end
 
 function nv_universe.create_planet_formspec(planet)
     local meta = nv_planetgen.generate_planet_metadata(planet)
+    local atmosphere_description
+    if meta.atmosphere == "freezing" then
+        atmosphere_description = "Extremely cold"
+    elseif meta.atmosphere == "vacuum" then
+        atmosphere_description = "No atmosphere"
+    elseif meta.atmosphere == "cold" then
+        atmosphere_description = "Cold climate"
+    elseif meta.atmosphere == "normal" then
+        atmosphere_description = "Temperate climate"
+    elseif meta.atmosphere == "reducing" then
+        atmosphere_description = "Reducing atmosphere"
+    elseif meta.atmosphere == "hot" then
+        atmosphere_description = "Hot climate"
+    elseif meta.atmosphere == "scorching" then
+        atmosphere_description = "Extremely hot"
+    end
+    local life_description
+    if meta.life == "dead" then
+        life_description = "No life forms"
+    elseif meta.life == "normal" then
+        life_description = "Living organisms"
+    elseif meta.life == "lush" then
+        life_description = "Abundant life"
+    end
+    local ocean_description
+    if not meta.has_oceans then
+        ocean_description = "No oceans"
+    elseif meta.atmosphere == "freezing" then
+        ocean_description = "Liquid hydrocarbons"
+    elseif meta.atmosphere == "scorching" then
+        ocean_description = "Lava oceans"
+    else
+        ocean_description = "Water oceans"
+    end
     return string.format(
 		[[
 			formspec_version[2]
@@ -228,8 +314,14 @@ function nv_universe.create_planet_formspec(planet)
 		string.format(
 		    [[
 		        Planet %s
+		        %s
+		        %s
+		        %s
 		    ]],
-		    get_planet_name(planet)
+		    get_planet_name(planet),
+		    atmosphere_description,
+		    life_description,
+		    ocean_description
 		),
 		create_planet_image(planet)
 	)
