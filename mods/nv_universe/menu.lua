@@ -417,6 +417,7 @@ function nv_universe.create_planet_formspec(planet, can_travel)
             planet
         )
     end
+    local planet_size = 7 * nv_universe.get_planet_gravity(planet)^(1/3)
     return string.format(
 		[[
 			formspec_version[2]
@@ -424,9 +425,7 @@ function nv_universe.create_planet_formspec(planet, can_travel)
 			textarea[0,1;4,4;;%s;]
 			%s
 			%s
-			container[4,0.5]
-			    image[0,0;7,7;%s]
-			container_end[]
+			image[%d,%d;%d,%d;%s]
 		]],
 		string.format(
 		    [[
@@ -442,6 +441,8 @@ function nv_universe.create_planet_formspec(planet, can_travel)
 		),
 		system_button,
 		travel_button,
+		8 - planet_size / 2, 4.5 - planet_size / 2,
+		planet_size, planet_size,
 		create_planet_image(planet)
 	)
 end
