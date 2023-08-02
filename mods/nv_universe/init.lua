@@ -100,6 +100,9 @@ function nv_universe.check_travel_capability(player, new_seed)
     if not nv_universe.players[name].in_space then
         return false
     end
+    if nv_universe.players[name].planet == new_seed then
+        return false
+    end
     return true
 end
 

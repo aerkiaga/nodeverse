@@ -10,6 +10,7 @@ local function make_normal_player(player)
         gravity = nv_player.get_relative_gravity(player),
         sneak = true
     }
+    player:set_eye_offset()
     nv_player.reset_model(player)
 end
 
@@ -108,6 +109,7 @@ local function set_flying_state(ship, player)
         gravity = 0.1 * nv_player.get_relative_gravity(player),
         sneak = false
     }
+    -- TODO: set_eye_offset
     nv_player.set_collisionbox(player, nv_ships.get_ship_collisionbox(ship))
     nv_ships.players_list[name].state = "flying"
     nv_ships.players_list[name].sound = minetest.sound_play({
