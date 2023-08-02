@@ -118,24 +118,26 @@ local function create_stars(size, system, selected_system)
                 local abs_x = (size.width / 3) * (x + 1.5 + gen_linear(G, -0.4, 0.4))
                 local abs_y = (size.height / 3) * (y + 1.5 + gen_linear(G, -0.4, 0.4))
                 local star_image = string.format([[
-		            image[%f,%f;%f,%f;nv_circle.png^[multiply:%s]
-		            button[%f,%f;%f,%f;_stars%d;]
+		            image[%f,%f;0.2,0.2;nv_circle.png^[multiply:%s]
+		            button[%f,%f;0.4,0.4;_stars%d;]
 	            ]],
 		            abs_x - 0.1, abs_y - 0.1,
-		            0.2, 0.2,
 		            generate_star(sys).color,
-		            abs_x - 0.1, abs_y - 0.1,
-		            0.2, 0.2,
+		            abs_x - 0.2, abs_y - 0.2,
 		            sys
 	            )
 	            if sys == selected_system then
 	                star_image = string.format([[
-		                image[%f,%f;%f,%f;nv_circle.png^[multiply:#55ff88]
+		                image[%f,%f;0.4,0.4;nv_circle.png^[multiply:#55ff88]
 	                ]],
-		                abs_x - 0.2, abs_y - 0.2,
-		                0.4, 0.4
+		                abs_x - 0.2, abs_y - 0.2
 	                ) .. star_image
 	            end
+	            star_image = string.format([[
+	                image[%f,%f;0.6,0.6;nv_circle.png^[multiply:#444444]
+                ]],
+	                abs_x - 0.3, abs_y - 0.3
+                ) .. star_image
 	            formspec = formspec .. star_image
             end
         end
@@ -146,6 +148,10 @@ end
 function nv_universe.create_stars_formspec(system, selected_system, can_travel)
     local planet_count = #get_planets_in_system(selected_system)
     local travel_button = ""
+    local system_button = string.format(
+        "button[1,5;2,1;system%d;Back to system]",
+        system
+    )
     if can_travel then
         travel_button = string.format(
             "button[1,6;2,1;travel%d;TRAVEL HERE]",
@@ -157,6 +163,7 @@ function nv_universe.create_stars_formspec(system, selected_system, can_travel)
 			formspec_version[2]
 			size[14,8]
 			textarea[0,1;4,4;;%s;]
+			%s
 			%s
 			container[4,0.5]
 			    %s
@@ -177,6 +184,7 @@ function nv_universe.create_stars_formspec(system, selected_system, can_travel)
 		    get_star_class(selected_system),
 		    planet_count, (planet_count > 1) and "s" or ""
 		),
+		system_button,
 		travel_button,
 		create_stars({
 			width = 7, height = 7
@@ -213,8 +221,8 @@ local function create_system(size, system, current_planet)
 			 i * orbit_size - planet_size / 2, size.height / 2 - planet_size / 2,
 			planet_size, planet_size,
 			planet_color,
-			i * orbit_size - planet_size / 2, size.height / 2 - planet_size / 2,
-			planet_size, planet_size,
+			i * orbit_size - planet_size, size.height / 2 - planet_size,
+			planet_size * 2, planet_size * 2,
 			planet
 		)
 		if planet == current_planet then
