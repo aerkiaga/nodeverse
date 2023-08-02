@@ -8,7 +8,7 @@ development have been ported to the 0.2.x versions.
  - Mod `nv_universe`.
  - Huge planets with their own atmospheric effects.
  - Outer space around each planet.
- - A GUI to travel between planets.
+ - A GUI to travel between planets and planetary systems.
  - Planet thumbnails and descriptions.
  - Support for dynamic shadows.
 
