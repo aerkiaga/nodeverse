@@ -199,7 +199,7 @@ local function random_overlay(G, file)
     )
 end
 
-local function create_planet_image(planet)
+function create_planet_image(planet)
     local meta = nv_planetgen.generate_planet_metadata(planet)
     local G = PcgRandom(planet, planet)
     nv_planetgen.choose_planet_nodes_and_colors(meta)

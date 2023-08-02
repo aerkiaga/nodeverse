@@ -11,7 +11,10 @@ function nv_universe.set_space_sky(player, seed)
 		type = "skybox",
 		textures = {
 			"nv_skybox_top.png",
-			"nv_skybox_bottom.png",
+			string.format(
+			    "nv_skybox_bottom.png^((%s)^[resize:512x512)",
+			    create_planet_image(seed)
+			),
 			"nv_skybox_right.png",
 			"nv_skybox_left.png",
 			"nv_skybox_back.png",
