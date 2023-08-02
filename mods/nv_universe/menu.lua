@@ -54,7 +54,8 @@ local function get_ordered_planets_in_system(system)
     return ordered_planets
 end
 
-local function get_planet_color(planet)
+local function get_planet_color(planet, use_snow)
+    use_snow = (use_snow == nil) and true or use_snow
 	local meta = nv_planetgen.generate_planet_metadata(planet)
 	nv_planetgen.choose_planet_nodes_and_colors(meta)
 	local land
@@ -63,6 +64,17 @@ local function get_planet_color(planet)
 	else
 		land = meta.raw_colors.stone
 	end
+	if use_snow then
+        if meta.atmosphere == "freezing" then
+            land.r = (land.r + 255 * 3) / 4
+            land.g = (land.g + 255 * 3) / 4
+            land.b = (land.b + 255 * 3) / 4
+        elseif meta.atmosphere == "cold" then
+            land.r = (land.r + 255) / 2
+            land.g = (land.g + 255) / 2
+            land.b = (land.b + 255) / 2
+        end
+    end
 	return nv_universe.sRGB_to_string(land)
 end
 
@@ -133,6 +145,7 @@ local function get_star_class(system)
 end
 
 function nv_universe.create_system_formspec(system)
+    local planet_count = #get_planets_in_system(system)
     return string.format(
 		[[
 			formspec_version[2]
@@ -146,7 +159,7 @@ function nv_universe.create_system_formspec(system)
 		    [[
 		        Planetary system %X
 		        Class %s star
-		        %d planets
+		        %d planet%s
 		        ___________________
 		        
 		        Select any planet
@@ -155,7 +168,7 @@ function nv_universe.create_system_formspec(system)
 		    ]],
 		    system,
 		    get_star_class(system),
-		    #get_planets_in_system(system)
+		    planet_count, (planet_count > 1) and "s" or ""
 		),
 		create_system({
 			width = 7, height = 7
@@ -172,11 +185,32 @@ local function get_planet_name(planet)
     return string.format("%X %s", system, suffix)
 end
 
+local function random_overlay(G, file)
+    return string.format(
+        "[combine:32x32:%d,%d=%s",
+        G:next(-31, 0), G:next(-31, 0),
+        file
+    )
+end
+
 local function create_planet_image(planet)
     local meta = nv_planetgen.generate_planet_metadata(planet)
+    local G = PcgRandom(planet, planet)
     nv_planetgen.choose_planet_nodes_and_colors(meta)
-	return string.format("nv_circle.png^[multiply:%s",
-	    nv_universe.sRGB_to_string(meta.raw_colors.stone)
+    local oceans
+    if meta.has_oceans then
+        oceans = string.format(
+            "((%s^[multiply:%s)^[resize:128x128)^[mask:nv_circle.png",
+            random_overlay(G, "nv_oceans.png"),
+            nv_universe.sRGB_to_string(meta.raw_colors.liquid)
+        )
+    else
+        oceans = "[combine:128x128"
+    end
+	return string.format(
+	    "(nv_circle.png^[multiply:%s)^(%s)",
+	    get_planet_color(planet),
+	    oceans
 	)
 end
 
