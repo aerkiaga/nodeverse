@@ -1,3 +1,10 @@
+function system_from_planet(planet)
+	while planet % 5 ~= 0 and planet % 11 ~= 0 and planet % 12 ~= 0 do
+		planet = planet - 1
+	end
+	return planet
+end
+
 function nv_universe.set_space_sky(player, seed)
     player:set_sky {
 		base_color = 0xFF080008,
@@ -22,14 +29,9 @@ function nv_universe.set_space_sky(player, seed)
 	player:set_stars {
 		visible = false
 	}
-	nv_universe.configure_menu(player, seed)
-end
-
-function system_from_planet(planet)
-	while planet % 5 ~= 0 and planet % 11 ~= 0 and planet % 12 ~= 0 do
-		planet = planet - 1
-	end
-	return planet
+	local system = system_from_planet(seed)
+	local formspec = nv_universe.create_system_formspec(system)
+	player:set_inventory_formspec(formspec)
 end
 
 function generate_star(seed)
@@ -46,7 +48,7 @@ function generate_star(seed)
 		Y = star_Y,
 		T = star.temperature
 	}
-	star.color = string.format("#%02x%02x%02x", star_sRGB.R, star_sRGB.G, star_sRGB.B)
+	star.color = nv_universe.sRGB_to_string(star_sRGB)
 	return star
 end
 
@@ -87,23 +89,23 @@ local function generate_sky_color(seed)
 		Y = base_Y * gen_linear(G, 0.5, 0.9),
 		T = base_T * gen_linear(G, 0.5, 1.5)
 	}
-	sky_color.day_sky = string.format("#%02x%02x%02x", day_sky_sRGB.R, day_sky_sRGB.G, day_sky_sRGB.B)
-	sky_color.day_horizon = string.format("#%02x%02x%02x", day_horizon_sRGB.R, day_horizon_sRGB.G, day_horizon_sRGB.B)
+	sky_color.day_sky = nv_universe.sRGB_to_string(day_sky_sRGB)
+	sky_color.day_horizon = nv_universe.sRGB_to_string(day_horizon_sRGB)
 	local sunrise_sRGB = nv_universe.YT_to_sRGB {
 		Y = 0.9,
 		T = 10^(3.8 + 2 * (3.8 - math.log10(base_T)))
 	}
-	sky_color.sunrise = string.format("#%02x%02x%02x", sunrise_sRGB.R, sunrise_sRGB.G, sunrise_sRGB.B)
+	sky_color.sunrise = nv_universe.sRGB_to_string(sunrise_sRGB)
 	local dawn_sky_sRGB = nv_universe.YT_to_sRGB {
 		Y = base_Y / 2,
 		T = base_T
 	}
-	sky_color.dawn_sky = string.format("#%02x%02x%02x", dawn_sky_sRGB.R, dawn_sky_sRGB.G, dawn_sky_sRGB.B)
+	sky_color.dawn_sky = nv_universe.sRGB_to_string(dawn_sky_sRGB)
 	local dawn_horizon_sRGB = nv_universe.YT_to_sRGB {
 		Y = base_Y / 1.5,
 		T = (10^(3.8 + 2 * ((3.8 - math.log10(base_T)))) + base_T) / 2
 	}
-	sky_color.dawn_horizon = string.format("#%02x%02x%02x", dawn_horizon_sRGB.R, dawn_horizon_sRGB.G, dawn_horizon_sRGB.B)
+	sky_color.dawn_horizon = nv_universe.sRGB_to_string(dawn_horizon_sRGB)
 	return sky_color
 end
 

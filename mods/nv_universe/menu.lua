@@ -63,15 +63,14 @@ local function get_planet_color(planet)
 	else
 		land = meta.raw_colors.stone
 	end
-	return string.format("#%02x%02x%02x", land.r, land.g, land.b)
+	return nv_universe.sRGB_to_string(land)
 end
 
-local function create_system(pos, size, system)
+local function create_system(size, system)
 	local background_colors = {"#222222", "#444444"}
 	local formspec = string.format([[
-		image[%f,%f;%f,%f;nv_circle.png^[multiply:%s]
+		image[0,0;%f,%f;nv_circle.png^[multiply:%s]
 	]],
-		pos.x, pos.y,
 		size.width, size.height,
 		background_colors[1]
 	)
@@ -83,7 +82,7 @@ local function create_system(pos, size, system)
 		local orbit_image = string.format([[
 			image[%f,%f;%f,%f;nv_circle.png^[multiply:%s]
 		]],
-			pos.x + i * orbit_size, pos.y + i * orbit_size,
+			i * orbit_size, i * orbit_size,
 			size.width - 2 * i * orbit_size, size.height - 2 * i * orbit_size,
 			background_colors[1 + i % 2]
 		)
@@ -92,10 +91,10 @@ local function create_system(pos, size, system)
 			image[%f,%f;%f,%f;nv_circle.png^[multiply:%s]
 			button[%f,%f;%f,%f;%s;]
 		]],
-			pos.x + i * orbit_size - planet_size / 2, pos.y + size.height / 2 - planet_size / 2,
+			 i * orbit_size - planet_size / 2, size.height / 2 - planet_size / 2,
 			planet_size, planet_size,
 			planet_color,
-			pos.x + i * orbit_size - planet_size / 2, pos.y + size.height / 2 - planet_size / 2,
+			i * orbit_size - planet_size / 2, size.height / 2 - planet_size / 2,
 			planet_size, planet_size,
 			string.format("planet%d", planet)
 		)
@@ -106,7 +105,7 @@ local function create_system(pos, size, system)
 	local star_image = string.format([[
 		image[%f,%f;%f,%f;nv_circle.png^[multiply:%s]
 	]],
-		pos.x + size.width / 2 - planet_size, pos.y + size.height / 2 - planet_size,
+		size.width / 2 - planet_size, size.height / 2 - planet_size,
 		planet_size * 2, planet_size * 2,
 		generate_star(system).color
 	)
@@ -114,31 +113,102 @@ local function create_system(pos, size, system)
 	return formspec
 end
 
-function nv_universe.configure_menu(player, planet)
-	local system = system_from_planet(planet)
-	local star = generate_star(system)
-	local formspec = string.format(
+local function get_star_class(system)
+    local star = generate_star(system)
+    if star.temperature < 3700 then
+        return "M"
+    elseif star.temperature < 5200 then
+        return "K"
+    elseif star.temperature < 6000 then
+        return "G"
+    elseif star.temperature < 7500 then
+        return "F"
+    elseif star.temperature < 10000 then
+        return "A"
+    elseif star.temperature < 30000 then
+        return "B"
+    else
+        return "O"
+    end
+end
+
+function nv_universe.create_system_formspec(system)
+    return string.format(
 		[[
 			formspec_version[2]
-			size[10,8]
-			%s
+			size[14,8]
+			textarea[0,1;4,4;;%s;]
+			container[4,0]
+			    %s
+			container_end[]
 		]],
+		string.format(
+		    [[
+		        Planetary system %X
+		        Class %s star
+		        %d planets
+		        ___________________
+		        
+		        Select any planet
+		        to see information
+		        about it.
+		    ]],
+		    system,
+		    get_star_class(system),
+		    #get_planets_in_system(system)
+		),
 		create_system({
-			x = 0.5, y = 0.5
-		}, {
 			width = 7, height = 7
 		}, system
 		)
 	)
-	player:set_inventory_formspec(formspec)
+end
+
+local suffixes = {"b", "c", "d", "e", "f"}
+local function get_planet_name(planet)
+    local system = system_from_planet(planet)
+    local index = planet - system + 1
+    local suffix = suffixes[index]
+    return string.format("%X %s", system, suffix)
+end
+
+local function create_planet_image(planet)
+    local meta = nv_planetgen.generate_planet_metadata(planet)
+    nv_planetgen.choose_planet_nodes_and_colors(meta)
+	return string.format("nv_circle.png^[multiply:%s",
+	    nv_universe.sRGB_to_string(meta.raw_colors.stone)
+	)
+end
+
+function nv_universe.create_planet_formspec(planet)
+    local meta = nv_planetgen.generate_planet_metadata(planet)
+    return string.format(
+		[[
+			formspec_version[2]
+			size[14,8]
+			textarea[0,1;4,4;;%s;]
+			container[4,0]
+			    image[0,0;7,7;%s]
+			container_end[]
+		]],
+		string.format(
+		    [[
+		        Planet %s
+		    ]],
+		    get_planet_name(planet)
+		),
+		create_planet_image(planet)
+	)
 end
 
 local function player_receive_fields_callback(player, formname, fields)
 	if formname == "" then
 		for field, value in pairs(fields) do
 			if string.sub(field, 1, 6) == "planet" then
-				local new_planet = tonumber(string.sub(field, 7, -1))
-				nv_universe.send_to_new_space(player, new_planet)
+				local selected_planet = tonumber(string.sub(field, 7, -1))
+				local formspec = nv_universe.create_planet_formspec(selected_planet)
+				minetest.show_formspec(player:get_player_name(), "", formspec)
+				--nv_universe.send_to_new_space(player, new_planet)
 			end
 		end
 	end

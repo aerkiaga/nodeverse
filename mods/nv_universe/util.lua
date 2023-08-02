@@ -1,3 +1,7 @@
+function nv_universe.sRGB_to_string(sRGB)
+    return string.format("#%02x%02x%02x", sRGB.R or sRGB.r, sRGB.G or sRGB.g, sRGB.B or sRGB.b)
+end
+
 local function sRGB_to_XYZ(sRGB)
 	local srgb = {
 		r = sRGB.R / 255,
