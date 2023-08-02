@@ -30,6 +30,7 @@ the tables below:
     type    description
     u6      one 6-bit unsigned number, as Base64 character
     u12     12-bit, little-endian (low bits first, followed by high bits)
+    u18     18-bit, signed and little-endian (low, mid, high)
     s18     18-bit, signed and little-endian (low, mid, high), sign-magnitude
                 the topmost bit indicates sign (1 for negative), while the lower
                 17 bits are the absolute magnitude of the number
@@ -521,6 +522,13 @@ function nv_ships.store_player_state(player)
 
     written_table["nv_ships:ship_count"] = #(player_data.ships)
 
+    local read_table = meta:to_table()
+    if read_table ~= nil then
+        read_table = read_table.fields
+        for key, value in pairs(read_table) do
+            written_table[key] = value
+        end
+    end
     local status = meta:from_table({
         fields = written_table
     })
