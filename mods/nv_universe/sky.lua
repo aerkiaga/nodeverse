@@ -33,7 +33,7 @@ function nv_universe.set_space_sky(player, seed)
 		visible = false
 	}
 	local system = system_from_planet(seed)
-	local formspec = nv_universe.create_system_formspec(system)
+	local formspec = nv_universe.create_system_formspec(system, seed)
 	player:set_inventory_formspec(formspec)
 end
 

@@ -95,12 +95,26 @@ local function send_into_planet(player)
     nv_player.set_relative_gravity(player, nv_universe.get_planet_gravity(placing.planet))
 end
 
+local allowed_differences = {-257, -256, -255, -1, 0, 1, 255, 256, 257}
 function nv_universe.check_travel_capability(player, new_seed)
     local name = player:get_player_name()
     if not nv_universe.players[name].in_space then
         return false
     end
-    if nv_universe.players[name].planet == new_seed then
+    local current_planet = nv_universe.players[name].planet
+    if current_planet == new_seed then
+        return false
+    end
+    local origin_system = system_from_planet(current_planet)
+    local destination_system = system_from_planet(new_seed)
+    local neighbor = false
+    for _, diff in ipairs(allowed_differences) do
+        if (origin_system + diff) % 65536 == destination_system then
+            neighbor = true
+            break
+        end
+    end
+    if not neighbor then
         return false
     end
     return true

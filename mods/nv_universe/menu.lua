@@ -84,7 +84,108 @@ local function get_planet_color(planet, use_snow)
 	return nv_universe.sRGB_to_string(land)
 end
 
-local function create_system(size, system)
+local function get_star_class(system)
+    local star = generate_star(system)
+    if star.temperature < 3700 then
+        return "M"
+    elseif star.temperature < 5200 then
+        return "K"
+    elseif star.temperature < 6000 then
+        return "G"
+    elseif star.temperature < 7500 then
+        return "F"
+    elseif star.temperature < 10000 then
+        return "A"
+    elseif star.temperature < 30000 then
+        return "B"
+    else
+        return "O"
+    end
+end
+
+local function create_stars(size, system, selected_system)
+	local background_colors = {"#222222", "#444444"}
+	local formspec = string.format([[
+		box[0,0;%f,%f;#222222]
+	]],
+		size.width, size.height
+	)
+	for y=-1,1,1 do
+        for x=-1,1,1 do
+            local sys = (system + x + y * 256) % 65536
+            if sys == system_from_planet(sys) then
+                local G = PcgRandom(sys, sys)
+                local abs_x = (size.width / 3) * (x + 1.5 + gen_linear(G, -0.4, 0.4))
+                local abs_y = (size.height / 3) * (y + 1.5 + gen_linear(G, -0.4, 0.4))
+                local star_image = string.format([[
+		            image[%f,%f;%f,%f;nv_circle.png^[multiply:%s]
+		            button[%f,%f;%f,%f;_stars%d;]
+	            ]],
+		            abs_x - 0.1, abs_y - 0.1,
+		            0.2, 0.2,
+		            generate_star(sys).color,
+		            abs_x - 0.1, abs_y - 0.1,
+		            0.2, 0.2,
+		            sys
+	            )
+	            if sys == selected_system then
+	                star_image = string.format([[
+		                image[%f,%f;%f,%f;nv_circle.png^[multiply:#55ff88]
+	                ]],
+		                abs_x - 0.2, abs_y - 0.2,
+		                0.4, 0.4
+	                ) .. star_image
+	            end
+	            formspec = formspec .. star_image
+            end
+        end
+    end
+	return formspec
+end
+
+function nv_universe.create_stars_formspec(system, selected_system, can_travel)
+    local planet_count = #get_planets_in_system(selected_system)
+    local travel_button = ""
+    if can_travel then
+        travel_button = string.format(
+            "button[1,6;2,1;travel%d;TRAVEL HERE]",
+            selected_system
+        )
+    end
+    return string.format(
+		[[
+			formspec_version[2]
+			size[14,8]
+			textarea[0,1;4,4;;%s;]
+			%s
+			container[4,0.5]
+			    %s
+			container_end[]
+		]],
+		string.format(
+		    [[
+		        Planetary system %X
+		        Class %s star
+		        %d planet%s
+		        ___________________
+		        
+		        Select any system
+		        to see information
+		        about it.
+		    ]],
+		    selected_system,
+		    get_star_class(selected_system),
+		    planet_count, (planet_count > 1) and "s" or ""
+		),
+		travel_button,
+		create_stars({
+			width = 7, height = 7
+		}, system, selected_system
+		)
+	)
+end
+
+local function create_system(size, system, current_planet)
 	local background_colors = {"#222222", "#444444"}
 	local formspec = string.format([[
 		image[0,0;%f,%f;nv_circle.png^[multiply:%s]
@@ -116,6 +217,14 @@ local function create_system(size, system)
 			planet_size, planet_size,
 			planet
 		)
+		if planet == current_planet then
+		    planet_image = string.format([[
+			    image[%f,%f;%f,%f;nv_circle.png^[multiply:#55ff88]
+		    ]],
+			    i * orbit_size - planet_size, size.height / 2 - planet_size,
+			    planet_size * 2, planet_size * 2
+		    ) .. planet_image
+		end
 		formspec = formspec .. orbit_image
 		planet_formspec = planet_formspec .. planet_image
 	end
@@ -131,33 +240,19 @@ local function create_system(size, system)
 	return formspec
 end
 
-local function get_star_class(system)
-    local star = generate_star(system)
-    if star.temperature < 3700 then
-        return "M"
-    elseif star.temperature < 5200 then
-        return "K"
-    elseif star.temperature < 6000 then
-        return "G"
-    elseif star.temperature < 7500 then
-        return "F"
-    elseif star.temperature < 10000 then
-        return "A"
-    elseif star.temperature < 30000 then
-        return "B"
-    else
-        return "O"
-    end
-end
-
-function nv_universe.create_system_formspec(system)
+function nv_universe.create_system_formspec(system, current_planet)
     local planet_count = #get_planets_in_system(system)
+    local stars_button = string.format(
+        "button[1,5;2,1;_stars%d;View neighbors]",
+        system
+    )
     return string.format(
 		[[
 			formspec_version[2]
 			size[14,8]
 			textarea[0,1;4,4;;%s;]
-			container[4,0]
+			%s
+			container[4,0.5]
 			    %s
 			container_end[]
 		]],
@@ -176,9 +271,10 @@ function nv_universe.create_system_formspec(system)
 		    get_star_class(system),
 		    planet_count, (planet_count > 1) and "s" or ""
 		),
+		stars_button,
 		create_system({
 			width = 7, height = 7
-		}, system
+		}, system, current_planet
 		)
 	)
 end
@@ -320,7 +416,7 @@ function nv_universe.create_planet_formspec(planet, can_travel)
 			textarea[0,1;4,4;;%s;]
 			%s
 			%s
-			container[4,0]
+			container[4,0.5]
 			    image[0,0;7,7;%s]
 			container_end[]
 		]],
@@ -345,9 +441,18 @@ end
 local function player_receive_fields_callback(player, formname, fields)
 	if formname == "" then
 		for field, value in pairs(fields) do
-			if string.sub(field, 1, 6) == "system" then
+		    if string.sub(field, 1, 6) == "_stars" then
+				local planet = nv_universe.players[player:get_player_name()].planet
+				local system = system_from_planet(planet)
 				local selected_system = tonumber(string.sub(field, 7, -1))
-				local formspec = nv_universe.create_system_formspec(selected_system)
+				local can_travel = nv_universe.check_travel_capability(player, selected_system) and system ~= selected_system
+				local formspec = nv_universe.create_stars_formspec(system, selected_system, can_travel)
+				minetest.show_formspec(player:get_player_name(), "", formspec)
+			end
+			if string.sub(field, 1, 6) == "system" then
+			    local planet = nv_universe.players[player:get_player_name()].planet
+				local selected_system = tonumber(string.sub(field, 7, -1))
+				local formspec = nv_universe.create_system_formspec(selected_system, planet)
 				minetest.show_formspec(player:get_player_name(), "", formspec)
 			end
 			if string.sub(field, 1, 6) == "planet" then
