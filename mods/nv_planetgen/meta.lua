@@ -9,6 +9,9 @@ function generate_planet_metadata(seed)
     -- COLOR DICTIONARY
     -- Maps node IDs to param2 color indices
     planet.color_dictionary = {}
+    -- RAW COLORS
+    -- Maps node names to raw colors
+    planet.raw_colors = {}
     -- HAS OCEANS
     -- Whether the planet has oceans full of liquid
     planet.has_oceans = gen_true_with_probability(G, 3/5)
@@ -78,3 +81,5 @@ function generate_planet_metadata(seed)
     })
     return planet
 end
+
+nv_planetgen.generate_planet_metadata = generate_planet_metadata

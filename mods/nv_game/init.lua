@@ -3,35 +3,10 @@ NV Game adds playable content to Nodeverse. It's the top-level mod that depends
 on other NV mods. 
 
  # INDEX
-    MAPGEN SETUP
     SHIPS SETUP
 ]]--
 
 dofile(minetest.get_modpath("nv_game") .. "/nodetypes.lua")
-
---[[
- # MAPGEN SETUP
-]]
-
-local block_size = 300
-local planets_per_block = 4
-local planet_size = 60
-
-local function new_area_callback(minp, maxp, area, A, A1, A2)
-    local world_seed = minetest.get_mapgen_setting("seed") % 65536
-    local planet_mapping = {
-        minp = minp,
-        maxp = maxp,
-        offset = {x=0, y=0, z=0},
-        seed = world_seed,
-        walled = false
-    }
-    nv_planetgen.generate_planet_chunk(
-        minp, maxp, area, A, A1, A2, planet_mapping
-    )
-end
-
-nv_planetgen.register_on_not_generated(new_area_callback)
 
 -- Remove default starting planet
 nv_planetgen.remove_planet_mapping(1)

@@ -1,5 +1,25 @@
 nv_player = {}
 
+nv_player.players = {}
+
+function nv_player.set_relative_gravity(player, amount)
+    local name = player:get_player_name()
+    local override = player:get_physics_override()
+    if nv_player.players[name] == nil then
+        override.gravity = override.gravity * amount
+    elseif nv_player.players[name] == 0 then
+        override.gravity = amount
+    else
+        override.gravity = override.gravity * amount / nv_player.players[name]
+    end
+    player:set_physics_override(override)
+    nv_player.players[name] = amount
+end
+
+function nv_player.get_relative_gravity(player)
+    return nv_player.players[player:get_player_name()] or 1
+end
+
 function nv_player.set_fall_damage(player, amount)
     local armor = player:get_armor_groups()
     if amount <= 0 then
@@ -75,35 +95,28 @@ function nv_player.sit_model(player)
     )
 end
 
-function nv_player.update_sky(player)
-    player:set_sky {
-		base_color = 0xFF080008,
-		type = "skybox",
-		textures = {
-			"nv_skybox_top.png",
-			"nv_skybox_bottom.png",
-			"nv_skybox_right.png",
-			"nv_skybox_left.png",
-			"nv_skybox_back.png",
-			"nv_skybox_front.png"
-		},
-		clouds = false,
-	}
-	player:set_sun {
-		visible = false,
-		sunrise_visible = false
-	}
-	player:set_moon {
-		visible = false
-	}
-	player:set_stars {
-		visible = false
-	}
-	player:override_day_night_ratio(1)
-end
-
 local function joinplayer_callback(player, last_login)
-    nv_player.update_sky(player)
+    player:set_minimap_modes({
+        {
+            type = "surface",
+            size = 243
+        }
+    }, 0
+    )
+    player:set_lighting {
+        saturation = 1,
+        shadows = {
+            intensity = 0.5
+        },
+        exposure = {
+            luminance_min = -3,
+            luminance_max = -3,
+            exposure_correction = 0,
+            speed_dark_bright = 10,
+            speed_bright_dark = 10,
+            center_weight_power = 1
+        }
+    }
 end
 
 minetest.register_on_joinplayer(joinplayer_callback)
