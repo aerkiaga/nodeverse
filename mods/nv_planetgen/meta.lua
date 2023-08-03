@@ -30,7 +30,7 @@ function generate_planet_metadata(seed)
     planet.rockiness = 5*math.abs(planet.rockiness-1) + 8*(planet.rockiness-1) + 3
     -- CAVENESS
     -- The tendency to form underground caves
-    local log2_caveness = gen_linear(G, -8, -1.5)
+    local log2_caveness = gen_linear(G, -6, -1)
     planet.caveness = 2^log2_caveness
     -- ATMOSPHERE
     -- vacuum       No liquids, no oxygen, extreme cold; can't sustain life
@@ -79,6 +79,21 @@ function generate_planet_metadata(seed)
         normal = normal_weight,
         dead = dead_weight
     })
+    -- CLIFF HEIGHT
+    -- The height of cliffs whenever they appear
+    planet.cliff_height = (1 - 2^gen_linear(G, 0, 4))
+    
+    -- CLIFF STEEPNESS
+    -- The steepness of cliffs whenever they appear
+    planet.cliff_steepness = 1 - 2^gen_linear(G, 0, 3)
+    
+    -- CLIFF ALTITUDE OFFSET
+    -- Cliffs will be more pronounced near this altitude and multiples
+    planet.cliff_altitude_offset = 2^gen_linear(G, 0, 3)
+    
+    -- CLIFF ALTITUDE PERIOD
+    -- Cliffs will repeat every multiple of this altitude
+    planet.cliff_altitude_period = 2^gen_linear(G, 0, 8)
     return planet
 end
 

@@ -167,6 +167,16 @@ end
  # ENTRY POINT
 ]]--
 
+local function cliff_transfer_function(ground, cliff_elevation, planet)
+    local cliff_multiplier = math.cos((cliff_elevation - planet.cliff_altitude_offset) * 2 * math.pi / planet.cliff_altitude_period)
+    if cliff_multiplier < 0 then
+        cliff_multiplier = 0
+    end
+    local cliff_height = planet.cliff_height * cliff_multiplier
+    local cliff_steepness = planet.cliff_steepness * cliff_multiplier
+    return ground + math.atan(cliff_steepness * (ground - cliff_elevation)) * cliff_height / 2
+end
+
 local elevation_ground_buffer = {}
 
 function nv_planetgen.pass_elevation(minp_abs, maxp_abs, area, offset, A, planet)
@@ -182,6 +192,10 @@ function nv_planetgen.pass_elevation(minp_abs, maxp_abs, area, offset, A, planet
     local Perlin_2d_mountain_elevation = PerlinWrapper({
         offset=0, scale=0.5, spread={x=100, y=100}, seed=planet.seed,
         octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"
+    })
+    local Perlin_2d_cliff_elevation = PerlinWrapper({
+        offset=0, scale=0.5, spread={x=80, y=80}, seed=planet.seed,
+        octaves=2, persist=0.5, lacunarity=3.0, flags="defaults"
     })
     local Perlin_2d_terrain_roughness = PerlinWrapper({
         offset=0, scale=0.5, spread={x=16, y=16}, seed=planet.seed,
@@ -210,6 +224,8 @@ function nv_planetgen.pass_elevation(minp_abs, maxp_abs, area, offset, A, planet
             -- Add terrain roughness for high-frequency details
             ground_comp.terrain_roughness = Perlin_2d_terrain_roughness:get_2d({x=x, y=z})
             ground = ground + ground_comp.terrain_roughness * 2
+            
+            ground = cliff_transfer_function(ground, Perlin_2d_cliff_elevation:get_2d({x=x, y=z}) * 25, planet)
 
             if planet.atmosphere == "vacuum" then
                 ground = ground + elevation_compute_craters(x, z, planet)

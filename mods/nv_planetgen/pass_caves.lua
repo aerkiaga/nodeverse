@@ -16,7 +16,7 @@ local function caves_check_block(sides)
     for index=1, 6 do
         if sides[index] then num_openings = num_openings + 1 end
     end
-    return num_openings > 1
+    return num_openings > 2
 end
 
 local caves_def_threshold_buffer = {}
