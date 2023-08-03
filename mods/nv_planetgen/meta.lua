@@ -93,7 +93,7 @@ function generate_planet_metadata(seed)
     
     -- CLIFF ALTITUDE PERIOD
     -- Cliffs will repeat every multiple of this altitude
-    planet.cliff_altitude_period = 2^gen_linear(G, 0, 8)
+    planet.cliff_altitude_period = 2^gen_linear(G, 0.5, 8)
     return planet
 end
 

@@ -158,12 +158,12 @@ function nv_universe.place_in_layer(layer)
     local limit = layer_limits[layer]
     local pos_y = nil
     if layers[layer].in_space then
-        pos_y = limit.min + 100
+        pos_y = limit.min + 20
     else
-        pos_y = math.floor((limit.min + limit.max) / 2 + 50)
+        pos_y = math.floor((limit.min + limit.max) / 2 + 80)
     end
     if pos_y > limit.max then
-        pos_y = math.floor((limit.min + limit.max) / 2)
+        pos_y = limit.max - 2
     end
     nv_universe.store_global_state()
     return {
