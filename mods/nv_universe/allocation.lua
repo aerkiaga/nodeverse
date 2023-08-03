@@ -237,6 +237,11 @@ end
  # MAPGEN SETUP
 ]]
 
+local post_processing = {}
+function nv_universe.register_post_processing(fn)
+    table.insert(post_processing, fn)
+end
+
 local function new_area_callback(minp, maxp, area, A, A1, A2)
     local min, max, offset, layer = nil
     for i, v in ipairs(layer_limits) do
@@ -266,6 +271,9 @@ local function new_area_callback(minp, maxp, area, A, A1, A2)
     nv_planetgen.generate_planet_chunk(
         minp, maxp, area, A, A1, A2, planet_mapping
     )
+    for _, fn in ipairs(post_processing) do
+        fn(planet_mapping, area, A, A1, A2)
+    end
     table.insert(layers[layer].areas, {minp=minp, maxp=maxp})
 end
 
