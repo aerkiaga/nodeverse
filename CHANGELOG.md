@@ -1,4 +1,8 @@
 # Changelog
+## [0.2.5] - 30-06-2023
+### Fixed
+ - Fix unstable data storage causing ships to malfunction.
+
 ## [0.2.4] - 30-06-2023
 ### Fixed
  - Bump max supported Minetest version to 5.7.
