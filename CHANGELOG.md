@@ -14,6 +14,10 @@ development have been ported to the 0.2.x versions.
  - Ice nodes covering cold planets.
  - Support for dynamic shadows.
 
+### Changed
+ - New main menu music, The Nodeverse Awaits version 2.
+ - Tweaked cave generation.
+
 ## [0.2.5] - 03-08-2023
 ### Fixed
  - Fix unstable data storage causing ships to malfunction.
