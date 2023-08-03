@@ -44,6 +44,7 @@ about their current status. Unallocated layers are nil. Format is:
     areas       list of generated areas, tables with 'minp' and 'maxp'
 ]]
 local layers = {}
+nv_universe.layers = layers
 
 --[[
 Contains a dictionary of layers by mapgen seed, with their mapping
@@ -52,6 +53,7 @@ to layers. Unmapped planets are nil. Format is:
     planet      layer index for planet itself, or nil
 ]]
 local planets = {}
+nv_universe.planets = planets
 
 --[[
  # ALLOCATION
@@ -68,6 +70,7 @@ function nv_universe.free_layer(layer)
     if next(planets[seed]) == nil then
         planets[seed] = nil
     end
+    nv_universe.store_global_state()
 end
 
 -- Returns layer index or nil.
@@ -110,6 +113,7 @@ function nv_universe.try_allocate_planet(seed)
             n_players = 0,
             areas = {}
         }
+        nv_universe.store_global_state()
         return layer
     end
 end
@@ -133,6 +137,7 @@ function nv_universe.try_allocate_space(seed)
             n_players = 0,
             areas = {}
         }
+        nv_universe.store_global_state()
         return layer
     end
 end
@@ -160,6 +165,7 @@ function nv_universe.place_in_layer(layer)
     if pos_y > limit.max then
         pos_y = math.floor((limit.min + limit.max) / 2)
     end
+    nv_universe.store_global_state()
     return {
         in_space = layers[layer].in_space,
         planet = layers[layer].planet,
@@ -172,6 +178,7 @@ Takes layer index, removes one player from it.
 ]]
 function nv_universe.remove_from_layer(layer)
     layers[layer].n_players = layers[layer].n_players - 1
+    --nv_universe.store_global_state()
 end
 
 --[[
