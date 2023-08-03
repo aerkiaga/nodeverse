@@ -6,6 +6,7 @@ Included files:
     nodetypes.lua       Registers custom nodes for a new planet
     pass_elevation.lua  First pass: terrain elevation and layers, oceans
     pass_caves.lua      Second pass: caves
+    pass_structures.lua Third pass: trees and other structures
     pass_final.lua      Final pass: random rotation, lighting, colors...
 
  # INDEX
@@ -21,6 +22,7 @@ dofile(minetest.get_modpath("nv_planetgen") .. "/meta.lua")
 dofile(minetest.get_modpath("nv_planetgen") .. "/nodetypes.lua")
 dofile(minetest.get_modpath("nv_planetgen") .. "/pass_elevation.lua")
 dofile(minetest.get_modpath("nv_planetgen") .. "/pass_caves.lua")
+dofile(minetest.get_modpath("nv_planetgen") .. "/pass_structures.lua")
 dofile(minetest.get_modpath("nv_planetgen") .. "/pass_final.lua")
 
 --[[
@@ -114,6 +116,7 @@ function nv_planetgen.generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping
         end
         nv_planetgen.pass_caves(new_minp, new_maxp, area, offset, A, A2, planet)
     end
+    nv_planetgen.pass_structures(minp, maxp, area, offset, A, A1, A2, mapping, planet)
     nv_planetgen.pass_final(minp, maxp, area, offset, A, A1, A2, mapping, planet, ground_buffer)
 end
 
