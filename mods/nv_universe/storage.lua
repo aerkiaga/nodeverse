@@ -125,9 +125,9 @@ function nv_universe.load_global_state()
             elseif name:sub(1, 1) == "p" then
                 nv_universe.planets[index] = nv_universe.planets[index] or {}
                 if value == "nil" then
-                    nv_universe.layers[index][key] = nil
+                    nv_universe.planets[index][key] = nil
                 else
-                    nv_universe.layers[index][key] = tonumber(value)
+                    nv_universe.planets[index][key] = tonumber(value)
                 end
             end
         end
@@ -169,7 +169,7 @@ function nv_universe.store_global_state()
         return
     end
     local meta = global_meta
-    for index, value in ipairs(nv_universe.layers) do
+    for index, value in pairs(nv_universe.layers) do
         for key, val in pairs(value) do
             if key == "areas" then
                 local array = {}
@@ -187,7 +187,7 @@ function nv_universe.store_global_state()
             end
         end
     end
-    for index, value in ipairs(nv_universe.planets) do
+    for index, value in pairs(nv_universe.planets) do
         for key, val in pairs(value) do
             written_table[string.format("nv_universe:p%d_%s", index, key)] = tostring(val)
         end
