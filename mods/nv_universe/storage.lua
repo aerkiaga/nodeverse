@@ -18,6 +18,9 @@ Player database format:
 
 function nv_universe.load_player_state(player)
     local name = player:get_player_name()
+    if nv_universe.players[name] ~= nil then
+        return
+    end
     local meta = player:get_meta()
     local read_table = meta:to_table()
     if read_table == nil then

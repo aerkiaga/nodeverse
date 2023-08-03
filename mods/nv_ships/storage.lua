@@ -467,8 +467,11 @@ end
 
 function nv_ships.load_player_state(player)
     local name = player:get_player_name()
-    local meta = player:get_meta()
     local player_data = nv_ships.players_list[name]
+    if player_data.state ~= nil then
+        return
+    end
+    local meta = player:get_meta()
     local read_table = meta:to_table()
     if read_table == nil then
         return
