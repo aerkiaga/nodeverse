@@ -10,6 +10,7 @@ development have been ported to the 0.2.x versions.
  - Outer space around each planet.
  - A GUI to travel between planets and planetary systems.
  - Planet thumbnails and descriptions.
+ - Ice nodes covering cold planets.
  - Support for dynamic shadows.
 
 ### Removed
