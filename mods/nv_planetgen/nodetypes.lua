@@ -124,7 +124,7 @@ end
 
 --[[
  # NODE TYPES
-Allocated: 372
+Allocated: 373
 64 .... base
 16          dust
 16          sediment
@@ -139,6 +139,7 @@ Allocated: 372
 1           flowing_lava
 1 ..... icy
 1           snow
+1           ice
 240 ... base floral
 96          grass_soil
 48          grass
@@ -584,6 +585,37 @@ local function register_icy_nodes()
             },
         } end
     )
+
+    -- ICE
+    -- Covers some areas of cold water oceans
+    -- Single variant
+    register_color_variants(
+        "ice", 1, 24,
+        nil,
+        function (n, color) return {
+            drawtype = "normal",
+            visual_scale = 1.0,
+            tiles = {
+                "nv_ice.png^[opacity:200",
+                "nv_ice2.png^[opacity:200",
+                "nv_ice.png^[opacity:200",
+                "nv_ice2.png^[opacity:200",
+                "nv_ice2.png^[opacity:200",
+                "nv_ice.png^[opacity:200"
+            },
+            use_texture_alpha = "blend",
+            paramtype = "light",
+            paramtype2 = "colorfacedir",
+            place_param2 = 8,
+            walkable = true,
+            buildable_to = true,
+            sounds = {
+                footstep = {
+                    name = "nv_step_stone", gain = 0.3, pitch = 1.5
+                }
+            }
+        } end
+    )
 end
 
 local function register_base_floral_nodes()
@@ -618,7 +650,7 @@ local function register_base_floral_nodes()
             place_param2 = 8,
             sounds = {
                 footstep = {
-                    name = "nv_step_grass_soil", gain = 0.1, pitch = 1
+                    name = "nv_step_grass_soil", gain = 0.05, pitch = 1
                 }
             }
         } end
@@ -744,6 +776,7 @@ function nv_planetgen.choose_planet_nodes_and_colors(planet)
         planet.raw_colors.liquid = fnColorWater(water_color)
     end
     planet.node_types.snow = minetest.get_content_id("nv_planetgen:snow")
+    planet.node_types.ice = minetest.get_content_id("nv_planetgen:ice")
     local grass_colorN
     if gen_true_with_probability(G, 1/2) then
         grass_colorN = G:next(1, 4)

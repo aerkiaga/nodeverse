@@ -146,6 +146,8 @@ local function elevation_gen_node_column(
             A[i] = planet.node_types.gravel -- Intermediate layer
         elseif y == math.floor(ground) then
             A[i] = elevation_compute_soil_layer(y, ground_comp, planet)
+        elseif planet.has_oceans and planet.atmosphere == "cold" and ground_comp.terrain_roughness > 0 and y == -1 then
+            A[i] = planet.node_types.ice -- Ice layer
         elseif planet.has_oceans and y < 0 then
             A[i] = planet.node_types.liquid -- Ocean
         elseif y == math.floor(ground) + 1 then
