@@ -27,7 +27,7 @@ click by default) on any of its nodes.
 
 By flying high into the sky, outer space will be reached. From there, it's possible
 to travel to other planets and stars via the inventory GUI. Information about each
-will be shown as well.
+will be shown as well. To return to the planet, descend into it ('sneak').
 
 Some planets may have a few colorful piñatas scattered over their surface.
 Breaking them affords new spaceship parts as random loot. These can be used to
