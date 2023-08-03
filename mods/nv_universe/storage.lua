@@ -44,7 +44,7 @@ function nv_universe.store_player_state(player)
     if read_table ~= nil then
         read_table = read_table.fields
         for key, value in pairs(read_table) do
-            written_table[key] = value
+            written_table[key] = written_table[key] or value
         end
     end
     local status = meta:from_table({

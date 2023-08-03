@@ -517,7 +517,6 @@ function nv_ships.store_player_state(player)
 
     for index, ship in ipairs(player_data.ships) do
         written_table["nv_ships:ship" .. index] = nv_ships.serialize_ship(ship)
-        --print(written_table["nv_ships:ship" .. index]) --debug
     end
 
     written_table["nv_ships:ship_count"] = #(player_data.ships)
@@ -526,7 +525,7 @@ function nv_ships.store_player_state(player)
     if read_table ~= nil then
         read_table = read_table.fields
         for key, value in pairs(read_table) do
-            written_table[key] = value
+            written_table[key] = written_table[key] or value
         end
     end
     local status = meta:from_table({
