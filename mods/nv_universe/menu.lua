@@ -154,7 +154,7 @@ function nv_universe.create_stars_formspec(system, selected_system, can_travel)
     )
     if can_travel then
         travel_button = string.format(
-            "button[1,6;2,1;travel%d;TRAVEL HERE]",
+            "button[1,6;2,1;stravl%d;TRAVEL HERE]",
             selected_system
         )
     end
@@ -473,6 +473,12 @@ local function player_receive_fields_callback(player, formname, fields)
 			if string.sub(field, 1, 6) == "travel" then
 			    local selected_planet = tonumber(string.sub(field, 7, -1))
 			    nv_universe.send_to_new_space(player, selected_planet)
+			end
+			if string.sub(field, 1, 6) == "stravl" then
+			    local selected_system = tonumber(string.sub(field, 7, -1))
+			    nv_universe.send_to_new_space(player, selected_system)
+			    local formspec = nv_universe.create_stars_formspec(selected_system, selected_system, false)
+				minetest.show_formspec(player:get_player_name(), "", formspec)
 			end
 		end
 	end
