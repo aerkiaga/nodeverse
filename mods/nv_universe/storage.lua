@@ -132,10 +132,6 @@ function nv_universe.load_global_state()
             end
         end
     end
-    
-    local status = meta:from_table({
-        fields = written_table
-    })
 end
 
 nv_universe.load_global_state()
