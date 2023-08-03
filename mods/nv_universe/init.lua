@@ -9,6 +9,7 @@ Included files:
     allocation.lua      Allocates slices of the world to different planets
     sky.lua       		Sets sky parameters according to location
     menu.lua			Implements a GUI to travel across the universe
+    storage.lua         Contains code to store and retrieve data from storage.
 
  # INDEX
     SETTINGS
@@ -33,6 +34,7 @@ dofile(minetest.get_modpath("nv_universe") .. "/util.lua")
 dofile(minetest.get_modpath("nv_universe") .. "/allocation.lua")
 dofile(minetest.get_modpath("nv_universe") .. "/sky.lua")
 dofile(minetest.get_modpath("nv_universe") .. "/menu.lua")
+dofile(minetest.get_modpath("nv_universe") .. "/storage.lua")
 
 --[[
  # PLAYER LIST
@@ -71,6 +73,7 @@ local function send_into_space(player)
     player:set_pos(placing.pos)
     nv_universe.set_space_sky(player, placing.planet)
     nv_player.set_relative_gravity(player, 0)
+    nv_universe.store_player_state(player)
 end
 
 local function send_into_planet(player)
@@ -93,6 +96,7 @@ local function send_into_planet(player)
     player:set_pos(placing.pos)
     nv_universe.set_planet_sky(player, placing.planet)
     nv_player.set_relative_gravity(player, nv_universe.get_planet_gravity(placing.planet))
+    nv_universe.store_player_state(player)
 end
 
 local allowed_differences = {-257, -256, -255, -1, 0, 1, 255, 256, 257}
@@ -139,6 +143,7 @@ function nv_universe.send_to_new_space(player, new_seed)
     nv_universe.players[name].planet = placing.planet
     player:set_pos(placing.pos)
     nv_universe.set_space_sky(player, placing.planet)
+    nv_universe.store_player_state(player)
 end
 
 --[[
@@ -186,13 +191,43 @@ local function newplayer_callback(player)
     local name = player:get_player_name()
     nv_universe.players[name] = new_player
     player:set_pos(placing.pos)
+    local formspec
     if placing.in_space then
         nv_universe.set_space_sky(player, placing.planet)
+        formspec = nv_universe.create_system_formspec(placing.planet, placing.planet)
     else
         nv_universe.set_planet_sky(player, placing.planet)
+        formspec = nv_universe.create_planet_formspec(placing.planet)
     end
-    local formspec = nv_universe.create_planet_formspec(placing.planet)
 	player:set_inventory_formspec(formspec)
+	nv_universe.store_player_state(player)
 end
 
 minetest.register_on_newplayer(newplayer_callback)
+
+local function joinplayer_callback(player, last_login)
+    if last_login == nil then
+        return
+    end
+    local name = player:get_player_name()
+    nv_universe.load_player_state(player)
+    local planet = nv_universe.players[name].planet
+    local system = system_from_planet(planet)
+    local formspec
+    if nv_universe.players[name].in_space then
+        nv_universe.set_space_sky(player, planet)
+        formspec = nv_universe.create_system_formspec(system, planet)
+    else
+        nv_universe.set_planet_sky(player, planet)
+        formspec = nv_universe.create_planet_formspec(planet)
+    end
+	player:set_inventory_formspec(formspec)
+end
+
+minetest.register_on_joinplayer(joinplayer_callback)
+
+local function leaveplayer_callback(player, timed_out)
+    nv_universe.store_player_state(player)
+end
+
+minetest.register_on_leaveplayer(leaveplayer_callback)
