@@ -1,5 +1,5 @@
 # Changelog
-## [0.3.0] - unreleased
+## [0.3.0] - 03-08-2023
 This is a major release; it breaks compatibility with existing worlds and adds
 many new features to the game. Most fixes and small changes made during its
 development have been ported to the 0.2.x versions.
