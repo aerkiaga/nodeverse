@@ -29,9 +29,9 @@ By flying high into the sky, outer space will be reached. From there, it's possi
 to travel to other planets and stars via the inventory GUI. Information about each
 will be shown as well. To return to the planet, descend into it ('sneak').
 
-Some planets may have a few colorful piñatas scattered over their surface.
-Breaking them affords new spaceship parts as random loot. These can be used to
-modify one's ship or create a new one.
+Most planets have a colorful piñata standing somewhere over their surface.
+Finding and breaking it affords new spaceship parts as random loot.
+These parts can be used to modify one's ship or create a new one.
 
 ## Mods
 This is a list of the components that make up this game. Each of these mods can
