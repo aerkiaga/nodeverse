@@ -13,16 +13,21 @@ been built on top of the code to make it playable. Since this is an
 any following versions will make breaking changes to the core game.
 
 ## Status
-A huge cloud of floating planets is created. Blocks include stone, gravel, dust,
-sediment, water, hydrocarbon, lava, grass soil, grass, dry grass, tall grass and
-snow. Planets of different colors, rockier, more hilly or flat, richer in
-oceans, arid, frozen, volcanic, and with or without living organisms are
-generated. World generation features oceans, caves, deserts and craters.
+A universe with tens of thousands of planets is created. Blocks include stone, gravel,
+dust, sediment, water, hydrocarbon, lava, grass soil, grass, dry grass, tall grass,
+ice and snow. Planets of different colors, rockier, more hilly or flat, richer in
+oceans, arid, frozen, volcanic, with or without living organisms, and with various
+terrain shapes and cave abundance are generated. World generation features oceans,
+ice sheets, caves, cliffs, deserts and craters.
 
 The player starts out flying a small, boring spaceship near the ground. Pressing
 'sneak' (shift by default) will land it. After landing, it's possible to unboard
 ('move') or lift off ('jump'). A ship can be boarded by pressing 'use' (right-
 click by default) on any of its nodes.
+
+By flying high into the sky, outer space will be reached. From there, it's possible
+to travel to other planets and stars via the inventory GUI. Information about each
+will be shown as well.
 
 Some planets may have a few colorful piñatas scattered over their surface.
 Breaking them affords new spaceship parts as random loot. These can be used to
@@ -47,6 +52,4 @@ Name | Dependencies | Description
  * Add player mechanics
  * Add basic items
  * Add basic crafting
- * Add interplanetary space
- * Add interstellar travel
  * Improve all of the above
