@@ -24,6 +24,7 @@ nv_ships.set_default_ship(default_ship)
  # UNIVERSE SETUP
 ]]
 
+local visited_planets = {}
 local function post_processing_callback(planet_mapping, area, A, A1, A2)
     local G = PcgRandom(planet_mapping.seed, planet_mapping.seed)
     local loot_x = G:next(-100, 100)
@@ -31,6 +32,11 @@ local function post_processing_callback(planet_mapping, area, A, A1, A2)
     if loot_x < planet_mapping.minp.x or loot_x > planet_mapping.maxp.x
     or loot_z < planet_mapping.minp.z or loot_z > planet_mapping.maxp.z then
         return
+    end
+    for _, seed in ipairs(visited_planets) do
+        if seed == planet_mapping.seed then
+            return
+        end
     end
     local meta = generate_planet_metadata(planet_mapping.seed)
     nv_planetgen.choose_planet_nodes_and_colors(meta)
@@ -46,6 +52,7 @@ local function post_processing_callback(planet_mapping, area, A, A1, A2)
             end
             A[i] = minetest.get_content_id("nv_game:pinata")
             A2[i] = A2[i] % 4
+            table.insert(visited_planets, planet_mapping.seed)
         end
     end
 end
