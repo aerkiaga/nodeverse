@@ -1,4 +1,8 @@
 # Changelog
+## [0.3.1] - 03-08-2023
+### Fixed
+ - Re-encoded the main menu music so it can play.
+
 ## [0.3.0] - 03-08-2023
 This is a major release; it breaks compatibility with existing worlds and adds
 many new features to the game. Most fixes and small changes made during its
