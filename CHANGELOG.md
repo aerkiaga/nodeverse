@@ -15,6 +15,10 @@ development have been ported to the 0.2.x versions.
 ### Removed
  - Default "piñata" mini-game.
 
+## [0.2.5] - 03-08-2023
+### Fixed
+ - Fix unstable data storage causing ships to malfunction.
+
 ## [0.2.4] - 30-06-2023
 ### Fixed
  - Bump max supported Minetest version to 5.7.
