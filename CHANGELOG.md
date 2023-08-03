@@ -1,5 +1,5 @@
 # Changelog
-## [0.2.5] - 30-06-2023
+## [0.2.5] - 03-08-2023
 ### Fixed
  - Fix unstable data storage causing ships to malfunction.
 
