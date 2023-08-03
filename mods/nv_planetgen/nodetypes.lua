@@ -587,7 +587,7 @@ local function register_icy_nodes()
     )
 
     -- ICE
-    -- Covers some areas of cold water oceans
+    -- Covers some areas of cold and freezing planets
     -- Single variant
     register_color_variants(
         "ice", 1, 24,
@@ -596,12 +596,12 @@ local function register_icy_nodes()
             drawtype = "normal",
             visual_scale = 1.0,
             tiles = {
-                "nv_ice.png^[opacity:200",
-                "nv_ice2.png^[opacity:200",
-                "nv_ice.png^[opacity:200",
-                "nv_ice2.png^[opacity:200",
-                "nv_ice2.png^[opacity:200",
-                "nv_ice.png^[opacity:200"
+                "nv_ice.png",
+                "nv_ice2.png",
+                "nv_ice.png",
+                "nv_ice2.png",
+                "nv_ice2.png",
+                "nv_ice.png"
             },
             use_texture_alpha = "blend",
             paramtype = "light",
@@ -611,7 +611,7 @@ local function register_icy_nodes()
             buildable_to = true,
             sounds = {
                 footstep = {
-                    name = "nv_step_stone", gain = 0.3, pitch = 1.5
+                    name = "nv_step_stone", gain = 0.3, pitch = 2.5
                 }
             }
         } end

@@ -75,6 +75,7 @@ local function elevation_compute_cover_layer(G, y, ground_comp, planet)
     local dry_grass_weight = 0
     local tall_grass_weight = 0
     local snow_weight = 0
+    local ice_weight = 0
     if planet.has_oceans and (ground_comp.ocean_elevation + ground_comp.mountain_elevation
     + ground_comp.mountain_roughness + (y-1)/20 < -0.4 or (y-1) < -1) then
         -- do nothing
@@ -112,7 +113,8 @@ local function elevation_compute_cover_layer(G, y, ground_comp, planet)
             snow_weight = 100
             air_weight = 0
         elseif planet.atmosphere == "freezing" then
-            snow_weight = 90
+            snow_weight = 40
+            ice_weight = 50
             air_weight = 10
         end
     end
@@ -130,6 +132,9 @@ local function elevation_compute_cover_layer(G, y, ground_comp, planet)
     end
     if planet.node_types.snow ~= nil then
         options[planet.node_types.snow] = snow_weight
+    end
+    if planet.node_types.ice ~= nil then
+        options[planet.node_types.ice] = ice_weight
     end
     return gen_weighted(G, options)
 end
