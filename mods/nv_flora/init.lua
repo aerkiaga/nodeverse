@@ -10,6 +10,7 @@ Included files:
 nv_flora = {}
 
 dofile(minetest.get_modpath("nv_flora") .. "/nodetypes.lua")
+dofile(minetest.get_modpath("nv_flora") .. "/small_plants.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/tall_grasses.lua")
 
 function get_planet_plant_colors(seed)
@@ -32,7 +33,13 @@ function get_planet_plant_colors(seed)
 end
 
 local function get_plant_meta(seed, index)
-    return nv_flora.get_tall_grass_meta(seed, index)
+    local G = PcgRandom(seed, seed)
+    local plant_type = G:next(1,100)
+    if plant_type < 70 then 
+        return nv_flora.get_small_plant_meta(seed, index)
+    else
+        return nv_flora.get_tall_grass_meta(seed, index)
+    end
 end
 
 local function plant_handler(seed)
@@ -40,9 +47,9 @@ local function plant_handler(seed)
     local meta = generate_planet_metadata(seed)
     local plant_count = 0
     if meta.life == "normal" then
-        plant_count = G:next(0, 8)
+        plant_count = G:next(4, 8)
     elseif meta.life == "lush" then
-        plant_count = G:next(4, 16)
+        plant_count = G:next(8, 24)
     end
     local r = {}
     local plant_meta = get_plant_meta(seed, index)

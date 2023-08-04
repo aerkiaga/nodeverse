@@ -53,13 +53,52 @@ end
 
 --[[
  # NODE TYPES
-Allocated: 6
+Allocated: 12
+6  .... small plant
+6           aloe_plant
 6  .... tall grass
 6           cane_grass
 ]]--
 
+local function register_small_plants()
+    nv_flora.node_types.aloe_plant = {}
+    -- ALOE PLANT
+    -- Aloe-like bush
+    -- 48 grass colors as palette and nodetype
+    register_color_variants(
+        "aloe_plant", 6,
+        function (x) 
+            local G = PcgRandom(7857467, x)            
+            return {
+                r = G:next(0, 192), g = G:next(64, 255), b = G:next(0, 192)
+            }
+        end,
+        function (n, color) return {
+            drawtype = "plantlike",
+            visual_scale = 1.0,
+            tiles = {
+                "nv_aloe_plant.png"
+            },
+            palette = string.format("nv_palette_grass%d.png", n),
+            paramtype = "light",
+            paramtype2 = "colordegrotate",
+            place_param2 = 0,
+            sunlight_propagates = true,
+            walkable = false,
+            buildable_to = true,
+            selection_box = {
+                type = "fixed",
+                fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
+            }
+        } end
+    )
+    for n=1,6 do
+        table.insert(nv_flora.node_types.aloe_plant, minetest.get_content_id(string.format("nv_flora:aloe_plant%d", n)))
+    end
+end
+
 local function register_tall_grasses()
-    nv_flora.node_types.cane_grasses = {}
+    nv_flora.node_types.cane_grass = {}
     -- CANE GRASS
     -- Rigid bamboo-like canes
     -- 48 grass colors as palette and nodetype
@@ -91,7 +130,7 @@ local function register_tall_grasses()
         } end
     )
     for n=1,6 do
-        table.insert(nv_flora.node_types.cane_grasses, minetest.get_content_id(string.format("nv_flora:cane_grass%d", n)))
+        table.insert(nv_flora.node_types.cane_grass, minetest.get_content_id(string.format("nv_flora:cane_grass%d", n)))
     end
 end
 
@@ -107,6 +146,7 @@ parameter 'n' of 'def_fn' to choose.
 
 nv_flora.node_types = {}
 function nv_flora.register_all_nodes()
+    register_small_plants()
     register_tall_grasses()
 end
 

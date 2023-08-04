@@ -1,4 +1,4 @@
-local function grass_callback(
+local function small_callback(
     origin, minp, maxp, area, A, A1, A2, mapping, planet, ground_buffer, custom
 )
     local x = minp.x
@@ -13,14 +13,13 @@ local function grass_callback(
     if minp.y + mapping.offset.y > ground + (custom.max_plant_height or 256) or maxp.y + mapping.offset.y < ground - (custom.max_plant_depth or 256) then
         return
     end
-    local grass_height = 3 + math.floor((x % 4) / 2 - 0.5)
     local yrot = (x * 23 + z * 749) % 24
     local color_group = math.floor((custom.color - 1) / 8) + 1
     local color_index = custom.color % 8
     for y=maxp.y,minp.y,-1 do
         if y + mapping.offset.y < ground then
             break
-        elseif y + mapping.offset.y < ground + 1 + grass_height then
+        elseif y + mapping.offset.y < ground + 1 + 1 then
             local i = area:index(x, y, z)
             local replaceable
             if A[i] == nil or A[i] == minetest.CONTENT_AIR then
@@ -33,32 +32,33 @@ local function grass_callback(
                 replaceable = buildable
             end
             if replaceable then
-                A[i] = nv_flora.node_types.cane_grass[color_group]
+                A[i] = nv_flora.node_types.aloe_plant[color_group]
                 A2[i] = yrot + color_index * 32
+                break
             end
         end
     end
 end
 
-function nv_flora.get_tall_grass_meta(seed, index)
+function nv_flora.get_small_plant_meta(seed, index)
     local r = {}
     local G = PcgRandom(seed, index)
     local meta = generate_planet_metadata(seed)
     local colors = get_planet_plant_colors(seed)
     -- General
     if meta.life == "lush" then
-        r.density = 1/(G:next(2, 10)^2)
+        r.density = 1/(G:next(2, 8)^2)
     else
-        r.density = 1/(G:next(8, 20)^2)
+        r.density = 1/(G:next(8, 14)^2)
     end
     r.side = 1
     r.order = 100
-    r.callback = grass_callback
-    -- Grass-specific
+    r.callback = small_callback
+    -- Small plant-specific
     r.color = colors[G:next(1, #colors)]
-    r.min_height = G:next(1, 5)^2
+    r.min_height = G:next(1, 4)^2
     r.max_height = r.min_height + G:next(1, 4)^2
-    r.max_plant_height = 5
+    r.max_plant_height = 2
     r.max_plant_depth = 1
     return r
 end
