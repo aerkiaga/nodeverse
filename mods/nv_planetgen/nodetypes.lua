@@ -251,23 +251,24 @@ local function register_base_nodes()
     -- STONE
     -- Main material to make up a planet
     -- Is entirely solid and anisotropic
-    -- 16 stone colors as nodetype
+    -- 16 stone colors as palette
     register_color_variants(
-        "stone", 16, 2,
+        "stone", 1, 2,
         fnColorStone,
         function (n, color) return {
             drawtype = "normal",
             visual_scale = 1.0,
             tiles = {
-                "nv_stone.png^[colorize:" .. color .. ":32",
-                "nv_stone.png^[colorize:" .. color .. ":32",
-                "(nv_stone.png^[transformR180)^[colorize:" .. color .. ":32",
-                "nv_stone.png^[colorize:" .. color .. ":32",
-                "(nv_stone.png^[transformR180)^[colorize:" .. color .. ":32",
-                "nv_stone.png^[colorize:" .. color .. ":32"
+                "nv_stone.png",
+                "nv_stone.png",
+                "nv_stone.png^[transformR180",
+                "nv_stone.png",
+                "nv_stone.png^[transformR180",
+                "nv_stone.png"
             },
+            palette = "nv_palette_stone.png",
             paramtype = "light",
-            paramtype2 = "facedir",
+            paramtype2 = "color4dir",
             place_param2 = 0,
             sounds = {
                 footstep = {
@@ -777,7 +778,8 @@ function nv_planetgen.choose_planet_nodes_and_colors(planet)
     planet.color_dictionary[planet.node_types.sediment] = (stone_color - 1) % 8
     planet.node_types.gravel = minetest.get_content_id("nv_planetgen:gravel" .. math.floor((stone_color - 1) / 8 + 1))
     planet.color_dictionary[planet.node_types.gravel] = (stone_color - 1) % 8
-    planet.node_types.stone = minetest.get_content_id("nv_planetgen:stone" .. stone_color)
+    planet.node_types.stone = minetest.get_content_id("nv_planetgen:stone")
+    planet.color_dictionary[planet.node_types.stone] = stone_color - 1
     if planet.atmosphere == "freezing" then
         planet.node_types.liquid = minetest.get_content_id("nv_planetgen:hydrocarbon")
         planet.raw_colors.liquid = {r = 113, g = 113, b = 113}
