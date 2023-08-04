@@ -8,13 +8,12 @@ mod. Each base node type has one or more variants to this end.
     VARIANT SELECTION
 ]]
 
-local function register_color_variants(name, num_variants, random_yrot, color_fn, def_fn)
+local function register_color_variants(name, num_variants, color_fn, def_fn)
     --[[
     Will register a number of node types. These are meant to be variants of a
     common abstract node type.
     name            string      node base name, e.g. 'tall_grass'
     num_variants    number      number of distinct node types to register
-    random_yrot     number      value to be registered at 'nv_planetgen.random_yrot_nodes'
     color_fn        function (x)
         (optional) Should return a table with 'r', 'g', and 'b' members in the
         range [0 .. 255], that will be passed as color string to 'def_fn'.
@@ -38,7 +37,6 @@ local function register_color_variants(name, num_variants, random_yrot, color_fn
         end
         local definition = def_fn(n, color)
         minetest.register_node(variant_name, definition)
-        nv_planetgen.random_yrot_nodes[minetest.get_content_id(variant_name)] = random_yrot
     end
 end
 
@@ -55,7 +53,7 @@ local function register_tall_grasses()
     -- Rigid bamboo-like canes
     -- 1 grass color as nodetype
     register_color_variants(
-        "cane_grass", 48, 8,
+        "cane_grass", 8,
         function (x) 
             local G = PcgRandom(7857467, x)            
             return {

@@ -62,7 +62,7 @@ function nv_planetgen.pass_final(
 
                         -- Apply random texture rotation to all supported nodes
                         local rot = nv_planetgen.random_yrot_nodes[A[i]]
-                        local param2 = 0
+                        local param2 = A2[i]
                         if rot ~= nil then
                             param2 = G:next() % rot
                             if rot == 2 then
