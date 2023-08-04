@@ -11,8 +11,10 @@ nv_flora = {}
 
 dofile(minetest.get_modpath("nv_flora") .. "/nodetypes.lua")
 
-local function cane_callback(
-    origin, minp, maxp, area, A, A1, A2, mapping, planet, ground_buffer
+--local function grass_meta(seed, index)
+
+local function plant_callback(
+    origin, minp, maxp, area, A, A1, A2, mapping, planet, ground_buffer, custom
 )
     local x = minp.x
     local z = minp.z
@@ -28,7 +30,7 @@ local function cane_callback(
     end
     local grass_height = 3 + math.floor((x % 4) / 2 - 0.5)
     local yrot = (x * 23 + z * 749) % 24
-    local color = mapping.seed % 64 + 1
+    local color = (mapping.seed * custom) % 64 + 1
     if color > 48 then
         color = color - 16
     end
@@ -57,13 +59,26 @@ local function cane_callback(
     end
 end
 
-local function cane_handler(seed)
+local function grass_handler(seed)
     local G = PcgRandom(seed, seed)
-    return {{
-        density = 1/(G:next(2, 20)^2),
-        side = 1,
-        callback = cane_callback
-    }}
+    local meta = generate_planet_metadata(seed)
+    local plant_count = 0
+    if meta.life == "normal" then
+        plant_count = G:next(0, 8)
+    elseif meta.life == "lush" then
+        plant_count = G:next(4, 16)
+    end
+    local r = {}
+    for index=1,plant_count do
+        table.insert(r, {
+            density = 1/(G:next(2, 20)^2),
+            side = 1,
+            order = 100,
+            callback = plant_callback,
+            custom = index
+        })
+    end
+    return r
 end
 
-nv_planetgen.register_structure_handler(cane_handler)
+nv_planetgen.register_structure_handler(grass_handler)
