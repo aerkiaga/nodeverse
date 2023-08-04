@@ -22,3 +22,4 @@ mv nv_palette11.png     nv_palette_grass6.png
 convert -level -25,100% +append nv_palette_stone1.png nv_palette_stone2.png nv_palette_stone.png
 convert +append nv_palette_stone.png nv_palette_stone.png nv_palette_stone.png
 convert +append nv_palette_stone.png nv_palette_stone.png nv_palette_stone.png
+convert +append nv_palette_grass1.png nv_palette_grass2.png nv_palette_grass3.png nv_palette_grass4.png nv_palette_grass5.png nv_palette_grass6.png nv_palette_grass5.png nv_palette_grass6.png nv_palette_grass.png

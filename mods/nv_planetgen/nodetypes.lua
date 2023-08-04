@@ -136,12 +136,12 @@ end
 
 --[[
  # NODE TYPES
-Allocated: 331
-22 .... base
+Allocated: 236
+7  .... base
 2           dust
 2           sediment
 2           gravel
-16          stone
+1           stone
 68 .... liquid
 32          water
 32          flowing_water
@@ -152,8 +152,8 @@ Allocated: 331
 1 ..... icy
 1           snow
 1           ice
-240 ... base floral
-96          grass_soil
+160 ... base floral
+16          grass_soil
 48          grass
 48          dry_grass
 48          tall_grass
@@ -637,10 +637,10 @@ end
 local function register_base_floral_nodes()
     -- GRASS SOIL
     -- A surface node for planets supporting life
-    -- 16 stone colors as nodetype, 48 grass colors as palette and nodetype
+    -- 16 stone colors as nodetype, 48 grass colors as palette
     register_color_variants(
-        "grass_soil", 16*6, 4,
-        function (n) return fnColorStone(n % 16) end,
+        "grass_soil", 16, 4,
+        fnColorStone,
         function (n, color) return {
             drawtype = "normal",
             visual_scale = 1.0,
@@ -661,8 +661,8 @@ local function register_base_floral_nodes()
                 {name = "nv_grass_soil_side2.png"}
             },
             paramtype = "light",
-            paramtype2 = "colorfacedir",
-            palette = "nv_palette_grass" .. math.floor((n-1) / 16) + 1 .. ".png",
+            paramtype2 = "color4dir",
+            palette = "nv_palette_grass.png",
             place_param2 = 8,
             sounds = {
                 footstep = {
@@ -797,19 +797,16 @@ function nv_planetgen.choose_planet_nodes_and_colors(planet)
     end
     planet.node_types.snow = minetest.get_content_id("nv_planetgen:snow")
     planet.node_types.ice = minetest.get_content_id("nv_planetgen:ice")
-    local grass_colorN
+    local grass_color
     if gen_true_with_probability(G, 1/2) then
-        grass_colorN = G:next(1, 4)
+        grass_color = G:next(1, 32)
     else
-        grass_colorN = G:next(5, 6)
+        grass_color = G:next(33, 48)
     end
-    local grass_colorP = G:next(0, 7)
-    local grass_soil_color = 16*(grass_colorN-1) + (stone_color-1) + 1
-    planet.node_types.grass_soil = minetest.get_content_id("nv_planetgen:grass_soil" .. grass_soil_color)
-    planet.color_dictionary[planet.node_types.grass_soil] = grass_colorP
-    local grass_colorT = 8*(grass_colorN-1) + grass_colorP + 1
-    planet.raw_colors.grass = fnColorGrass(grass_colorT)
-    planet.node_types.grass = minetest.get_content_id("nv_planetgen:grass" .. grass_colorT)
-    planet.node_types.dry_grass = minetest.get_content_id("nv_planetgen:dry_grass" .. grass_colorT)
-    planet.node_types.tall_grass = minetest.get_content_id("nv_planetgen:tall_grass" .. grass_colorT)
+    planet.node_types.grass_soil = minetest.get_content_id("nv_planetgen:grass_soil" .. stone_color)
+    planet.color_dictionary[planet.node_types.grass_soil] = grass_color - 1
+    planet.raw_colors.grass = fnColorGrass(grass_color)
+    planet.node_types.grass = minetest.get_content_id("nv_planetgen:grass" .. grass_color)
+    planet.node_types.dry_grass = minetest.get_content_id("nv_planetgen:dry_grass" .. grass_color)
+    planet.node_types.tall_grass = minetest.get_content_id("nv_planetgen:tall_grass" .. grass_color)
 end
