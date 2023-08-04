@@ -33,7 +33,11 @@ local function grass_callback(
             end
             if replaceable then
                 A[i] = custom.node
-                A2[i] = yrot + color_index * 32
+                if custom.is_colorful then
+                    A2[i] = yrot + (color_index + y + mapping.offset.y - ground) % 48 * 32
+                else
+                    A2[i] = yrot + color_index * 32
+                end
             end
         end
     end
@@ -63,6 +67,7 @@ function nv_flora.get_tall_grass_meta(seed, index)
         [nv_flora.node_types.ball_grass] = 1
     })
     r.node = plant_type_nodes[color_group]
+    r.is_colorful = (G:next(0, 2) == 0)
     if meta.has_oceans then
         r.min_height = G:next(1, 4)^2
         r.max_height = r.min_height + G:next(1, 3)^2
