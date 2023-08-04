@@ -26,8 +26,9 @@ local function cane_callback(
     if ground < -1 or ground > 1 then
         return
     end
+    local grass_height = 3 + math.floor((x % 4) / 2 - 0.5)
     for y=maxp.y,minp.y,-1 do
-        if y + mapping.offset.y < ground + 1 + 3 then
+        if y + mapping.offset.y < ground + 1 + grass_height then
             local i = area:index(x, y, z)
             local replaceable
             if A[i] == nil or A[i] == minetest.CONTENT_AIR then

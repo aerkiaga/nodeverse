@@ -57,9 +57,9 @@ local function register_tall_grasses()
     register_color_variants(
         "cane_grass", 48, 4,
         function (x) 
-            local G = PcgRandom(56623, x)            
+            local G = PcgRandom(7857467, x)            
             return {
-                r = G:next(0, 192), g = G:next(64, 255), b = G:next(0, 192)
+                r = G:next(0, 255), g = G:next(64, 255), b = G:next(0, 255)
             }
         end,
         function (n, color) return {
