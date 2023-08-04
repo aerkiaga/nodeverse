@@ -11,7 +11,32 @@ nv_flora = {}
 
 dofile(minetest.get_modpath("nv_flora") .. "/nodetypes.lua")
 
---local function grass_meta(seed, index)
+local function get_planet_plant_colors(seed)
+    local G = PcgRandom(seed, seed)
+    local meta = generate_planet_metadata(seed)
+    nv_planetgen.choose_planet_nodes_and_colors(meta)
+    local color_count = G:next(2, 4)
+    local default_color_group = tonumber(minetest.get_name_from_content_id(meta.node_types.grass):sub(19,-1))
+    local default_color_index = meta.color_dictionary[meta.node_types.grass]
+    local default_color = (default_color_group - 1) * 8 + default_color_index
+    local r = {default_color}
+    for n=2,color_count do
+        local color = G:next(1, 64)
+        if color > 48 then
+            color = color - 16
+        end
+        table.insert(r, color)
+    end
+    return r
+end
+
+local function get_plant_meta(seed, index)
+    local r = {}
+    local G = PcgRandom(seed, index)
+    local colors = get_planet_plant_colors(seed)
+    r.color = colors[G:next(1, #colors)]
+    return r
+end
 
 local function plant_callback(
     origin, minp, maxp, area, A, A1, A2, mapping, planet, ground_buffer, custom
@@ -30,12 +55,8 @@ local function plant_callback(
     end
     local grass_height = 3 + math.floor((x % 4) / 2 - 0.5)
     local yrot = (x * 23 + z * 749) % 24
-    local color = (mapping.seed * custom) % 64 + 1
-    if color > 48 then
-        color = color - 16
-    end
-    local color_group = math.floor((color - 1) / 8) + 1
-    local color_index = color % 8
+    local color_group = math.floor((custom.color - 1) / 8) + 1
+    local color_index = custom.color % 8
     for y=maxp.y,minp.y,-1 do
         if y + mapping.offset.y < ground + 1 + grass_height then
             local i = area:index(x, y, z)
@@ -71,11 +92,11 @@ local function grass_handler(seed)
     local r = {}
     for index=1,plant_count do
         table.insert(r, {
-            density = 1/(G:next(2, 20)^2),
+            density = 1/(G:next(2.5, 20)^2),
             side = 1,
             order = 100,
             callback = plant_callback,
-            custom = index
+            custom = get_plant_meta(seed, index)
         })
     end
     return r
