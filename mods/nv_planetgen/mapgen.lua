@@ -288,7 +288,7 @@ minetest.register_alias('mapgen_water_source', 'nv_planetgen:water_source')
 
 --[[
 Dictionary, maps node IDs to random texture rotation modulo.
-See 'generate_planet_chunk' in this file. Sensible values are:
+See 'pass_final.lua'. Sensible values are:
     nil     No entry, random rotation disabled
     1       Effectively equivalent to 'nil'
     2       Rotate some blocks 90 deg around +Y vector
@@ -300,5 +300,18 @@ Here, add random texture rotation around Y axis to dummy stone block
 nv_planetgen.random_yrot_nodes = {
     [minetest.get_content_id('nv_planetgen:stone')] = 4
 }
+
+--[[
+Dictionary, maps node IDs to color param2 multiplier.
+See 'pass_final.lua'. Sensible values are:
+    nil     No entry, equivalent to 1
+    1       Useful for param2 = 'color'
+    4       Useful for param2 = 'color4dir'
+    8       Useful for param2 = 'colorwallmounted'
+    32      Useful for param2 = 'colorfacedir' or 'colordegrotate'
+Here, add random texture rotation around Y axis to dummy stone block
+]]--
+
+nv_planetgen.color_multiplier = {}
 
 nv_planetgen.register_all_nodes()

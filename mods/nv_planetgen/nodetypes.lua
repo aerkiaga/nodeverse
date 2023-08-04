@@ -13,6 +13,7 @@ such, you should perform the same changes in that file.
     VARIANT SELECTION
 ]]
 
+nv_planetgen.color_multiplier = {}
 local function register_color_variants(name, num_variants, random_yrot, color_fn, def_fn)
     --[[
     Will register a number of node types. These are meant to be variants of a
@@ -43,7 +44,18 @@ local function register_color_variants(name, num_variants, random_yrot, color_fn
         end
         local definition = def_fn(n, color)
         minetest.register_node(variant_name, definition)
-        nv_planetgen.random_yrot_nodes[minetest.get_content_id(variant_name)] = random_yrot
+        local id = minetest.get_content_id(variant_name)
+        nv_planetgen.random_yrot_nodes[id] = random_yrot
+        if definition.paramtype2 == "color" then
+            nv_planetgen.color_multiplier[id] = 1
+        elseif definition.paramtype2 == "color4dir" then
+            nv_planetgen.color_multiplier[id] = 4
+        elseif definition.paramtype2 == "colorwallmounted" then
+            nv_planetgen.color_multiplier[id] = 8
+        elseif definition.paramtype2 == "colorfacedir"
+        or definition.paramtype2 == "colordegrotate" then
+            nv_planetgen.color_multiplier[id] = 32
+        end
     end
 end
 
@@ -59,7 +71,7 @@ local function fnLighten(n, m)
     return 255 - math.floor((255 - n) / m)
 end
 
--- 16 colors
+-- Matches 'fnColorStone' in 'textures/palettes/generate.scm'
 local function fnColorStone(n)
     n = n - 1
     local r = fnBitsDistribution(n, 0, 2, 192)
@@ -124,9 +136,9 @@ end
 
 --[[
  # NODE TYPES
-Allocated: 373
-64 .... base
-16          dust
+Allocated: 359
+50 .... base
+2           dust
 16          sediment
 16          gravel
 16          stone
@@ -151,21 +163,22 @@ local function register_base_nodes()
     -- DUST
     -- Covers a planet's surface
     -- Made of the same material as STONE
-    -- 16 stone colors as nodetype
+    -- 16 stone colors as palette and nodetype
     register_color_variants(
-        "dust", 16, 24,
+        "dust", 2, 24,
         fnColorStone,
         function (n, color) return {
             drawtype = "normal",
             visual_scale = 1.0,
             tiles = {
-                "nv_dust.png^[colorize:" .. color .. ":64",
-                "nv_dust2.png^[colorize:" .. color .. ":64",
-                "nv_dust.png^[colorize:" .. color .. ":64",
-                "nv_dust2.png^[colorize:" .. color .. ":64",
-                "nv_dust2.png^[colorize:" .. color .. ":64",
-                "nv_dust.png^[colorize:" .. color .. ":64"
+                "nv_dust.png",
+                "nv_dust2.png",
+                "nv_dust.png",
+                "nv_dust2.png",
+                "nv_dust2.png",
+                "nv_dust.png"
             },
+            palette = string.format("nv_palette_stone%d.png", n),
             paramtype = "light",
             paramtype2 = "colorfacedir",
             place_param2 = 0,
@@ -756,7 +769,8 @@ function nv_planetgen.choose_planet_nodes_and_colors(planet)
     local G = PcgRandom(planet.seed, planet.seed)
     local stone_color = G:next(1, 16)
     planet.raw_colors.stone = fnColorStone(stone_color)
-    planet.node_types.dust = minetest.get_content_id("nv_planetgen:dust" .. stone_color)
+    planet.node_types.dust = minetest.get_content_id("nv_planetgen:dust" .. math.floor((stone_color - 1) / 8 + 1))
+    planet.color_dictionary[planet.node_types.dust] = (stone_color - 1) % 8
     planet.node_types.sediment = minetest.get_content_id("nv_planetgen:sediment" .. stone_color)
     planet.node_types.gravel = minetest.get_content_id("nv_planetgen:gravel" .. stone_color)
     planet.node_types.stone = minetest.get_content_id("nv_planetgen:stone" .. stone_color)

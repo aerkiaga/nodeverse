@@ -25,6 +25,18 @@
     (- 255 (floor (/ (- 255 n) m)))
 )
 
+; Matches 'fnColorStone' in 'nodetypes.lua'
+(define (fnColorStone n)
+    (let*
+        (
+            (theR (fnBitsDistribution n 0 2 192))
+            (theG (fnBitsDistribution n 2 1 theR))
+            (theB (fnBitsDistribution n 3 1 theG))
+        )
+        (vector (fnLighten theR 3) (fnLighten theG 3) (fnLighten theB 3))
+    )
+)
+
 ; Matches 'fnColorWaterRandom' in 'nodetypes.lua'
 (define (fnColorWaterRandom n)
     (let*
@@ -119,7 +131,7 @@
     (let*
         (
             (theImageWidth  8)
-            (theImageHeight 10)
+            (theImageHeight 12)
             (theImage (car (gimp-image-new
                  theImageWidth
                  theImageHeight
@@ -138,8 +150,9 @@
 
         (gimp-image-add-layer theImage theLayer 0)
 
-        (doFillVariants theLayer 0 4 fnColorWater)
-        (doFillVariants theLayer 4 6 fnColorGrass)
+        (doFillVariants theLayer 0 2 fnColorStone)
+        (doFillVariants theLayer 2 4 fnColorWater)
+        (doFillVariants theLayer 6 6 fnColorGrass)
 
         (gimp-display-new theImage)
         (gimp-image-clean-all theImage)

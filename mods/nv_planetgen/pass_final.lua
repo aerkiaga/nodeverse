@@ -70,11 +70,11 @@ function nv_planetgen.pass_final(
                             end
                         end
 
-                        -- Apply 'colorfacedir' color to all supported nodes
-                        -- TODO: support 'color' and 'colorwallmounted' colors
+                        -- Apply palette color to all supported nodes
                         local color = planet.color_dictionary[A[i]]
                         if color ~= nil then
-                            color = color * 0x20
+                            local multiplier = nv_planetgen.color_multiplier[A[i]] or 1
+                            color = color * multiplier
                             param2 = param2 + color
                         end
 
