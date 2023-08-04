@@ -136,7 +136,7 @@ end
 
 --[[
  # NODE TYPES
-Allocated: 236
+Allocated: 110
 7  .... base
 2           dust
 2           sediment
@@ -152,11 +152,11 @@ Allocated: 236
 1 ..... icy
 1           snow
 1           ice
-160 ... base floral
+34  ... base floral
 16          grass_soil
-48          grass
-48          dry_grass
-48          tall_grass
+6           grass
+6           dry_grass
+6           tall_grass
 ]]--
 
 local function register_base_nodes()
@@ -660,9 +660,9 @@ local function register_base_floral_nodes()
                 {name = "nv_grass_soil_side.png^[transformFX"},
                 {name = "nv_grass_soil_side2.png"}
             },
+            palette = "nv_palette_grass.png",
             paramtype = "light",
             paramtype2 = "color4dir",
-            palette = "nv_palette_grass.png",
             place_param2 = 8,
             sounds = {
                 footstep = {
@@ -673,18 +673,19 @@ local function register_base_floral_nodes()
     )
     -- GRASS
     -- A short grassy plant
-    -- 48 grass colors as nodetype
+    -- 48 grass colors as palette and nodetype
     register_color_variants(
-        "grass", 48, 20,
+        "grass", 6, 20,
         fnColorGrass,
         function (n, color) return {
             drawtype = "plantlike",
             visual_scale = 1.0,
             tiles = {
-                {name = "nv_grass.png", color = color},
+                "nv_grass.png",
             },
+            palette = string.format("nv_palette_grass%d.png", n),
             paramtype = "light",
-            paramtype2 = "degrotate",
+            paramtype2 = "colordegrotate",
             place_param2 = 0,
             sunlight_propagates = true,
             walkable = false,
@@ -698,16 +699,17 @@ local function register_base_floral_nodes()
 
     -- DRY GRASS
     -- A dry grassy plant
-    -- 48 grass colors as nodetype
+    -- 48 grass colors as palette and nodetype
     register_color_variants(
-        "dry_grass", 48, 20,
+        "dry_grass", 6, 20,
         fnColorGrass,
         function (n, color) return {
             drawtype = "plantlike",
             visual_scale = 1.0,
             tiles = {
-                {name = "nv_grass_dry.png", color = color},
+                "nv_grass_dry.png"
             },
+            palette = string.format("nv_palette_grass%d.png", n),
             paramtype = "light",
             paramtype2 = "degrotate",
             place_param2 = 0,
@@ -723,16 +725,17 @@ local function register_base_floral_nodes()
 
     -- TALL GRASS
     -- A tall grassy plant
-    -- 48 grass colors as nodetype
+    -- 48 grass colors as palette and nodetype
     register_color_variants(
-        "tall_grass", 48, 20,
+        "tall_grass", 6, 20,
         fnColorGrass,
         function (n, color) return {
             drawtype = "plantlike",
             visual_scale = 1.0,
             tiles = {
-                {name = "nv_grass_tall.png", color = color},
+                "nv_grass_tall.png"
             },
+            palette = string.format("nv_palette_grass%d.png", n),
             paramtype = "light",
             paramtype2 = "degrotate",
             place_param2 = 0,
@@ -806,7 +809,10 @@ function nv_planetgen.choose_planet_nodes_and_colors(planet)
     planet.node_types.grass_soil = minetest.get_content_id("nv_planetgen:grass_soil" .. stone_color)
     planet.color_dictionary[planet.node_types.grass_soil] = grass_color - 1
     planet.raw_colors.grass = fnColorGrass(grass_color)
-    planet.node_types.grass = minetest.get_content_id("nv_planetgen:grass" .. grass_color)
-    planet.node_types.dry_grass = minetest.get_content_id("nv_planetgen:dry_grass" .. grass_color)
-    planet.node_types.tall_grass = minetest.get_content_id("nv_planetgen:tall_grass" .. grass_color)
+    planet.node_types.grass = minetest.get_content_id("nv_planetgen:grass" .. math.floor((grass_color - 1) / 8 + 1))
+    planet.color_dictionary[planet.node_types.grass] = (grass_color - 1) % 8
+    planet.node_types.dry_grass = minetest.get_content_id("nv_planetgen:dry_grass" .. math.floor((grass_color - 1) / 8 + 1))
+    planet.color_dictionary[planet.node_types.dry_grass] = (grass_color - 1) % 8
+    planet.node_types.tall_grass = minetest.get_content_id("nv_planetgen:tall_grass" .. math.floor((grass_color - 1) / 8 + 1))
+    planet.color_dictionary[planet.node_types.tall_grass] = (grass_color - 1) % 8
 end
