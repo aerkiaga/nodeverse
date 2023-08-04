@@ -62,7 +62,9 @@ local function plant_callback(
     local color_group = math.floor((custom.color - 1) / 8) + 1
     local color_index = custom.color % 8
     for y=maxp.y,minp.y,-1 do
-        if y + mapping.offset.y < ground + 1 + grass_height then
+        if y + mapping.offset.y < ground then
+            break
+        elseif y + mapping.offset.y < ground + 1 + grass_height then
             local i = area:index(x, y, z)
             local replaceable
             if A[i] == nil or A[i] == minetest.CONTENT_AIR then
@@ -78,8 +80,6 @@ local function plant_callback(
                 A[i] = nv_flora.node_types.cane_grasses[color_group]
                 A2[i] = yrot + color_index * 32
             end
-        elseif y + mapping.offset.y < ground then
-            break
         end
     end
 end
