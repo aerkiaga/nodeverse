@@ -14,8 +14,7 @@ local function small_callback(
         return
     end
     local yrot = (x * 23 + z * 749) % 24
-    local color_group = math.floor((custom.color - 1) / 8) + 1
-    local color_index = custom.color % 8
+    local color_index = custom.color % 8 + 1
     for y=maxp.y,minp.y,-1 do
         if y + mapping.offset.y < ground then
             break
@@ -32,7 +31,7 @@ local function small_callback(
                 replaceable = buildable
             end
             if replaceable then
-                A[i] = nv_flora.node_types.aloe_plant[color_group]
+                A[i] = custom.node
                 A2[i] = yrot + color_index * 32
                 break
             end
@@ -56,8 +55,14 @@ function nv_flora.get_small_plant_meta(seed, index)
     r.callback = small_callback
     -- Small plant-specific
     r.color = colors[G:next(1, #colors)]
+    local color_group = math.floor((r.color - 1) / 8) + 1
+    local plant_type_nodes = gen_weighted(G, {
+        [nv_flora.node_types.aloe_plant] = 1,
+        [nv_flora.node_types.fern_plant] = 1
+    })
+    r.node = plant_type_nodes[color_group]
     r.min_height = G:next(1, 4)^2
-    r.max_height = r.min_height + G:next(1, 4)^2
+    r.max_height = r.min_height + G:next(1, 5)^2
     r.max_plant_height = 2
     r.max_plant_depth = 1
     return r

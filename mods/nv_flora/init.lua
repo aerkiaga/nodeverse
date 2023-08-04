@@ -17,10 +17,10 @@ function get_planet_plant_colors(seed)
     local G = PcgRandom(seed, seed)
     local meta = generate_planet_metadata(seed)
     nv_planetgen.choose_planet_nodes_and_colors(meta)
-    local color_count = G:next(2, 4)
+    local color_count = 1--G:next(2, 4)
     local default_color_group = tonumber(minetest.get_name_from_content_id(meta.node_types.grass):sub(19,-1))
     local default_color_index = meta.color_dictionary[meta.node_types.grass]
-    local default_color = (default_color_group - 1) * 8 + default_color_index
+    local default_color = (default_color_group - 1) * 8 + default_color_index + 1
     local r = {default_color}
     for n=2,color_count do
         local color = G:next(1, 64)
@@ -34,12 +34,11 @@ end
 
 local function get_plant_meta(seed, index)
     local G = PcgRandom(seed, seed)
-    local plant_type = G:next(1,100)
-    if plant_type < 70 then 
-        return nv_flora.get_small_plant_meta(seed, index)
-    else
-        return nv_flora.get_tall_grass_meta(seed, index)
-    end
+    local plant_type_handler = gen_weighted(G, {
+        [nv_flora.get_small_plant_meta] = 60,
+        [nv_flora.get_tall_grass_meta] = 40
+    })
+    return plant_type_handler(seed, index)
 end
 
 local function plant_handler(seed)
@@ -47,13 +46,13 @@ local function plant_handler(seed)
     local meta = generate_planet_metadata(seed)
     local plant_count = 0
     if meta.life == "normal" then
-        plant_count = G:next(4, 8)
+        plant_count = G:next(6, 12)
     elseif meta.life == "lush" then
-        plant_count = G:next(8, 24)
+        plant_count = G:next(12, 24)
     end
     local r = {}
-    local plant_meta = get_plant_meta(seed, index)
     for index=1,plant_count do
+        local plant_meta = get_plant_meta(seed, index)
         table.insert(r, {
             density = plant_meta.density,
             side = plant_meta.side,

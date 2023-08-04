@@ -67,12 +67,7 @@ local function register_small_plants()
     -- 48 grass colors as palette and nodetype
     register_color_variants(
         "aloe_plant", 6,
-        function (x) 
-            local G = PcgRandom(7857467, x)            
-            return {
-                r = G:next(0, 192), g = G:next(64, 255), b = G:next(0, 192)
-            }
-        end,
+        function (x) return {r = 0, g = 0, b = 0} end,
         function (n, color) return {
             drawtype = "plantlike",
             visual_scale = 1.0,
@@ -94,6 +89,36 @@ local function register_small_plants()
     )
     for n=1,6 do
         table.insert(nv_flora.node_types.aloe_plant, minetest.get_content_id(string.format("nv_flora:aloe_plant%d", n)))
+    end
+    
+    nv_flora.node_types.fern_plant = {}
+    -- FERN PLANT
+    -- Fern-like bush
+    -- 48 grass colors as palette and nodetype
+    register_color_variants(
+        "fern_plant", 6,
+        function (x) return {r = 0, g = 0, b = 0} end,
+        function (n, color) return {
+            drawtype = "plantlike",
+            visual_scale = 1.0,
+            tiles = {
+                "nv_fern_plant.png"
+            },
+            palette = string.format("nv_palette_grass%d.png", n),
+            paramtype = "light",
+            paramtype2 = "colordegrotate",
+            place_param2 = 0,
+            sunlight_propagates = true,
+            walkable = false,
+            buildable_to = true,
+            selection_box = {
+                type = "fixed",
+                fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
+            }
+        } end
+    )
+    for n=1,6 do
+        table.insert(nv_flora.node_types.fern_plant, minetest.get_content_id(string.format("nv_flora:fern_plant%d", n)))
     end
 end
 
