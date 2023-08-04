@@ -53,11 +53,13 @@ end
 
 --[[
  # NODE TYPES
-Allocated: 12
+Allocated: 24
 6  .... small plant
 6           aloe_plant
+6           fern_plant
 6  .... tall grass
 6           cane_grass
+6           bowl_grass
 ]]--
 
 local function register_small_plants()
@@ -156,6 +158,41 @@ local function register_tall_grasses()
     )
     for n=1,6 do
         table.insert(nv_flora.node_types.cane_grass, minetest.get_content_id(string.format("nv_flora:cane_grass%d", n)))
+    end
+    
+    nv_flora.node_types.thick_grass = {}
+    -- THICK GRASS
+    -- A thick central stem with small leaves symmetrically surrounding it
+    -- 48 grass colors as palette and nodetype
+    register_color_variants(
+        "thick_grass", 6,
+        function (x) 
+            local G = PcgRandom(7857467, x)            
+            return {
+                r = G:next(0, 192), g = G:next(64, 255), b = G:next(0, 192)
+            }
+        end,
+        function (n, color) return {
+            drawtype = "plantlike",
+            visual_scale = 1.0,
+            tiles = {
+                "nv_thick_grass.png"
+            },
+            palette = string.format("nv_palette_grass%d.png", n),
+            paramtype = "light",
+            paramtype2 = "colordegrotate",
+            place_param2 = 0,
+            sunlight_propagates = true,
+            walkable = false,
+            buildable_to = true,
+            selection_box = {
+                type = "fixed",
+                fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
+            }
+        } end
+    )
+    for n=1,6 do
+        table.insert(nv_flora.node_types.thick_grass, minetest.get_content_id(string.format("nv_flora:thick_grass%d", n)))
     end
 end
 

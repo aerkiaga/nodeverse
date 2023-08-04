@@ -15,7 +15,6 @@ local function grass_callback(
     end
     local grass_height = 3 + math.floor((x % 4) / 2 - 0.5)
     local yrot = (x * 23 + z * 749) % 24
-    local color_group = math.floor((custom.color - 1) / 8) + 1
     local color_index = custom.color % 8 + 1
     for y=maxp.y,minp.y,-1 do
         if y + mapping.offset.y < ground then
@@ -33,7 +32,7 @@ local function grass_callback(
                 replaceable = buildable
             end
             if replaceable then
-                A[i] = nv_flora.node_types.cane_grass[color_group]
+                A[i] = custom.node
                 A2[i] = yrot + color_index * 32
             end
         end
@@ -56,6 +55,12 @@ function nv_flora.get_tall_grass_meta(seed, index)
     r.callback = grass_callback
     -- Grass-specific
     r.color = colors[G:next(1, #colors)]
+    local color_group = math.floor((r.color - 1) / 8) + 1
+    local plant_type_nodes = gen_weighted(G, {
+        [nv_flora.node_types.cane_grass] = 1,
+        [nv_flora.node_types.thick_grass] = 1
+    })
+    r.node = plant_type_nodes[color_group]
     r.min_height = G:next(1, 4)^2
     r.max_height = r.min_height + G:next(1, 4)^2
     r.max_plant_height = 5

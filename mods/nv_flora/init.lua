@@ -46,9 +46,9 @@ local function plant_handler(seed)
     local meta = generate_planet_metadata(seed)
     local plant_count = 0
     if meta.life == "normal" then
-        plant_count = G:next(6, 12)
+        plant_count = G:next(10, 15)
     elseif meta.life == "lush" then
-        plant_count = G:next(12, 24)
+        plant_count = G:next(20, 30)
     end
     local r = {}
     for index=1,plant_count do
