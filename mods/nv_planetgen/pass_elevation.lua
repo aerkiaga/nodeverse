@@ -203,13 +203,15 @@ function nv_planetgen.pass_elevation(minp_abs, maxp_abs, area, offset, A, planet
     })
     local abs = math.abs
     local fast_int_hash = fast_int_hash
+    local base = area.MinEdge
+    local extent = area:getExtent()
     for z_abs=minp_abs.z, maxp_abs.z do
         local z = z_abs + offset.z
         for x_abs=minp_abs.x, maxp_abs.x do
             local x = x_abs + offset.x
             local ground_comp = {}
             local ground = 0
-            local k = (z_abs - minp_abs.z)*(maxp_abs.x - minp_abs.x + 1) + x_abs - minp_abs.x + 1
+            local k = (z_abs - base.z) * extent.x + x_abs - base.x + 1
 
             -- Use land/ocean elevation as initial ground level
             ground_comp.ocean_elevation = Perlin_2d_ocean_elevation:get_2d({x=x, y=z})

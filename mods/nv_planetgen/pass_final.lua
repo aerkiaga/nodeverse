@@ -28,9 +28,11 @@ function nv_planetgen.pass_final(
 
     local G = PcgRandom(5683749)
 
+    local base = area.MinEdge
+    local extent = area:getExtent()
     for z_abs=minpz, maxpz do
         for x_abs=minpx, maxpx do
-            local k = (z_abs - minpz)*(maxpx - minpx + 1) + x_abs - minpx + 1
+            local k = (z_abs - base.z) * extent.x + x_abs - base.x + 1
             local ground = math.floor(ground_buffer[k])
             ground = math.max(ground, 0)
             local maxpy_new = math.min(maxpy, ground - offset.y + 10)

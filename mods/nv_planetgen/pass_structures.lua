@@ -98,7 +98,7 @@ function nv_planetgen.pass_structures(
                         y = maxp_abs.y,
                         z = math.min(test_z + structure.side, maxp_abs.z)
                     }
-                    structure.callback(origin, minp, maxp, area, A, A1, A2, mapping, planet)
+                    structure.callback(origin, minp, maxp, area, A, A1, A2, mapping, planet, ground_buffer)
                 end
             end
         end

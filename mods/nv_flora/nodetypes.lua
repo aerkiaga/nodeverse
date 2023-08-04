@@ -50,21 +50,22 @@ Allocated: 1
 ]]--
 
 local function register_tall_grasses()
+    nv_flora.node_types.tall_grasses = {}
     -- CANE GRASS
     -- Rigid bamboo-like canes
     -- 1 grass color as nodetype
     register_color_variants(
-        "cane_grass", 48, 20,
+        "cane_grass", 48, 1,
         function (x) return {
             r = 64, g = 255, b = 64
         } end,
         function (n, color) return {
             drawtype = "plantlike",
             visual_scale = 1.0,
-            tiles = string.format(
+            tiles = {string.format(
                 "nv_cane_grass.png^[colorize:%s",
                 color
-            ),
+            )},
             paramtype = "light",
             paramtype2 = "degrotate",
             place_param2 = 0,
@@ -77,6 +78,7 @@ local function register_tall_grasses()
             }
         } end
     )
+    table.insert(nv_flora.node_types.tall_grasses, minetest.get_content_id("nv_flora:cane_grass1"))
 end
 
 --[[
@@ -89,6 +91,9 @@ can be combined, by creating as many palettes as 'num_variants' and using
 parameter 'n' of 'def_fn' to choose.
 ]]
 
+nv_flora.node_types = {}
 function nv_flora.register_all_nodes()
     register_tall_grasses()
 end
+
+nv_flora.register_all_nodes()
