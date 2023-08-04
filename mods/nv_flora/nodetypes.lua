@@ -37,23 +37,34 @@ local function register_color_variants(name, num_variants, color_fn, def_fn)
         end
         local definition = def_fn(n, color)
         minetest.register_node(variant_name, definition)
+        local id = minetest.get_content_id(variant_name)
+        if definition.paramtype2 == "color" then
+            nv_planetgen.color_multiplier[id] = 1
+        elseif definition.paramtype2 == "color4dir" then
+            nv_planetgen.color_multiplier[id] = 4
+        elseif definition.paramtype2 == "colorwallmounted" then
+            nv_planetgen.color_multiplier[id] = 8
+        elseif definition.paramtype2 == "colorfacedir"
+        or definition.paramtype2 == "colordegrotate" then
+            nv_planetgen.color_multiplier[id] = 32
+        end
     end
 end
 
 --[[
  # NODE TYPES
-Allocated: 1
-8  .... tall grass
-8           cane_grass
+Allocated: 6
+6  .... tall grass
+6           cane_grass
 ]]--
 
 local function register_tall_grasses()
     nv_flora.node_types.tall_grasses = {}
     -- CANE GRASS
     -- Rigid bamboo-like canes
-    -- 1 grass color as nodetype
+    -- 48 grass colors as palette and nodetype
     register_color_variants(
-        "cane_grass", 8,
+        "cane_grass", 6,
         function (x) 
             local G = PcgRandom(7857467, x)            
             return {
@@ -63,12 +74,12 @@ local function register_tall_grasses()
         function (n, color) return {
             drawtype = "plantlike",
             visual_scale = 1.0,
-            tiles = {string.format(
-                "nv_cane_grass.png^[multiply:%s",
-                color
-            )},
+            tiles = {
+                "nv_cane_grass.png"
+            },
+            palette = string.format("nv_palette_grass%d.png", n),
             paramtype = "light",
-            paramtype2 = "degrotate",
+            paramtype2 = "colordegrotate",
             place_param2 = 0,
             sunlight_propagates = true,
             walkable = false,
@@ -79,7 +90,7 @@ local function register_tall_grasses()
             }
         } end
     )
-    for n=1,8 do
+    for n=1,6 do
         table.insert(nv_flora.node_types.tall_grasses, minetest.get_content_id(string.format("nv_flora:cane_grass%d", n)))
     end
 end

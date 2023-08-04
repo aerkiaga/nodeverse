@@ -27,7 +27,7 @@ local function cane_callback(
         return
     end
     local grass_height = 3 + math.floor((x % 4) / 2 - 0.5)
-    local yrot = (x * 23 + z * 749) % 240
+    local yrot = (x * 23 + z * 749) % 24
     for y=maxp.y,minp.y,-1 do
         if y + mapping.offset.y < ground + 1 + grass_height then
             local i = area:index(x, y, z)
