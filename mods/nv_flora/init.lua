@@ -19,11 +19,11 @@ local function cane_callback(
     local base = area.MinEdge
     local extent = area:getExtent()
     local k = (z - base.z) * extent.x + x - base.x + 1
-    if k > #ground_buffer then
-        return
-    end
     local ground = math.floor(ground_buffer[k])
     if ground < -1 or ground > 1 then
+        return
+    end
+    if minp.y + mapping.offset.y > ground + 5 or maxp.y + mapping.offset.y < ground - 1 then
         return
     end
     local grass_height = 3 + math.floor((x % 4) / 2 - 0.5)
