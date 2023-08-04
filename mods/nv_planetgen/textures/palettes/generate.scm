@@ -33,7 +33,7 @@
             (theG (fnBitsDistribution n 2 1 theR))
             (theB (fnBitsDistribution n 3 1 theG))
         )
-        (vector (fnLighten theR 3) (fnLighten theG 3) (fnLighten theB 3))
+        (vector (fnLighten theR 4) (fnLighten theG 4) (fnLighten theB 4))
     )
 )
 

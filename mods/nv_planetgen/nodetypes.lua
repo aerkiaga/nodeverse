@@ -136,11 +136,11 @@ end
 
 --[[
  # NODE TYPES
-Allocated: 359
-50 .... base
+Allocated: 331
+22 .... base
 2           dust
-16          sediment
-16          gravel
+2           sediment
+2           gravel
 16          stone
 68 .... liquid
 32          water
@@ -193,21 +193,22 @@ local function register_base_nodes()
     -- Covers a planet's ocean floor and beaches
     -- Made of the same material as STONE
     -- Deposited by LIQUID over time
-    -- 16 stone colors as nodetype
+    -- 16 stone colors as palette and nodetype
     register_color_variants(
-        "sediment", 16, 24,
+        "sediment", 2, 24,
         fnColorStone,
         function (n, color) return {
             drawtype = "normal",
             visual_scale = 1.0,
             tiles = {
-                "nv_sediment.png^[colorize:" .. color .. ":48",
-                "nv_sediment2.png^[colorize:" .. color .. ":48",
-                "nv_sediment.png^[colorize:" .. color .. ":48",
-                "nv_sediment2.png^[colorize:" .. color .. ":48",
-                "nv_sediment2.png^[colorize:" .. color .. ":48",
-                "nv_sediment.png^[colorize:" .. color .. ":48"
+                "nv_sediment.png",
+                "nv_sediment2.png",
+                "nv_sediment.png",
+                "nv_sediment2.png",
+                "nv_sediment2.png",
+                "nv_sediment.png"
             },
+            palette = string.format("nv_palette_stone%d.png", n),
             paramtype = "light",
             paramtype2 = "colorfacedir",
             place_param2 = 0,
@@ -221,21 +222,22 @@ local function register_base_nodes()
     -- GRAVEL
     -- Lies under a layer of DUST
     -- Less granular than DUST
-    -- 16 stone colors as nodetype
+    -- 16 stone colors as palette and nodetype
     register_color_variants(
-        "gravel", 16, 4,
+        "gravel", 2, 4,
         fnColorStone,
         function (n, color) return {
             drawtype = "normal",
             visual_scale = 1.0,
             tiles = {
-                "nv_gravel.png^[colorize:" .. color .. ":48",
-                "nv_gravel.png^[colorize:" .. color .. ":48",
-                "(nv_gravel.png^[transformR180)^[colorize:" .. color .. ":48",
-                "(nv_gravel.png^[transformR90)^[colorize:" .. color .. ":48",
-                "(nv_gravel.png^[transformR270)^[colorize:" .. color .. ":48",
-                "nv_gravel.png^[colorize:" .. color .. ":48",
+                "nv_gravel.png",
+                "nv_gravel.png",
+                "nv_gravel.png^[transformR180",
+                "nv_gravel.png^[transformR90",
+                "nv_gravel.png^[transformR270",
+                "nv_gravel.png",
             },
+            palette = string.format("nv_palette_stone%d.png", n),
             paramtype = "light",
             paramtype2 = "colorfacedir",
             place_param2 = 0,
@@ -771,8 +773,10 @@ function nv_planetgen.choose_planet_nodes_and_colors(planet)
     planet.raw_colors.stone = fnColorStone(stone_color)
     planet.node_types.dust = minetest.get_content_id("nv_planetgen:dust" .. math.floor((stone_color - 1) / 8 + 1))
     planet.color_dictionary[planet.node_types.dust] = (stone_color - 1) % 8
-    planet.node_types.sediment = minetest.get_content_id("nv_planetgen:sediment" .. stone_color)
-    planet.node_types.gravel = minetest.get_content_id("nv_planetgen:gravel" .. stone_color)
+    planet.node_types.sediment = minetest.get_content_id("nv_planetgen:sediment" .. math.floor((stone_color - 1) / 8 + 1))
+    planet.color_dictionary[planet.node_types.sediment] = (stone_color - 1) % 8
+    planet.node_types.gravel = minetest.get_content_id("nv_planetgen:gravel" .. math.floor((stone_color - 1) / 8 + 1))
+    planet.color_dictionary[planet.node_types.gravel] = (stone_color - 1) % 8
     planet.node_types.stone = minetest.get_content_id("nv_planetgen:stone" .. stone_color)
     if planet.atmosphere == "freezing" then
         planet.node_types.liquid = minetest.get_content_id("nv_planetgen:hydrocarbon")
