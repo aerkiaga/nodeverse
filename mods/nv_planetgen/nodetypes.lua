@@ -77,7 +77,7 @@ local function fnColorStone(n)
     local r = fnBitsDistribution(n, 0, 2, 192)
     local g = fnBitsDistribution(n, 2, 1, r)
     local b = fnBitsDistribution(n, 3, 1, g)
-    return {r=r, g=g, b=b}
+    return {r=fnLighten(r, 4), g=fnLighten(g, 4), b=fnLighten(b, 4)}
 end
 
 -- Matches 'fnColorWaterRandom' in 'textures/palettes/generate.scm'
@@ -646,11 +646,11 @@ local function register_base_floral_nodes()
             visual_scale = 1.0,
             tiles = {
                 {name = "nv_grass_soil_top.png"},
-                {name = "nv_dust.png^[colorize:" .. color .. ":64", color = "white"},
-                {name = "nv_dust2.png^[colorize:" .. color .. ":64", color = "white"},
-                {name = "nv_dust.png^[colorize:" .. color .. ":64", color = "white"},
-                {name = "nv_dust2.png^[colorize:" .. color .. ":64", color = "white"},
-                {name = "nv_dust2.png^[colorize:" .. color .. ":64", color = "white"}
+                {name = "nv_dust.png", color = color},
+                {name = "nv_dust2.png", color = color},
+                {name = "nv_dust.png", color = color},
+                {name = "nv_dust2.png", color = color},
+                {name = "nv_dust2.png", color = color}
             },
             overlay_tiles = {
                 "",
