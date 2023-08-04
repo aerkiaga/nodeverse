@@ -45,8 +45,8 @@ end
 --[[
  # NODE TYPES
 Allocated: 1
-4  .... tall grass
-4           cane_grass
+8  .... tall grass
+8           cane_grass
 ]]--
 
 local function register_tall_grasses()
@@ -55,11 +55,11 @@ local function register_tall_grasses()
     -- Rigid bamboo-like canes
     -- 1 grass color as nodetype
     register_color_variants(
-        "cane_grass", 48, 4,
+        "cane_grass", 48, 8,
         function (x) 
             local G = PcgRandom(7857467, x)            
             return {
-                r = G:next(0, 255), g = G:next(64, 255), b = G:next(0, 255)
+                r = G:next(0, 192), g = G:next(64, 255), b = G:next(0, 192)
             }
         end,
         function (n, color) return {
@@ -81,7 +81,7 @@ local function register_tall_grasses()
             }
         } end
     )
-    for n=1,4 do
+    for n=1,8 do
         table.insert(nv_flora.node_types.tall_grasses, minetest.get_content_id(string.format("nv_flora:cane_grass%d", n)))
     end
 end
