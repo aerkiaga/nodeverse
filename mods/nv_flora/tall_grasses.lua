@@ -34,7 +34,7 @@ local function grass_callback(
             if replaceable then
                 A[i] = custom.node
                 if custom.is_colorful then
-                    A2[i] = yrot + (color_index + y + mapping.offset.y - ground) % 48 * 32
+                    A2[i] = yrot + (color_index + math.floor((y + mapping.offset.y - ground) / 2)) % 48 * 32
                 else
                     A2[i] = yrot + color_index * 32
                 end
