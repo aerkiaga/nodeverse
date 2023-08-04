@@ -35,6 +35,10 @@ local function get_plant_meta(seed, index)
     local G = PcgRandom(seed, index)
     local colors = get_planet_plant_colors(seed)
     r.color = colors[G:next(1, #colors)]
+    r.min_height = G:next(1, 5)^2
+    r.max_height = r.min_height + G:next(1, 4)^2
+    r.max_plant_height = 5
+    r.max_plant_depth = 1
     return r
 end
 
@@ -47,10 +51,10 @@ local function plant_callback(
     local extent = area:getExtent()
     local k = (z - base.z) * extent.x + x - base.x + 1
     local ground = math.floor(ground_buffer[k])
-    if ground < -1 or ground > 1 then
+    if ground < custom.min_height or ground > custom.max_height then
         return
     end
-    if minp.y + mapping.offset.y > ground + 5 or maxp.y + mapping.offset.y < ground - 1 then
+    if minp.y + mapping.offset.y > ground + (custom.max_plant_height or 256) or maxp.y + mapping.offset.y < ground - (custom.max_plant_depth or 256) then
         return
     end
     local grass_height = 3 + math.floor((x % 4) / 2 - 0.5)
