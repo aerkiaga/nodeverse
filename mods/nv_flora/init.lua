@@ -42,7 +42,7 @@ local function cane_callback(
                 replaceable = buildable
             end
             if replaceable then
-                A[i] = nv_flora.node_types.tall_grasses[mapping.seed % 8 + 1]
+                A[i] = nv_flora.node_types.tall_grasses[mapping.seed % 6 + 1]
                 A2[i] = yrot
             end
         elseif y + mapping.offset.y < ground then
