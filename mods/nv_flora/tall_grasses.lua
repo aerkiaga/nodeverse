@@ -15,7 +15,7 @@ local function grass_callback(
     end
     local grass_height = 3 + math.floor((x % 4) / 2 - 0.5)
     local yrot = (x * 23 + z * 749) % 24
-    local color_index = custom.color % 8 + 1
+    local color_index = (custom.color - 1) % 8
     for y=maxp.y,minp.y,-1 do
         if y + mapping.offset.y < ground then
             break
@@ -50,6 +50,7 @@ function nv_flora.get_tall_grass_meta(seed, index)
     else
         r.density = 1/(G:next(8, 20)^2)
     end
+    r.seed = 638262
     r.side = 1
     r.order = 100
     r.callback = grass_callback

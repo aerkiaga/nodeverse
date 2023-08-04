@@ -14,7 +14,7 @@ local function small_callback(
         return
     end
     local yrot = (x * 23 + z * 749) % 24
-    local color_index = custom.color % 8 + 1
+    local color_index = (custom.color - 1) % 8
     for y=maxp.y,minp.y,-1 do
         if y + mapping.offset.y < ground then
             break
@@ -50,6 +50,7 @@ function nv_flora.get_small_plant_meta(seed, index)
     else
         r.density = 1/(G:next(8, 14)^2)
     end
+    r.seed = 5646457
     r.side = 1
     r.order = 100
     r.callback = small_callback

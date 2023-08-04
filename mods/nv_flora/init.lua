@@ -17,7 +17,7 @@ function get_planet_plant_colors(seed)
     local G = PcgRandom(seed, seed)
     local meta = generate_planet_metadata(seed)
     nv_planetgen.choose_planet_nodes_and_colors(meta)
-    local color_count = 1--G:next(2, 4)
+    local color_count = G:next(2, 4)
     local default_color_group = tonumber(minetest.get_name_from_content_id(meta.node_types.grass):sub(19,-1))
     local default_color_index = meta.color_dictionary[meta.node_types.grass]
     local default_color = (default_color_group - 1) * 8 + default_color_index + 1
@@ -33,10 +33,10 @@ function get_planet_plant_colors(seed)
 end
 
 local function get_plant_meta(seed, index)
-    local G = PcgRandom(seed, seed)
+    local G = PcgRandom(seed, index)
     local plant_type_handler = gen_weighted(G, {
-        [nv_flora.get_small_plant_meta] = 60,
-        [nv_flora.get_tall_grass_meta] = 40
+        [nv_flora.get_small_plant_meta] = 70,
+        [nv_flora.get_tall_grass_meta] = 30
     })
     return plant_type_handler(seed, index)
 end
@@ -55,6 +55,7 @@ local function plant_handler(seed)
         local plant_meta = get_plant_meta(seed, index)
         table.insert(r, {
             density = plant_meta.density,
+            seed = plant_meta.seed,
             side = plant_meta.side,
             order = plant_meta.order,
             callback = plant_meta.callback,

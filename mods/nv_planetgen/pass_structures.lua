@@ -14,6 +14,7 @@ from other mods.
 --[[
 Structure format:
     density     average density of this structure in the world (scaled by structure size)
+    seed        unique seed for structure placing
     side        horizontal width of the structure as a square
     order       structures with a lower order floating point value will be created earlier
     callback    function (origin, minp, maxp, area, A, A1, A2, mapping)
@@ -87,7 +88,7 @@ function nv_planetgen.pass_structures(
             local planet_z = test_z + mapping.offset.z
             for test_x=test_minx,test_maxx,test_step do
                 local planet_x = test_x + mapping.offset.x
-                local G = PcgRandom(planet.seed, planet_x + planet_z * 1749)
+                local G = PcgRandom(planet.seed + structure.seed, planet_x + planet_z * 1749)
                 if gen_linear(G, 0, 1) < test_prob then
                     local origin = {x=test_x, z=test_z}
                     local minp = {
