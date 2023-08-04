@@ -66,9 +66,9 @@ local function get_planet_color(planet, use_snow)
 		land.b = (land.b) / 2
 	else
 		land = meta.raw_colors.stone
-		land.r = (land.r + 128 * 3) / 4
-		land.g = (land.g + 128 * 3) / 4
-		land.b = (land.b + 128 * 3) / 4
+		land.r = land.r / 2
+		land.g = land.g / 2
+		land.b = land.b / 2
 	end
 	if use_snow then
         if meta.atmosphere == "freezing" then

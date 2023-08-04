@@ -1,4 +1,11 @@
 # Changelog
+## [0.4.0] - unreleased
+This is a major release; it breaks compatibility with existing worlds and adds
+many new features to the game.
+
+### Added
+ - Mod `nv_flora`.
+
 ## [0.3.1] - 03-08-2023
 ### Fixed
  - Re-encoded the main menu music so it can play.

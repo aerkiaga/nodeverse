@@ -13,6 +13,7 @@ such, you should perform the same changes in that file.
     VARIANT SELECTION
 ]]
 
+nv_planetgen.color_multiplier = {}
 local function register_color_variants(name, num_variants, random_yrot, color_fn, def_fn)
     --[[
     Will register a number of node types. These are meant to be variants of a
@@ -43,7 +44,18 @@ local function register_color_variants(name, num_variants, random_yrot, color_fn
         end
         local definition = def_fn(n, color)
         minetest.register_node(variant_name, definition)
-        nv_planetgen.random_yrot_nodes[minetest.get_content_id(variant_name)] = random_yrot
+        local id = minetest.get_content_id(variant_name)
+        nv_planetgen.random_yrot_nodes[id] = random_yrot
+        if definition.paramtype2 == "color" then
+            nv_planetgen.color_multiplier[id] = 1
+        elseif definition.paramtype2 == "color4dir" then
+            nv_planetgen.color_multiplier[id] = 4
+        elseif definition.paramtype2 == "colorwallmounted" then
+            nv_planetgen.color_multiplier[id] = 8
+        elseif definition.paramtype2 == "colorfacedir"
+        or definition.paramtype2 == "colordegrotate" then
+            nv_planetgen.color_multiplier[id] = 32
+        end
     end
 end
 
@@ -59,13 +71,13 @@ local function fnLighten(n, m)
     return 255 - math.floor((255 - n) / m)
 end
 
--- 16 colors
+-- Matches 'fnColorStone' in 'textures/palettes/generate.scm'
 local function fnColorStone(n)
     n = n - 1
     local r = fnBitsDistribution(n, 0, 2, 192)
     local g = fnBitsDistribution(n, 2, 1, r)
     local b = fnBitsDistribution(n, 3, 1, g)
-    return {r=r, g=g, b=b}
+    return {r=fnLighten(r, 4), g=fnLighten(g, 4), b=fnLighten(b, 4)}
 end
 
 -- Matches 'fnColorWaterRandom' in 'textures/palettes/generate.scm'
@@ -124,12 +136,12 @@ end
 
 --[[
  # NODE TYPES
-Allocated: 373
-64 .... base
-16          dust
-16          sediment
-16          gravel
-16          stone
+Allocated: 110
+7  .... base
+2           dust
+2           sediment
+2           gravel
+1           stone
 68 .... liquid
 32          water
 32          flowing_water
@@ -140,32 +152,33 @@ Allocated: 373
 1 ..... icy
 1           snow
 1           ice
-240 ... base floral
-96          grass_soil
-48          grass
-48          dry_grass
-48          tall_grass
+34  ... base floral
+16          grass_soil
+6           grass
+6           dry_grass
+6           tall_grass
 ]]--
 
 local function register_base_nodes()
     -- DUST
     -- Covers a planet's surface
     -- Made of the same material as STONE
-    -- 16 stone colors as nodetype
+    -- 16 stone colors as palette and nodetype
     register_color_variants(
-        "dust", 16, 24,
+        "dust", 2, 24,
         fnColorStone,
         function (n, color) return {
             drawtype = "normal",
             visual_scale = 1.0,
             tiles = {
-                "nv_dust.png^[colorize:" .. color .. ":64",
-                "nv_dust2.png^[colorize:" .. color .. ":64",
-                "nv_dust.png^[colorize:" .. color .. ":64",
-                "nv_dust2.png^[colorize:" .. color .. ":64",
-                "nv_dust2.png^[colorize:" .. color .. ":64",
-                "nv_dust.png^[colorize:" .. color .. ":64"
+                "nv_dust.png",
+                "nv_dust2.png",
+                "nv_dust.png",
+                "nv_dust2.png",
+                "nv_dust2.png",
+                "nv_dust.png"
             },
+            palette = string.format("nv_palette_stone%d.png", n),
             paramtype = "light",
             paramtype2 = "colorfacedir",
             place_param2 = 0,
@@ -180,21 +193,22 @@ local function register_base_nodes()
     -- Covers a planet's ocean floor and beaches
     -- Made of the same material as STONE
     -- Deposited by LIQUID over time
-    -- 16 stone colors as nodetype
+    -- 16 stone colors as palette and nodetype
     register_color_variants(
-        "sediment", 16, 24,
+        "sediment", 2, 24,
         fnColorStone,
         function (n, color) return {
             drawtype = "normal",
             visual_scale = 1.0,
             tiles = {
-                "nv_sediment.png^[colorize:" .. color .. ":48",
-                "nv_sediment2.png^[colorize:" .. color .. ":48",
-                "nv_sediment.png^[colorize:" .. color .. ":48",
-                "nv_sediment2.png^[colorize:" .. color .. ":48",
-                "nv_sediment2.png^[colorize:" .. color .. ":48",
-                "nv_sediment.png^[colorize:" .. color .. ":48"
+                "nv_sediment.png",
+                "nv_sediment2.png",
+                "nv_sediment.png",
+                "nv_sediment2.png",
+                "nv_sediment2.png",
+                "nv_sediment.png"
             },
+            palette = string.format("nv_palette_stone%d.png", n),
             paramtype = "light",
             paramtype2 = "colorfacedir",
             place_param2 = 0,
@@ -208,21 +222,22 @@ local function register_base_nodes()
     -- GRAVEL
     -- Lies under a layer of DUST
     -- Less granular than DUST
-    -- 16 stone colors as nodetype
+    -- 16 stone colors as palette and nodetype
     register_color_variants(
-        "gravel", 16, 4,
+        "gravel", 2, 4,
         fnColorStone,
         function (n, color) return {
             drawtype = "normal",
             visual_scale = 1.0,
             tiles = {
-                "nv_gravel.png^[colorize:" .. color .. ":48",
-                "nv_gravel.png^[colorize:" .. color .. ":48",
-                "(nv_gravel.png^[transformR180)^[colorize:" .. color .. ":48",
-                "(nv_gravel.png^[transformR90)^[colorize:" .. color .. ":48",
-                "(nv_gravel.png^[transformR270)^[colorize:" .. color .. ":48",
-                "nv_gravel.png^[colorize:" .. color .. ":48",
+                "nv_gravel.png",
+                "nv_gravel.png",
+                "nv_gravel.png^[transformR180",
+                "nv_gravel.png^[transformR90",
+                "nv_gravel.png^[transformR270",
+                "nv_gravel.png",
             },
+            palette = string.format("nv_palette_stone%d.png", n),
             paramtype = "light",
             paramtype2 = "colorfacedir",
             place_param2 = 0,
@@ -236,23 +251,24 @@ local function register_base_nodes()
     -- STONE
     -- Main material to make up a planet
     -- Is entirely solid and anisotropic
-    -- 16 stone colors as nodetype
+    -- 16 stone colors as palette
     register_color_variants(
-        "stone", 16, 2,
+        "stone", 1, 2,
         fnColorStone,
         function (n, color) return {
             drawtype = "normal",
             visual_scale = 1.0,
             tiles = {
-                "nv_stone.png^[colorize:" .. color .. ":32",
-                "nv_stone.png^[colorize:" .. color .. ":32",
-                "(nv_stone.png^[transformR180)^[colorize:" .. color .. ":32",
-                "nv_stone.png^[colorize:" .. color .. ":32",
-                "(nv_stone.png^[transformR180)^[colorize:" .. color .. ":32",
-                "nv_stone.png^[colorize:" .. color .. ":32"
+                "nv_stone.png",
+                "nv_stone.png",
+                "nv_stone.png^[transformR180",
+                "nv_stone.png",
+                "nv_stone.png^[transformR180",
+                "nv_stone.png"
             },
+            palette = "nv_palette_stone.png",
             paramtype = "light",
-            paramtype2 = "facedir",
+            paramtype2 = "color4dir",
             place_param2 = 0,
             sounds = {
                 footstep = {
@@ -621,20 +637,20 @@ end
 local function register_base_floral_nodes()
     -- GRASS SOIL
     -- A surface node for planets supporting life
-    -- 16 stone colors as nodetype, 48 grass colors as palette and nodetype
+    -- 16 stone colors as nodetype, 48 grass colors as palette
     register_color_variants(
-        "grass_soil", 16*6, 4,
-        function (n) return fnColorStone(n % 16) end,
+        "grass_soil", 16, 4,
+        fnColorStone,
         function (n, color) return {
             drawtype = "normal",
             visual_scale = 1.0,
             tiles = {
                 {name = "nv_grass_soil_top.png"},
-                {name = "nv_dust.png^[colorize:" .. color .. ":64", color = "white"},
-                {name = "nv_dust2.png^[colorize:" .. color .. ":64", color = "white"},
-                {name = "nv_dust.png^[colorize:" .. color .. ":64", color = "white"},
-                {name = "nv_dust2.png^[colorize:" .. color .. ":64", color = "white"},
-                {name = "nv_dust2.png^[colorize:" .. color .. ":64", color = "white"}
+                {name = "nv_dust.png", color = color},
+                {name = "nv_dust2.png", color = color},
+                {name = "nv_dust.png", color = color},
+                {name = "nv_dust2.png", color = color},
+                {name = "nv_dust2.png", color = color}
             },
             overlay_tiles = {
                 "",
@@ -644,9 +660,9 @@ local function register_base_floral_nodes()
                 {name = "nv_grass_soil_side.png^[transformFX"},
                 {name = "nv_grass_soil_side2.png"}
             },
+            palette = "nv_palette_grass.png",
             paramtype = "light",
-            paramtype2 = "colorfacedir",
-            palette = "nv_palette_grass" .. math.floor((n-1) / 16) + 1 .. ".png",
+            paramtype2 = "color4dir",
             place_param2 = 8,
             sounds = {
                 footstep = {
@@ -657,18 +673,19 @@ local function register_base_floral_nodes()
     )
     -- GRASS
     -- A short grassy plant
-    -- 48 grass colors as nodetype
+    -- 48 grass colors as palette and nodetype
     register_color_variants(
-        "grass", 48, 20,
+        "grass", 6, 20,
         fnColorGrass,
         function (n, color) return {
             drawtype = "plantlike",
             visual_scale = 1.0,
             tiles = {
-                {name = "nv_grass.png", color = color},
+                "nv_grass.png",
             },
+            palette = string.format("nv_palette_grass%d.png", n),
             paramtype = "light",
-            paramtype2 = "degrotate",
+            paramtype2 = "colordegrotate",
             place_param2 = 0,
             sunlight_propagates = true,
             walkable = false,
@@ -682,18 +699,19 @@ local function register_base_floral_nodes()
 
     -- DRY GRASS
     -- A dry grassy plant
-    -- 48 grass colors as nodetype
+    -- 48 grass colors as palette and nodetype
     register_color_variants(
-        "dry_grass", 48, 20,
+        "dry_grass", 6, 20,
         fnColorGrass,
         function (n, color) return {
             drawtype = "plantlike",
             visual_scale = 1.0,
             tiles = {
-                {name = "nv_grass_dry.png", color = color},
+                "nv_grass_dry.png"
             },
+            palette = string.format("nv_palette_grass%d.png", n),
             paramtype = "light",
-            paramtype2 = "degrotate",
+            paramtype2 = "colordegrotate",
             place_param2 = 0,
             sunlight_propagates = true,
             walkable = false,
@@ -707,18 +725,19 @@ local function register_base_floral_nodes()
 
     -- TALL GRASS
     -- A tall grassy plant
-    -- 48 grass colors as nodetype
+    -- 48 grass colors as palette and nodetype
     register_color_variants(
-        "tall_grass", 48, 20,
+        "tall_grass", 6, 20,
         fnColorGrass,
         function (n, color) return {
             drawtype = "plantlike",
             visual_scale = 1.0,
             tiles = {
-                {name = "nv_grass_tall.png", color = color},
+                "nv_grass_tall.png"
             },
+            palette = string.format("nv_palette_grass%d.png", n),
             paramtype = "light",
-            paramtype2 = "degrotate",
+            paramtype2 = "colordegrotate",
             place_param2 = 0,
             sunlight_propagates = true,
             walkable = false,
@@ -756,10 +775,14 @@ function nv_planetgen.choose_planet_nodes_and_colors(planet)
     local G = PcgRandom(planet.seed, planet.seed)
     local stone_color = G:next(1, 16)
     planet.raw_colors.stone = fnColorStone(stone_color)
-    planet.node_types.dust = minetest.get_content_id("nv_planetgen:dust" .. stone_color)
-    planet.node_types.sediment = minetest.get_content_id("nv_planetgen:sediment" .. stone_color)
-    planet.node_types.gravel = minetest.get_content_id("nv_planetgen:gravel" .. stone_color)
-    planet.node_types.stone = minetest.get_content_id("nv_planetgen:stone" .. stone_color)
+    planet.node_types.dust = minetest.get_content_id("nv_planetgen:dust" .. math.floor((stone_color - 1) / 8 + 1))
+    planet.color_dictionary[planet.node_types.dust] = (stone_color - 1) % 8
+    planet.node_types.sediment = minetest.get_content_id("nv_planetgen:sediment" .. math.floor((stone_color - 1) / 8 + 1))
+    planet.color_dictionary[planet.node_types.sediment] = (stone_color - 1) % 8
+    planet.node_types.gravel = minetest.get_content_id("nv_planetgen:gravel" .. math.floor((stone_color - 1) / 8 + 1))
+    planet.color_dictionary[planet.node_types.gravel] = (stone_color - 1) % 8
+    planet.node_types.stone = minetest.get_content_id("nv_planetgen:stone")
+    planet.color_dictionary[planet.node_types.stone] = stone_color - 1
     if planet.atmosphere == "freezing" then
         planet.node_types.liquid = minetest.get_content_id("nv_planetgen:hydrocarbon")
         planet.raw_colors.liquid = {r = 113, g = 113, b = 113}
@@ -777,19 +800,19 @@ function nv_planetgen.choose_planet_nodes_and_colors(planet)
     end
     planet.node_types.snow = minetest.get_content_id("nv_planetgen:snow")
     planet.node_types.ice = minetest.get_content_id("nv_planetgen:ice")
-    local grass_colorN
+    local grass_color
     if gen_true_with_probability(G, 1/2) then
-        grass_colorN = G:next(1, 4)
+        grass_color = G:next(1, 32)
     else
-        grass_colorN = G:next(5, 6)
+        grass_color = G:next(33, 48)
     end
-    local grass_colorP = G:next(0, 7)
-    local grass_soil_color = 16*(grass_colorN-1) + (stone_color-1) + 1
-    planet.node_types.grass_soil = minetest.get_content_id("nv_planetgen:grass_soil" .. grass_soil_color)
-    planet.color_dictionary[planet.node_types.grass_soil] = grass_colorP
-    local grass_colorT = 8*(grass_colorN-1) + grass_colorP + 1
-    planet.raw_colors.grass = fnColorGrass(grass_colorT)
-    planet.node_types.grass = minetest.get_content_id("nv_planetgen:grass" .. grass_colorT)
-    planet.node_types.dry_grass = minetest.get_content_id("nv_planetgen:dry_grass" .. grass_colorT)
-    planet.node_types.tall_grass = minetest.get_content_id("nv_planetgen:tall_grass" .. grass_colorT)
+    planet.node_types.grass_soil = minetest.get_content_id("nv_planetgen:grass_soil" .. stone_color)
+    planet.color_dictionary[planet.node_types.grass_soil] = grass_color - 1
+    planet.raw_colors.grass = fnColorGrass(grass_color)
+    planet.node_types.grass = minetest.get_content_id("nv_planetgen:grass" .. math.floor((grass_color - 1) / 8 + 1))
+    planet.color_dictionary[planet.node_types.grass] = (grass_color - 1) % 8
+    planet.node_types.dry_grass = minetest.get_content_id("nv_planetgen:dry_grass" .. math.floor((grass_color - 1) / 8 + 1))
+    planet.color_dictionary[planet.node_types.dry_grass] = (grass_color - 1) % 8
+    planet.node_types.tall_grass = minetest.get_content_id("nv_planetgen:tall_grass" .. math.floor((grass_color - 1) / 8 + 1))
+    planet.color_dictionary[planet.node_types.tall_grass] = (grass_color - 1) % 8
 end
