@@ -34,10 +34,19 @@ end
 
 local function get_plant_meta(seed, index)
     local G = PcgRandom(seed, index)
-    local plant_type_handler = gen_weighted(G, {
-        [nv_flora.get_small_plant_meta] = 70,
-        [nv_flora.get_tall_grass_meta] = 30
-    })
+    local meta = generate_planet_metadata(seed)
+    local plant_type_handler
+    if meta.life == "lush" then
+        plant_type_handler = gen_weighted(G, {
+            [nv_flora.get_small_plant_meta] = 70,
+            [nv_flora.get_tall_grass_meta] = 30
+        })
+    else
+        plant_type_handler = gen_weighted(G, {
+            [nv_flora.get_small_plant_meta] = 70,
+            [nv_flora.get_tall_grass_meta] = 15
+        })
+    end
     return plant_type_handler(seed, index)
 end
 

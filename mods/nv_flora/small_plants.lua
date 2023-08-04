@@ -62,8 +62,13 @@ function nv_flora.get_small_plant_meta(seed, index)
         [nv_flora.node_types.fern_plant] = 1
     })
     r.node = plant_type_nodes[color_group]
-    r.min_height = G:next(1, 4)^2
-    r.max_height = r.min_height + G:next(1, 5)^2
+    if meta.has_oceans then
+        r.min_height = G:next(1, 4)^2
+        r.max_height = r.min_height + G:next(1, 5)^2
+    else
+        r.min_height = G:next(1, 6)^2 - 18
+        r.max_height = r.min_height + G:next(1, 6)^2
+    end
     r.max_plant_height = 2
     r.max_plant_depth = 1
     return r

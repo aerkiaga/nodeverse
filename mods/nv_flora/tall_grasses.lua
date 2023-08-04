@@ -48,7 +48,7 @@ function nv_flora.get_tall_grass_meta(seed, index)
     if meta.life == "lush" then
         r.density = 1/(G:next(2, 10)^2)
     else
-        r.density = 1/(G:next(8, 20)^2)
+        r.density = 1/(G:next(10, 20)^2)
     end
     r.seed = 638262
     r.side = 1
@@ -59,11 +59,17 @@ function nv_flora.get_tall_grass_meta(seed, index)
     local color_group = math.floor((r.color - 1) / 8) + 1
     local plant_type_nodes = gen_weighted(G, {
         [nv_flora.node_types.cane_grass] = 1,
-        [nv_flora.node_types.thick_grass] = 1
+        [nv_flora.node_types.thick_grass] = 1,
+        [nv_flora.node_types.ball_grass] = 1
     })
     r.node = plant_type_nodes[color_group]
-    r.min_height = G:next(1, 4)^2
-    r.max_height = r.min_height + G:next(1, 4)^2
+    if meta.has_oceans then
+        r.min_height = G:next(1, 4)^2
+        r.max_height = r.min_height + G:next(1, 3)^2
+    else
+        r.min_height = G:next(1, 6)^2 - 18
+        r.max_height = r.min_height + G:next(1, 5)^2
+    end
     r.max_plant_height = 5
     r.max_plant_depth = 1
     return r
