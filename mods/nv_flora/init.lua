@@ -28,6 +28,12 @@ local function cane_callback(
     end
     local grass_height = 3 + math.floor((x % 4) / 2 - 0.5)
     local yrot = (x * 23 + z * 749) % 24
+    local color = mapping.seed % 64 + 1
+    if color > 48 then
+        color = color - 16
+    end
+    local color_group = math.floor((color - 1) / 8) + 1
+    local color_index = color % 8
     for y=maxp.y,minp.y,-1 do
         if y + mapping.offset.y < ground + 1 + grass_height then
             local i = area:index(x, y, z)
@@ -42,8 +48,8 @@ local function cane_callback(
                 replaceable = buildable
             end
             if replaceable then
-                A[i] = nv_flora.node_types.tall_grasses[mapping.seed % 6 + 1]
-                A2[i] = yrot
+                A[i] = nv_flora.node_types.cane_grasses[color_group]
+                A2[i] = yrot + color_index * 32
             end
         elseif y + mapping.offset.y < ground then
             break

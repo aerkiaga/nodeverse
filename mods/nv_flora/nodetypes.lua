@@ -59,7 +59,7 @@ Allocated: 6
 ]]--
 
 local function register_tall_grasses()
-    nv_flora.node_types.tall_grasses = {}
+    nv_flora.node_types.cane_grasses = {}
     -- CANE GRASS
     -- Rigid bamboo-like canes
     -- 48 grass colors as palette and nodetype
@@ -91,7 +91,7 @@ local function register_tall_grasses()
         } end
     )
     for n=1,6 do
-        table.insert(nv_flora.node_types.tall_grasses, minetest.get_content_id(string.format("nv_flora:cane_grass%d", n)))
+        table.insert(nv_flora.node_types.cane_grasses, minetest.get_content_id(string.format("nv_flora:cane_grass%d", n)))
     end
 end
 
