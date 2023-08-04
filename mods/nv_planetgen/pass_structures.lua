@@ -36,14 +36,31 @@ Structure format:
 ]]--
 
 local registered_structures = {}
-function nv_planetgen.register_structure(def)
-    for n, structure in ipairs(registered_structures) do
+local function register_structure(seed, def)
+    registered_structures[seed] = registered_structures[seed] or {}
+    for n, structure in ipairs(registered_structures[seed]) do
         if structure.order > def.order then
-            table.insert(registered_structures, n, def)
+            table.insert(registered_structures[seed], n, def)
             break
         end
     end
-    table.insert(registered_structures, def)
+    table.insert(registered_structures[seed], def)
+end
+
+local structure_handlers = {}
+-- The callback will get a seed and must return a list of structures
+function nv_planetgen.register_structure_handler(callback)
+    table.insert(structure_handlers, callback)
+end
+
+local function get_registered_structures(seed)
+    registered_structures[seed] = {}
+    for _, callback in ipairs(structure_handlers) do
+        local structures = callback(seed)
+        for _, structure in ipairs(structures) do
+            register_structure(seed, structure)
+        end
+    end
 end
 
 --[[
@@ -51,9 +68,13 @@ end
 ]]--
 
 function nv_planetgen.pass_structures(
-    minp_abs, maxp_abs, area, offset, A, A1, A2, mapping, planet
+    minp_abs, maxp_abs, area, offset, A, A1, A2, mapping, planet, ground_buffer
 )
-    for _, structure in ipairs(registered_structures) do
+    local seed = mapping.seed
+    if registered_structures[seed] == nil then
+        get_registered_structures(seed)
+    end
+    for _, structure in ipairs(registered_structures[seed]) do
         local test_minx = minp_abs.x - structure.side
         local test_minz = minp_abs.z - structure.side
         local test_maxx = maxp_abs.x

@@ -116,7 +116,7 @@ function nv_planetgen.generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping
         end
         nv_planetgen.pass_caves(new_minp, new_maxp, area, offset, A, A2, planet)
     end
-    nv_planetgen.pass_structures(minp, maxp, area, offset, A, A1, A2, mapping, planet)
+    nv_planetgen.pass_structures(minp, maxp, area, offset, A, A1, A2, mapping, planet, ground_buffer)
     nv_planetgen.pass_final(minp, maxp, area, offset, A, A1, A2, mapping, planet, ground_buffer)
 end
 

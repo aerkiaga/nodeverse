@@ -19,8 +19,12 @@ local function test_callback(
     end
 end
 
-nv_planetgen.register_structure({
-    density = 1/100,
-    side = 1,
-    callback = test_callback
-})
+local function test_handler(seed)
+    return {{
+        density = 1/100,
+        side = 1,
+        callback = test_callback
+    }}
+end
+
+nv_planetgen.register_structure_handler(test_handler)
