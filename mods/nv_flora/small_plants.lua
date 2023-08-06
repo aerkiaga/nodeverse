@@ -17,19 +17,20 @@ local function small_callback(
     local color_index = (custom.color - 1) % 8
     for y=math.max(ground - mapping.offset.y, minp.y),math.min(ground + 1 - mapping.offset.y, maxp.y),1 do
         local i = area:index(x, y, z)
+        local node_name = minetest.get_name_from_content_id(A[i])
         if y + mapping.offset.y == ground then
             if A[i] == nil
             or A[i] == minetest.CONTENT_AIR
-            or not minetest.registered_nodes[minetest.get_name_from_content_id(A[i])].walkable then
+            or node_name == "nv_planetgen:ice"
+            or not minetest.registered_nodes[node_name].walkable then
                 return
             end
         else
             if A[i] == nil
             or A[i] == minetest.CONTENT_AIR
-            or minetest.get_name_from_content_id(A[i]) == "nv_planetgen:snow" then
+            or node_name == "nv_planetgen:snow" then
                 A[i] = custom.node
                 A2[i] = yrot + color_index * 32
-                break
             end
         end
     end

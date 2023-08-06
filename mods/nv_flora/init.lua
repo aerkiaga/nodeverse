@@ -12,6 +12,7 @@ nv_flora = {}
 dofile(minetest.get_modpath("nv_flora") .. "/nodetypes.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/small_plants.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/tall_grasses.lua")
+dofile(minetest.get_modpath("nv_flora") .. "/cave_plants.lua")
 
 function get_planet_plant_colors(seed)
     local G = PcgRandom(seed, seed)
@@ -39,11 +40,13 @@ local function get_plant_meta(seed, index)
     if meta.life == "lush" then
         plant_type_handler = gen_weighted(G, {
             [nv_flora.get_small_plant_meta] = 70,
+            [nv_flora.get_cave_plant_meta] = 30,
             [nv_flora.get_tall_grass_meta] = 30
         })
     else
         plant_type_handler = gen_weighted(G, {
             [nv_flora.get_small_plant_meta] = 70,
+            [nv_flora.get_cave_plant_meta] = 20,
             [nv_flora.get_tall_grass_meta] = 15
         })
     end
