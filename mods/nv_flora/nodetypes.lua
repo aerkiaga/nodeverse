@@ -123,10 +123,12 @@ local function register_small_plants()
     for n=1,6 do
         table.insert(nv_flora.node_types.fern_plant, minetest.get_content_id(string.format("nv_flora:fern_plant%d", n)))
     end
-    
+end
+
+local function register_small_mushrooms()
     nv_flora.node_types.thin_mushroom = {}
     -- THIN MUSHROOM
-    -- A glowing mushroom with a long, thin stem and s small cap
+    -- A glowing mushroom with a long, thin stem and a small cap
     -- 32 grass colors as palette and nodetype
     register_color_variants(
         "thin_mushroom", 4,
@@ -141,7 +143,7 @@ local function register_small_plants()
             paramtype = "light",
             paramtype2 = "colordegrotate",
             place_param2 = 0,
-            light_source = 8,
+            light_source = 7,
             sunlight_propagates = true,
             walkable = false,
             buildable_to = true,
@@ -153,6 +155,67 @@ local function register_small_plants()
     )
     for n=1,4 do
         table.insert(nv_flora.node_types.thin_mushroom, minetest.get_content_id(string.format("nv_flora:thin_mushroom%d", n)))
+    end
+    
+    nv_flora.node_types.small_mushroom = {}
+    -- SMALL MUSHROOM
+    -- A small, asymmetrical mushroom
+    -- 32 grass colors as palette and nodetype
+    register_color_variants(
+        "small_mushroom", 4,
+        function (x) return {r = 0, g = 0, b = 0} end,
+        function (n, color) return {
+            drawtype = "plantlike",
+            visual_scale = 1.0,
+            tiles = {
+                "nv_small_mushroom.png"
+            },
+            palette = string.format("nv_palette_grass%d.png", n),
+            paramtype = "light",
+            paramtype2 = "colordegrotate",
+            place_param2 = 0,
+            sunlight_propagates = true,
+            walkable = false,
+            buildable_to = true,
+            selection_box = {
+                type = "fixed",
+                fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
+            }
+        } end
+    )
+    for n=1,4 do
+        table.insert(nv_flora.node_types.small_mushroom, minetest.get_content_id(string.format("nv_flora:small_mushroom%d", n)))
+    end
+    
+    nv_flora.node_types.trumpet_mushroom = {}
+    -- TRUMPET MUSHROOM
+    -- A large, trumpet-shaped glowing mushroom
+    -- 32 grass colors as palette and nodetype
+    register_color_variants(
+        "trumpet_mushroom", 4,
+        function (x) return {r = 0, g = 0, b = 0} end,
+        function (n, color) return {
+            drawtype = "plantlike",
+            visual_scale = 1.0,
+            tiles = {
+                "nv_trumpet_mushroom.png"
+            },
+            palette = string.format("nv_palette_grass%d.png", n),
+            paramtype = "light",
+            paramtype2 = "colordegrotate",
+            place_param2 = 0,
+            light_source = 11,
+            sunlight_propagates = true,
+            walkable = false,
+            buildable_to = true,
+            selection_box = {
+                type = "fixed",
+                fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
+            }
+        } end
+    )
+    for n=1,4 do
+        table.insert(nv_flora.node_types.trumpet_mushroom, minetest.get_content_id(string.format("nv_flora:trumpet_mushroom%d", n)))
     end
 end
 
@@ -276,6 +339,7 @@ parameter 'n' of 'def_fn' to choose.
 nv_flora.node_types = {}
 function nv_flora.register_all_nodes()
     register_small_plants()
+    register_small_mushrooms()
     register_tall_grasses()
 end
 

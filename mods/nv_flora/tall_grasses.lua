@@ -24,16 +24,24 @@ local function grass_callback(
             or not minetest.registered_nodes[minetest.get_name_from_content_id(A[i])].walkable then
                 return
             end
-        elseif y + mapping.offset.y < ground + 1 + grass_height then
-            if A[i] == nil
+        else
+            if not(A[i] == nil
             or A[i] == minetest.CONTENT_AIR
-            or minetest.get_name_from_content_id(A[i]) == "nv_planetgen:snow" then
-                A[i] = custom.node
-                if custom.is_colorful then
-                    A2[i] = yrot + (color_index + math.floor((y + mapping.offset.y - ground) / 2)) % 48 * 32
-                else
-                    A2[i] = yrot + color_index * 32
-                end
+            or minetest.get_name_from_content_id(A[i]) == "nv_planetgen:snow") then
+                return
+            end
+        end
+    end
+    for y=math.max(ground + 1 - mapping.offset.y, minp.y),math.min(ground + grass_height - mapping.offset.y, maxp.y),1 do
+        local i = area:index(x, y, z)
+        if A[i] == nil
+        or A[i] == minetest.CONTENT_AIR
+        or minetest.get_name_from_content_id(A[i]) == "nv_planetgen:snow" then
+            A[i] = custom.node
+            if custom.is_colorful then
+                A2[i] = yrot + (color_index + math.floor((y + mapping.offset.y - ground) / 2)) % 48 * 32
+            else
+                A2[i] = yrot + color_index * 32
             end
         end
     end

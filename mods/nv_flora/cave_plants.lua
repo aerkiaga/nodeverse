@@ -50,11 +50,12 @@ function nv_flora.get_cave_plant_meta(seed, index)
         r.color = math.floor(r.color / 2)
     end
     plant_type_nodes = gen_weighted(G, {
-        [nv_flora.node_types.thin_mushroom] = 1
+        [nv_flora.node_types.thin_mushroom] = 1,
+        [nv_flora.node_types.trumpet_mushroom] = 1
     })
     local color_group = math.floor((r.color - 1) / 8) + 1
     r.node = plant_type_nodes[color_group]
-    r.max_height = 200
+    r.max_height = G:next(1, 4)^2 - 8
     r.min_height = -G:next(1, 6)^2
     return r
 end
