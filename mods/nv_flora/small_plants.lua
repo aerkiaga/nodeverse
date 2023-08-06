@@ -15,22 +15,18 @@ local function small_callback(
     end
     local yrot = (x * 23 + z * 749) % 24
     local color_index = (custom.color - 1) % 8
-    for y=maxp.y,minp.y,-1 do
-        if y + mapping.offset.y < ground then
-            break
-        elseif y + mapping.offset.y < ground + 1 + 1 then
-            local i = area:index(x, y, z)
-            local replaceable
-            if A[i] == nil or A[i] == minetest.CONTENT_AIR then
-                replaceable = true
-            else
-                local buildable = minetest.registered_nodes[minetest.get_name_from_content_id(A[i])].buildable_to
-                if buildable == nil then
-                    buildable = false
-                end
-                replaceable = buildable
+    for y=math.max(ground - mapping.offset.y, minp.y),math.min(ground + 1 - mapping.offset.y, maxp.y),1 do
+        local i = area:index(x, y, z)
+        if y + mapping.offset.y == ground then
+            if A[i] == nil
+            or A[i] == minetest.CONTENT_AIR
+            or not minetest.registered_nodes[minetest.get_name_from_content_id(A[i])].walkable then
+                return
             end
-            if replaceable then
+        else
+            if A[i] == nil
+            or A[i] == minetest.CONTENT_AIR
+            or minetest.get_name_from_content_id(A[i]) == "nv_planetgen:snow" then
                 A[i] = custom.node
                 A2[i] = yrot + color_index * 32
                 break
@@ -81,6 +77,6 @@ function nv_flora.get_small_plant_meta(seed, index)
         r.max_height = r.min_height + G:next(1, 6)^2
     end
     r.max_plant_height = 2
-    r.max_plant_depth = 1
+    r.max_plant_depth = 2
     return r
 end

@@ -16,22 +16,18 @@ local function grass_callback(
     local grass_height = 3 + math.floor((x % 4) / 2 - 0.5)
     local yrot = (x * 23 + z * 749) % 24
     local color_index = (custom.color - 1) % 8
-    for y=maxp.y,minp.y,-1 do
-        if y + mapping.offset.y < ground then
-            break
-        elseif y + mapping.offset.y < ground + 1 + grass_height then
-            local i = area:index(x, y, z)
-            local replaceable
-            if A[i] == nil or A[i] == minetest.CONTENT_AIR then
-                replaceable = true
-            else
-                local buildable = minetest.registered_nodes[minetest.get_name_from_content_id(A[i])].buildable_to
-                if buildable == nil then
-                    buildable = false
-                end
-                replaceable = buildable
+    for y=math.max(ground - mapping.offset.y, minp.y),math.min(ground + grass_height - mapping.offset.y, maxp.y),1 do
+        local i = area:index(x, y, z)
+        if y + mapping.offset.y == ground then
+            if A[i] == nil
+            or A[i] == minetest.CONTENT_AIR
+            or not minetest.registered_nodes[minetest.get_name_from_content_id(A[i])].walkable then
+                return
             end
-            if replaceable then
+        elseif y + mapping.offset.y < ground + 1 + grass_height then
+            if A[i] == nil
+            or A[i] == minetest.CONTENT_AIR
+            or minetest.get_name_from_content_id(A[i]) == "nv_planetgen:snow" then
                 A[i] = custom.node
                 if custom.is_colorful then
                     A2[i] = yrot + (color_index + math.floor((y + mapping.offset.y - ground) / 2)) % 48 * 32
@@ -76,6 +72,6 @@ function nv_flora.get_tall_grass_meta(seed, index)
         r.max_height = r.min_height + G:next(1, 5)^2
     end
     r.max_plant_height = 5
-    r.max_plant_depth = 1
+    r.max_plant_depth = 2
     return r
 end
