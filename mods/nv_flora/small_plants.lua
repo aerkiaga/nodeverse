@@ -56,11 +56,22 @@ function nv_flora.get_small_plant_meta(seed, index)
     r.callback = small_callback
     -- Small plant-specific
     r.color = colors[G:next(1, #colors)]
+    r.is_mushroom = gen_weighted(G, {[true] = 1, [false] = 2})
+    local plant_type_nodes
+    if r.is_mushroom then
+        if r.color > 32 then
+            r.color = math.floor(r.color / 2)
+        end
+        plant_type_nodes = gen_weighted(G, {
+            [nv_flora.node_types.thin_mushroom] = 1
+        })
+    else
+        plant_type_nodes = gen_weighted(G, {
+            [nv_flora.node_types.aloe_plant] = 1,
+            [nv_flora.node_types.fern_plant] = 1
+        })
+    end
     local color_group = math.floor((r.color - 1) / 8) + 1
-    local plant_type_nodes = gen_weighted(G, {
-        [nv_flora.node_types.aloe_plant] = 1,
-        [nv_flora.node_types.fern_plant] = 1
-    })
     r.node = plant_type_nodes[color_group]
     if meta.has_oceans then
         r.min_height = G:next(1, 4)^2
