@@ -61,7 +61,8 @@ function nv_flora.get_small_plant_meta(seed, index)
         end
         plant_type_nodes = gen_weighted(G, {
             [nv_flora.node_types.thin_mushroom] = 1,
-            [nv_flora.node_types.small_mushroom] = 1
+            [nv_flora.node_types.small_mushroom] = 1,
+            [nv_flora.node_types.large_mushroom] = 1
         })
     else
         plant_type_nodes = gen_weighted(G, {

@@ -217,6 +217,36 @@ local function register_small_mushrooms()
     for n=1,4 do
         table.insert(nv_flora.node_types.trumpet_mushroom, minetest.get_content_id(string.format("nv_flora:trumpet_mushroom%d", n)))
     end
+    
+    nv_flora.node_types.large_mushroom = {}
+    -- LARGE MUSHROOM
+    -- A short mushroom with a very large, dotted cap
+    -- 32 grass colors as palette and nodetype
+    register_color_variants(
+        "large_mushroom", 4,
+        function (x) return {r = 0, g = 0, b = 0} end,
+        function (n, color) return {
+            drawtype = "plantlike",
+            visual_scale = 1.0,
+            tiles = {
+                "nv_large_mushroom.png"
+            },
+            palette = string.format("nv_palette_grass%d.png", n),
+            paramtype = "light",
+            paramtype2 = "colordegrotate",
+            place_param2 = 0,
+            sunlight_propagates = true,
+            walkable = false,
+            buildable_to = true,
+            selection_box = {
+                type = "fixed",
+                fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
+            }
+        } end
+    )
+    for n=1,4 do
+        table.insert(nv_flora.node_types.large_mushroom, minetest.get_content_id(string.format("nv_flora:large_mushroom%d", n)))
+    end
 end
 
 local function register_tall_grasses()
