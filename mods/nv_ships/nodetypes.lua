@@ -70,7 +70,7 @@ end
 
 minetest.register_entity("nv_ships:ship_node", {on_step = entity_on_step})
 
-local function register_node_and_entity(name, def)
+local function register_nv_ships_node(name, def)
     local node_def = {
         description = def.description or "",
         drawtype = def.drawtype,
@@ -134,7 +134,7 @@ local function register_hull_node_and_entity(name, def)
             --color = default_palette[n],
             drop = "nv_ships:hull_plate" .. n,
         }
-        register_node_and_entity(name .. n, colored_def)
+        register_nv_ships_node(name .. n, colored_def)
     end
 end
 
@@ -144,7 +144,7 @@ local function register_hull_variants(name, def)
     def2.overlay_tiles = nil
     def2.groups = table.copy(def.groups)
     def2.groups.ship_scaffold = 1
-    register_node_and_entity(name, def2)
+    register_nv_ships_node(name, def2)
     local def3 = table.copy(def)
     def3.tiles = {def.nv_texture .. "_hull.png"}
     def3.overlay_tiles = {def.nv_texture .. "_hull_overlay.png"}
@@ -358,7 +358,7 @@ register_hull_variants("turbo_engine", {
 -- LANDING LEG
 -- A retractable landing leg for spacecraft
 -- Has no entity form
-register_node_and_entity("landing_leg", {
+register_nv_ships_node("landing_leg", {
     description = "Landing leg",
     drawtype = "mesh",
     sunlight_propagates = true,
@@ -383,7 +383,7 @@ register_node_and_entity("landing_leg", {
 -- A glass square cutting a node-shaped space in half
 -- Should be unobtainable
 -- TODO: handle side faces being visible with multiple connected panes
-register_node_and_entity("glass_face", {
+register_nv_ships_node("glass_face", {
     description = "Glass face",
     drawtype = "mesh",
     sunlight_propagates = true,
@@ -412,7 +412,7 @@ register_node_and_entity("glass_face", {
 -- GLASS EDGE
 -- Two perpendicular glass rectangles separating a quadrant of a node
 -- Should be unobtainable
-register_node_and_entity("glass_edge", {
+register_nv_ships_node("glass_edge", {
     description = "Glass edge",
     drawtype = "mesh",
     sunlight_propagates = true,
@@ -443,7 +443,7 @@ register_node_and_entity("glass_edge", {
 -- GLASS VERTEX
 -- Three perpendicular glass squares separating an octant of a node
 -- Should be unobtainable
-register_node_and_entity("glass_vertex", {
+register_nv_ships_node("glass_vertex", {
     description = "Glass vertex",
     drawtype = "mesh",
     sunlight_propagates = true,
