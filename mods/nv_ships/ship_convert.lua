@@ -31,6 +31,18 @@ function nv_ships.ship_to_entity(ship, player, remove)
     end
 
     local function to_entity_rotation(param2, facing)
+        -- Table copied from https://github.com/minetest/minetest/pull/11932
+        local rotate_param2_y = {
+		    [0] = 3, 0, 1, 2,
+		    19, 16, 17, 18,
+		    15, 12, 13, 14,
+		    7, 4, 5, 6,
+		    11, 8, 9, 10,
+		    21, 22, 23, 20
+	    }
+	    for n= 1,facing do
+	        param2 = rotate_param2_y[param2]
+	    end
         local rotation_table = {
             [0] = {x=0, y=0, z=0},      [1] = {x=0, y=90, z=0},
             [2] = {x=0, y=180, z=0},    [3] = {x=0, y=270, z=0},
@@ -45,9 +57,7 @@ function nv_ships.ship_to_entity(ship, player, remove)
             [20] = {x=0, y=0, z=180},   [21] = {x=0, y=90, z=180},
             [22] = {x=0, y=180, z=180}, [23] = {x=0, y=270, z=180},
         }
-        local r = rotation_table[param2]
-        r.y = r.y - facing * 90
-        return r
+        return rotation_table[param2]
     end
 
     ----------------------------------------------------------------------------
