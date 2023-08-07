@@ -47,6 +47,7 @@ function nv_ships.ship_to_entity(ship, player, remove)
         }
         local r = rotation_table[param2]
         r.y = r.y - facing * 90
+
         return r
     end
 
@@ -85,16 +86,65 @@ function nv_ships.ship_to_entity(ship, player, remove)
                     x = x_cockpit_rel, y = y_cockpit_rel, z = z_cockpit_rel
                 })
                 local node_name = ship.An[k]
-                local ent_name = nv_ships.node_name_to_ent_name_dict[node_name]
-                if ent_name ~= nil then
+
+                local def = minetest.registered_nodes[node_name]
+                if def then
                     local pos_abs = {x=x_abs, y=y_abs, z=z_abs}
                     if remove then
                         minetest.remove_node(pos_abs)
                     end
-                    local rotation = to_entity_rotation(ship.A2[k], ship.facing)
-                    if ent_name ~= "" then
-                        local ent = minetest.add_entity(pos_abs, ent_name)
-                        ent:set_attach(player, "", pos_player_rel, rotation, true)
+
+                    local rotation = {x=0, y=0, z=0}
+
+                    if def.paramtype2 == "facedir" then
+                        rotation = to_entity_rotation(ship.A2[k], ship.facing)
+                    end
+
+                    if not def.nv_no_entity then
+                        local use_texture_alpha = (def.use_texture_alpha == "blend")
+
+                        -- “tiles” in node definition and “textures” in entity definition are incompatible
+                        local textures = {}
+
+                        for _, tile in ipairs(def.tiles) do
+                            if type(tile) == "table" then
+                                table.insert(textures, tile.name)
+                            else
+                                table.insert(textures, tile)
+                            end
+                        end
+
+                        if def.drawtype == "mesh" then
+                            local ent = minetest.add_entity(pos_abs, "nv_ships:ship_node")
+                            ent:set_attach(player, "", pos_player_rel, rotation, true)
+
+                            ent:set_properties({
+                                visual = "mesh",
+                                textures = textures,
+                                use_texture_alpha = use_texture_alpha,
+                                visual_size = {x=10, y=10, z=10},
+                                mesh = def.mesh
+                            })
+                        elseif def.drawtype == "normal" then
+                            local ent = minetest.add_entity(pos_abs, "nv_ships:ship_node")
+                            ent:set_attach(player, "", pos_player_rel, rotation, true)
+
+                            -- “cube” uses 6 textures just like a node, but all 6 must be defined
+                            if #textures ~= 6 then
+                                local last = #textures
+
+                                for idx = last + 1, 6 do
+                                    textures[idx] = textures[last]
+                                end
+                            end
+
+                            ent:set_properties({
+                                visual = "cube",
+                                textures = textures,
+                                use_texture_alpha = use_texture_alpha,
+                                visual_size = {x=10, y=10, z=10}
+                            })
+                        end
                     end
                 end
                 k = k + 1

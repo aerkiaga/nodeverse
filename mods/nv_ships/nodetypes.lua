@@ -1,6 +1,5 @@
 --[[
-It is in this file that all spaceship nodes are defined. Each node type is associated
-with an entity type, following a simple naming scheme (e.g. "nv_ships:seat" vs "nv_ships:ent_seat").
+It is in this file that all spaceship nodes are defined.
 
  # INDEX
     CALLBACKS
@@ -51,8 +50,6 @@ end
  # COMMON REGISTRATION
 ]]
 
-nv_ships.node_name_to_ent_name_dict = {}
-
 local function colorize_tiles(tiles, overlay_tiles, color)
     local r = {}
     for n=1, #(tiles or {}) do
@@ -71,7 +68,9 @@ local function colorize_tiles(tiles, overlay_tiles, color)
     return r
 end
 
-local function register_node_and_entity(name, def)
+minetest.register_entity("nv_ships:ship_node", {on_step = entity_on_step})
+
+local function register_nv_ships_node(name, def)
     local node_def = {
         description = def.description or "",
         drawtype = def.drawtype,
@@ -95,31 +94,10 @@ local function register_node_and_entity(name, def)
         can_dig = can_dig_normal,
         on_punch = def.on_punch,
         on_rightclick = nv_ships.ship_rightclick_callback,
+        nv_no_entity = def.nv_no_entity
     }
     node_def.groups.nv_ships = 1
     minetest.register_node("nv_ships:" .. name, node_def)
-
-    local ent_use_texture_alpha = false
-    if def.use_texture_alpha == "blend" then
-        ent_use_texture_alpha = true
-    end
-    local ent_def = {
-        initial_properties = {
-            visual = "mesh",
-            textures = def.tiles,
-            use_texture_alpha = ent_use_texture_alpha,
-            visual_size = {x=10, y=10, z=10},
-            mesh = def.mesh
-        },
-        on_step = entity_on_step
-    }
-    minetest.register_entity("nv_ships:ent_" .. name, ent_def)
-
-    if def.nv_no_entity then
-        nv_ships.node_name_to_ent_name_dict["nv_ships:" .. name] = ""
-    else
-        nv_ships.node_name_to_ent_name_dict["nv_ships:" .. name] = "nv_ships:ent_" .. name
-    end
 end
 
 local function register_hull_node_and_entity(name, def)
@@ -156,7 +134,7 @@ local function register_hull_node_and_entity(name, def)
             --color = default_palette[n],
             drop = "nv_ships:hull_plate" .. n,
         }
-        register_node_and_entity(name .. n, colored_def)
+        register_nv_ships_node(name .. n, colored_def)
     end
 end
 
@@ -166,7 +144,7 @@ local function register_hull_variants(name, def)
     def2.overlay_tiles = nil
     def2.groups = table.copy(def.groups)
     def2.groups.ship_scaffold = 1
-    register_node_and_entity(name, def2)
+    register_nv_ships_node(name, def2)
     local def3 = table.copy(def)
     def3.tiles = {def.nv_texture .. "_hull.png"}
     def3.overlay_tiles = {def.nv_texture .. "_hull_overlay.png"}
@@ -380,7 +358,7 @@ register_hull_variants("turbo_engine", {
 -- LANDING LEG
 -- A retractable landing leg for spacecraft
 -- Has no entity form
-register_node_and_entity("landing_leg", {
+register_nv_ships_node("landing_leg", {
     description = "Landing leg",
     drawtype = "mesh",
     sunlight_propagates = true,
@@ -405,7 +383,7 @@ register_node_and_entity("landing_leg", {
 -- A glass square cutting a node-shaped space in half
 -- Should be unobtainable
 -- TODO: handle side faces being visible with multiple connected panes
-register_node_and_entity("glass_face", {
+register_nv_ships_node("glass_face", {
     description = "Glass face",
     drawtype = "mesh",
     sunlight_propagates = true,
@@ -434,7 +412,7 @@ register_node_and_entity("glass_face", {
 -- GLASS EDGE
 -- Two perpendicular glass rectangles separating a quadrant of a node
 -- Should be unobtainable
-register_node_and_entity("glass_edge", {
+register_nv_ships_node("glass_edge", {
     description = "Glass edge",
     drawtype = "mesh",
     sunlight_propagates = true,
@@ -465,7 +443,7 @@ register_node_and_entity("glass_edge", {
 -- GLASS VERTEX
 -- Three perpendicular glass squares separating an octant of a node
 -- Should be unobtainable
-register_node_and_entity("glass_vertex", {
+register_nv_ships_node("glass_vertex", {
     description = "Glass vertex",
     drawtype = "mesh",
     sunlight_propagates = true,
