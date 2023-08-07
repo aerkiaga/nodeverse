@@ -62,7 +62,7 @@ local function tree_callback(
                         A2[i] = yrot + custom.leaves_color * 4
                     end
                 end
-                length = length + math.sqrt(delta_x^2 + delta_y^2 + delta_z^2)
+                length = length + math.sqrt(delta_x^2 + delta_y^2 + delta_z^2) / 2
                 cur_x = cur_x + delta_x / 2
                 cur_y = cur_y + delta_y / 2
                 cur_z = cur_z + delta_z / 2
@@ -106,12 +106,12 @@ function nv_flora.get_tree_meta(seed, index)
         r.min_height = G:next(1, 6)^2 - 18
         r.max_height = r.min_height + G:next(1, 5)^2
     end
-    r.stem_height = G:next(2, 4)^2
-    r.ray_length = G:next(3, r.stem_height)
+    r.stem_height = G:next(2, 5)^2
+    r.ray_length = G:next(4, r.stem_height + 2)
     r.ray_count = G:next(2, 6)^2 + G:next(1, 4)
     r.row_count = G:next(1, 5)^2
     r.min_pitch = gen_linear(G, -math.pi / 2, 0)
-    r.max_pitch = gen_linear(G, r.min_pitch, math.pi / 2)
+    r.max_pitch = gen_linear(G, 2 * r.min_pitch / 3 + math.pi / 6, math.pi / 2)
     r.ray_twist = gen_linear(G, 0, 2 * math.pi / r.ray_count)
     r.ray_fall = gen_linear(G, -0.5, 0)
     r.side = 2 * r.ray_length + 1

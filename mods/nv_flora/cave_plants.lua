@@ -35,9 +35,9 @@ function nv_flora.get_cave_plant_meta(seed, index)
     local colors = get_planet_plant_colors(seed)
     -- General
     if meta.life == "lush" then
-        r.density = 1/(G:next(2, 4)^2)
+        r.density = 1/(G:next(3, 5)^2)
     else
-        r.density = 1/(G:next(4, 12)^2)
+        r.density = 1/(G:next(5, 12)^2)
     end
     r.seed = 5646457 + index
     r.side = 1

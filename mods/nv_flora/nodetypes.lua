@@ -376,8 +376,8 @@ local function register_stems()
             tiles = {
                 "nv_veiny_stem_top.png",
                 "nv_veiny_stem_top.png",
-                "nv_veiny_stem.png^[transformFX",
-                "nv_veiny_stem.png^[transformFX",
+                "nv_veiny_stem.png^[transformFY",
+                "nv_veiny_stem.png^[transformFY",
                 "nv_veiny_stem.png",
                 "nv_veiny_stem.png"
             },
@@ -404,8 +404,8 @@ local function register_stems()
             tiles = {
                 "nv_woody_stem_top.png",
                 "nv_woody_stem_top.png",
-                "nv_woody_stem.png^[transformFX",
-                "nv_woody_stem.png^[transformFX",
+                "nv_woody_stem.png^[transformFY",
+                "nv_woody_stem.png^[transformFY",
                 "nv_woody_stem.png",
                 "nv_woody_stem.png"
             },
