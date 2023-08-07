@@ -1,6 +1,5 @@
 --[[
-It is in this file that all spaceship nodes are defined. Each node type is associated
-with an entity type, following a simple naming scheme (e.g. "nv_ships:seat" vs "nv_ships:ent_seat").
+It is in this file that all spaceship nodes are defined.
 
  # INDEX
     CALLBACKS
@@ -51,8 +50,6 @@ end
  # COMMON REGISTRATION
 ]]
 
-nv_ships.node_name_to_ent_name_dict = {}
-
 local function colorize_tiles(tiles, overlay_tiles, color)
     local r = {}
     for n=1, #(tiles or {}) do
@@ -70,6 +67,8 @@ local function colorize_tiles(tiles, overlay_tiles, color)
     end
     return r
 end
+
+minetest.register_entity("nv_ships:ship_node", {on_step = entity_on_step})
 
 local function register_node_and_entity(name, def)
     local node_def = {
@@ -95,31 +94,10 @@ local function register_node_and_entity(name, def)
         can_dig = can_dig_normal,
         on_punch = def.on_punch,
         on_rightclick = nv_ships.ship_rightclick_callback,
+        nv_no_entity = def.nv_no_entity
     }
     node_def.groups.nv_ships = 1
     minetest.register_node("nv_ships:" .. name, node_def)
-
-    local ent_use_texture_alpha = false
-    if def.use_texture_alpha == "blend" then
-        ent_use_texture_alpha = true
-    end
-    local ent_def = {
-        initial_properties = {
-            visual = "mesh",
-            textures = def.tiles,
-            use_texture_alpha = ent_use_texture_alpha,
-            visual_size = {x=10, y=10, z=10},
-            mesh = def.mesh
-        },
-        on_step = entity_on_step
-    }
-    minetest.register_entity("nv_ships:ent_" .. name, ent_def)
-
-    if def.nv_no_entity then
-        nv_ships.node_name_to_ent_name_dict["nv_ships:" .. name] = ""
-    else
-        nv_ships.node_name_to_ent_name_dict["nv_ships:" .. name] = "nv_ships:ent_" .. name
-    end
 end
 
 local function register_hull_node_and_entity(name, def)
