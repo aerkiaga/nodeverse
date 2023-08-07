@@ -125,7 +125,7 @@ function nv_ships.ship_to_entity(ship, player, remove)
                                 visual_size = {x=10, y=10, z=10},
                                 mesh = def.mesh
                             })
-                        elseif def.drawtype == "cube" then
+                        elseif def.drawtype == "normal" then
                             local ent = minetest.add_entity(pos_abs, "nv_ships:ship_node")
                             ent:set_attach(player, "", pos_player_rel, rotation, true)
 
