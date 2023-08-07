@@ -54,13 +54,20 @@ end
 --[[
  # NODE TYPES
 Allocated: 30
-6  .... small plant
+12 .... small plants
 6           aloe_plant
 6           fern_plant
-6  .... tall grass
+24 .... small mushrooms
+6           thin mushroom
+6           small mushroom
+6           trumpet mushroom
+6           large mushroom
+6  .... tall grasses
 6           cane_grass
 6           thick_grass
 6           ball_grass
+1  .... stems
+1           veiny_stem
 ]]--
 
 local function register_small_plants()
@@ -356,6 +363,67 @@ local function register_tall_grasses()
     end
 end
 
+local function register_stems()
+    nv_flora.node_types.veiny_stem = {}
+    -- VEINY STEM
+    -- Thick stem with veiny surface
+    -- 48 grass colors as palette
+    register_color_variants(
+        "veiny_stem", 1,
+        function (x) return {r = 0, g = 0, b = 0} end,
+        function (n, color) return {
+            drawtype = "normal",
+            tiles = {
+                "nv_veiny_stem_top.png",
+                "nv_veiny_stem_top.png",
+                "nv_veiny_stem.png^[transformFX",
+                "nv_veiny_stem.png^[transformFX",
+                "nv_veiny_stem.png",
+                "nv_veiny_stem.png"
+            },
+            palette = "nv_palette_grass.png",
+            paramtype = "light",
+            paramtype2 = "color4dir",
+            place_param2 = 0,
+            sunlight_propagates = false,
+            walkable = true,
+            buildable_to = false
+        } end
+    )
+    nv_flora.node_types.veiny_stem = minetest.get_content_id("nv_flora:veiny_stem")
+end
+
+local function register_leaves()
+    nv_flora.node_types.soft_leaves = {}
+    -- SOFT LEAVES
+    -- Leaves with a soft appearance
+    -- 48 grass colors as palette
+    register_color_variants(
+        "soft_leaves", 1,
+        function (x) return {r = 0, g = 0, b = 0} end,
+        function (n, color) return {
+            drawtype = "normal",
+            tiles = {
+                "nv_soft_leaves.png",
+                "nv_soft_leaves.png",
+                "nv_soft_leaves.png^[transformFX^[transformFY",
+                "nv_soft_leaves.png^[transformFX",
+                "nv_soft_leaves.png",
+                "nv_soft_leaves.png^[transformFY"
+            },
+            use_texture_alpha = "clip",
+            palette = "nv_palette_grass.png",
+            paramtype = "light",
+            paramtype2 = "color4dir",
+            place_param2 = 0,
+            sunlight_propagates = true,
+            walkable = true,
+            buildable_to = false
+        } end
+    )
+    nv_flora.node_types.soft_leaves = minetest.get_content_id("nv_flora:soft_leaves")
+end
+
 --[[
  # REGISTRATION
 Color variants can be generated in two ways: one involves creating a color
@@ -371,6 +439,8 @@ function nv_flora.register_all_nodes()
     register_small_plants()
     register_small_mushrooms()
     register_tall_grasses()
+    register_stems()
+    register_leaves()
 end
 
 nv_flora.register_all_nodes()

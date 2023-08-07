@@ -13,6 +13,7 @@ dofile(minetest.get_modpath("nv_flora") .. "/nodetypes.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/small_plants.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/tall_grasses.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/cave_plants.lua")
+dofile(minetest.get_modpath("nv_flora") .. "/trees.lua")
 
 function get_planet_plant_colors(seed)
     local G = PcgRandom(seed, seed)
@@ -41,13 +42,15 @@ local function get_plant_meta(seed, index)
         plant_type_handler = gen_weighted(G, {
             [nv_flora.get_small_plant_meta] = 70,
             [nv_flora.get_cave_plant_meta] = 30,
-            [nv_flora.get_tall_grass_meta] = 30
+            [nv_flora.get_tall_grass_meta] = 30,
+            [nv_flora.get_tree_meta] = 30
         })
     else
         plant_type_handler = gen_weighted(G, {
             [nv_flora.get_small_plant_meta] = 70,
             [nv_flora.get_cave_plant_meta] = 20,
-            [nv_flora.get_tall_grass_meta] = 15
+            [nv_flora.get_tall_grass_meta] = 15,
+            [nv_flora.get_tree_meta] = 40
         })
     end
     return plant_type_handler(seed, index)
@@ -58,9 +61,9 @@ local function plant_handler(seed)
     local meta = generate_planet_metadata(seed)
     local plant_count = 0
     if meta.life == "normal" then
-        plant_count = G:next(10, 15)
+        plant_count = G:next(15, 25)
     elseif meta.life == "lush" then
-        plant_count = G:next(20, 30)
+        plant_count = G:next(30, 50)
     end
     local r = {}
     for index=1,plant_count do

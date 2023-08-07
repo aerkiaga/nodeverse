@@ -1,8 +1,8 @@
 local function grass_callback(
     origin, minp, maxp, area, A, A1, A2, mapping, planet, ground_buffer, custom
 )
-    local x = minp.x
-    local z = minp.z
+    local x = origin.x
+    local z = origin.z
     local base = area.MinEdge
     local extent = area:getExtent()
     local k = (z - base.z) * extent.x + x - base.x + 1
@@ -58,7 +58,7 @@ function nv_flora.get_tall_grass_meta(seed, index)
     else
         r.density = 1/(G:next(10, 20)^2)
     end
-    r.seed = 638262
+    r.seed = 638262 + index
     r.side = 1
     r.order = 100
     r.callback = grass_callback

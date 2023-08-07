@@ -82,7 +82,7 @@ function nv_planetgen.pass_structures(
         local test_minz = minp_abs.z - structure.side
         local test_maxx = maxp_abs.x
         local test_maxz = maxp_abs.z
-        local test_step = math.max(math.floor(structure.side / 10), 1)
+        local test_step = math.max(math.floor(structure.side / 20), 1)
         local test_prob = structure.density * test_step^2 / structure.side^2
         for test_z=test_minz,test_maxz,test_step do
             local planet_z = test_z + mapping.offset.z
@@ -97,13 +97,15 @@ function nv_planetgen.pass_structures(
                         z = math.max(test_z, minp_abs.z)
                     }
                     local maxp = {
-                        x = math.min(test_x + structure.side, maxp_abs.x),
+                        x = math.min(test_x + structure.side - 1, maxp_abs.x),
                         y = maxp_abs.y,
-                        z = math.min(test_z + structure.side, maxp_abs.z)
+                        z = math.min(test_z + structure.side - 1, maxp_abs.z)
                     }
-                    structure.callback(
-                        origin, minp, maxp, area, A, A1, A2, mapping, planet, ground_buffer, structure.custom
-                    )
+                    if minp.x <= maxp.x and minp.z <= maxp.z then
+                        structure.callback(
+                            origin, minp, maxp, area, A, A1, A2, mapping, planet, ground_buffer, structure.custom
+                        )
+                    end
                 end
             end
         end

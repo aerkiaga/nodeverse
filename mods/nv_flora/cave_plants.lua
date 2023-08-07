@@ -39,11 +39,11 @@ function nv_flora.get_cave_plant_meta(seed, index)
     else
         r.density = 1/(G:next(4, 12)^2)
     end
-    r.seed = 5646457
+    r.seed = 5646457 + index
     r.side = 1
     r.order = 100
     r.callback = small_callback
-    -- Small plant-specific
+    -- Cave plant-specific
     r.color = colors[G:next(1, #colors)]
     local plant_type_nodes
     if r.color > 32 then
