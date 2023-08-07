@@ -88,11 +88,12 @@ function nv_flora.get_tree_meta(seed, index)
     r.callback = tree_callback
     -- Tree-specific
     r.stem_color = colors[G:next(1, #colors)]
-    if r.stem_color > 32 then
+    if r.stem_color > 16 then
         r.stem_color = math.floor(r.stem_color / 2)
     end
     r.leaves_color = colors[G:next(1, #colors)]
     r.stem_node = gen_weighted(G, {
+        [nv_flora.node_types.woody_stem] = 2,
         [nv_flora.node_types.veiny_stem] = 1
     })
     r.leaves_node = gen_weighted(G, {
@@ -108,7 +109,7 @@ function nv_flora.get_tree_meta(seed, index)
     r.stem_height = G:next(2, 4)^2
     r.ray_length = G:next(3, r.stem_height)
     r.ray_count = G:next(2, 6)^2 + G:next(1, 4)
-    r.row_count = G:next(1, 6)^2
+    r.row_count = G:next(1, 5)^2
     r.min_pitch = gen_linear(G, -math.pi / 2, 0)
     r.max_pitch = gen_linear(G, r.min_pitch, math.pi / 2)
     r.ray_twist = gen_linear(G, 0, 2 * math.pi / r.ray_count)

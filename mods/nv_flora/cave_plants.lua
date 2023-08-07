@@ -56,6 +56,6 @@ function nv_flora.get_cave_plant_meta(seed, index)
     local color_group = math.floor((r.color - 1) / 8) + 1
     r.node = plant_type_nodes[color_group]
     r.max_height = G:next(1, 4)^2 - 8
-    r.min_height = -G:next(1, 6)^2
+    r.min_height = -G:next(4, 8)^2
     return r
 end

@@ -391,6 +391,34 @@ local function register_stems()
         } end
     )
     nv_flora.node_types.veiny_stem = minetest.get_content_id("nv_flora:veiny_stem")
+    
+    nv_flora.node_types.woody_stem = {}
+    -- WOODY STEM
+    -- Thick stem with wood bark texture
+    -- 32 grass colors as palette
+    register_color_variants(
+        "woody_stem", 1,
+        function (x) return {r = 0, g = 0, b = 0} end,
+        function (n, color) return {
+            drawtype = "normal",
+            tiles = {
+                "nv_woody_stem_top.png",
+                "nv_woody_stem_top.png",
+                "nv_woody_stem.png^[transformFX",
+                "nv_woody_stem.png^[transformFX",
+                "nv_woody_stem.png",
+                "nv_woody_stem.png"
+            },
+            palette = "nv_palette_grass.png",
+            paramtype = "light",
+            paramtype2 = "color4dir",
+            place_param2 = 0,
+            sunlight_propagates = false,
+            walkable = true,
+            buildable_to = false
+        } end
+    )
+    nv_flora.node_types.woody_stem = minetest.get_content_id("nv_flora:woody_stem")
 end
 
 local function register_leaves()
