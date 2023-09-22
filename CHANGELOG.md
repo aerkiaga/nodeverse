@@ -6,6 +6,13 @@ many new features to the game.
 ### Added
  - Mod `nv_flora`.
 
+### Fixed
+ - Incorrect rotation of some node entities on liftoff.
+
+### Performance
+ - Drastically reduced the number of necessary node registrations.
+ - Now uses a single entity type for ships (thanks to Siegmentation Fault).
+
 ## [0.3.1] - 03-08-2023
 ### Fixed
  - Re-encoded the main menu music so it can play.
