@@ -53,21 +53,24 @@ end
 
 --[[
  # NODE TYPES
-Allocated: 30
+Allocated: 45
 12 .... small plants
 6           aloe_plant
 6           fern_plant
 24 .... small mushrooms
-6           thin mushroom
-6           small mushroom
-6           trumpet mushroom
-6           large mushroom
+6           thin_mushroom
+6           small_mushroom
+6           trumpet_mushroom
+6           large_mushroom
 6  .... tall grasses
 6           cane_grass
 6           thick_grass
 6           ball_grass
 1  .... stems
 1           veiny_stem
+2  .... leaves
+1           soft_leaves
+1           smooth_cap
 ]]--
 
 local function register_small_plants()
@@ -450,6 +453,34 @@ local function register_leaves()
         } end
     )
     nv_flora.node_types.soft_leaves = minetest.get_content_id("nv_flora:soft_leaves")
+    
+    nv_flora.node_types.smooth_cap = {}
+    -- SMOOTH CAP
+    -- Smooth, solid, fungus-like material
+    -- 32 grass colors as palette
+    register_color_variants(
+        "smooth_cap", 1,
+        function (x) return {r = 0, g = 0, b = 0} end,
+        function (n, color) return {
+            drawtype = "normal",
+            tiles = {
+                "nv_smooth_cap.png",
+                "nv_smooth_cap.png",
+                "nv_smooth_cap.png^[transformFX^[transformFY",
+                "nv_smooth_cap.png^[transformFX",
+                "nv_smooth_cap.png",
+                "nv_smooth_cap.png^[transformFY"
+            },
+            palette = "nv_palette_grass.png",
+            paramtype = "light",
+            paramtype2 = "color4dir",
+            place_param2 = 0,
+            sunlight_propagates = false,
+            walkable = true,
+            buildable_to = false
+        } end
+    )
+    nv_flora.node_types.smooth_cap = minetest.get_content_id("nv_flora:smooth_cap")
 end
 
 --[[

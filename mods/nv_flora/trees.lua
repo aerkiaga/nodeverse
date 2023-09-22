@@ -87,18 +87,40 @@ function nv_flora.get_tree_meta(seed, index)
     r.order = 100
     r.callback = tree_callback
     -- Tree-specific
+    local planet_weirdness = gen_linear(PcgRandom(index, index), 0.4, 1.8)
+    r.is_mushroom = gen_weighted(G, {[true] = 1 * planet_weirdness, [false] = 2 / planet_weirdness})
     r.stem_color = colors[G:next(1, #colors)]
     if r.stem_color > 16 then
         r.stem_color = math.floor(r.stem_color / 2)
     end
     r.leaves_color = colors[G:next(1, #colors)]
-    r.stem_node = gen_weighted(G, {
-        [nv_flora.node_types.woody_stem] = 2,
-        [nv_flora.node_types.veiny_stem] = 1
-    })
-    r.leaves_node = gen_weighted(G, {
-        [nv_flora.node_types.soft_leaves] = 1
-    })
+    if r.is_mushroom then
+        if r.leaves_color > 16 then
+            r.leaves_color = math.floor(r.leaves_color / 2)
+        end
+        r.stem_node = gen_weighted(G, {
+            [nv_flora.node_types.veiny_stem] = 1
+        })
+        r.leaves_node = gen_weighted(G, {
+            [nv_flora.node_types.smooth_cap] = 1
+        })
+        r.ray_count = G:next(5, 6)^2
+        r.row_count = G:next(1, 2)^2
+    else
+        r.stem_node = gen_weighted(G, {
+            [nv_flora.node_types.woody_stem] = 2,
+            [nv_flora.node_types.veiny_stem] = 1
+        })
+        r.leaves_node = gen_weighted(G, {
+            [nv_flora.node_types.soft_leaves] = 1
+        })
+        r.ray_count = G:next(2, 6)^2 + G:next(1, 4)
+        if r.ray_count >= 9 then
+            r.row_count = G:next(3, 5)^2
+        else
+            r.row_count = G:next(1, 4)^2
+        end
+    end
     if meta.has_oceans then
         r.min_height = G:next(1, 4)^2
         r.max_height = r.min_height + G:next(1, 3)^2
@@ -108,12 +130,14 @@ function nv_flora.get_tree_meta(seed, index)
     end
     r.stem_height = G:next(2, 5)^2
     r.ray_length = G:next(4, r.stem_height + 2)
-    r.ray_count = G:next(2, 6)^2 + G:next(1, 4)
-    r.row_count = G:next(1, 5)^2
     r.min_pitch = gen_linear(G, -math.pi / 2, 0)
     r.max_pitch = gen_linear(G, 2 * r.min_pitch / 3 + math.pi / 6, math.pi / 2)
     r.ray_twist = gen_linear(G, 0, 2 * math.pi / r.ray_count)
-    r.ray_fall = gen_linear(G, -0.5, 0)
+    if r.row_count == 1 then
+        r.ray_fall = gen_linear(G, -0.7, -0.1)
+    else
+        r.ray_fall = gen_linear(G, -0.4, 0.1)
+    end
     r.side = 2 * r.ray_length + 1
     return r
 end
