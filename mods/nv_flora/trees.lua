@@ -12,24 +12,32 @@ local function tree_callback(
         return
     end
     -- Attempt to create stem
-    
+    local stem_min_x = stem_x - math.floor((custom.stem_width - 1) / 2)
+    local stem_min_z = stem_z - math.floor((custom.stem_width - 1) / 2)
+    local stem_max_x = stem_x + math.floor(custom.stem_width / 2)
+    local stem_max_z = stem_z + math.floor(custom.stem_width / 2)
     local stem_height = custom.stem_height + math.floor(((stem_x + stem_z * 45) % 4) / 2 - 0.5)
-    if not (stem_x < minp.x or stem_x > maxp.x
-    or stem_z < minp.z or stem_z > maxp.z) then
-        local k = (stem_z - base.z) * extent.x + stem_x - base.x + 1
-        local ground = math.floor(ground_buffer[k])
-        for y=math.max(ground + 1 - mapping.offset.y, minp.y),math.min(uni_ground + stem_height - mapping.offset.y, maxp.y),1 do
-            local i = area:index(stem_x, y, stem_z)
-            local yrot = (stem_x * 23 + y * 67 + stem_z * 749) % 4
-            if A[i] == nil
-            or A[i] == minetest.CONTENT_AIR
-            or minetest.registered_nodes[minetest.get_name_from_content_id(A[i])].buildable_to then
-                A[i] = custom.stem_node
-                A2[i] = yrot + custom.stem_color * 4
+    for z=math.max(stem_min_z, minp.z),math.min(stem_max_z, maxp.z),1 do
+        for x=math.max(stem_min_x, minp.x),math.min(stem_max_x, maxp.x),1 do
+            local k = (z - base.z) * extent.x + x - base.x + 1
+            local ground = math.floor(ground_buffer[k])
+            for y=math.max(ground + 1 - mapping.offset.y, minp.y),math.min(uni_ground + stem_height - mapping.offset.y, maxp.y),1 do
+                local i = area:index(x, y, z)
+                local yrot = (x * 23 + y * 67 + z * 749) % 4
+                if A[i] == nil
+                or A[i] == minetest.CONTENT_AIR
+                or minetest.registered_nodes[minetest.get_name_from_content_id(A[i])].buildable_to then
+                    A[i] = custom.stem_node
+                    A2[i] = yrot + custom.stem_color * 4
+                end
             end
         end
     end
     -- Create rays
+    if custom.stem_width % 2 == 0 then
+        stem_x = stem_x + 0.5
+        stem_z = stem_z + 0.5
+    end
     for m=1,custom.row_count do
         local pitch = m * (custom.max_pitch - custom.min_pitch) / custom.row_count + custom.min_pitch
         for n=1,custom.ray_count do
@@ -121,6 +129,11 @@ function nv_flora.get_tree_meta(seed, index)
     end
     r.stem_height = G:next(2, 5)^2
     r.ray_length = G:next(4, r.stem_height + 2)
+    if r.ray_length < 9 then
+        r.stem_width = 1
+    else
+        r.stem_width = 2
+    end
     r.min_pitch = gen_linear(G, -math.pi / 2, 0)
     r.max_pitch = gen_linear(G, 2 * r.min_pitch / 3 + math.pi / 6, math.pi / 2)
     r.ray_twist = gen_linear(G, 0, 2 * math.pi / r.ray_count)
