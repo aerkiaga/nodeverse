@@ -3,25 +3,13 @@ local function tree_callback(
 )
     local base = area.MinEdge
     local extent = area:getExtent()
-    -- Get uniformized ground height
-    local uni_ground = 0
-    local count = 0
-    for z=minp.z,maxp.z do
-        for x=minp.x,maxp.x do
-            local k = (z - base.z) * extent.x + x - base.x + 1
-            local ground = ground_buffer[k]
-            uni_ground = uni_ground + ground
-            count = count + 1
-        end
-    end
-    uni_ground = math.floor(uni_ground / count)
-    uni_ground = uni_ground - (uni_ground % 4)
-    if uni_ground < custom.min_height or uni_ground > custom.max_height then
-        return
-    end
-    -- Attempt to create stem
     local stem_x = origin.x + math.floor(custom.side / 2)
     local stem_z = origin.z + math.floor(custom.side / 2)
+    
+    -- Get uniformized ground height
+    local uni_ground = nv_planetgen.get_ground_level(planet, stem_x, stem_z)
+    
+    -- Attempt to create stem
     local stem_height = custom.stem_height + math.floor(((stem_x + stem_z * 45) % 4) / 2 - 0.5)
     if not (stem_x < minp.x or stem_x > maxp.x
     or stem_z < minp.z or stem_z > maxp.z) then

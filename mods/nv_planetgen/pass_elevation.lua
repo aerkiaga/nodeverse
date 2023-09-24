@@ -179,29 +179,80 @@ end
 
 local elevation_ground_buffer = {}
 
+local memoized_generators = {}
+
+local function get_generators(planet)
+    if memoized_generators[planet.seed] == nil then
+        memoized_generators[planet.seed] = {
+            ocean_elevation = PerlinWrapper({
+                offset=0, scale=0.5, spread={x=500, y=500}, seed=planet.seed,
+                octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"
+            }),
+            mountain_roughness = PerlinWrapper({
+                offset=0, scale=0.5, spread={x=300, y=300}, seed=planet.seed,
+                octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"
+            }),
+            mountain_elevation = PerlinWrapper({
+                offset=0, scale=0.5, spread={x=100, y=100}, seed=planet.seed,
+                octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"
+            }),
+            cliff_elevation = PerlinWrapper({
+                offset=0, scale=0.5, spread={x=80, y=80}, seed=planet.seed,
+                octaves=2, persist=0.5, lacunarity=3.0, flags="defaults"
+            }),
+            terrain_roughness = PerlinWrapper({
+                offset=0, scale=0.5, spread={x=16, y=16}, seed=planet.seed,
+                octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"
+            })
+        }
+    end
+    return memoized_generators[planet.seed]
+end
+
+local function compute_ground_level(
+    planet,
+    ocean_elevation,
+    mountain_roughness,
+    mountain_elevation,
+    terrain_roughness,
+    cliff_elevation
+)
+    local ground = 0
+
+    -- Use land/ocean elevation as initial ground level
+    ground = ground + ocean_elevation * 25
+
+    -- Compute mountain roughness and elevation into ground level
+    ground = ground + (mountain_elevation+planet.terrestriality)
+    * (mountain_roughness/(math.abs(mountain_roughness)+0.5) + 1)^2 * 25
+
+    -- Add terrain roughness for high-frequency details
+    ground = ground + terrain_roughness * 2
+    
+    ground = cliff_transfer_function(ground, cliff_elevation * 25, planet)
+
+    if planet.atmosphere == "vacuum" then
+        ground = ground + elevation_compute_craters(x, z, planet)
+    end
+    
+    return ground
+end
+
+function nv_planetgen.get_ground_level(planet, x, z)
+    local generators = get_generators(planet)
+    return compute_ground_level(
+        planet,
+        generators.ocean_elevation:get_2d({x=x, y=z}),
+        generators.mountain_roughness:get_2d({x=x, y=z}),
+        generators.mountain_elevation:get_2d({x=x, y=z}),
+        generators.terrain_roughness:get_2d({x=x, y=z}),
+        generators.cliff_elevation:get_2d({x=x, y=z})
+    )
+end
+
 function nv_planetgen.pass_elevation(minp_abs, maxp_abs, area, offset, A, planet)
     local r = elevation_ground_buffer
-    local Perlin_2d_ocean_elevation = PerlinWrapper({
-        offset=0, scale=0.5, spread={x=500, y=500}, seed=planet.seed,
-        octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"
-    })
-    local Perlin_2d_mountain_roughness = PerlinWrapper({
-        offset=0, scale=0.5, spread={x=300, y=300}, seed=planet.seed,
-        octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"
-    })
-    local Perlin_2d_mountain_elevation = PerlinWrapper({
-        offset=0, scale=0.5, spread={x=100, y=100}, seed=planet.seed,
-        octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"
-    })
-    local Perlin_2d_cliff_elevation = PerlinWrapper({
-        offset=0, scale=0.5, spread={x=80, y=80}, seed=planet.seed,
-        octaves=2, persist=0.5, lacunarity=3.0, flags="defaults"
-    })
-    local Perlin_2d_terrain_roughness = PerlinWrapper({
-        offset=0, scale=0.5, spread={x=16, y=16}, seed=planet.seed,
-        octaves=3, persist=0.5, lacunarity=2.0, flags="defaults"
-    })
-    local abs = math.abs
+    local generators = get_generators(planet)
     local fast_int_hash = fast_int_hash
     local base = area.MinEdge
     local extent = area:getExtent()
@@ -210,24 +261,21 @@ function nv_planetgen.pass_elevation(minp_abs, maxp_abs, area, offset, A, planet
         for x_abs=minp_abs.x, maxp_abs.x do
             local x = x_abs + offset.x
             local ground_comp = {}
-            local ground = 0
             local k = (z_abs - base.z) * extent.x + x_abs - base.x + 1
 
-            -- Use land/ocean elevation as initial ground level
-            ground_comp.ocean_elevation = Perlin_2d_ocean_elevation:get_2d({x=x, y=z})
-            ground = ground + ground_comp.ocean_elevation * 25
-
-            -- Compute mountain roughness and elevation into ground level
-            ground_comp.mountain_roughness = Perlin_2d_mountain_roughness:get_2d({x=x, y=z})
-            ground_comp.mountain_elevation = Perlin_2d_mountain_elevation:get_2d({x=x, y=z})
-            ground = ground + (ground_comp.mountain_elevation+planet.terrestriality)
-            * (ground_comp.mountain_roughness/(abs(ground_comp.mountain_roughness)+0.5) + 1)^2 * 25
-
-            -- Add terrain roughness for high-frequency details
-            ground_comp.terrain_roughness = Perlin_2d_terrain_roughness:get_2d({x=x, y=z})
-            ground = ground + ground_comp.terrain_roughness * 2
+            ground_comp.ocean_elevation = generators.ocean_elevation:get_2d({x=x, y=z})
+            ground_comp.mountain_roughness = generators.mountain_roughness:get_2d({x=x, y=z})
+            ground_comp.mountain_elevation = generators.mountain_elevation:get_2d({x=x, y=z})
+            ground_comp.terrain_roughness = generators.terrain_roughness:get_2d({x=x, y=z})
             
-            ground = cliff_transfer_function(ground, Perlin_2d_cliff_elevation:get_2d({x=x, y=z}) * 25, planet)
+            local ground = compute_ground_level(
+                planet,
+                ground_comp.ocean_elevation,
+                ground_comp.mountain_roughness,
+                ground_comp.mountain_elevation,
+                ground_comp.terrain_roughness,
+                generators.cliff_elevation:get_2d({x=x, y=z})
+            )
 
             if planet.atmosphere == "vacuum" then
                 ground = ground + elevation_compute_craters(x, z, planet)
