@@ -89,7 +89,7 @@ function nv_flora.get_tree_meta(seed, index)
     r.order = 100
     r.callback = tree_callback
     -- Tree-specific
-    local planet_weirdness = gen_linear(PcgRandom(index, index), 0.4, 1.8)
+    local planet_weirdness = gen_linear(PcgRandom(seed, seed), 0.6, 1.6) ^ 3
     r.is_mushroom = gen_weighted(G, {[true] = 1 * planet_weirdness, [false] = 2 / planet_weirdness})
     r.stem_color = colors[G:next(1, #colors)]
     if r.stem_color > 16 then

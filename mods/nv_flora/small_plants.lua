@@ -52,7 +52,7 @@ function nv_flora.get_small_plant_meta(seed, index)
     r.order = 100
     r.callback = small_callback
     -- Small plant-specific
-    local planet_weirdness = gen_linear(PcgRandom(index, index), 0.4, 1.8)
+    local planet_weirdness = gen_linear(PcgRandom(seed, seed), 0.6, 1.6) ^ 3
     r.color = colors[G:next(1, #colors)]
     r.is_mushroom = gen_weighted(G, {[true] = 1 * planet_weirdness, [false] = 2 / planet_weirdness})
     local plant_type_nodes
