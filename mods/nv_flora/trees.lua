@@ -65,7 +65,7 @@ local function tree_callback(
                 cur_x = cur_x + delta_x / 2
                 cur_y = cur_y + delta_y / 2
                 cur_z = cur_z + delta_z / 2
-                delta_y = delta_y + custom.ray_fall / 2
+                delta_y = math.max(delta_y + custom.ray_fall / 2, -1)
             end
         end
     end
