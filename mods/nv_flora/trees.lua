@@ -8,8 +8,11 @@ local function tree_callback(
     
     -- Get uniformized ground height
     local uni_ground = nv_planetgen.get_ground_level(planet, stem_x, stem_z)
-    
+    if uni_ground < custom.min_height or uni_ground > custom.max_height then
+        return
+    end
     -- Attempt to create stem
+    
     local stem_height = custom.stem_height + math.floor(((stem_x + stem_z * 45) % 4) / 2 - 0.5)
     if not (stem_x < minp.x or stem_x > maxp.x
     or stem_z < minp.z or stem_z > maxp.z) then
