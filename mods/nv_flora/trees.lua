@@ -106,7 +106,7 @@ function nv_flora.get_tree_meta(seed, index)
         r.leaves_node = gen_weighted(G, {
             [nv_flora.node_types.smooth_cap] = 1
         })
-        r.ray_count = G:next(5, 6)^2
+        r.ray_count = 100
         r.row_count = G:next(1, 2)^2
     else
         r.stem_node = gen_weighted(G, {
@@ -146,7 +146,7 @@ function nv_flora.get_tree_meta(seed, index)
         r.ray_fall = gen_linear(G, -0.4, 0.1)
     end
     if r.is_mushroom then
-        r.ray_wiggle = 0
+        r.ray_wiggle = gen_linear(G, 0, 0.1) ^ 2
     else
         r.ray_wiggle = gen_linear(G, 0, 0.5) ^ 2
     end
