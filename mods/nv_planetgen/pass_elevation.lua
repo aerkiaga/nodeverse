@@ -210,7 +210,7 @@ local function get_generators(planet)
 end
 
 local function compute_ground_level(
-    planet,
+    planet, x, z,
     ocean_elevation,
     mountain_roughness,
     mountain_elevation,
@@ -241,7 +241,7 @@ end
 function nv_planetgen.get_ground_level(planet, x, z)
     local generators = get_generators(planet)
     return compute_ground_level(
-        planet,
+        planet, x, z,
         generators.ocean_elevation:get_2d({x=x, y=z}),
         generators.mountain_roughness:get_2d({x=x, y=z}),
         generators.mountain_elevation:get_2d({x=x, y=z}),
@@ -269,7 +269,7 @@ function nv_planetgen.pass_elevation(minp_abs, maxp_abs, area, offset, A, planet
             ground_comp.terrain_roughness = generators.terrain_roughness:get_2d({x=x, y=z})
             
             local ground = compute_ground_level(
-                planet,
+                planet, x, z,
                 ground_comp.ocean_elevation,
                 ground_comp.mountain_roughness,
                 ground_comp.mountain_elevation,
