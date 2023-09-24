@@ -24,7 +24,7 @@ local function tree_callback(
             local ground = math.floor(ground_buffer[k])
             for y=math.max(ground + 1 - mapping.offset.y, minp.y),math.min(uni_ground + stem_height - mapping.offset.y, maxp.y),1 do
                 local i = area:index(x, y, z)
-                local yrot = (x * 23 + y * 67 + z * 749) % 4
+                local yrot = ((y * 547 + x + z) % 131) * 583 % 13 % 4
                 if A[i] == nil
                 or A[i] == minetest.CONTENT_AIR
                 or minetest.registered_nodes[minetest.get_name_from_content_id(A[i])].buildable_to then
