@@ -1,6 +1,7 @@
 local function tree_callback(
     origin, minp, maxp, area, A, A1, A2, mapping, planet, ground_buffer, custom
 )
+    local G = PcgRandom(custom.seed, origin.x + 6489 * origin.x)
     local base = area.MinEdge
     local extent = area:getExtent()
     local stem_x = origin.x + math.floor(custom.side / 2)
@@ -65,6 +66,8 @@ local function tree_callback(
                 cur_x = cur_x + delta_x / 2
                 cur_y = cur_y + delta_y / 2
                 cur_z = cur_z + delta_z / 2
+                delta_x = math.max(math.min(delta_x + gen_linear(G, -custom.ray_wiggle, custom.ray_wiggle), 1), -1)
+                delta_z = math.max(math.min(delta_z + gen_linear(G, -custom.ray_wiggle, custom.ray_wiggle), 1), -1)
                 delta_y = math.max(delta_y + custom.ray_fall / 2, -1)
             end
         end
@@ -142,6 +145,11 @@ function nv_flora.get_tree_meta(seed, index)
     else
         r.ray_fall = gen_linear(G, -0.4, 0.1)
     end
-    r.side = 2 * r.ray_length + 1
+    if r.is_mushroom then
+        r.ray_wiggle = 0
+    else
+        r.ray_wiggle = gen_linear(G, 0, 0.5) ^ 2
+    end
+    r.side = 2 * r.ray_length + 3
     return r
 end
