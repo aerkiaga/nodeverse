@@ -5,6 +5,8 @@ many new features to the game.
 
 ### Added
  - Mod `nv_flora`.
+ - Short and tall plants, cave flora, trees and large mushrooms.
+ - 12 kinds of floral nodes.
 
 ### Fixed
  - Incorrect rotation of some node entities on liftoff.
