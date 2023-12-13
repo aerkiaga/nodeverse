@@ -1,4 +1,8 @@
 # Changelog
+## [0.3.2] - 13-12-2023
+### Fixed
+ - Bumped maximum supported engine version to 5.8.
+
 ## [0.3.1] - 03-08-2023
 ### Fixed
  - Re-encoded the main menu music so it can play.
