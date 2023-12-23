@@ -59,7 +59,11 @@ local function tree_callback(
                     if A[i] == nil
                     or A[i] == minetest.CONTENT_AIR then
                         A[i] = custom.leaves_node
-                        A2[i] = yrot + custom.leaves_color * 4
+                        if length > custom.leaves_inner * custom.ray_length and gen_linear(G, 0, 1) < custom.leaves_prob then
+                            A2[i] = yrot + custom.leaves_color2 * 4
+                        else
+                            A2[i] = yrot + custom.leaves_color * 4
+                        end
                     end
                 end
                 length = length + math.sqrt(delta_x^2 + delta_y^2 + delta_z^2) / 2
@@ -96,6 +100,12 @@ function nv_flora.get_tree_meta(seed, index)
         r.stem_color = math.floor(r.stem_color / 2)
     end
     r.leaves_color = colors[G:next(1, #colors)]
+    r.leaves_color2 = colors[G:next(1, #colors)]
+    r.leaves_inner = (G:next(0, 10)/10)^2
+    r.leaves_prob = 0.8 - r.leaves_inner^2
+    if r.leaves_prob < 0.67 then
+        r.leaves_prob = 1
+    end
     if r.is_mushroom then
         if r.leaves_color > 16 then
             r.leaves_color = math.floor(r.leaves_color / 2)
@@ -113,6 +123,7 @@ function nv_flora.get_tree_meta(seed, index)
             [nv_flora.node_types.woody_stem] = 2,
             [nv_flora.node_types.veiny_stem] = 1
         })
+        r.leaves_color2 = r.leaves_color
         r.leaves_node = gen_weighted(G, {
             [nv_flora.node_types.soft_leaves] = 1
         })
