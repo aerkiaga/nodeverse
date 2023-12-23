@@ -8,6 +8,9 @@ many new features to the game.
  - Short and tall plants, cave flora, trees and large mushrooms.
  - 12 kinds of floral nodes.
 
+### Changed
+ - Made caves larger and less common.
+
 ### Fixed
  - Incorrect rotation of some node entities on liftoff.
 
