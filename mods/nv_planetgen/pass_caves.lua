@@ -16,7 +16,7 @@ local function caves_check_block(sides)
     for index=1, 6 do
         if sides[index] then num_openings = num_openings + 1 end
     end
-    return num_openings > 2
+    return num_openings > 0
 end
 
 local caves_def_threshold_buffer = {}
@@ -95,6 +95,12 @@ local function caves_gen_block(
 )
     local block_minp = vec3_add(block_minp_abs, offset)
     local sides = {}
+    
+    local ground_level = nv_planetgen.get_ground_level(planet, block_minp.x + 8, block_minp.z + 8)
+    local is_ground = false
+    if block_minp.y + 16 > ground_level then
+        is_ground = true
+    end
 
     -- Delete a fixed proportion of side openings, depending on planet and depth
     -- The less openings, the less connected and large the caves will be
@@ -106,8 +112,8 @@ local function caves_gen_block(
     S. Wilke 1983 "Bond percolation threshold in the simple cubic lattice"
     ]]--
     local caveness = planet.caveness
-    if block_minp.y < -16*4 then caveness = caveness / 4
-    elseif block_minp.y < -16*2 then caveness = caveness ^ (1/4)
+    if is_ground then caveness = caveness / 8
+    elseif block_minp.y < -16*10 then caveness = 0
     end
     for n=1, 6 do
         local n2 = ((n - 1) % 3) + 1
