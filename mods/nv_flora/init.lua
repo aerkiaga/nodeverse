@@ -39,12 +39,16 @@ local function get_plant_meta(seed, index)
     local meta = generate_planet_metadata(seed)
     local plant_type_handler
     if meta.life == "lush" then
-        plant_type_handler = gen_weighted(G, {
-            [nv_flora.get_small_plant_meta] = 70,
-            [nv_flora.get_cave_plant_meta] = 30,
-            [nv_flora.get_tall_grass_meta] = 30,
-            [nv_flora.get_tree_meta] = 30
-        })
+        if index == 0 then
+            plant_type_handler = nv_flora.get_tree_meta
+        else
+            plant_type_handler = gen_weighted(G, {
+                [nv_flora.get_small_plant_meta] = 70,
+                [nv_flora.get_cave_plant_meta] = 30,
+                [nv_flora.get_tall_grass_meta] = 30,
+                [nv_flora.get_tree_meta] = 20
+            })
+        end
     else
         plant_type_handler = gen_weighted(G, {
             [nv_flora.get_small_plant_meta] = 70,
