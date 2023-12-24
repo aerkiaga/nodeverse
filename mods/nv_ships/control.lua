@@ -242,13 +242,7 @@ local function shutdown_callback()
 end
 
 local function dieplayer_callback(player, last_login)
-    -- TODO: a player's ship(s) should be summoned to the player's spawn site,
-    -- or the player should spawn at their ship's position
     local name = player:get_player_name()
-    local inventory = player:get_inventory()
-    if not inventory:contains_item("main", "nv_ships:seat 1") then
-       inventory:add_item("main", "nv_ships:seat 1")
-    end
     if nv_ships.players_list[name].state ~= nil then
         nv_ships.remove_ship_entity(player)
         make_normal_player(player)
@@ -257,8 +251,19 @@ local function dieplayer_callback(player, last_login)
     end
 end
 
+local function respawnplayer_callback(player)
+    local name = player:get_player_name()
+    ship = nv_ships.players_list[name].ships[1]
+    if ship ~= nil then
+        nv_ships.ship_to_entity(ship, player, true)
+        set_flying_state(ship, player)
+    end
+    return true
+end
+
 minetest.register_globalstep(globalstep_callback)
 minetest.register_on_joinplayer(joinplayer_callback)
 minetest.register_on_leaveplayer(leaveplayer_callback)
 minetest.register_on_dieplayer(dieplayer_callback)
+minetest.register_on_respawnplayer(respawnplayer_callback)
 minetest.register_on_shutdown(shutdown_callback)
