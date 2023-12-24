@@ -12,6 +12,7 @@ many new features to the game.
  - Made caves larger and less common.
 
 ### Fixed
+ - Players being placed in space with no ship upon respwning.
  - Incorrect rotation of some node entities on liftoff.
 
 ### Performance
