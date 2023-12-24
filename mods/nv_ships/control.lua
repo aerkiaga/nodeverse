@@ -111,6 +111,7 @@ local function set_flying_state(ship, player)
     }
     -- TODO: set_eye_offset
     nv_player.set_collisionbox(player, nv_ships.get_ship_collisionbox(ship))
+    nv_ships.players_list[name].cur_ship = ship
     nv_ships.players_list[name].state = "flying"
     nv_ships.players_list[name].sound = minetest.sound_play({
         name = "nv_engine", gain = 0.5, pitch = 1
