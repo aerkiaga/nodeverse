@@ -1,7 +1,8 @@
 # Changelog
 ## [0.4.0] - unreleased
 This is a major release; it breaks compatibility with existing worlds and adds
-many new features to the game.
+many new features to the game. Most fixes and small changes made during its
+development have been ported to the 0.3.x versions.
 
 ### Added
  - Mod `nv_flora`.
@@ -11,13 +12,14 @@ many new features to the game.
 ### Changed
  - Made caves larger and less common.
 
-### Fixed
- - Players being placed in space with no ship upon respawning.
- - Incorrect rotation of some node entities on liftoff.
-
 ### Performance
  - Drastically reduced the number of necessary node registrations.
  - Now uses a single entity type for ships (thanks to Siegmentation Fault).
+
+## [0.3.3] - 24-12-2023
+### Fixed
+ - Players being placed in space with no ship upon respawning.
+ - Incorrect rotation of some node entities on liftoff.
 
 ## [0.3.2] - 13-12-2023
 ### Fixed
