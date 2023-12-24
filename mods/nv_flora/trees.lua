@@ -50,6 +50,7 @@ local function tree_callback(
             local cur_x = stem_x
             local cur_y = uni_ground + stem_height - mapping.offset.y
             local cur_z = stem_z
+            local number = gen_linear(G, 0, 1)
             while length <= custom.ray_length do
                 if not(cur_x < minp.x or cur_x > maxp.x
                 or cur_y < minp.y or cur_y > maxp.y
@@ -58,11 +59,16 @@ local function tree_callback(
                     local yrot = math.floor((cur_x * 23 + cur_y * 67 + cur_z * 749) % 4)
                     if A[i] == nil
                     or A[i] == minetest.CONTENT_AIR then
-                        A[i] = custom.leaves_node
-                        if length > custom.leaves_inner * custom.ray_length and gen_linear(G, 0, 1) < custom.leaves_prob then
-                            A2[i] = yrot + custom.leaves_color2 * 4
+                        if length < 3 - custom.stem_ray_prob and number < custom.stem_ray_prob and (custom.row_count == 1 or m ~= custom.row_count) then
+                            A[i] = custom.stem_node
+                            A2[i] = yrot + custom.stem_color * 4
                         else
-                            A2[i] = yrot + custom.leaves_color * 4
+                            A[i] = custom.leaves_node
+                            if length > custom.leaves_inner * custom.ray_length and gen_linear(G, 0, 1) < custom.leaves_prob then
+                                A2[i] = yrot + custom.leaves_color2 * 4
+                            else
+                                A2[i] = yrot + custom.leaves_color * 4
+                            end
                         end
                     end
                 end
@@ -96,12 +102,13 @@ function nv_flora.get_tree_meta(seed, index)
     local planet_weirdness = gen_linear(PcgRandom(seed, seed), 0.6, 1.6) ^ 3
     r.is_mushroom = gen_weighted(G, {[true] = 1 * planet_weirdness, [false] = 2 / planet_weirdness})
     r.stem_color = colors[G:next(1, #colors)]
+    r.stem_ray_prob = 0
     if r.stem_color > 16 then
         r.stem_color = math.floor(r.stem_color / 2)
     end
     r.leaves_color = colors[G:next(1, #colors)]
     r.leaves_color2 = colors[G:next(1, #colors)]
-    r.leaves_inner = (G:next(0, 10)/10)^2
+    r.leaves_inner = (G:next(0, 10)/10)^1.5
     r.leaves_prob = 0.8 - r.leaves_inner^2
     if r.leaves_prob < 0.67 then
         r.leaves_prob = 1
@@ -128,6 +135,7 @@ function nv_flora.get_tree_meta(seed, index)
             [nv_flora.node_types.soft_leaves] = 1
         })
         r.ray_count = G:next(2, 6)^2 + G:next(1, 4)
+        r.stem_ray_prob = 1 / (r.ray_count/gen_linear(G, 2, 7) + 1)
         if r.ray_count >= 9 then
             r.row_count = G:next(3, 5)^2
         else
