@@ -59,17 +59,19 @@ local function tree_callback(
                     local yrot = math.floor((cur_x * 23 + cur_y * 67 + cur_z * 749) % 4)
                     if A[i] == nil
                     or A[i] == minetest.CONTENT_AIR then
-                        if length < custom.branch_length and number < custom.stem_ray_prob and (custom.row_count == 1 or m ~= custom.row_count) then
-                            A[i] = custom.stem_node
-                            A2[i] = yrot + custom.stem_color * 4
+                        A[i] = custom.leaves_node
+                        if length > custom.leaves_inner * custom.ray_length and gen_linear(G, 0, 1) < custom.leaves_prob then
+                            A2[i] = yrot + custom.leaves_color2 * 4
                         else
-                            A[i] = custom.leaves_node
-                            if length > custom.leaves_inner * custom.ray_length and gen_linear(G, 0, 1) < custom.leaves_prob then
-                                A2[i] = yrot + custom.leaves_color2 * 4
-                            else
-                                A2[i] = yrot + custom.leaves_color * 4
-                            end
+                            A2[i] = yrot + custom.leaves_color * 4
                         end
+                    end
+                    if A[i] == custom.leaves_node
+                    and length < custom.branch_length
+                    and number < custom.stem_ray_prob
+                    and (custom.row_count == 1 or m ~= custom.row_count) then
+                        A[i] = custom.stem_node
+                        A2[i] = yrot + custom.stem_color * 4
                     end
                 end
                 length = length + math.sqrt(delta_x^2 + delta_y^2 + delta_z^2) / 2
@@ -135,7 +137,7 @@ function nv_flora.get_tree_meta(seed, index)
             [nv_flora.node_types.soft_leaves] = 1
         })
         r.ray_count = G:next(2, 6)^2 + G:next(1, 4)
-        r.stem_ray_prob = 1 / (r.ray_count/gen_linear(G, 5, 8) + 1)
+        r.stem_ray_prob = 1 / (r.ray_count/gen_linear(G, 3, 5) + 1)
         if r.ray_count >= 9 then
             r.row_count = G:next(3, 5)^2
         else
