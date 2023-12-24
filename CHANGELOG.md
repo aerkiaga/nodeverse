@@ -1,4 +1,9 @@
 # Changelog
+## [0.3.3] - 24-12-2023
+### Fixed
+ - Players being placed in space with no ship upon respawning.
+ - Incorrect rotation of some node entities on liftoff.
+
 ## [0.3.2] - 13-12-2023
 ### Fixed
  - Bumped maximum supported engine version to 5.8.
