@@ -59,7 +59,7 @@ local function tree_callback(
                     local yrot = math.floor((cur_x * 23 + cur_y * 67 + cur_z * 749) % 4)
                     if A[i] == nil
                     or A[i] == minetest.CONTENT_AIR then
-                        if length < 3 - custom.stem_ray_prob and number < custom.stem_ray_prob and (custom.row_count == 1 or m ~= custom.row_count) then
+                        if length < custom.branch_length and number < custom.stem_ray_prob and (custom.row_count == 1 or m ~= custom.row_count) then
                             A[i] = custom.stem_node
                             A2[i] = yrot + custom.stem_color * 4
                         else
@@ -135,7 +135,7 @@ function nv_flora.get_tree_meta(seed, index)
             [nv_flora.node_types.soft_leaves] = 1
         })
         r.ray_count = G:next(2, 6)^2 + G:next(1, 4)
-        r.stem_ray_prob = 1 / (r.ray_count/gen_linear(G, 2, 7) + 1)
+        r.stem_ray_prob = 1 / (r.ray_count/gen_linear(G, 5, 8) + 1)
         if r.ray_count >= 9 then
             r.row_count = G:next(3, 5)^2
         else
@@ -151,6 +151,7 @@ function nv_flora.get_tree_meta(seed, index)
     end
     r.stem_height = G:next(2, 5)^2
     r.ray_length = G:next(4, r.stem_height + 2)
+    r.branch_length = r.ray_length * gen_linear(G, 0.2, 0.4)
     if r.ray_length < 9 then
         r.stem_width = 1
     else
