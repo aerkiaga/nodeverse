@@ -7,13 +7,10 @@ local function small_callback(
     local extent = area:getExtent()
     local k = (z - base.z) * extent.x + x - base.x + 1
     local ground = math.floor(ground_buffer[k])
-    if ground < custom.min_height or ground > custom.max_height then
-        return
-    end
     local yrot = (x * 23 + z * 749) % 24
     local color_index = (custom.color - 1) % 8
     local grounded = false
-    for y=minp.y,math.min(maxp.y, ground - mapping.offset.y),1 do
+    for y=math.max(minp.y, custom.min_height - mapping.offset.y),math.min(math.min(maxp.y, ground - mapping.offset.y - 3), custom.max_height - mapping.offset.y),1 do
         local i = area:index(x, y, z)
         if grounded and (A[i] == nil
         or A[i] == minetest.CONTENT_AIR) then
@@ -55,7 +52,7 @@ function nv_flora.get_cave_plant_meta(seed, index)
     })
     local color_group = math.floor((r.color - 1) / 8) + 1
     r.node = plant_type_nodes[color_group]
-    r.max_height = G:next(1, 4)^2 - 8
+    r.max_height = G:next(1, 5)^2 - 8
     r.min_height = -G:next(4, 8)^2
     return r
 end
