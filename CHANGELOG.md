@@ -8,9 +8,10 @@ development have been ported to the 0.3.x versions.
  - Mod `nv_flora`.
  - Short and tall plants, cave flora, cacti, trees and large mushrooms.
  - 14 kinds of floral nodes.
+ - Underground lakes.
 
 ### Changed
- - Made caves larger and less common.
+ - Made caves larger, and less common and predictable.
  - Balanced cliff generation.
 
 ### Performance
