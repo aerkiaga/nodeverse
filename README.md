@@ -41,9 +41,11 @@ Name | Dependencies | Description
 ---- | ------------ | -----------
 `nv_planetgen` | None | Generates planet terrain. See its `README.md` for instructions on advanced usage.
 `nv_player` | `player_api` | Adds player models and tools.
-`nv_ships` | `nv_player` | Adds spaceships that can be built from nodes.
 `nv_universe` | `nv_planetgen` `nv_player` | Manages independent planets and an interface to travel between them.
+`nv_ships` | `nv_player` `nv_universe`* | Adds spaceships that can be built from nodes.
 `nv_game` | `nv_planetgen`, `nv_ships`, `nv_universe` | Introduces a basic minigame on top of other mods.
+
+*optional dependency
 
 ## TODO
  * Add minerals and ores
