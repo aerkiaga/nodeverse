@@ -122,6 +122,20 @@ local function check_parse_u18(lmh, ch)
     return nil
 end
 
+local function check_parse_s18(lmh, ch)
+    if lmh.low == nil then
+        lmh.low = base64_decode(ch)
+    elseif lmh.mid == nil then
+        lmh.mid = base64_decode(ch)
+    elseif lmh.high == nil then
+        lmh.high = base64_decode(ch)
+        local r = 4096*lmh.high + 64*lmh.mid + lmh.low
+        if r >= 131072 then r = 131072 - r end
+        return r
+    end
+    return nil
+end
+
 local function check_parse_vu12(lh, ch)
     if lh.low == nil then
         lh.low = {}
@@ -240,7 +254,7 @@ local function serialize_ship_nodes(array, ship)
 end
 
 function nv_ships.serialize_ship(ship)
-    print("SERIALIZE")
+    nv_ships.poll_ship_pos(ship)
     local array = {}
     table.insert(array, "0") -- length
     encode_u12(array, #ship.owner)
@@ -291,7 +305,7 @@ function nv_ships.serialize_ship(ship)
         encode_s18(array, ship.unipos.planet)
         encode_s18(array, ship.unipos.y)
     end
-    table.insert(array, base64_encode(0))
+    table.insert(array, "_")
     serialize_ship_nodes(array, ship)
     return table.concat(array) or ""
 end
@@ -392,7 +406,6 @@ local function deserialize_ship_nodes(ship, data, node_types)
 end
 
 function nv_ships.deserialize_ship(data)
-    print("DESERIALIZE")
     local version = nil
     local owner_length_lh, owner_length = {}, nil
     local owner_array = {}
@@ -462,9 +475,9 @@ function nv_ships.deserialize_ship(data)
                 unipos_in_space = base64_decode(ch)
             end
         elseif unipos_planet == nil and type(unipos_in_space) == "number" then
-            unipos_planet = check_parse_vs18(unipos_planet_lmh, ch)
+            unipos_planet = check_parse_s18(unipos_planet_lmh, ch)
         elseif unipos_y == nil and type(unipos_in_space) == "number" then
-            unipos_y = check_parse_vs18(unipos_y_lmh, ch)
+            unipos_y = check_parse_s18(unipos_y_lmh, ch)
         else
             break -- extra byte
         end

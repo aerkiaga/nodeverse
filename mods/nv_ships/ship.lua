@@ -176,29 +176,20 @@ end
 ]]--
 
 function nv_ships.load_ship_pos(ship)
-    print("LOAD")
     if nv_universe ~= nil and ship.pos ~= nil and ship.unipos ~= nil then
-        print("***")
         ship.pos.y = nv_universe.get_absolute_coordinates(ship.unipos)
-        print(string.format("(%d %d) -> %d", ship.unipos.planet, ship.unipos.y, ship.pos.y))
     end
 end
 
 function nv_ships.poll_ship_pos(ship)
-    print("POLL")
     if nv_universe ~= nil and ship.pos ~= nil and ship.unipos ~= nil then
-        print("***")
         ship.pos.y = nv_universe.poll_absolute_coordinates(ship.unipos)
-        print(string.format("(%d %d) -> %d", ship.unipos.planet, ship.unipos.y, ship.pos.y))
     end
 end
 
 function nv_ships.load_ship_unipos(ship)
-    print("UNIPOS")
     if nv_universe ~= nil then
-        print("***")
         ship.unipos = nv_universe.get_universal_coordinates(ship.pos.y)
-        print(string.format("%d -> (%d %d)", ship.pos.y, ship.unipos.planet, ship.unipos.y))
     end
 end
 
