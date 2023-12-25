@@ -37,6 +37,7 @@ Ship format:
     state       what the ship currently is made of, "entity" or "node"
     size        size in nodes, as xyz vector
     pos         if state == "node", lowest xyz of ship bounding box in world
+    unipos      optional; if 'nv_universe' is enabled, universal coordinates
     An          flat array of node names in ship bounding box (only part of ship)
     A2          flat array of param2's in ship bounding box (only part of ship)
     ----------- The remaining values are calculated in 'ship_check.lua'
@@ -174,11 +175,30 @@ end
  # BOARDING
 ]]--
 
+function nv_ships.load_ship_pos(ship)
+    if nv_universe ~= nil and ship.pos ~= nil and ship.unipos ~= nil then
+        ship.pos.y = nv_universe.get_absolute_coordinates(ship.unipos)
+    end
+end
+
+function nv_ships.poll_ship_pos(ship)
+    if nv_universe ~= nil and ship.pos ~= nil and ship.unipos ~= nil then
+        ship.pos.y = nv_universe.poll_absolute_coordinates(ship.unipos)
+    end
+end
+
+function nv_ships.load_ship_unipos(ship)
+    if nv_universe ~= nil then
+        ship.unipos = nv_universe.get_universal_coordinates(ship.pos.y)
+    end
+end
+
 function nv_ships.try_board_ship(pos, player)
     -- Identify what ship the particular node belongs to
     -- Must belong to the given player
     local function identify_ship(player_name)
         for index, ship in ipairs(nv_ships.players_list[player_name].ships) do
+            nv_ships.load_ship_pos(ship)
             if ship.state == "node" then
                 local ship_maxp = {
                     x = ship.pos.x + ship.size.x - 1,
@@ -229,6 +249,7 @@ end
 function nv_ships.try_unboard_ship(player)
     local name = player:get_player_name()
     local ship = nv_ships.players_list[name].cur_ship
+    nv_ships.load_ship_pos(ship)
     local player_pos = player:get_pos()
     local ship_min_pos = ship.pos
     local ship_max_pos = {
