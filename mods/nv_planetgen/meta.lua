@@ -49,8 +49,12 @@ function generate_planet_metadata(seed)
         scorching = 1,
         reducing = 1
     })
+    -- CAVE WETNESS
+    -- The tendency to waterlog underground caves
+    planet.cave_wetness = 0.35
     if planet.atmosphere == "vacuum" then
         planet.has_oceans = false
+        planet.cave_wetness = 0
     end
     if planet.atmosphere == "freezing" or planet.atmosphere == "scorching" then
         -- We don't want large, useless hydrocarbon/lava oceans

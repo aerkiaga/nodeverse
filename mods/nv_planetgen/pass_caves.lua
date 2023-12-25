@@ -133,8 +133,10 @@ local function caves_gen_block(
 
     caves_gen_threshold_buffer(sides)
     
+    local G = PcgRandom(planet.seed, minp_abs.x + 6587 * minp_abs.z)
     local is_waterlogged = false
-    if planet.atmosphere ~= "vacuum" and not sides[1] and not sides[3] and not sides[4] and not sides[5] and not sides[6] then
+    if planet.atmosphere ~= "vacuum" and not is_ground
+    and not sides[5] and gen_linear(G, 0, 1) < planet.cave_wetness then
         is_waterlogged = true
     end
 
@@ -167,7 +169,10 @@ local function caves_gen_block(
                     end
                     if caves_3d_buffer[k] > threshold then
                         if is_waterlogged and y_abs < minp_abs.y + 8 then
-                            A[i] = planet.node_types.liquid
+                            if x_abs ~= minp_abs.x and x_abs ~= maxp_abs.x
+                            and z_abs ~= minp_abs.z and z_abs ~= maxp_abs.z then
+                                A[i] = planet.node_types.liquid
+                            end
                         else
                             A[i] = minetest.CONTENT_AIR
                         end

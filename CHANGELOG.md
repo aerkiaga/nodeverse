@@ -11,11 +11,11 @@ development have been ported to the 0.3.x versions.
  - Underground lakes.
 
 ### Changed
- - Made caves larger, and less common and predictable.
+ - Made caves larger, as well as less common and predictable.
  - Balanced cliff generation.
 
 ### Performance
- - Drastically reduced the number of necessary node registrations.
+ - Dramatically reduced the number of necessary node registrations.
  - Now uses a single entity type for ships (thanks to Siegmentation Fault).
 
 ## [0.3.3] - 24-12-2023
