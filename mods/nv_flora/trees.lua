@@ -1,7 +1,7 @@
 local function tree_callback(
     origin, minp, maxp, area, A, A1, A2, mapping, planet, ground_buffer, custom
 )
-    local G = PcgRandom(custom.seed, origin.x + 6489 * origin.x)
+    local G = PcgRandom(custom.seed, origin.x + 6489 * origin.z)
     local base = area.MinEdge
     local extent = area:getExtent()
     local stem_x = origin.x + math.floor(custom.side / 2)

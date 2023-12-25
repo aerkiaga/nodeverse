@@ -53,7 +53,7 @@ end
 
 --[[
  # NODE TYPES
-Allocated: 45
+Allocated: 47
 12 .... small plants
 6           aloe_plant
 6           fern_plant
@@ -66,8 +66,10 @@ Allocated: 45
 6           cane_grass
 6           thick_grass
 6           ball_grass
-1  .... stems
+3  .... stems
 1           veiny_stem
+1           woody_stem
+1           succulent_stem
 2  .... leaves
 1           soft_leaves
 1           smooth_cap
@@ -422,6 +424,34 @@ local function register_stems()
         } end
     )
     nv_flora.node_types.woody_stem = minetest.get_content_id("nv_flora:woody_stem")
+    
+    nv_flora.node_types.succulent_stem = {}
+    -- SUCCULENT STEM
+    -- Water-filled stem, used for branched plants
+    -- 48 grass colors as palette
+    register_color_variants(
+        "succulent_stem", 1,
+        function (x) return {r = 0, g = 0, b = 0} end,
+        function (n, color) return {
+            drawtype = "normal",
+            tiles = {
+                "nv_succulent_stem_top.png",
+                "nv_succulent_stem_top.png",
+                "nv_succulent_stem.png^[transformFY",
+                "nv_succulent_stem.png^[transformFY",
+                "nv_succulent_stem.png",
+                "nv_succulent_stem.png"
+            },
+            palette = "nv_palette_grass.png",
+            paramtype = "light",
+            paramtype2 = "color4dir",
+            place_param2 = 0,
+            sunlight_propagates = false,
+            walkable = true,
+            buildable_to = false
+        } end
+    )
+    nv_flora.node_types.succulent_stem = minetest.get_content_id("nv_flora:succulent_stem")
 end
 
 local function register_leaves()
