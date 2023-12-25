@@ -217,6 +217,62 @@ function nv_universe.get_planet_limits(seed)
 end
 
 --[[
+Takes absolute Y coordinate, returns table representing an universal coordinate.
+Format is:
+    in_space    whether the specified location is in outer space
+    planet      seed of the planet it is in
+    y           relative Y coordinate within the planet layer
+]]
+function nv_universe.get_universal_coordinates(y_abs)
+    for n, limit in ipairs(layer_limits) do
+        if y_abs >= limit.min and y_abs <= limit.max then
+            return {
+                in_space = layers[n].in_space,
+                planet = layers[n].planet,
+                y = y_abs - limit.min,
+            }
+        end
+    end
+    return nil
+end
+
+--[[
+Takes universal coordinate as returned by nv_universe.get_universal_coordinates(),
+returns absolute Y coordinate, allocating a new layer if necessary.
+]]
+function nv_universe.get_absolute_coordinates(universal)
+    if universal.in_space then
+        if planets[universal.planet] == nil or planets[universal.planet].space == nil then
+            nv_universe.try_allocate_space(universal.planet)
+        end
+        return layer_limits[planets[universal.planet].space].min + universal.y
+    else
+        if planets[universal.planet] == nil or planets[universal.planet].planet == nil then
+            nv_universe.try_allocate_planet(universal.planet)
+        end
+        return layer_limits[planets[universal.planet].planet].min + universal.y
+    end
+end
+
+--[[
+Takes universal coordinate as returned by nv_universe.get_universal_coordinates(),
+returns absolute Y coordinate, or 'nil' if the ship's layer is not loaded.
+]]
+function nv_universe.poll_absolute_coordinates(universal)
+    if universal.in_space then
+        if planets[universal.planet] == nil or planets[universal.planet].space == nil then
+            return nil
+        end
+        return layer_limits[planets[universal.planet].space].min + universal.y
+    else
+        if planets[universal.planet] == nil or planets[universal.planet].planet == nil then
+            return nil
+        end
+        return layer_limits[planets[universal.planet].planet].min + universal.y
+    end
+end
+
+--[[
 Takes planet mapgen seed, returns nil or table with information.
 Format is:
     min         minimum Y coordinate of space layer

@@ -54,6 +54,7 @@ end
 -- Will update ship data as required
 -- Returns 'false' if the node can't be placed, 'true' otherwise
 local function try_put_node_in_ship(node, pos, ship)
+    nv_ships.load_ship_pos(ship)
     local rel_pos = {
         x = pos.x - ship.pos.x,
         y = pos.y - ship.pos.y,
@@ -76,6 +77,7 @@ end
 -- Changes a node at an absolute position in the world,
 -- updating the ship accordingly
 function nv_ships.set_ship_node(node, pos, ship)
+    nv_ships.load_ship_pos(ship)
     local rel_pos = {
         x = pos.x - ship.pos.x,
         y = pos.y - ship.pos.y,
@@ -172,11 +174,13 @@ end
 -- Tries to shrink the ship bounding box as much as possible
 -- while preserving all nodes contained inside it
 local function shrink_ship_to_content(ship)
+    nv_ships.load_ship_pos(ship)
     -- Operate on a temporary new ship
     local new_ship = {
         owner = ship.owner, state = "node", size = table.copy(ship.size), pos = table.copy(ship.pos),
         cockpit_pos = ship.cockpit_pos, facing = ship.facing, An = {}, A2 = {}
     }
+    nv_ships.load_ship_unipos(new_ship)
     local did_shrink = false
     repeat -- Repeat the following until the ship can't be shrunk anymore
         -- Probably not the best possible way to implement this...
@@ -240,6 +244,7 @@ Given an absolute node position that has been removed from the ship, it tries to
 split the remaining nodes into as many non-adjacent new ships as possible.
 ]]--
 local function try_split_ship_by_node(pos, ship)
+    nv_ships.load_ship_pos(ship)
 
     -- Returns whether the particular quadrant plane contains any node
     local function try_plane(X, Y, Z)
@@ -458,6 +463,7 @@ end
 -- Will update ship data as required
 -- Returns 'false' if the node can't be removed, 'true' otherwise
 local function try_remove_node_from_ship(node, pos, ship)
+    nv_ships.load_ship_pos(ship)
     local rel_pos = {
         x = pos.x - ship.pos.x,
         y = pos.y - ship.pos.y,
@@ -500,6 +506,7 @@ end
 -- to 1 for adjacent to a face, etc. See 'compute_box_conflict()').
 local function find_conflicts(conflicts, pos, ships)
     for index, ship in ipairs(ships) do
+        nv_ships.poll_ship_pos(ship)
         if ship.state == "node" then
             local conflict = compute_box_conflict(pos, ship.pos, ship.size)
             if conflict ~= nil then
@@ -676,8 +683,9 @@ function nv_ships.try_add_node(node, pos, player)
         -- A new ship will be created
         local new_ship = {
             owner = name, state = "node", size = {x=1, y=1, z=1}, pos = pos,
-            cockpit_pos = nil, facing = nil, An = {}, A2 = {}
+            unipos = nil, cockpit_pos = nil, facing = nil, An = {}, A2 = {}
         }
+        nv_ships.load_ship_unipos(new_ship)
         init_ship_nodes(new_ship)
         if try_put_node_in_ship(node, pos, new_ship) then
             -- Node placement succeeded, commit single-node ship

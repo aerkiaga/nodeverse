@@ -18,6 +18,11 @@ This function will fail if the ship has no cockpit.
 ]]
 function nv_ships.ship_to_entity(ship, player, remove)
     if remove == nil then remove = true end
+    if remove then
+        nv_ships.load_ship_pos(ship)
+    else
+        nv_ships.poll_ship_pos(ship)
+    end
 
     local function to_player_coordinates(facing, pos)
         local r = {x=10*pos.x, y=10*pos.y, z=10*pos.z}
@@ -177,6 +182,7 @@ function nv_ships.remove_ship_entity(player)
 end
 
 function nv_ships.rotate_ship_nodes(ship, facing)
+    nv_ships.poll_ship_pos(ship)
     local function get_apply_rotation(rot)
         if rot == 0 then
             return function (x_rel, z_rel)
@@ -326,6 +332,7 @@ function nv_ships.ship_to_node(ship, player, pos)
         end
     end
     ship.state = "node"
+    nv_ships.load_ship_unipos(ship)
     if player then
         nv_ships.remove_ship_entity(player)
     end

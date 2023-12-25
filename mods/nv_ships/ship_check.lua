@@ -122,6 +122,7 @@ Entry point for all the functions in this file.
 ]]--
 
 function nv_ships.global_check_ship(ship)
+    nv_ships.poll_ship_pos(ship)
     ship.cockpit_pos = nil
     ship.facing = nil
     local x_stride = ship.size.x

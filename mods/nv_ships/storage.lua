@@ -44,15 +44,18 @@ Serialized ship format:
     offset  type    description
     0       u6      version, always 0
     1       u12     length of owner name string
-    3       string  owner name (see 'ships.lua')
-    a       u12     ship index (see 'ships.lua')
-    a+2     char    state, 'e' for "entity", 'n' for "node" (see 'ships.lua')
-    a+3     vu12    ship size in all axes (see 'ships.lua')
-    a+9     vs18?   absolute position of ship origin (see 'ships.lua')
-    a+18    vu12?   relative position of cockpit (see 'ships.lua')
-    a+24    u6?     cockpit (and ship) facing direction (see 'ships.lua')
+    3       string  owner name (see 'ship.lua')
+    a       u12     ship index (see 'ship.lua')
+    a+2     char    state, 'e' for "entity", 'n' for "node" (see 'ship.lua')
+    a+3     vu12    ship size in all axes (see 'ship.lua')
+    a+9     vs18?   absolute position of ship origin (see 'ship.lua')
+    a+18    vu12?   relative position of cockpit (see 'ship.lua')
+    a+24    u6?     cockpit (and ship) facing direction (see 'ship.lua')
     a+25    u12     number of distinct node types, entries in node type table
-    a+27    u6      reserved, should be 0
+    a+27    u6      universal position, 'in_space' (see 'nv_universe', 'allocation.lua')
+    a+28    s18     universal position, 'planet' (see 'nv_universe', 'allocation.lua')
+    a+31    s18     universal position, 'y' (see 'nv_universe', 'allocation.lua')
+    a+34    u6      reserved
     Following this is the node type table, with entries following this format:
     ent+0   u12     node type name length
     ent+2   u18     node type name offset in node type name list
@@ -237,6 +240,7 @@ local function serialize_ship_nodes(array, ship)
 end
 
 function nv_ships.serialize_ship(ship)
+    print("SERIALIZE")
     local array = {}
     table.insert(array, "0") -- length
     encode_u12(array, #ship.owner)
@@ -276,6 +280,17 @@ function nv_ships.serialize_ship(ship)
         end
     end
     encode_u12(array, node_types)
+    if ship.unipos == nil then
+        table.insert(array, "_______")
+    else
+        if ship.unipos.in_space then
+            table.insert(array, base64_encode(1))
+        else
+            table.insert(array, base64_encode(0))
+        end
+        encode_s18(array, ship.unipos.planet)
+        encode_s18(array, ship.unipos.y)
+    end
     table.insert(array, base64_encode(0))
     serialize_ship_nodes(array, ship)
     return table.concat(array) or ""
@@ -377,6 +392,7 @@ local function deserialize_ship_nodes(ship, data, node_types)
 end
 
 function nv_ships.deserialize_ship(data)
+    print("DESERIALIZE")
     local version = nil
     local owner_length_lh, owner_length = {}, nil
     local owner_array = {}
@@ -388,6 +404,9 @@ function nv_ships.deserialize_ship(data)
     local cockpit_pos_lh, cockpit_pos = {}, nil
     local facing = nil
     local node_types_lh, node_types = {}, nil
+    local unipos_in_space = nil
+    local unipos_planet_lmh, unipos_planet = {}, nil
+    local unipos_y_lmh, unipos_y = {}, nil
     local header_length = 0
     local ignore = 0
     for ch in data:gmatch(".") do
@@ -435,14 +454,33 @@ function nv_ships.deserialize_ship(data)
             end
         elseif node_types == nil then
             node_types = check_parse_u12(node_types_lh, ch)
+        elseif unipos_in_space == nil then
+            if ch == "_" then
+                unipos_in_space = {}
+                ignore = 6
+            else
+                unipos_in_space = base64_decode(ch)
+            end
+        elseif unipos_planet == nil and type(unipos_in_space) == "number" then
+            unipos_planet = check_parse_vs18(unipos_planet_lmh, ch)
+        elseif unipos_y == nil and type(unipos_in_space) == "number" then
+            unipos_y = check_parse_vs18(unipos_y_lmh, ch)
         else
-            -- one extra byte
-            break
+            break -- extra byte
         end
     end
     if pos.x == nil then pos = nil end
     if cockpit_pos.x == nil then cockpit_pos = nil end
     if facing == -1 then facing = nil end
+    
+    local unipos = nil
+    if type(unipos_in_space) == "number" then
+        unipos = {
+            in_space = (unipos_in_space > 0),
+            planet = unipos_planet,
+            y = unipos_y
+        }
+    end
 
     local ship = {
         owner = owner,
@@ -450,6 +488,7 @@ function nv_ships.deserialize_ship(data)
         state = state,
         size = size,
         pos = pos,
+        unipos = unipos,
         An = {},
         A2 = {},
         cockpit_pos = cockpit_pos,
