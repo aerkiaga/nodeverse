@@ -54,11 +54,8 @@ local function elevation_compute_soil_layer(y, ground_comp, planet)
                 return planet.node_types.dust
             end
         elseif planet.atmosphere == "hot" then
-            if planet.has_oceans and ground_comp.ocean_elevation
-            - ground_comp.terrain_roughness/10 > 0.3 then
-                return planet.node_types.dust
-            elseif not planet.has_oceans and ground_comp.ocean_elevation
-            + ground_comp.terrain_roughness/10 < 0 then
+            if ground_comp.ocean_elevation
+            + ground_comp.terrain_roughness/10 < 0.2 then
                 return planet.node_types.sediment -- Desert
             else
                 return planet.node_types.grass_soil
@@ -86,7 +83,7 @@ local function elevation_compute_cover_layer(G, y, ground_comp, planet)
                 grass_weight = 1
                 dry_grass_weight = 5
             elseif not planet.has_oceans and ground_comp.ocean_elevation
-            + ground_comp.terrain_roughness/10 < 0 then
+            + ground_comp.terrain_roughness/10 < 0.5 then
                 grass_weight = 0
                 dry_grass_weight = 1
             else

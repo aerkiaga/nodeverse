@@ -91,7 +91,7 @@ function nv_flora.get_branched_plant_meta(seed, index)
         r.min_height = G:next(1, 4)^2 - 18
         r.max_height = r.min_height + G:next(2, 6)^2
     end
-    r.max_plant_height = G:next(2, 6)
+    r.max_plant_height = G:next(3, 6)
     r.side = r.max_plant_height * 2
     return r
 end
