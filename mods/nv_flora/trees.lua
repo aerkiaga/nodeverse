@@ -137,7 +137,7 @@ function nv_flora.get_tree_meta(seed, index)
             [nv_flora.node_types.soft_leaves] = 1
         })
         r.ray_count = G:next(2, 6)^2 + G:next(1, 4)
-        r.stem_ray_prob = 1 / (r.ray_count/gen_linear(G, 3, 5) + 1)
+        r.stem_ray_prob = 1 / (r.ray_count/gen_linear(G, 2, 4) + 1)
         if r.ray_count >= 9 then
             r.row_count = G:next(3, 5)^2
         else
