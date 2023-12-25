@@ -6,8 +6,8 @@ development have been ported to the 0.3.x versions.
 
 ### Added
  - Mod `nv_flora`.
- - Short and tall plants, cave flora, trees and large mushrooms.
- - 12 kinds of floral nodes.
+ - Short and tall plants, cave flora, cacti, trees and large mushrooms.
+ - 14 kinds of floral nodes.
 
 ### Changed
  - Made caves larger and less common.
