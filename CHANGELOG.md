@@ -11,6 +11,7 @@ development have been ported to the 0.3.x versions.
 
 ### Changed
  - Made caves larger and less common.
+ - Balanced cliff generation.
 
 ### Performance
  - Drastically reduced the number of necessary node registrations.
