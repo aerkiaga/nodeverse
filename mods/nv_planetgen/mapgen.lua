@@ -88,6 +88,12 @@ function nv_planetgen.set_dirty_flag()
 end
 
 -- API
+local post_processing = {}
+function nv_planetgen.register_post_processing(callback)
+    table.insert(post_processing, callback)
+end
+
+-- API
 function nv_planetgen.generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
     local max = math.max
     local min = math.min
@@ -118,6 +124,9 @@ function nv_planetgen.generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping
     end
     nv_planetgen.pass_structures(minp, maxp, area, offset, A, A1, A2, mapping, planet, ground_buffer)
     nv_planetgen.pass_final(minp, maxp, area, offset, A, A1, A2, mapping, planet, ground_buffer)
+    for n, callback in ipairs(post_processing) do
+        callback(minp, maxp, area, offset, A, A1, A2, mapping, planet, ground_buffer)
+    end
 end
 
 local function split_not_generated_boxes(not_generated_boxes, minp, maxp)
