@@ -342,7 +342,7 @@ local function post_processing_callback(minp, maxp, area, offset, A, A1, A2, map
     for name, player_data in pairs(nv_ships.players_list) do
         for index, ship in ipairs(player_data.ships) do
             nv_ships.poll_ship_pos(ship)
-            if ship.pos ~= nil then
+            if ship.pos ~= nil and ship.state == "node" then
                 local x_stride = ship.size.x
                 local y_stride = ship.size.y
                 for z_abs=math.max(minp.z, ship.pos.z),math.min(maxp.z, ship.pos.z + ship.size.z - 1),1 do
