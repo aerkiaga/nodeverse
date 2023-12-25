@@ -95,7 +95,7 @@ function nv_flora.get_tree_meta(seed, index)
     if meta.life == "lush" then
         r.density = 1/(G:next(1, 4)^2)
     else
-        r.density = 1/(G:next(4, 13)^2)
+        r.density = 1/(G:next(4, 10)^2)
     end
     r.seed = 638262 + index
     r.order = 100

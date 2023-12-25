@@ -58,6 +58,13 @@ local function get_plant_meta(seed, index)
             [nv_flora.get_tree_meta] = 20,
             [nv_flora.get_branched_plant_meta] = 30
         })
+    elseif meta.atmosphere == "cold" then
+        plant_type_handler = gen_weighted(G, {
+            [nv_flora.get_small_plant_meta] = 50,
+            [nv_flora.get_cave_plant_meta] = 20,
+            [nv_flora.get_tall_grass_meta] = 5,
+            [nv_flora.get_tree_meta] = 40
+        })
     else
         plant_type_handler = gen_weighted(G, {
             [nv_flora.get_small_plant_meta] = 70,

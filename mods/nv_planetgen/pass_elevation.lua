@@ -55,7 +55,7 @@ local function elevation_compute_soil_layer(y, ground_comp, planet)
             end
         elseif planet.atmosphere == "hot" then
             if ground_comp.ocean_elevation
-            + ground_comp.terrain_roughness/10 < 0.2 then
+            + ground_comp.terrain_roughness/10 < 0.3 then
                 return planet.node_types.sediment -- Desert
             else
                 return planet.node_types.grass_soil

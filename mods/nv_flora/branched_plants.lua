@@ -73,7 +73,7 @@ function nv_flora.get_branched_plant_meta(seed, index)
     local meta = generate_planet_metadata(seed)
     local colors = get_planet_plant_colors(seed)
     -- General
-    r.density = 1/(G:next(5, 15)^2)
+    r.density = 1/(G:next(5, 10)^2)
     r.seed = 6583 + index
     r.order = 100
     r.callback = branched_callback
