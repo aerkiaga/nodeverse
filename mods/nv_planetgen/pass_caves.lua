@@ -112,7 +112,7 @@ local function caves_gen_block(
     S. Wilke 1983 "Bond percolation threshold in the simple cubic lattice"
     ]]--
     local caveness = planet.caveness
-    if is_ground then caveness = caveness / 8
+    if is_ground then caveness = caveness / 16
     elseif block_minp.y < -16*10 then caveness = 0
     end
     for n=1, 6 do
@@ -123,7 +123,7 @@ local function caves_gen_block(
         elseif n == 5 then block_minp2.y = block_minp2.y - 16
         elseif n == 6 then block_minp2.z = block_minp2.z - 16
         end
-        local seed = block_minp2.x%0x10000 + block_minp2.y%0x100 + block_minp2.z
+        local seed = block_minp2.x*6483%0x10703 + block_minp2.y*758941%0x101 + block_minp2.z*451
         sides[n] = gen_true_with_probability(PcgRandom(planet.seed + seed, n2 + seed), caveness)
     end
 
@@ -132,6 +132,11 @@ local function caves_gen_block(
     end
 
     caves_gen_threshold_buffer(sides)
+    
+    local is_waterlogged = false
+    if planet.atmosphere ~= "vacuum" and not sides[1] and not sides[3] and not sides[4] and not sides[5] and not sides[6] then
+        is_waterlogged = true
+    end
 
     noise:get_3d_map_flat(block_minp, caves_3d_buffer)
 
@@ -161,7 +166,11 @@ local function caves_gen_block(
                         threshold = threshold - 0.2
                     end
                     if caves_3d_buffer[k] > threshold then
-                        A[i] = minetest.CONTENT_AIR
+                        if is_waterlogged and y_abs < minp_abs.y + 8 then
+                            A[i] = planet.node_types.liquid
+                        else
+                            A[i] = minetest.CONTENT_AIR
+                        end
                     end
                 end
 
