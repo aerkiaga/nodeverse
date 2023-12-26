@@ -35,7 +35,7 @@ local function get_base_formspec(player)
         for m, pseed in ipairs(nv_universe.get_ordered_planets_in_system(systems[n].seed)) do
             pl = pl .. string.format(
                 [[
-                    image[%d,%d;1.8,1.8;%s]
+                    animated_image[%d,%d;1.8,1.8;image;%s;1;0]
                 ]],
                 x,
                 y + 1,
@@ -61,8 +61,6 @@ local function get_base_formspec(player)
     end
     return string.format(
         [[
-            formspec_version[2]
-	        size[14,8]
 	        scrollbaroptions[min=0;max=%d;smallstep=1;largestep=8]
 	        scrollbar[13.7,0;0.3,8;vertical;encycloscroll;0]
             scroll_container[0,0;14,8;encycloscroll;vertical;1]
