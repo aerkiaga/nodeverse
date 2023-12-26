@@ -610,6 +610,12 @@ local function register_miscellaneous()
                     {-0.5, -0.5, -0.5, 0.5, -0.5 + 1/16, 0.5}
                 },
             },
+            collision_box = {
+                type = "fixed",
+                fixed = {
+                    {-0.5, -0.5, -0.5, 0.5, -0.5 + 1/16, 0.5}
+                },
+            },
             drop = "",
             groups = {snappy = 2},
         } end
