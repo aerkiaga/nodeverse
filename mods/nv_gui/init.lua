@@ -19,6 +19,25 @@ local global_tabs = {}
 
 local name_to_tab = {}
 
+local function postprocess_formspec(formspec, selected_tab)
+    local names = ""
+    for n, def in ipairs(global_tabs) do
+        names = names .. def.text .. ","
+    end
+    names = string.sub(names, 1, #names - 1)
+    return string.format(
+		[[
+			formspec_version[2]
+			size[14,8]
+			tabheader[0,0;tabh;%s;%d;<transparent>;<draw_border>]
+			%s
+		]],
+		names,
+		selected_tab,
+		formspec
+    )
+end
+
 function nv_gui.register_tab(name, text, callback)
     table.insert(global_tabs, {
         name = name,
@@ -35,6 +54,8 @@ function nv_gui.set_inventory_formspec(player, tabname, formspec)
         current = 1,
         formspecs = {},
     }
+    local current = player_tabs[name].current
+    formspec = postprocess_formspec(formspec, current)
     player_tabs[name].formspecs[tab] = formspec
     if player_tabs[name].current == tab then
         player:set_inventory_formspec(formspec)
@@ -42,6 +63,9 @@ function nv_gui.set_inventory_formspec(player, tabname, formspec)
 end
 
 function nv_gui.show_formspec(player, formspec)
+    local name = player:get_player_name()
+    local current = player_tabs[name].current
+    formspec = postprocess_formspec(formspec, current)
     minetest.show_formspec(player:get_player_name(), "", formspec)
 end
 
