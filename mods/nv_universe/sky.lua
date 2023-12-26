@@ -34,7 +34,7 @@ function nv_universe.set_space_sky(player, seed)
 	}
 	local system = system_from_planet(seed)
 	local formspec = nv_universe.create_system_formspec(system, seed)
-	player:set_inventory_formspec(formspec)
+	nv_gui.set_inventory_formspec(player, "universe", formspec)
 end
 
 function generate_star(seed)
@@ -153,7 +153,7 @@ function nv_universe.set_planet_sky(player, seed)
 		visible = true
 	}
 	local formspec = nv_universe.create_planet_formspec(seed)
-	player:set_inventory_formspec(formspec)
+	nv_gui.set_inventory_formspec(player, "universe", formspec)
 end
 
 function nv_universe.get_planet_gravity(seed)

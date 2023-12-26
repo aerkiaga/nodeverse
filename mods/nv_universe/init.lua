@@ -199,7 +199,7 @@ local function newplayer_callback(player)
         nv_universe.set_planet_sky(player, placing.planet)
         formspec = nv_universe.create_planet_formspec(placing.planet)
     end
-	player:set_inventory_formspec(formspec)
+	nv_gui.set_inventory_formspec(player, "universe", formspec)
 	nv_universe.store_player_state(player)
 end
 
@@ -221,7 +221,7 @@ local function joinplayer_callback(player, last_login)
         nv_universe.set_planet_sky(player, planet)
         formspec = nv_universe.create_planet_formspec(planet)
     end
-	player:set_inventory_formspec(formspec)
+	nv_gui.set_inventory_formspec(player, "universe", formspec)
 end
 
 minetest.register_on_joinplayer(joinplayer_callback)

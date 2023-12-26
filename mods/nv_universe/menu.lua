@@ -447,41 +447,39 @@ function nv_universe.create_planet_formspec(planet, can_travel)
 	)
 end
 
-local function player_receive_fields_callback(player, formname, fields)
-	if formname == "" then
-		for field, value in pairs(fields) do
-		    if string.sub(field, 1, 6) == "_stars" then
-				local planet = nv_universe.players[player:get_player_name()].planet
-				local system = system_from_planet(planet)
-				local selected_system = tonumber(string.sub(field, 7, -1))
-				local can_travel = nv_universe.check_travel_capability(player, selected_system) and system ~= selected_system
-				local formspec = nv_universe.create_stars_formspec(system, selected_system, can_travel)
-				minetest.show_formspec(player:get_player_name(), "", formspec)
-			end
-			if string.sub(field, 1, 6) == "system" then
-			    local planet = nv_universe.players[player:get_player_name()].planet
-				local selected_system = tonumber(string.sub(field, 7, -1))
-				local formspec = nv_universe.create_system_formspec(selected_system, planet)
-				minetest.show_formspec(player:get_player_name(), "", formspec)
-			end
-			if string.sub(field, 1, 6) == "planet" then
-				local selected_planet = tonumber(string.sub(field, 7, -1))
-				local can_travel = nv_universe.check_travel_capability(player, selected_planet)
-				local formspec = nv_universe.create_planet_formspec(selected_planet, can_travel)
-				minetest.show_formspec(player:get_player_name(), "", formspec)
-			end
-			if string.sub(field, 1, 6) == "travel" then
-			    local selected_planet = tonumber(string.sub(field, 7, -1))
-			    nv_universe.send_to_new_space(player, selected_planet)
-			end
-			if string.sub(field, 1, 6) == "stravl" then
-			    local selected_system = tonumber(string.sub(field, 7, -1))
-			    nv_universe.send_to_new_space(player, selected_system)
-			    local formspec = nv_universe.create_stars_formspec(selected_system, selected_system, false)
-				minetest.show_formspec(player:get_player_name(), "", formspec)
-			end
+local function player_receive_fields_callback(player, fields)
+	for field, value in pairs(fields) do
+	    if string.sub(field, 1, 6) == "_stars" then
+			local planet = nv_universe.players[player:get_player_name()].planet
+			local system = system_from_planet(planet)
+			local selected_system = tonumber(string.sub(field, 7, -1))
+			local can_travel = nv_universe.check_travel_capability(player, selected_system) and system ~= selected_system
+			local formspec = nv_universe.create_stars_formspec(system, selected_system, can_travel)
+			nv_gui.show_formspec(player, formspec)
+		end
+		if string.sub(field, 1, 6) == "system" then
+		    local planet = nv_universe.players[player:get_player_name()].planet
+			local selected_system = tonumber(string.sub(field, 7, -1))
+			local formspec = nv_universe.create_system_formspec(selected_system, planet)
+			nv_gui.show_formspec(player, formspec)
+		end
+		if string.sub(field, 1, 6) == "planet" then
+			local selected_planet = tonumber(string.sub(field, 7, -1))
+			local can_travel = nv_universe.check_travel_capability(player, selected_planet)
+			local formspec = nv_universe.create_planet_formspec(selected_planet, can_travel)
+			nv_gui.show_formspec(player, formspec)
+		end
+		if string.sub(field, 1, 6) == "travel" then
+		    local selected_planet = tonumber(string.sub(field, 7, -1))
+		    nv_universe.send_to_new_space(player, selected_planet)
+		end
+		if string.sub(field, 1, 6) == "stravl" then
+		    local selected_system = tonumber(string.sub(field, 7, -1))
+		    nv_universe.send_to_new_space(player, selected_system)
+		    local formspec = nv_universe.create_stars_formspec(selected_system, selected_system, false)
+			nv_gui.show_formspec(player, formspec)
 		end
 	end
 end
 
-minetest.register_on_player_receive_fields(player_receive_fields_callback)
+nv_gui.register_tab("universe", "Navigation", player_receive_fields_callback)
