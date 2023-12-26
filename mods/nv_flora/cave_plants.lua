@@ -1,4 +1,4 @@
-local function small_callback(
+local function cave_plant_callback(
     origin, minp, maxp, area, A, A1, A2, mapping, planet, ground_buffer, custom
 )
     local x = minp.x
@@ -39,7 +39,7 @@ function nv_flora.get_cave_plant_meta(seed, index)
     r.seed = 5646457 + index
     r.side = 1
     r.order = 100
-    r.callback = small_callback
+    r.callback = cave_plant_callback
     -- Cave plant-specific
     r.color = colors[G:next(1, #colors)]
     local plant_type_nodes

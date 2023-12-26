@@ -53,7 +53,7 @@ end
 
 --[[
  # NODE TYPES
-Allocated: 47
+Allocated: 48
 12 .... small plants
 6           aloe_plant
 6           fern_plant
@@ -73,6 +73,8 @@ Allocated: 47
 2  .... leaves
 1           soft_leaves
 1           smooth_cap
+1  .... miscellaneous
+1           vine
 ]]--
 
 local function register_small_plants()
@@ -392,7 +394,8 @@ local function register_stems()
             place_param2 = 0,
             sunlight_propagates = false,
             walkable = true,
-            buildable_to = false
+            buildable_to = false,
+            nv_vineable = true
         } end
     )
     nv_flora.node_types.veiny_stem = minetest.get_content_id("nv_flora:veiny_stem")
@@ -420,7 +423,8 @@ local function register_stems()
             place_param2 = 0,
             sunlight_propagates = false,
             walkable = true,
-            buildable_to = false
+            buildable_to = false,
+            nv_vineable = true
         } end
     )
     nv_flora.node_types.woody_stem = minetest.get_content_id("nv_flora:woody_stem")
@@ -479,7 +483,8 @@ local function register_leaves()
             place_param2 = 0,
             sunlight_propagates = true,
             walkable = true,
-            buildable_to = false
+            buildable_to = false,
+            nv_vineable = true
         } end
     )
     nv_flora.node_types.soft_leaves = minetest.get_content_id("nv_flora:soft_leaves")
@@ -513,6 +518,39 @@ local function register_leaves()
     nv_flora.node_types.smooth_cap = minetest.get_content_id("nv_flora:smooth_cap")
 end
 
+local function register_miscellaneous()
+    nv_flora.node_types.vine = {}
+    -- VINE
+    -- Leaves with a soft appearance
+    -- 8 water colors as palette
+    register_color_variants(
+        "vine", 1,
+        function (x) return {r = 0, g = 0, b = 0} end,
+        function (n, color) return {
+            drawtype = "signlike",
+            tiles = {
+                "nv_vine.png",
+            },
+            use_texture_alpha = "clip",
+            palette = "nv_palette_water2.png",
+            paramtype = "light",
+            paramtype2 = "colorwallmounted",
+            place_param2 = 0,
+            sunlight_propagates = true,
+            walkable = false,
+            climbable = true,
+            buildable_to = true,
+            selection_box = {
+                type = "fixed",
+                fixed = {
+                    {-0.5, -0.5, -0.5, 0.5, -0.5 + 1/16, 0.5}
+                },
+            },
+        } end
+    )
+    nv_flora.node_types.vine = minetest.get_content_id("nv_flora:vine")
+end
+
 --[[
  # REGISTRATION
 Color variants can be generated in two ways: one involves creating a color
@@ -530,6 +568,7 @@ function nv_flora.register_all_nodes()
     register_tall_grasses()
     register_stems()
     register_leaves()
+    register_miscellaneous()
 end
 
 nv_flora.register_all_nodes()

@@ -274,7 +274,8 @@ local function register_base_nodes()
                 footstep = {
                     name = "nv_step_stone", gain = 0.4, pitch = 1
                 }
-            }
+            },
+            nv_vineable = true
         } end
     )
 end

@@ -15,6 +15,7 @@ dofile(minetest.get_modpath("nv_flora") .. "/tall_grasses.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/cave_plants.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/trees.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/branched_plants.lua")
+dofile(minetest.get_modpath("nv_flora") .. "/vines.lua")
 
 function get_planet_plant_colors(seed)
     local G = PcgRandom(seed, seed)
@@ -47,7 +48,8 @@ local function get_plant_meta(seed, index)
                 [nv_flora.get_small_plant_meta] = 70,
                 [nv_flora.get_cave_plant_meta] = 30,
                 [nv_flora.get_tall_grass_meta] = 30,
-                [nv_flora.get_tree_meta] = 20
+                [nv_flora.get_tree_meta] = 20,
+                [nv_flora.get_vine_meta] = 10
             })
         end
     elseif meta.atmosphere == "hot" then
@@ -83,7 +85,7 @@ local function plant_handler(seed)
     if meta.life == "normal" then
         plant_count = G:next(15, 25)
     elseif meta.life == "lush" then
-        plant_count = G:next(30, 50)
+        plant_count = G:next(35, 55)
     end
     local r = {}
     for index=1,plant_count do
