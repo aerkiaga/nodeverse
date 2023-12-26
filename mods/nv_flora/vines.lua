@@ -13,6 +13,7 @@ local function vine_callback(
             local point_count = 0
             local saved_p2 = nil
             local threshold = G:next(1, 2)
+            local threshold2 = G:next(2, 3)
             for y=math.min(maxp.y, custom.max_height - mapping.offset.y),math.max(minp.y, custom.min_height - mapping.offset.y),-1 do
                 local i = area:index(x, y, z)
                 if (A[i] == nil or A[i] == minetest.CONTENT_AIR) then
@@ -26,7 +27,7 @@ local function vine_callback(
                     elseif z < maxp.z and minetest.registered_nodes[minetest.get_name_from_content_id(A[area:index(x, y, z + 1)])].nv_vineable ~= nil then
                         p2 = 4
                     end
-                    if p2 ~= nil or point_count > G:next(2, 3) then
+                    if p2 ~= nil or point_count > threshold2 then
                         if p2 ~= nil then
                             point_count = point_count + 1
                             saved_p2 = p2
