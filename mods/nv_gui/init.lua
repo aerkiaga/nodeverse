@@ -29,7 +29,7 @@ local function postprocess_formspec(formspec, selected_tab)
 		[[
 			formspec_version[2]
 			size[14,8]
-			tabheader[0,0;tabh;%s;%d;<transparent>;<draw_border>]
+			tabheader[0,0;tabh;%s;%d;false;false]
 			%s
 		]],
 		names,
@@ -54,8 +54,7 @@ function nv_gui.set_inventory_formspec(player, tabname, formspec)
         current = 1,
         formspecs = {},
     }
-    local current = player_tabs[name].current
-    formspec = postprocess_formspec(formspec, current)
+    formspec = postprocess_formspec(formspec, tab)
     player_tabs[name].formspecs[tab] = formspec
     if player_tabs[name].current == tab then
         player:set_inventory_formspec(formspec)
@@ -72,9 +71,19 @@ end
 local function player_receive_fields_callback(player, formname, fields)
 	if formname == "" then
 	    local name = player:get_player_name()
+	    for field, value in pairs(fields) do
+	        if string.sub(field, 1, 4) == "tabh" then
+	            local current = tonumber(value)
+	            player_tabs[name].current = current
+	            local formspec = player_tabs[name].formspecs[current]
+	            nv_gui.show_formspec(player, formspec)
+	            player:set_inventory_formspec(formspec)
+	        end
+	    end
 	    local tab = player_tabs[name].current
 	    global_tabs[tab].callback(player, fields)
 	end
+	return true
 end
 
 minetest.register_on_player_receive_fields(player_receive_fields_callback)
