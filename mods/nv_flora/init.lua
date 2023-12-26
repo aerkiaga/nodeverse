@@ -16,6 +16,7 @@ dofile(minetest.get_modpath("nv_flora") .. "/cave_plants.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/trees.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/branched_plants.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/vines.lua")
+dofile(minetest.get_modpath("nv_flora") .. "/lilypads.lua")
 
 function get_planet_plant_colors(seed)
     local G = PcgRandom(seed, seed)
@@ -49,7 +50,8 @@ local function get_plant_meta(seed, index)
                 [nv_flora.get_cave_plant_meta] = 30,
                 [nv_flora.get_tall_grass_meta] = 30,
                 [nv_flora.get_tree_meta] = 20,
-                [nv_flora.get_vine_meta] = 10
+                [nv_flora.get_vine_meta] = 10,
+                [nv_flora.get_lilypad_meta] = meta.has_oceans and 10 or 0
             })
         end
     elseif meta.atmosphere == "hot" then

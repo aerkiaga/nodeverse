@@ -545,13 +545,44 @@ local function register_miscellaneous()
                 fixed = {
                     {-0.5, -0.5, -0.5, 0.5, -0.5 + 1/16, 0.5}
                 },
-            },
+            }
         } end
     )
     nv_flora.node_types.vine = {
         minetest.get_content_id("nv_flora:vine1"),
         minetest.get_content_id("nv_flora:vine2")
     }
+    
+    nv_flora.node_types.lilypad = {}
+    -- CLASSIC LILYPAD
+    -- A standard circular lilypad
+    -- 8 water colors as palette
+    register_color_variants(
+        "classic_lilypad", 1,
+        function (x) return {r = 0, g = 0, b = 0} end,
+        function (n, color) return {
+            drawtype = "signlike",
+            tiles = {
+                "nv_classic_lilypad.png",
+            },
+            use_texture_alpha = "clip",
+            palette = "nv_palette_water2.png",
+            paramtype = "light",
+            paramtype2 = "colorwallmounted",
+            place_param2 = 0,
+            sunlight_propagates = true,
+            walkable = true,
+            climbable = false,
+            buildable_to = true,
+            selection_box = {
+                type = "fixed",
+                fixed = {
+                    {-0.5, -0.5, -0.5, 0.5, -0.5 + 1/16, 0.5}
+                },
+            }
+        } end
+    )
+    nv_flora.node_types.classic_lilypad = minetest.get_content_id("nv_flora:classic_lilypad")
 end
 
 --[[

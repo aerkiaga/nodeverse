@@ -56,13 +56,13 @@ function nv_flora.get_vine_meta(seed, index)
     r.side = 8
     r.order = 100
     r.callback = vine_callback
-    -- Cave plant-specific
+    -- Vine-specific
     r.color = colors[G:next(1, #colors)] % 8
     r.nodes = gen_weighted(G, {
         [nv_flora.node_types.vine] = 1
     })
     r.vine_density = gen_linear(G, 0.4, 0.8)
-    r.max_height = G:next(3, 6)^2
+    r.max_height = G:next(4, 7)^2
     r.min_height = -G:next(1, 5)^2
     return r
 end
