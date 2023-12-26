@@ -54,6 +54,8 @@ local function get_ordered_planets_in_system(system)
     return ordered_planets
 end
 
+nv_universe.get_ordered_planets_in_system = get_ordered_planets_in_system
+
 local function get_planet_color(planet, use_snow)
     use_snow = (use_snow == nil) and true or use_snow
 	local meta = nv_planetgen.generate_planet_metadata(planet)
@@ -369,6 +371,8 @@ function create_planet_image(planet)
 	    oceans
 	)
 end
+
+nv_universe.create_planet_image = create_planet_image
 
 function nv_universe.create_planet_formspec(planet, can_travel)
     local meta = nv_planetgen.generate_planet_metadata(planet)

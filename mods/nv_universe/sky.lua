@@ -5,6 +5,8 @@ function system_from_planet(planet)
 	return planet
 end
 
+nv_universe.system_from_planet = system_from_planet
+
 function nv_universe.set_space_sky(player, seed)
     player:set_sky {
 		base_color = 0xFF080008,
