@@ -12,6 +12,7 @@ local function vine_callback(
         for x=minp.x,maxp.x,1 do
             local point_count = 0
             local saved_p2 = nil
+            local threshold = G:next(1, 2)
             for y=math.min(maxp.y, custom.max_height - mapping.offset.y),math.max(minp.y, custom.min_height - mapping.offset.y),-1 do
                 local i = area:index(x, y, z)
                 if (A[i] == nil or A[i] == minetest.CONTENT_AIR) then
@@ -32,8 +33,8 @@ local function vine_callback(
                         else
                             point_count = point_count - G:next(1, 2)
                         end
-                        if point_count > G:next(1, 2) and (p2 == nil or gen_linear(G, 0, 1) < custom.vine_density) then
-                            A[i] = custom.node
+                        if point_count > threshold and (p2 == nil or gen_linear(G, 0, 1) < custom.vine_density) then
+                            A[i] = custom.nodes[G:next(1, 2)]
                             A2[i] = saved_p2 + color_index * 8
                         end
                     end
@@ -56,7 +57,7 @@ function nv_flora.get_vine_meta(seed, index)
     r.callback = vine_callback
     -- Cave plant-specific
     r.color = colors[G:next(1, #colors)] % 8
-    r.node = gen_weighted(G, {
+    r.nodes = gen_weighted(G, {
         [nv_flora.node_types.vine] = 1
     })
     r.vine_density = gen_linear(G, 0.4, 0.8)

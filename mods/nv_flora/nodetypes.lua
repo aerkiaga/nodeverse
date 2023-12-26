@@ -524,12 +524,12 @@ local function register_miscellaneous()
     -- Leaves with a soft appearance
     -- 8 water colors as palette
     register_color_variants(
-        "vine", 1,
+        "vine", 2,
         function (x) return {r = 0, g = 0, b = 0} end,
         function (n, color) return {
             drawtype = "signlike",
             tiles = {
-                "nv_vine.png",
+                string.format("nv_vine%d.png", n),
             },
             use_texture_alpha = "clip",
             palette = "nv_palette_water2.png",
@@ -548,7 +548,10 @@ local function register_miscellaneous()
             },
         } end
     )
-    nv_flora.node_types.vine = minetest.get_content_id("nv_flora:vine")
+    nv_flora.node_types.vine = {
+        minetest.get_content_id("nv_flora:vine1"),
+        minetest.get_content_id("nv_flora:vine2")
+    }
 end
 
 --[[
