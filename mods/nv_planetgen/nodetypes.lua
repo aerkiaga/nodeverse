@@ -186,7 +186,9 @@ local function register_base_nodes()
                 footstep = {
                     name = "nv_step_dust", gain = 0.2, pitch = 1
                 }
-            }
+            },
+            drop = "",
+            groups = {crumbly = 1},
         } end
     )
     -- SEDIMENT
@@ -216,7 +218,9 @@ local function register_base_nodes()
                 footstep = {
                     name = "nv_step_sediment", gain = 0.07, pitch = 1
                 }
-            }
+            },
+            drop = "",
+            groups = {crumbly = 2},
         } end
     )
     -- GRAVEL
@@ -245,7 +249,9 @@ local function register_base_nodes()
                 footstep = {
                     name = "nv_step_gravel", gain = 0.3, pitch = 1
                 }
-            }
+            },
+            drop = "",
+            groups = {crumbly = 1},
         } end
     )
     -- STONE
@@ -275,7 +281,9 @@ local function register_base_nodes()
                     name = "nv_step_stone", gain = 0.4, pitch = 1
                 }
             },
-            nv_vineable = true
+            drop = "",
+            groups = {cracky = 1},
+            nv_vineable = true,
         } end
     )
 end
@@ -599,8 +607,10 @@ local function register_icy_nodes()
                     name = "nv_step_snow", gain = 0.15, pitch = 1
                 }
             },
+            drop = "",
             groups = {
                 can_replace = 1,
+                crumbly = 2,
             },
         } end
     )
@@ -632,7 +642,9 @@ local function register_icy_nodes()
                 footstep = {
                     name = "nv_step_stone", gain = 0.3, pitch = 2.5
                 }
-            }
+            },
+            drop = "",
+            groups = {cracky = 2},
         } end
     )
 end
@@ -671,7 +683,9 @@ local function register_base_floral_nodes()
                 footstep = {
                     name = "nv_step_grass_soil", gain = 0.05, pitch = 1
                 }
-            }
+            },
+            drop = "",
+            groups = {crumbly = 1},
         } end
     )
     -- GRASS
@@ -696,7 +710,9 @@ local function register_base_floral_nodes()
             selection_box = {
                 type = "fixed",
                 fixed = {{-0.5, -0.5, -0.5, 0.5, 0, 0.5}}
-            }
+            },
+            drop = "",
+            groups = {snappy = 2},
         } end
     )
 
@@ -722,7 +738,9 @@ local function register_base_floral_nodes()
             selection_box = {
                 type = "fixed",
                 fixed = {{-0.5, -0.5, -0.5, 0.5, -3/16, 0.5}}
-            }
+            },
+            drop = "",
+            groups = {snappy = 2},
         } end
     )
 
@@ -748,7 +766,9 @@ local function register_base_floral_nodes()
             selection_box = {
                 type = "fixed",
                 fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
-            }
+            },
+            drop = "",
+            groups = {snappy = 2},
         } end
     )
 end

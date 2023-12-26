@@ -101,7 +101,9 @@ local function register_small_plants()
             selection_box = {
                 type = "fixed",
                 fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
-            }
+            },
+            drop = "",
+            groups = {snappy = 2},
         } end
     )
     for n=1,6 do
@@ -131,7 +133,9 @@ local function register_small_plants()
             selection_box = {
                 type = "fixed",
                 fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
-            }
+            },
+            drop = "",
+            groups = {snappy = 2},
         } end
     )
     for n=1,6 do
@@ -164,7 +168,9 @@ local function register_small_mushrooms()
             selection_box = {
                 type = "fixed",
                 fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
-            }
+            },
+            drop = "",
+            groups = {snappy = 2},
         } end
     )
     for n=1,4 do
@@ -194,7 +200,9 @@ local function register_small_mushrooms()
             selection_box = {
                 type = "fixed",
                 fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
-            }
+            },
+            drop = "",
+            groups = {snappy = 2},
         } end
     )
     for n=1,4 do
@@ -225,7 +233,9 @@ local function register_small_mushrooms()
             selection_box = {
                 type = "fixed",
                 fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
-            }
+            },
+            drop = "",
+            groups = {snappy = 2},
         } end
     )
     for n=1,4 do
@@ -255,7 +265,9 @@ local function register_small_mushrooms()
             selection_box = {
                 type = "fixed",
                 fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
-            }
+            },
+            drop = "",
+            groups = {snappy = 2},
         } end
     )
     for n=1,4 do
@@ -292,7 +304,9 @@ local function register_tall_grasses()
             selection_box = {
                 type = "fixed",
                 fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
-            }
+            },
+            drop = "",
+            groups = {snappy = 1},
         } end
     )
     for n=1,6 do
@@ -327,7 +341,9 @@ local function register_tall_grasses()
             selection_box = {
                 type = "fixed",
                 fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
-            }
+            },
+            drop = "",
+            groups = {snappy = 1},
         } end
     )
     for n=1,6 do
@@ -362,7 +378,9 @@ local function register_tall_grasses()
             selection_box = {
                 type = "fixed",
                 fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
-            }
+            },
+            drop = "",
+            groups = {snappy = 1},
         } end
     )
     for n=1,6 do
@@ -395,7 +413,9 @@ local function register_stems()
             sunlight_propagates = false,
             walkable = true,
             buildable_to = false,
-            nv_vineable = true
+            drop = "",
+            groups = {choppy = 1},
+            nv_vineable = true,
         } end
     )
     nv_flora.node_types.veiny_stem = minetest.get_content_id("nv_flora:veiny_stem")
@@ -424,7 +444,9 @@ local function register_stems()
             sunlight_propagates = false,
             walkable = true,
             buildable_to = false,
-            nv_vineable = true
+            drop = "",
+            groups = {choppy = 1},
+            nv_vineable = true,
         } end
     )
     nv_flora.node_types.woody_stem = minetest.get_content_id("nv_flora:woody_stem")
@@ -452,7 +474,9 @@ local function register_stems()
             place_param2 = 0,
             sunlight_propagates = false,
             walkable = true,
-            buildable_to = false
+            buildable_to = false,
+            drop = "",
+            groups = {choppy = 2},
         } end
     )
     nv_flora.node_types.succulent_stem = minetest.get_content_id("nv_flora:succulent_stem")
@@ -484,7 +508,9 @@ local function register_leaves()
             sunlight_propagates = true,
             walkable = true,
             buildable_to = false,
-            nv_vineable = true
+            nv_vineable = true,
+            drop = "",
+            groups = {snappy = 1},
         } end
     )
     nv_flora.node_types.soft_leaves = minetest.get_content_id("nv_flora:soft_leaves")
@@ -512,7 +538,9 @@ local function register_leaves()
             place_param2 = 0,
             sunlight_propagates = false,
             walkable = true,
-            buildable_to = false
+            buildable_to = false,
+            drop = "",
+            groups = {choppy = 2},
         } end
     )
     nv_flora.node_types.smooth_cap = minetest.get_content_id("nv_flora:smooth_cap")
@@ -545,7 +573,9 @@ local function register_miscellaneous()
                 fixed = {
                     {-0.5, -0.5, -0.5, 0.5, -0.5 + 1/16, 0.5}
                 },
-            }
+            },
+            drop = "",
+            groups = {snappy = 2},
         } end
     )
     nv_flora.node_types.vine = {
@@ -579,7 +609,9 @@ local function register_miscellaneous()
                 fixed = {
                     {-0.5, -0.5, -0.5, 0.5, -0.5 + 1/16, 0.5}
                 },
-            }
+            },
+            drop = "",
+            groups = {snappy = 2},
         } end
     )
     nv_flora.node_types.classic_lilypad = minetest.get_content_id("nv_flora:classic_lilypad")

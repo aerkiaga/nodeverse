@@ -6,8 +6,8 @@ development have been ported to the 0.3.x versions.
 
 ### Added
  - Mod `nv_flora`.
- - Short and tall plants, cave flora, cacti, vines, trees and large mushrooms.
- - 15 kinds of floral nodes.
+ - Short and tall plants, cave flora, cacti, vines, lily pads, trees and large mushrooms.
+ - 16 kinds of floral nodes.
  - Underground lakes.
 
 ### Changed
@@ -17,6 +17,9 @@ development have been ported to the 0.3.x versions.
 ### Performance
  - Dramatically reduced the number of necessary node registrations.
  - Now uses a single entity type for ships (thanks to Siegmentation Fault).
+
+### Fixed
+ - Now ships are preserved even if planets are re-generated.
 
 ## [0.3.3] - 24-12-2023
 ### Fixed

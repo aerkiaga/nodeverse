@@ -21,6 +21,27 @@ local default_ship = "0MAsingleplayerBAnFAEAEABAgAAABAgCABACAALA________UAAAAAXA
 nv_ships.set_default_ship(default_ship)
 
 --[[
+ # DEFAULT TOOL
+]]
+
+minetest.register_item(":", {
+	type = "none",
+	wield_image = "wieldhand.png",
+	wield_scale = {x=1,y=1,z=2.5},
+	tool_capabilities = {
+		full_punch_interval = 0.9,
+		max_drop_level = 0,
+		groupcaps={
+            crumbly={maxlevel=1, times={[1]=1.30, [2]=0.80, [3]=0.50}},
+            cracky={maxlevel=1, times={[1]=2.50, [2]=2.00, [3]=1.50}},
+            snappy={maxlevel=1, times={[1]=0.60, [2]=0.40, [3]=0.20}},
+            choppy={maxlevel=1, times={[1]=2.10, [2]=1.80, [3]=1.20}},
+        },
+		damage_groups = {fleshy=1},
+	}
+})
+
+--[[
  # UNIVERSE SETUP
 ]]
 
