@@ -9,6 +9,7 @@ development have been ported to the 0.3.x versions.
  - Short and tall plants, cave flora, cacti, vines, lily pads, trees and large mushrooms.
  - 16 kinds of floral nodes.
  - Underground lakes.
+ - Ability to break nodes.
 
 ### Changed
  - Made caves larger, as well as less common and predictable.
