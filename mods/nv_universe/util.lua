@@ -1,3 +1,36 @@
+--[[
+ # DUG LIST
+]]
+
+--[[
+Contains a dictionary of all dug nodes by 'in_space', then by planet,
+then by Y, then by Z, then by X. Each leaf node only contains 'true'.
+]]--
+
+nv_universe.dug = {}
+
+function nv_universe.mark_dug_node(in_space, planet, x, y, z)
+    if nv_universe.dug[in_space] == nil then
+        nv_universe.dug[in_space] = {}
+    end
+    local cur = nv_universe.dug[in_space]
+    if cur[planet] == nil then
+        cur[planet] = {}
+    end
+    cur = cur[planet]
+    if cur[y] == nil then
+        cur[y] = {}
+    end
+    cur = cur[y]
+    if cur[z] == nil then
+        cur[z] = {}
+    end
+    cur = cur[z]
+    if cur[x] == nil then
+        cur[x] = true
+    end
+end
+
 function nv_universe.sRGB_to_string(sRGB)
     return string.format("#%02x%02x%02x", sRGB.R or sRGB.r, sRGB.G or sRGB.g, sRGB.B or sRGB.b)
 end

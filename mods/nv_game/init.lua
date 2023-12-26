@@ -4,6 +4,7 @@ on other NV mods.
 
  # INDEX
     SHIPS SETUP
+    DEFAULT TOOL
     UNIVERSE SETUP
 ]]--
 

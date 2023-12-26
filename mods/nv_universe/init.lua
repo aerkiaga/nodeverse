@@ -231,3 +231,41 @@ local function leaveplayer_callback(player, timed_out)
 end
 
 minetest.register_on_leaveplayer(leaveplayer_callback)
+
+local function dignode_callback(pos, oldnode, digger)
+    local def = minetest.registered_nodes[oldnode.name]
+    if def.nv_managed then
+        return
+    end
+    local unipos = nv_universe.get_universal_coordinates(pos.y)
+    nv_universe.mark_dug_node(unipos.in_space, unipos.planet, pos.x, unipos.y, pos.z)
+end
+
+minetest.register_on_dignode(dignode_callback)
+
+local function post_processing_callback(minp, maxp, area, offset, A, A1, A2, mapping, planet, ground_buffer)
+    if not nv_universe.dug[false] then
+        return
+    end
+    for p, cur in pairs(nv_universe.dug[false]) do
+        if p == planet.seed then
+            for y, cur2 in pairs(cur) do
+                if y - offset.y >= minp.y and y - offset.y <= maxp.y then
+                    for z, cur3 in pairs(cur2) do
+                        if z >= minp.z and z <= maxp.z then
+                            for x, t in pairs(cur3) do
+                                local i = area:index(x, y - offset.y, z)
+                                local def = minetest.registered_nodes[minetest.get_name_from_content_id(A[i])]
+                                if not def.nv_managed then
+                                    A[i] = minetest.CONTENT_AIR
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+nv_planetgen.register_post_processing(post_processing_callback)

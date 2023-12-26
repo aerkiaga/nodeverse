@@ -129,6 +129,12 @@ function nv_universe.load_global_state()
                 else
                     nv_universe.planets[index][key] = tonumber(value)
                 end
+            elseif name:sub(1, 1) == "d" then
+                local count = #value / 9
+                for n=1,count do
+                    local pos = decode_vs18(value:sub(1+n*9-9,9+n*9-9))
+                    nv_universe.mark_dug_node(false, index, pos.x, pos.y, pos.z)
+                end
             end
         end
     end
@@ -186,6 +192,22 @@ function nv_universe.store_global_state()
     for index, value in pairs(nv_universe.planets) do
         for key, val in pairs(value) do
             written_table[string.format("nv_universe:p%d_%s", index, key)] = tostring(val)
+        end
+    end
+    
+    if nv_universe.dug[false] then
+        for planet, coords in pairs(nv_universe.dug[false]) do
+            local array = {}
+            for y, coords2 in pairs(coords) do
+                for z, coords3 in pairs(coords2) do
+                    for x, t in pairs(coords3) do
+                        encode_s18(array, x)
+                        encode_s18(array, y)
+                        encode_s18(array, z)
+                    end
+                end
+            end
+            written_table[string.format("nv_universe:d%d_", planet)] = table.concat(array)
         end
     end
     
