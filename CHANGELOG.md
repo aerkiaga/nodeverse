@@ -5,7 +5,7 @@ many new features to the game. Most fixes and small changes made during its
 development have been ported to the 0.3.x versions.
 
 ### Added
- - Mod `nv_flora`.
+ - Mods `nv_flora` and `nv_gui`.
  - Short and tall plants, cave flora, cacti, vines, lily pads, trees and large mushrooms.
  - 16 kinds of floral nodes.
  - Underground lakes.
