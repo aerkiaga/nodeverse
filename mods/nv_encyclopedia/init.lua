@@ -57,11 +57,18 @@ local function get_base_formspec(player)
             ),
             pl
         )
-        y = y + 2
+        y = y + 3
     end
-    return [[
-        scroll_container[0,0;14,8;encycloscroll;vertical;0.1]
-    ]] .. r .. [[
+    return string.format(
+        [[
+            formspec_version[2]
+	        size[14,8]
+	        scrollbaroptions[min=0;max=%d;smallstep=1;largestep=8]
+	        scrollbar[13.7,0;0.3,8;vertical;encycloscroll;0]
+            scroll_container[0,0;14,8;encycloscroll;vertical;1]
+        ]],
+        y - 4
+    ) .. r .. [[
         scroll_container_end[]
     ]]
 end
@@ -77,20 +84,13 @@ local function visit_planet_callback(player, planet)
     table.insert(nv_encyclopedia.players[name], {
         seed = planet,
     })
+    nv_gui.set_inventory_formspec(player, "encyclopedia", get_base_formspec(player))
 end
 
 nv_universe.register_on_visit_planet(visit_planet_callback)
 
 local function joinplayer_callback(player, last_login)
-    local formspec = string.format(
-        [[
-		    formspec_version[2]
-		    size[14,8]
-		    %s
-	    ]],
-	    get_base_formspec(player)
-	)
-	nv_gui.set_inventory_formspec(player, "encyclopedia", formspec)
+	nv_gui.set_inventory_formspec(player, "encyclopedia", get_base_formspec(player))
 end
 
 minetest.register_on_joinplayer(joinplayer_callback)
