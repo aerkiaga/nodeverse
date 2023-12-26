@@ -51,7 +51,7 @@ function nv_flora.get_vine_meta(seed, index)
     local meta = generate_planet_metadata(seed)
     local colors = get_planet_plant_colors(seed)
     -- General
-    r.density = 1/G:next(2, 6)
+    r.density = 1/G:next(2, 4)
     r.seed = 7583893 + index
     r.side = 8
     r.order = 100
