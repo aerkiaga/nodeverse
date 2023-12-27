@@ -37,6 +37,7 @@ minetest.register_item(":", {
             cracky={maxlevel=1, times={[1]=2.50, [2]=2.00, [3]=1.50}},
             snappy={maxlevel=1, times={[1]=0.60, [2]=0.40, [3]=0.20}},
             choppy={maxlevel=1, times={[1]=2.10, [2]=1.80, [3]=1.20}},
+            oddly_breakable_by_hand={maxlevel=1, times={[1]=0, [2]=0, [3]=0}},
         },
 		damage_groups = {fleshy=1},
 	}
