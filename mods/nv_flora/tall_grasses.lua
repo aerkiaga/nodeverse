@@ -99,10 +99,16 @@ function nv_flora.get_tall_grass_meta(seed, index)
     r.color = colors[G:next(1, #colors)]
     local color_group = math.floor((r.color - 1) / 8) + 1
     local plant_type_nodes = gen_weighted(G, {
-        [nv_flora.node_types.cane_grass] = 1,
-        [nv_flora.node_types.thick_grass] = 1,
-        [nv_flora.node_types.ball_grass] = 1
+        cane_grass = 1,
+        thick_grass = 1,
+        ball_grass = 1
     })
+    local translation = {
+        cane_grass = nv_flora.node_types.cane_grass,
+        thick_grass = nv_flora.node_types.thick_grass,
+        ball_grass = nv_flora.node_types.ball_grass,
+    }
+    plant_type_nodes = translation[plant_type_nodes]
     r.node = plant_type_nodes[color_group]
     r.is_colorful = (G:next(0, 2) == 0)
     if meta.has_oceans then

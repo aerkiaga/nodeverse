@@ -43,43 +43,53 @@ end
 local function get_plant_meta(seed, index)
     local G = PcgRandom(seed, index)
     local meta = generate_planet_metadata(seed)
-    local plant_type_handler
+    local plant_type_handler = nil
     if meta.life == "lush" then
-        if index == 0 then
-            plant_type_handler = nv_flora.get_tree_meta
+        if index == 1 then
+            plant_type_handler = "small_plant"
         else
             plant_type_handler = gen_weighted(G, {
-                [nv_flora.get_small_plant_meta] = 30,
-                [nv_flora.get_cave_plant_meta] = 30,
-                [nv_flora.get_tall_grass_meta] = 20,
-                [nv_flora.get_tree_meta] = 25,
-                [nv_flora.get_vine_meta] = 7,
-                [nv_flora.get_lilypad_meta] = meta.has_oceans and 7 or 0
+                small_plant = 30,
+                cave_plant = 30,
+                tall_grass = 20,
+                tree = 25,
+                vine = 7,
+                lilypad = meta.has_oceans and 7 or 0
             })
         end
     elseif meta.atmosphere == "hot" then
         plant_type_handler = gen_weighted(G, {
-            [nv_flora.get_small_plant_meta] = 30,
-            [nv_flora.get_cave_plant_meta] = 20,
-            [nv_flora.get_tall_grass_meta] = 20,
-            [nv_flora.get_tree_meta] = 20,
-            [nv_flora.get_branched_plant_meta] = 30
+            small_plant = 30,
+            cave_plant = 20,
+            tall_grass = 20,
+            tree = 20,
+            branched_plant = 30
         })
     elseif meta.atmosphere == "cold" then
         plant_type_handler = gen_weighted(G, {
-            [nv_flora.get_small_plant_meta] = 30,
-            [nv_flora.get_cave_plant_meta] = 20,
-            [nv_flora.get_tall_grass_meta] = 5,
-            [nv_flora.get_tree_meta] = 40
+            small_plant = 30,
+            cave_plant = 20,
+            tall_grass = 5,
+            tree = 40
         })
     else
         plant_type_handler = gen_weighted(G, {
-            [nv_flora.get_small_plant_meta] = 40,
-            [nv_flora.get_cave_plant_meta] = 20,
-            [nv_flora.get_tall_grass_meta] = 15,
-            [nv_flora.get_tree_meta] = 40
+            small_plant = 40,
+            cave_plant = 20,
+            tall_grass = 15,
+            tree = 40
         })
     end
+    local translation = {
+        small_plant = nv_flora.get_small_plant_meta,
+        cave_plant = nv_flora.get_cave_plant_meta,
+        tall_grass = nv_flora.get_tall_grass_meta,
+        tree = nv_flora.get_tree_meta,
+        vine = nv_flora.get_vine_meta,
+        lilypad = nv_flora.get_lilypad_meta,
+        branched_plant = nv_flora.get_branched_plant_meta,
+    }
+    plant_type_handler = translation[plant_type_handler]
     return plant_type_handler(seed, index)
 end
 
@@ -93,7 +103,7 @@ local function plant_handler(seed)
         plant_count = G:next(25, 45)
     end
     local r = {}
-    for index=1,plant_count do
+    for index=1,plant_count,1 do
         local plant_meta = get_plant_meta(seed, index)
         table.insert(r, {
             density = plant_meta.density,
