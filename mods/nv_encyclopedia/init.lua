@@ -4,6 +4,7 @@ nv_encyclopedia = {}
 Contains a dictionary of players, where each value is a list of planets
 in the order they were visited by that player. Format is:
     seed        seed of the planet
+    flora       table, with each index' value set to 'true'
 ]]
 nv_encyclopedia.players = {}
 
@@ -16,7 +17,7 @@ local function get_planet_formspec(player, planet)
     for n, plant in ipairs(flora) do
         r = r .. string.format(
             [[
-                image[%d,%d;1.8,1.8;%s]
+                image[%d,%d;1.8,1.8;((%s)^[resize:128x128)]
             ]],
             x,
             y,
@@ -132,11 +133,33 @@ local function visit_planet_callback(player, planet)
     end
     table.insert(nv_encyclopedia.players[name], {
         seed = planet,
+        flora = {},
     })
     nv_gui.set_inventory_formspec(player, "encyclopedia", get_base_formspec(player))
 end
 
 nv_universe.register_on_visit_planet(visit_planet_callback)
+
+local function dig_plant_callback(player, planet, index)
+    local name = player:get_player_name()
+    nv_encyclopedia.players[name] = nv_encyclopedia.players[name] or {}
+    local found = nil
+    for n, player_planet in ipairs(nv_encyclopedia.players[name]) do
+        if player_planet.seed == planet then
+            found = player_planet
+        end
+    end
+    if not found then
+        found = {
+            seed = planet,
+            flora = {},
+        }
+    end
+    table.insert(nv_encyclopedia.players[name], found)
+    found.flora[index] = true
+end
+
+nv_flora.register_on_dig_plant(plant_callback)
 
 local function joinplayer_callback(player, last_login)
 	nv_gui.set_inventory_formspec(player, "encyclopedia", get_base_formspec(player))

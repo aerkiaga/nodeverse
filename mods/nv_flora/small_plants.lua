@@ -31,6 +31,10 @@ local function small_callback(
             or node_name == "nv_planetgen:snow" then
                 A[i] = custom.node
                 A2[i] = yrot + color_index * 32
+                nv_planetgen.set_meta(
+                    {x=x, y=y, z=z},
+                    {fields={seed=tostring(planet.seed), index=tostring(custom.index)}}
+                )
             end
         end
     end
@@ -65,6 +69,7 @@ function nv_flora.get_small_plant_meta(seed, index)
         r.density = 1/(G:next(8, 12)^2)
     end
     r.seed = 5646457 + index
+    r.index = index
     r.side = 1
     r.order = 100
     r.callback = small_callback

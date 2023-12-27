@@ -209,6 +209,21 @@ function nv_planetgen.register_on_not_generated(callback)
 end
 
 --[[
+Contains a list of all node metadata to add in the next emerge. Entry format is:
+    pos         node position
+    meta        metadata, as table
+]]--
+local meta_nodes = {}
+
+-- API
+function nv_planetgen.set_meta(pos, meta)
+    table.insert(meta_nodes, {
+        pos = pos,
+        meta = meta,
+    })
+end
+
+--[[
 # ENTRY POINT
 ]]--
 
@@ -261,6 +276,18 @@ local function mapgen_callback(minp, maxp, blockseed)
         VM:calc_lighting()
         VM:write_to_map()
     end
+end
+
+function nv_planetgen.refresh_meta()
+    for n, entry in ipairs(meta_nodes) do
+        local meta = minetest.get_meta(entry.pos)
+        local tab = meta:to_table()
+        for k, v in pairs(entry.meta.fields) do
+            tab.fields[k] = v
+        end
+        meta:from_table(tab)
+    end
+    meta_nodes = {}
 end
 
 --[[
