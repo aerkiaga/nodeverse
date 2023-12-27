@@ -19,13 +19,11 @@ function nv_flora.register_on_dig_plant(callback)
 end
 
 local function default_dig_callback(pos, oldnode, oldmetadata, digger)
-    nv_planetgen.refresh_meta()
-    local meta = minetest.get_meta(pos)
-    local tab = meta:to_table()
-    if not tab then
+    local meta = oldmetadata
+    if not meta then
         return
     end
-    local seed, index = tonumber(tab.fields.seed), tonumber(tab.fields.index)
+    local seed, index = tonumber(meta.fields.seed), tonumber(meta.fields.index)
     if not seed or not index then
         return
     end

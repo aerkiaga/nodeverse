@@ -14,14 +14,23 @@ local function get_planet_formspec(player, planet)
     local flora = nv_flora.get_planet_flora(planet)
     local x = 1
     local y = 1
+    local dug_plants = {}
+    for n, player_planet in ipairs(nv_encyclopedia.players[name]) do
+        if player_planet.seed == planet then
+            dug_plants = player_planet.flora
+        end
+    end
     for n, plant in ipairs(flora) do
         r = r .. string.format(
             [[
-                image[%d,%d;1.8,1.8;((%s)^[resize:128x128)]
+                image[%d,%d;1.8,1.8;%s]
             ]],
             x,
             y,
-            plant.thumbnail(planet, plant.custom)
+            string.format(
+                dug_plants[plant.custom.index] and "([fill:128x128:#444444)^((%s)^[resize:128x128)" or "((%s)^[resize:12x12)^[hsl:0:-100:-40",
+                plant.thumbnail(planet, plant.custom)
+            )
         )
         x = x + 2
         if x > 10 then
@@ -144,22 +153,24 @@ local function dig_plant_callback(player, planet, index)
     local name = player:get_player_name()
     nv_encyclopedia.players[name] = nv_encyclopedia.players[name] or {}
     local found = nil
+    local m = nil
     for n, player_planet in ipairs(nv_encyclopedia.players[name]) do
         if player_planet.seed == planet then
             found = player_planet
         end
+        m = n
     end
     if not found then
         found = {
             seed = planet,
             flora = {},
         }
+        table.insert(nv_encyclopedia.players[name], found)
     end
-    table.insert(nv_encyclopedia.players[name], found)
     found.flora[index] = true
 end
 
-nv_flora.register_on_dig_plant(plant_callback)
+nv_flora.register_on_dig_plant(dig_plant_callback)
 
 local function joinplayer_callback(player, last_login)
 	nv_gui.set_inventory_formspec(player, "encyclopedia", get_base_formspec(player))

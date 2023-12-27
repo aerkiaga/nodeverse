@@ -276,6 +276,7 @@ local function mapgen_callback(minp, maxp, blockseed)
         VM:calc_lighting()
         VM:write_to_map()
     end
+    nv_planetgen.refresh_meta()
 end
 
 function nv_planetgen.refresh_meta()
