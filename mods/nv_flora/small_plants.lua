@@ -31,9 +31,30 @@ local function small_callback(
             or node_name == "nv_planetgen:snow" then
                 A[i] = custom.node
                 A2[i] = yrot + color_index * 32
+                nv_planetgen.set_meta(
+                    {x=x, y=y, z=z},
+                    {fields={seed=tostring(planet.seed), index=tostring(custom.index)}}
+                )
             end
         end
     end
+end
+
+local function small_thumbnail(seed, custom)
+    local color_group = math.floor((custom.color - 1) / 8) + 1
+    local translation = {
+        [nv_flora.node_types.thin_mushroom[(color_group - 1) % 4 + 1]] = "nv_thin_mushroom.png",
+        [nv_flora.node_types.small_mushroom[(color_group - 1) % 4 + 1]] = "nv_small_mushroom.png",
+        [nv_flora.node_types.large_mushroom[(color_group - 1) % 4 + 1]] = "nv_large_mushroom.png",
+        [nv_flora.node_types.aloe_plant[color_group]] = "nv_aloe_plant.png",
+        [nv_flora.node_types.fern_plant[color_group]] = "nv_fern_plant.png",
+    }
+    local color_string = nv_universe.sRGB_to_string(fnColorGrass(custom.color))
+    return string.format(
+        "%s^[multiply:%s",
+        translation[custom.node],
+        color_string
+    )
 end
 
 function nv_flora.get_small_plant_meta(seed, index)
@@ -43,10 +64,11 @@ function nv_flora.get_small_plant_meta(seed, index)
     local colors = get_planet_plant_colors(seed)
     -- General
     if meta.life == "lush" then
-        r.density = 1/(G:next(2, 8)^2)
+        r.density = 1/(G:next(2, 7)^2)
     else
-        r.density = 1/(G:next(8, 14)^2)
+        r.density = 1/(G:next(8, 12)^2)
     end
+    r.index = index
     r.seed = 5646457 + index
     r.side = 1
     r.order = 100
@@ -54,33 +76,42 @@ function nv_flora.get_small_plant_meta(seed, index)
     -- Small plant-specific
     local planet_weirdness = gen_linear(PcgRandom(seed, seed), 0.6, 1.6) ^ 3
     r.color = colors[G:next(1, #colors)]
-    r.is_mushroom = gen_weighted(G, {[true] = 1 * planet_weirdness, [false] = 2 / planet_weirdness})
+    r.is_mushroom = gen_weighted(G, {["+"] = 1 * planet_weirdness, [""] = 2 / planet_weirdness}) == "+"
     local plant_type_nodes
     if r.is_mushroom then
         if r.color > 32 then
             r.color = math.floor(r.color / 2)
         end
         plant_type_nodes = gen_weighted(G, {
-            [nv_flora.node_types.thin_mushroom] = 1,
-            [nv_flora.node_types.small_mushroom] = 1,
-            [nv_flora.node_types.large_mushroom] = 1
+            thin_mushroom = 1,
+            small_mushroom = 1,
+            large_mushroom = 1
         })
     else
         plant_type_nodes = gen_weighted(G, {
-            [nv_flora.node_types.aloe_plant] = 1,
-            [nv_flora.node_types.fern_plant] = 1
+            aloe_plant = 1,
+            fern_plant = 1
         })
     end
+    local translation = {
+        thin_mushroom = nv_flora.node_types.thin_mushroom,
+        small_mushroom = nv_flora.node_types.small_mushroom,
+        large_mushroom = nv_flora.node_types.large_mushroom,
+        aloe_plant = nv_flora.node_types.aloe_plant,
+        fern_plant = nv_flora.node_types.fern_plant,
+    }
+    plant_type_nodes = translation[plant_type_nodes]
     local color_group = math.floor((r.color - 1) / 8) + 1
     r.node = plant_type_nodes[color_group]
     if meta.has_oceans then
         r.min_height = G:next(1, 4)^2
-        r.max_height = r.min_height + G:next(1, 5)^2
+        r.max_height = r.min_height + G:next(2, 5)^2
     else
         r.min_height = G:next(1, 6)^2 - 18
-        r.max_height = r.min_height + G:next(1, 6)^2
+        r.max_height = r.min_height + G:next(2, 6)^2
     end
     r.max_plant_height = 2
     r.max_plant_depth = 2
+    r.thumbnail = small_thumbnail
     return r
 end

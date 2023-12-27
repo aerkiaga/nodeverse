@@ -3,6 +3,8 @@ NV Flora implements large flora for Nodeverse.
 
 Included files:
     nodetypes.lua       Node definitions and registration
+    thumbnail.lua       Utility functions to build a thumbnail for each plant
+    other               Each file contains definitions for one kind of plant
 
  # INDEX
 ]]--
@@ -10,6 +12,7 @@ Included files:
 nv_flora = {}
 
 dofile(minetest.get_modpath("nv_flora") .. "/nodetypes.lua")
+dofile(minetest.get_modpath("nv_flora") .. "/thumbnail.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/small_plants.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/tall_grasses.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/cave_plants.lua")
@@ -40,43 +43,53 @@ end
 local function get_plant_meta(seed, index)
     local G = PcgRandom(seed, index)
     local meta = generate_planet_metadata(seed)
-    local plant_type_handler
+    local plant_type_handler = nil
     if meta.life == "lush" then
-        if index == 0 then
-            plant_type_handler = nv_flora.get_tree_meta
+        if index == 1 then
+            plant_type_handler = "small_plant"
         else
             plant_type_handler = gen_weighted(G, {
-                [nv_flora.get_small_plant_meta] = 70,
-                [nv_flora.get_cave_plant_meta] = 30,
-                [nv_flora.get_tall_grass_meta] = 30,
-                [nv_flora.get_tree_meta] = 20,
-                [nv_flora.get_vine_meta] = 10,
-                [nv_flora.get_lilypad_meta] = meta.has_oceans and 10 or 0
+                small_plant = 30,
+                cave_plant = 30,
+                tall_grass = 20,
+                tree = 25,
+                vine = 7,
+                lilypad = meta.has_oceans and 7 or 0
             })
         end
     elseif meta.atmosphere == "hot" then
         plant_type_handler = gen_weighted(G, {
-            [nv_flora.get_small_plant_meta] = 50,
-            [nv_flora.get_cave_plant_meta] = 20,
-            [nv_flora.get_tall_grass_meta] = 20,
-            [nv_flora.get_tree_meta] = 20,
-            [nv_flora.get_branched_plant_meta] = 30
+            small_plant = 30,
+            cave_plant = 20,
+            tall_grass = 20,
+            tree = 20,
+            branched_plant = 30
         })
     elseif meta.atmosphere == "cold" then
         plant_type_handler = gen_weighted(G, {
-            [nv_flora.get_small_plant_meta] = 50,
-            [nv_flora.get_cave_plant_meta] = 20,
-            [nv_flora.get_tall_grass_meta] = 5,
-            [nv_flora.get_tree_meta] = 40
+            small_plant = 30,
+            cave_plant = 20,
+            tall_grass = 5,
+            tree = 40
         })
     else
         plant_type_handler = gen_weighted(G, {
-            [nv_flora.get_small_plant_meta] = 70,
-            [nv_flora.get_cave_plant_meta] = 20,
-            [nv_flora.get_tall_grass_meta] = 15,
-            [nv_flora.get_tree_meta] = 40
+            small_plant = 40,
+            cave_plant = 20,
+            tall_grass = 15,
+            tree = 40
         })
     end
+    local translation = {
+        small_plant = nv_flora.get_small_plant_meta,
+        cave_plant = nv_flora.get_cave_plant_meta,
+        tall_grass = nv_flora.get_tall_grass_meta,
+        tree = nv_flora.get_tree_meta,
+        vine = nv_flora.get_vine_meta,
+        lilypad = nv_flora.get_lilypad_meta,
+        branched_plant = nv_flora.get_branched_plant_meta,
+    }
+    plant_type_handler = translation[plant_type_handler]
     return plant_type_handler(seed, index)
 end
 
@@ -85,12 +98,12 @@ local function plant_handler(seed)
     local meta = generate_planet_metadata(seed)
     local plant_count = 0
     if meta.life == "normal" then
-        plant_count = G:next(15, 25)
+        plant_count = G:next(12, 20)
     elseif meta.life == "lush" then
-        plant_count = G:next(35, 55)
+        plant_count = G:next(25, 45)
     end
     local r = {}
-    for index=1,plant_count do
+    for index=1,plant_count,1 do
         local plant_meta = get_plant_meta(seed, index)
         table.insert(r, {
             density = plant_meta.density,
@@ -98,10 +111,13 @@ local function plant_handler(seed)
             side = plant_meta.side,
             order = plant_meta.order,
             callback = plant_meta.callback,
+            thumbnail = plant_meta.thumbnail or nv_flora.get_default_thumbnail,
             custom = plant_meta
         })
     end
     return r
 end
+
+nv_flora.get_planet_flora = plant_handler
 
 nv_planetgen.register_structure_handler(plant_handler)

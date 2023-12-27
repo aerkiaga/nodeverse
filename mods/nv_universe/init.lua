@@ -14,6 +14,7 @@ Included files:
  # INDEX
     SETTINGS
     PLAYER LIST
+    UTILITIES
     PLAYER OPERATIONS
     CALLBACKS
 ]]--
@@ -48,6 +49,22 @@ to manage their location within the universe. Format is:
 ]]--
 
 nv_universe.players = {}
+
+--[[
+ # UTILITIES
+]]
+
+local on_visit_planet_callbacks = {}
+
+function nv_universe.register_on_visit_planet(callback)
+    table.insert(on_visit_planet_callbacks, callback)
+end
+
+local function on_visit_planet(player, planet)
+    for n, callback in ipairs(on_visit_planet_callbacks) do
+        callback(player, planet)
+    end
+end
 
 --[[
  # PLAYER OPERATIONS
@@ -85,12 +102,13 @@ local function send_into_planet(player)
     nv_universe.remove_from_space(seed)
     local layer = nv_universe.try_allocate_planet(seed)
     if not layer then
-        -- return to planet
+        -- return to space
         layer = nv_universe.try_allocate_space(seed)
         nv_universe.place_in_layer(layer)
         return
     end
     local placing = nv_universe.place_in_layer(layer)
+    on_visit_planet(player, placing.planet)
     nv_universe.players[name].in_space = placing.in_space
     nv_universe.players[name].planet = placing.planet
     player:set_pos(placing.pos)
@@ -184,6 +202,7 @@ local function newplayer_callback(player)
         layer = 1
     end
     local placing = nv_universe.place_in_layer(layer)
+    on_visit_planet(player, placing.planet)
     local new_player = {
         in_space = placing.in_space,
         planet = placing.planet

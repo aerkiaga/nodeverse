@@ -62,18 +62,23 @@ function gen_linear_sum(generator, min, max, sum)
 end
 
 function gen_weighted(generator, options)
-    local total_weight = 0
+    local array_options = {}
     for i, v in pairs(options) do
-        total_weight = total_weight + v
+        table.insert(array_options, {i=i, v=v})
+    end
+    table.sort(array_options, function(a, b) return a.i < b.i end)
+    local total_weight = 0
+    for n, p in ipairs(array_options) do
+        total_weight = total_weight + p.v
     end
     local value = gen_linear(generator, 0, total_weight)
-    for i, v in pairs(options) do
-        value = value - v
+    for n, p in ipairs(array_options) do
+        value = value - p.v
         if value < 0 then
-            return i
+            return p.i
         end
     end
-    return #options
+    return #array_options
 end
 
 --[[

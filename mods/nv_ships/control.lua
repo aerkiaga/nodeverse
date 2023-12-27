@@ -254,7 +254,7 @@ end
 
 local function respawnplayer_callback(player)
     local name = player:get_player_name()
-    ship = nv_ships.players_list[name].ships[1]
+    local ship = nv_ships.players_list[name].ships[1]
     if ship ~= nil then
         nv_ships.ship_to_entity(ship, player, true)
         set_flying_state(ship, player)

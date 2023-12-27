@@ -8,8 +8,8 @@ local function tree_callback(
     local stem_z = origin.z + math.floor(custom.side / 2)
     
     -- Get uniformized ground height
-    local uni_ground = nv_planetgen.get_ground_level(planet, stem_x, stem_z)
-    if uni_ground < custom.min_height or uni_ground > custom.max_height then
+    local uni_ground = ground_buffer and nv_planetgen.get_ground_level(planet, stem_x, stem_z) or -1
+    if ground_buffer ~= nil and (uni_ground < custom.min_height or uni_ground > custom.max_height) then
         return
     end
     -- Attempt to create stem
@@ -21,7 +21,7 @@ local function tree_callback(
     for z=math.max(stem_min_z, minp.z),math.min(stem_max_z, maxp.z),1 do
         for x=math.max(stem_min_x, minp.x),math.min(stem_max_x, maxp.x),1 do
             local k = (z - base.z) * extent.x + x - base.x + 1
-            local ground = math.floor(ground_buffer[k])
+            local ground = ground_buffer and math.floor(ground_buffer[k]) or -1
             for y=math.max(ground + 1 - mapping.offset.y, minp.y),math.min(uni_ground + stem_height - mapping.offset.y, maxp.y),1 do
                 local i = area:index(x, y, z)
                 local yrot = ((y * 547 + x + z) % 131) * 583 % 13 % 4
@@ -30,6 +30,12 @@ local function tree_callback(
                 or minetest.registered_nodes[minetest.get_name_from_content_id(A[i])].buildable_to then
                     A[i] = custom.stem_node
                     A2[i] = yrot + custom.stem_color * 4
+                    if ground_buffer ~= nil then
+                        nv_planetgen.set_meta(
+                            {x=x, y=y, z=z},
+                            {fields={seed=tostring(planet.seed), index=tostring(custom.index)}}
+                        )
+                    end
                 end
             end
         end
@@ -65,6 +71,12 @@ local function tree_callback(
                         else
                             A2[i] = yrot + custom.leaves_color * 4
                         end
+                        if ground_buffer ~= nil then
+                            nv_planetgen.set_meta(
+                                {x=cur_x, y=cur_y, z=cur_z},
+                                {fields={seed=tostring(planet.seed), index=tostring(custom.index)}}
+                            )
+                        end
                     end
                     if A[i] == custom.leaves_node
                     and length < custom.branch_length
@@ -72,6 +84,12 @@ local function tree_callback(
                     and (custom.row_count == 1 or m ~= custom.row_count) then
                         A[i] = custom.stem_node
                         A2[i] = yrot + custom.stem_color * 4
+                        if ground_buffer ~= nil then
+                            nv_planetgen.set_meta(
+                                {x=cur_x, y=cur_y, z=cur_z},
+                                {fields={seed=tostring(planet.seed), index=tostring(custom.index)}}
+                            )
+                        end
                     end
                 end
                 length = length + math.sqrt(delta_x^2 + delta_y^2 + delta_z^2) / 2
@@ -86,6 +104,56 @@ local function tree_callback(
     end
 end
 
+local function tree_thumbnail(seed, custom)
+    local width = custom.side
+    local height = custom.stem_height + custom.ray_length + 12
+    local square = math.max(width, height)
+    local origin = {x=0, z=0}
+    local minp = {x=0, y=0, z=0}
+    local maxp = {x=width - 1, y=height - 1, z=width - 1}
+    local area = VoxelArea(minp, maxp)
+    local A, A1, A2 = {}, {}, {}
+    local mapping = {offset={x=0, y=0, z=0}}
+    local planet = nv_planetgen.generate_planet_metadata(seed)
+    local ground_buffer = nil
+    tree_callback(
+        origin, minp, maxp, area, A, A1, A2, mapping, planet, ground_buffer, custom
+    )
+    local translation = {
+        [nv_flora.node_types.woody_stem] = "nv_woody_stem.png",
+        [nv_flora.node_types.veiny_stem] = "nv_veiny_stem.png",
+        [nv_flora.node_types.soft_leaves] = "nv_soft_leaves.png",
+        [nv_flora.node_types.smooth_cap] = "nv_smooth_cap.png",
+    }
+    local r = ""
+    local k = 0
+    for z=minp.z,maxp.z,1 do
+        for y=minp.y,maxp.y,1 do
+            local found = false
+            for x=minp.x,maxp.x,1 do
+                if not found and A[k] ~= nil and A[k] ~= minetest.CONTENT_AIR then
+                    local color = math.floor(A2[k] / 4) + 1
+                    local color_string = nv_universe.sRGB_to_string(fnColorGrass(color))
+                    r = r .. string.format(
+                        "((([combine:%dx%d:%d,%d=%s)^[resize:%dx%d)^[multiply:%s)^",
+                        square * 16,
+                        square * 16,
+                        z * 16 + math.floor((square - width) * 16 / 2),
+                        (square - y - 1)*16,
+                        translation[A[k]],
+                        square * 4,
+                        square * 4,
+                        color_string
+                    )
+                    found = true
+                end
+                k = k + 1
+            end
+        end
+    end
+    return string.sub(r, 1, #r - 1)
+end
+
 function nv_flora.get_tree_meta(seed, index)
     local r = {}
     local G = PcgRandom(seed, index)
@@ -97,12 +165,13 @@ function nv_flora.get_tree_meta(seed, index)
     else
         r.density = 1/(G:next(4, 10)^2)
     end
+    r.index = index
     r.seed = 638262 + index
     r.order = 100
     r.callback = tree_callback
     -- Tree-specific
     local planet_weirdness = gen_linear(PcgRandom(seed, seed), 0.6, 1.6) ^ 3
-    r.is_mushroom = gen_weighted(G, {[true] = 1 * planet_weirdness, [false] = 2 / planet_weirdness})
+    r.is_mushroom = gen_weighted(G, {["+"] = 1 * planet_weirdness, [""] = 2 / planet_weirdness}) == "+"
     r.stem_color = colors[G:next(1, #colors)]
     r.stem_ray_prob = 0
     if r.stem_color > 16 then
@@ -173,5 +242,6 @@ function nv_flora.get_tree_meta(seed, index)
         r.ray_wiggle = gen_linear(G, 0, 0.5) ^ 2
     end
     r.side = 2 * r.ray_length + 3
+    r.thumbnail = tree_thumbnail
     return r
 end

@@ -37,12 +37,29 @@ local function vine_callback(
                         if point_count > threshold and (p2 == nil or gen_linear(G, 0, 1) < custom.vine_density) then
                             A[i] = custom.nodes[G:next(1, 2)]
                             A2[i] = saved_p2 + color_index * 8
+                            nv_planetgen.set_meta(
+                                {x=x, y=y, z=z},
+                                {fields={seed=tostring(planet.seed), index=tostring(custom.index)}}
+                            )
                         end
                     end
                 end
             end
         end
     end
+end
+
+local function vine_thumbnail(seed, custom)
+    local color_group = math.floor((custom.color - 1) / 8) + 1
+    local translation = {
+        [nv_flora.node_types.vine] = "nv_vine1.png",
+    }
+    local color_string = nv_universe.sRGB_to_string(fnColorWater(custom.color + 8))
+    return string.format(
+        "%s^[multiply:%s",
+        translation[custom.nodes],
+        color_string
+    )
 end
 
 function nv_flora.get_vine_meta(seed, index)
@@ -52,6 +69,7 @@ function nv_flora.get_vine_meta(seed, index)
     local colors = get_planet_plant_colors(seed)
     -- General
     r.density = 1/G:next(2, 4)
+    r.index = index
     r.seed = 7583893 + index
     r.side = 8
     r.order = 100
@@ -62,7 +80,8 @@ function nv_flora.get_vine_meta(seed, index)
         [nv_flora.node_types.vine] = 1
     })
     r.vine_density = gen_linear(G, 0.4, 0.8)
-    r.max_height = G:next(4, 7)^2
-    r.min_height = -G:next(1, 5)^2
+    r.max_height = G:next(5, 7)^2
+    r.min_height = -G:next(2, 5)^2
+    r.thumbnail = vine_thumbnail
     return r
 end

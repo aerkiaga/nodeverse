@@ -3,10 +3,34 @@ The functions in this file perform registration of all node types used by the
 mod. Each base node type has one or more variants to this end.
 
  # INDEX
+    CALLBACK
     NODE TYPES
     REGISTRATION
     VARIANT SELECTION
 ]]
+
+--[[
+ # CALLBACK
+]]
+local on_dig_plant_callbacks = {}
+
+function nv_flora.register_on_dig_plant(callback)
+    table.insert(on_dig_plant_callbacks, callback)
+end
+
+local function default_dig_callback(pos, oldnode, oldmetadata, digger)
+    local meta = oldmetadata
+    if not meta then
+        return
+    end
+    local seed, index = tonumber(meta.fields.seed), tonumber(meta.fields.index)
+    if not seed or not index then
+        return
+    end
+    for n, callback in ipairs(on_dig_plant_callbacks) do
+        callback(digger, seed, index)
+    end
+end
 
 local function register_color_variants(name, num_variants, color_fn, def_fn)
     --[[
@@ -103,6 +127,7 @@ local function register_small_plants()
                 fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
             },
             drop = "",
+            after_dig_node = default_dig_callback,
             groups = {snappy = 2},
         } end
     )
@@ -135,6 +160,7 @@ local function register_small_plants()
                 fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
             },
             drop = "",
+            after_dig_node = default_dig_callback,
             groups = {snappy = 2},
         } end
     )
@@ -170,6 +196,7 @@ local function register_small_mushrooms()
                 fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
             },
             drop = "",
+            after_dig_node = default_dig_callback,
             groups = {snappy = 2},
         } end
     )
@@ -202,6 +229,7 @@ local function register_small_mushrooms()
                 fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
             },
             drop = "",
+            after_dig_node = default_dig_callback,
             groups = {snappy = 2},
         } end
     )
@@ -235,6 +263,7 @@ local function register_small_mushrooms()
                 fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
             },
             drop = "",
+            after_dig_node = default_dig_callback,
             groups = {snappy = 2},
         } end
     )
@@ -267,6 +296,7 @@ local function register_small_mushrooms()
                 fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
             },
             drop = "",
+            after_dig_node = default_dig_callback,
             groups = {snappy = 2},
         } end
     )
@@ -306,6 +336,7 @@ local function register_tall_grasses()
                 fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
             },
             drop = "",
+            after_dig_node = default_dig_callback,
             groups = {snappy = 1},
         } end
     )
@@ -343,6 +374,7 @@ local function register_tall_grasses()
                 fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
             },
             drop = "",
+            after_dig_node = default_dig_callback,
             groups = {snappy = 1},
         } end
     )
@@ -380,6 +412,7 @@ local function register_tall_grasses()
                 fixed = {{-0.5, -0.5, -0.5, 0.5, 6/16, 0.5}}
             },
             drop = "",
+            after_dig_node = default_dig_callback,
             groups = {snappy = 1},
         } end
     )
@@ -414,6 +447,7 @@ local function register_stems()
             walkable = true,
             buildable_to = false,
             drop = "",
+            after_dig_node = default_dig_callback,
             groups = {choppy = 1},
             nv_vineable = true,
         } end
@@ -445,6 +479,7 @@ local function register_stems()
             walkable = true,
             buildable_to = false,
             drop = "",
+            after_dig_node = default_dig_callback,
             groups = {choppy = 1},
             nv_vineable = true,
         } end
@@ -476,6 +511,7 @@ local function register_stems()
             walkable = true,
             buildable_to = false,
             drop = "",
+            after_dig_node = default_dig_callback,
             groups = {choppy = 2},
         } end
     )
@@ -510,6 +546,7 @@ local function register_leaves()
             buildable_to = false,
             nv_vineable = true,
             drop = "",
+            after_dig_node = default_dig_callback,
             groups = {snappy = 1},
         } end
     )
@@ -540,6 +577,7 @@ local function register_leaves()
             walkable = true,
             buildable_to = false,
             drop = "",
+            after_dig_node = default_dig_callback,
             groups = {choppy = 2},
         } end
     )
@@ -575,6 +613,7 @@ local function register_miscellaneous()
                 },
             },
             drop = "",
+            after_dig_node = default_dig_callback,
             groups = {snappy = 2},
         } end
     )
@@ -617,6 +656,7 @@ local function register_miscellaneous()
                 },
             },
             drop = "",
+            after_dig_node = default_dig_callback,
             groups = {snappy = 2},
         } end
     )

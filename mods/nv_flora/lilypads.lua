@@ -28,9 +28,26 @@ local function lilypad_callback(
             or node_name == "nv_planetgen:snow" then
                 A[i] = custom.node
                 A2[i] = 1 + color_index * 8
+                nv_planetgen.set_meta(
+                    {x=x, y=y, z=z},
+                    {fields={seed=tostring(planet.seed), index=tostring(custom.index)}}
+                )
             end
         end
     end
+end
+
+local function lilypad_thumbnail(seed, custom)
+    local color_group = math.floor((custom.color - 1) / 8) + 1
+    local translation = {
+        [nv_flora.node_types.classic_lilypad] = "nv_classic_lilypad.png",
+    }
+    local color_string = nv_universe.sRGB_to_string(fnColorWater(custom.color + 8))
+    return string.format(
+        "%s^[multiply:%s",
+        translation[custom.node],
+        color_string
+    )
 end
 
 function nv_flora.get_lilypad_meta(seed, index)
@@ -40,6 +57,7 @@ function nv_flora.get_lilypad_meta(seed, index)
     local colors = get_planet_plant_colors(seed)
     -- General
     r.density = 1/(G:next(3, 6)^2)
+    r.index = index
     r.seed = 765473 + index
     r.side = 1
     r.order = 100
@@ -54,5 +72,6 @@ function nv_flora.get_lilypad_meta(seed, index)
     r.max_height = 0
     r.max_plant_height = 2
     r.max_plant_depth = 2
+    r.thumbnail = lilypad_thumbnail
     return r
 end
