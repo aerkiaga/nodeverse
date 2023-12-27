@@ -124,6 +124,7 @@ local function tree_thumbnail(seed, custom)
         [nv_flora.node_types.veiny_stem] = "nv_veiny_stem.png",
         [nv_flora.node_types.soft_leaves] = "nv_soft_leaves.png",
         [nv_flora.node_types.smooth_cap] = "nv_smooth_cap.png",
+        [nv_flora.node_types.glassy_cap] = "nv_smooth_cap.png",
     }
     local r = ""
     local k = 0
@@ -212,6 +213,9 @@ function nv_flora.get_tree_meta(seed, index)
         else
             r.row_count = G:next(1, 4)^2
         end
+    end
+    if meta.atmosphere == "reducing" then
+        r.leaves_node = nv_flora.node_types.glassy_cap
     end
     if meta.has_oceans then
         r.min_height = G:next(1, 4)^2

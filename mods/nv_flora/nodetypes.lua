@@ -582,6 +582,39 @@ local function register_leaves()
         } end
     )
     nv_flora.node_types.smooth_cap = minetest.get_content_id("nv_flora:smooth_cap")
+    
+    nv_flora.node_types.glassy_cap = {}
+    -- GLASSY CAP
+    -- Smooth, transparent, luminous node
+    -- 48 grass colors as palette
+    register_color_variants(
+        "glassy_cap", 1,
+        function (x) return {r = 0, g = 0, b = 0} end,
+        function (n, color) return {
+            drawtype = "normal",
+            tiles = {
+                "nv_smooth_cap.png^[opacity:192",
+                "nv_smooth_cap.png^[opacity:192",
+                "nv_smooth_cap.png^[transformFX^[transformFY^[opacity:192",
+                "nv_smooth_cap.png^[transformFX^[opacity:192",
+                "nv_smooth_cap.png^[opacity:192",
+                "nv_smooth_cap.png^[transformFY^[opacity:192"
+            },
+            use_texture_alpha = "blend",
+            palette = "nv_palette_grass.png",
+            paramtype = "light",
+            paramtype2 = "color4dir",
+            place_param2 = 0,
+            light_source = 5,
+            sunlight_propagates = false,
+            walkable = true,
+            buildable_to = false,
+            drop = "",
+            after_dig_node = default_dig_callback,
+            groups = {choppy = 2},
+        } end
+    )
+    nv_flora.node_types.glassy_cap = minetest.get_content_id("nv_flora:glassy_cap")
 end
 
 local function register_miscellaneous()
