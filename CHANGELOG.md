@@ -5,11 +5,12 @@ many new features to the game. Most fixes and small changes made during its
 development have been ported to the 0.3.x versions.
 
 ### Added
- - Mods `nv_flora` and `nv_gui`.
+ - Mods `nv_flora`, `nv_gui` and `nv_encyclopedia`.
  - Short and tall plants, cave flora, cacti, vines, lily pads, trees and large mushrooms.
- - 16 kinds of floral nodes.
+ - 17 kinds of floral nodes.
  - Underground lakes.
  - Ability to break nodes.
+ - A GUI to keep track of your discovered planets and floral species.
 
 ### Changed
  - Made caves larger, as well as less common and predictable.
