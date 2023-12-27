@@ -47,6 +47,34 @@ local function grass_callback(
     end
 end
 
+local function grass_thumbnail(seed, custom)
+    local color_group = math.floor((custom.color - 1) / 8) + 1
+    local translation = {
+        [nv_flora.node_types.cane_grass[color_group]] = "nv_cane_grass.png",
+        [nv_flora.node_types.thick_grass[color_group]] = "nv_thick_grass.png",
+        [nv_flora.node_types.ball_grass[color_group]] = "nv_ball_grass.png",
+    }
+    local height = 3
+    local r = ""
+    for n=1,height,1 do
+        local color = custom.color
+        if custom.is_colorful then
+            color = (color + math.floor(n / 2) - 1) % 48 + 1
+        end
+        local color_string = nv_universe.sRGB_to_string(fnColorGrass(color))
+        r = r .. string.format(
+            "(([combine:%dx%d:%d,%d=%s)^[multiply:%s)^",
+            height * 16,
+            height * 16,
+            math.floor(height/2 - 0.5) * 16,
+            height * 16 - n * 16,
+            translation[custom.node],
+            color_string
+        )
+    end
+    return string.sub(r, 1, #r - 1)
+end
+
 function nv_flora.get_tall_grass_meta(seed, index)
     local r = {}
     local G = PcgRandom(seed, index)
@@ -81,5 +109,6 @@ function nv_flora.get_tall_grass_meta(seed, index)
     end
     r.max_plant_height = 5
     r.max_plant_depth = 2
+    r.thumbnail = grass_thumbnail
     return r
 end

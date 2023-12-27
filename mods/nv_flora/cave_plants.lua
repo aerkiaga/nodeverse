@@ -25,6 +25,20 @@ local function cave_plant_callback(
     end
 end
 
+local function cave_plant_thumbnail(seed, custom)
+    local color_group = math.floor((custom.color - 1) / 8) + 1
+    local translation = {
+        [nv_flora.node_types.thin_mushroom[color_group]] = "nv_thin_mushroom.png",
+        [nv_flora.node_types.trumpet_mushroom[color_group]] = "nv_trumpet_mushroom.png",
+    }
+    local color_string = nv_universe.sRGB_to_string(fnColorGrass(custom.color))
+    return string.format(
+        "%s^[multiply:%s",
+        translation[custom.node],
+        color_string
+    )
+end
+
 function nv_flora.get_cave_plant_meta(seed, index)
     local r = {}
     local G = PcgRandom(seed, index)
@@ -54,5 +68,6 @@ function nv_flora.get_cave_plant_meta(seed, index)
     r.node = plant_type_nodes[color_group]
     r.max_height = G:next(1, 5)^2 - 8
     r.min_height = -G:next(4, 8)^2
+    r.thumbnail = cave_plant_thumbnail
     return r
 end

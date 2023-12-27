@@ -33,6 +33,19 @@ local function lilypad_callback(
     end
 end
 
+local function lilypad_thumbnail(seed, custom)
+    local color_group = math.floor((custom.color - 1) / 8) + 1
+    local translation = {
+        [nv_flora.node_types.classic_lilypad] = "nv_classic_lilypad.png",
+    }
+    local color_string = nv_universe.sRGB_to_string(fnColorWater(custom.color + 8))
+    return string.format(
+        "%s^[multiply:%s",
+        translation[custom.node],
+        color_string
+    )
+end
+
 function nv_flora.get_lilypad_meta(seed, index)
     local r = {}
     local G = PcgRandom(seed, index)
@@ -54,5 +67,6 @@ function nv_flora.get_lilypad_meta(seed, index)
     r.max_height = 0
     r.max_plant_height = 2
     r.max_plant_depth = 2
+    r.thumbnail = lilypad_thumbnail
     return r
 end

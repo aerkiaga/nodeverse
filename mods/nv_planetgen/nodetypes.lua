@@ -98,7 +98,7 @@ end
 
 -- 32 colors
 -- Matches 'fnColorWater' in 'textures/palettes/generate.scm'
-local function fnColorWater(n)
+function fnColorWater(n)
     n = n - 1 -- make 0-based
     if n < 24 then
         return fnColorWaterRandom(n)

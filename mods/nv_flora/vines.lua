@@ -45,6 +45,19 @@ local function vine_callback(
     end
 end
 
+local function vine_thumbnail(seed, custom)
+    local color_group = math.floor((custom.color - 1) / 8) + 1
+    local translation = {
+        [nv_flora.node_types.vine] = "nv_vine1.png",
+    }
+    local color_string = nv_universe.sRGB_to_string(fnColorWater(custom.color + 8))
+    return string.format(
+        "%s^[multiply:%s",
+        translation[custom.nodes],
+        color_string
+    )
+end
+
 function nv_flora.get_vine_meta(seed, index)
     local r = {}
     local G = PcgRandom(seed, index)
@@ -64,5 +77,6 @@ function nv_flora.get_vine_meta(seed, index)
     r.vine_density = gen_linear(G, 0.4, 0.8)
     r.max_height = G:next(4, 7)^2
     r.min_height = -G:next(1, 5)^2
+    r.thumbnail = vine_thumbnail
     return r
 end
