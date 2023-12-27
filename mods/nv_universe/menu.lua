@@ -297,6 +297,8 @@ local function get_planet_name(planet)
     return string.format("%X %s", system, suffix)
 end
 
+nv_universe.get_planet_name = get_planet_name
+
 local function random_overlay(G, file)
     return string.format(
         "[combine:32x32:%d,%d=%s",

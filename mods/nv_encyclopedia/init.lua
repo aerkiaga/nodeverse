@@ -14,14 +14,75 @@ local function get_planet_formspec(player, planet)
     local name = player:get_player_name()
     local r = ""
     local flora = nv_flora.get_planet_flora(planet)
+    local meta = nv_planetgen.generate_planet_metadata(planet)
     local x = 1
     local y = 1
+    r = r .. string.format(
+        [[
+            image[%d,%d;3,3;%s]
+        ]],
+        x + 6,
+        y,
+        nv_universe.create_planet_image(planet)
+    )
+    r = r .. string.format("textarea[%d,%d;5,4;;%s;]", x, y,
+        string.format(
+            [[
+Planet %s
+________________________
+
+Atmosphere: %s
+Life: %s
+Oceans: %s
+Landscape: %s
+Exposed stone: %s
+Caves: %s
+            ]],
+            nv_universe.get_planet_name(planet),
+            
+            meta.atmosphere == "freezing" and "extremely cold" or (
+            meta.atmosphere == "vacuum" and "none" or (
+            meta.atmosphere == "cold" and "cold" or (
+            meta.atmosphere == "normal" and "temperate" or (
+            meta.atmosphere == "reducing" and "reducing" or (
+            meta.atmosphere == "hot" and "hot" or (
+            meta.atmosphere == "scorching" and "extremely hot")))))),
+            
+            meta.life == "dead" and "none" or (
+            meta.life == "normal" and "some" or (
+            meta.life == "lush" and "lush")),
+            
+            meta.has_oceans and "yes" or "no",
+            
+            meta.terrestriality > 0 and "high" or "low",
+            
+            meta.rockiness < 4 and "none" or (
+            meta.rockiness < 5 and "scarce" or "common"),
+            
+            meta.caveness < 0.2 and "scarce" or (
+            meta.caveness < 0.5 and "common" or "very common")
+        )
+    ) y = y + 4
+    local n_total, n_found = #flora, 0
     local dug_plants = {}
     for n, player_planet in ipairs(nv_encyclopedia.players[name]) do
         if player_planet.seed == planet then
             dug_plants = player_planet.flora
         end
     end
+    for k, t in pairs(dug_plants) do
+        n_found = n_found + 1
+    end
+    r = r .. string.format(
+        [[
+            textarea[%d,%d;5,2;;Collected flora: %s;]
+        ]],
+        x, y,
+        meta.life == "dead" and "N/A" or string.format(
+            "%d / %d", n_found, n_total
+        )
+    )
+    y = y + 1
     for n, plant in ipairs(flora) do
         r = r .. string.format(
             [[
@@ -112,7 +173,7 @@ local function get_base_formspec(player)
             y,
             string.format(
                 [[
-                    Planetary system %X  -  %d / %d visited
+                    Planetary system %X  -  %d / %d planets visited
                 ]],
                 systems[n].seed,
                 n_discovered,
@@ -120,7 +181,7 @@ local function get_base_formspec(player)
             ),
             pl
         )
-        y = y + 3
+        y = y + 4
     end
     return string.format(
         [[
