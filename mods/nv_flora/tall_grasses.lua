@@ -58,7 +58,7 @@ local function grass_thumbnail(seed, custom)
         [nv_flora.node_types.thick_grass[color_group]] = "nv_thick_grass.png",
         [nv_flora.node_types.ball_grass[color_group]] = "nv_ball_grass.png",
     }
-    local height = 3
+    local height = 4
     local r = ""
     for n=1,height,1 do
         local color = custom.color
@@ -70,7 +70,7 @@ local function grass_thumbnail(seed, custom)
             "(([combine:%dx%d:%d,%d=%s)^[multiply:%s)^",
             height * 16,
             height * 16,
-            math.floor(height/2 - 0.5) * 16,
+            math.floor((height/2 - 0.5) * 16),
             height * 16 - n * 16,
             translation[custom.node],
             color_string

@@ -103,7 +103,7 @@ local function branched_thumbnail(seed, custom)
                         "(([combine:%dx%d:%d,%d=%s)^[multiply:%s)^",
                         square * 16,
                         square * 16,
-                        z * 16 + math.floor((square - width) * 16 / 2),
+                        z * 16 + math.floor((square - width - 1) * 16 / 2),
                         (square - y - 1)*16,
                         translation[A[k]],
                         color_string
