@@ -60,9 +60,9 @@ function nv_flora.get_small_plant_meta(seed, index)
     local colors = get_planet_plant_colors(seed)
     -- General
     if meta.life == "lush" then
-        r.density = 1/(G:next(2, 8)^2)
+        r.density = 1/(G:next(2, 7)^2)
     else
-        r.density = 1/(G:next(8, 14)^2)
+        r.density = 1/(G:next(8, 12)^2)
     end
     r.seed = 5646457 + index
     r.side = 1
@@ -92,10 +92,10 @@ function nv_flora.get_small_plant_meta(seed, index)
     r.node = plant_type_nodes[color_group]
     if meta.has_oceans then
         r.min_height = G:next(1, 4)^2
-        r.max_height = r.min_height + G:next(1, 5)^2
+        r.max_height = r.min_height + G:next(2, 5)^2
     else
         r.min_height = G:next(1, 6)^2 - 18
-        r.max_height = r.min_height + G:next(1, 6)^2
+        r.max_height = r.min_height + G:next(2, 6)^2
     end
     r.max_plant_height = 2
     r.max_plant_depth = 2

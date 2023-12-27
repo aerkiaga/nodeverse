@@ -75,8 +75,8 @@ function nv_flora.get_vine_meta(seed, index)
         [nv_flora.node_types.vine] = 1
     })
     r.vine_density = gen_linear(G, 0.4, 0.8)
-    r.max_height = G:next(4, 7)^2
-    r.min_height = -G:next(1, 5)^2
+    r.max_height = G:next(5, 7)^2
+    r.min_height = -G:next(2, 5)^2
     r.thumbnail = vine_thumbnail
     return r
 end

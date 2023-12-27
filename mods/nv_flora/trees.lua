@@ -8,7 +8,7 @@ local function tree_callback(
     local stem_z = origin.z + math.floor(custom.side / 2)
     
     -- Get uniformized ground height
-    local uni_ground = nv_planetgen.get_ground_level(planet, stem_x, stem_z)
+    local uni_ground = ground_buffer and nv_planetgen.get_ground_level(planet, stem_x, stem_z) or -1
     if ground_buffer ~= nil and (uni_ground < custom.min_height or uni_ground > custom.max_height) then
         return
     end

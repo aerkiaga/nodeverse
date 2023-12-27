@@ -82,9 +82,9 @@ function nv_flora.get_tall_grass_meta(seed, index)
     local colors = get_planet_plant_colors(seed)
     -- General
     if meta.life == "lush" then
-        r.density = 1/(G:next(2, 10)^2)
+        r.density = 1/(G:next(2, 8)^2)
     else
-        r.density = 1/(G:next(10, 20)^2)
+        r.density = 1/(G:next(10, 16)^2)
     end
     r.seed = 638262 + index
     r.side = 1
@@ -102,10 +102,10 @@ function nv_flora.get_tall_grass_meta(seed, index)
     r.is_colorful = (G:next(0, 2) == 0)
     if meta.has_oceans then
         r.min_height = G:next(1, 4)^2
-        r.max_height = r.min_height + G:next(1, 3)^2
+        r.max_height = r.min_height + G:next(2, 3)^2
     else
         r.min_height = G:next(1, 6)^2 - 18
-        r.max_height = r.min_height + G:next(1, 5)^2
+        r.max_height = r.min_height + G:next(2, 5)^2
     end
     r.max_plant_height = 5
     r.max_plant_depth = 2

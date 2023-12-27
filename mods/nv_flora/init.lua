@@ -49,17 +49,17 @@ local function get_plant_meta(seed, index)
             plant_type_handler = nv_flora.get_tree_meta
         else
             plant_type_handler = gen_weighted(G, {
-                [nv_flora.get_small_plant_meta] = 70,
+                [nv_flora.get_small_plant_meta] = 30,
                 [nv_flora.get_cave_plant_meta] = 30,
-                [nv_flora.get_tall_grass_meta] = 30,
-                [nv_flora.get_tree_meta] = 20,
-                [nv_flora.get_vine_meta] = 10,
-                [nv_flora.get_lilypad_meta] = meta.has_oceans and 10 or 0
+                [nv_flora.get_tall_grass_meta] = 20,
+                [nv_flora.get_tree_meta] = 25,
+                [nv_flora.get_vine_meta] = 7,
+                [nv_flora.get_lilypad_meta] = meta.has_oceans and 7 or 0
             })
         end
     elseif meta.atmosphere == "hot" then
         plant_type_handler = gen_weighted(G, {
-            [nv_flora.get_small_plant_meta] = 50,
+            [nv_flora.get_small_plant_meta] = 30,
             [nv_flora.get_cave_plant_meta] = 20,
             [nv_flora.get_tall_grass_meta] = 20,
             [nv_flora.get_tree_meta] = 20,
@@ -67,14 +67,14 @@ local function get_plant_meta(seed, index)
         })
     elseif meta.atmosphere == "cold" then
         plant_type_handler = gen_weighted(G, {
-            [nv_flora.get_small_plant_meta] = 50,
+            [nv_flora.get_small_plant_meta] = 30,
             [nv_flora.get_cave_plant_meta] = 20,
             [nv_flora.get_tall_grass_meta] = 5,
             [nv_flora.get_tree_meta] = 40
         })
     else
         plant_type_handler = gen_weighted(G, {
-            [nv_flora.get_small_plant_meta] = 70,
+            [nv_flora.get_small_plant_meta] = 40,
             [nv_flora.get_cave_plant_meta] = 20,
             [nv_flora.get_tall_grass_meta] = 15,
             [nv_flora.get_tree_meta] = 40
@@ -88,9 +88,9 @@ local function plant_handler(seed)
     local meta = generate_planet_metadata(seed)
     local plant_count = 0
     if meta.life == "normal" then
-        plant_count = G:next(15, 25)
+        plant_count = G:next(12, 20)
     elseif meta.life == "lush" then
-        plant_count = G:next(35, 55)
+        plant_count = G:next(25, 45)
     end
     local r = {}
     for index=1,plant_count do
