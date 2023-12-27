@@ -36,6 +36,23 @@ local function small_callback(
     end
 end
 
+local function small_thumbnail(seed, custom)
+    local color_group = math.floor((custom.color - 1) / 8) + 1
+    local translation = {
+        [nv_flora.node_types.thin_mushroom[(color_group - 1) % 4 + 1]] = "nv_thin_mushroom.png",
+        [nv_flora.node_types.small_mushroom[(color_group - 1) % 4 + 1]] = "nv_small_mushroom.png",
+        [nv_flora.node_types.large_mushroom[(color_group - 1) % 4 + 1]] = "nv_large_mushroom.png",
+        [nv_flora.node_types.aloe_plant[color_group]] = "nv_aloe_plant.png",
+        [nv_flora.node_types.fern_plant[color_group]] = "nv_fern_plant.png",
+    }
+    local color_string = nv_universe.sRGB_to_string(fnColorGrass(custom.color))
+    return string.format(
+        "%s^[multiply:%s",
+        translation[custom.node],
+        color_string
+    )
+end
+
 function nv_flora.get_small_plant_meta(seed, index)
     local r = {}
     local G = PcgRandom(seed, index)
@@ -82,5 +99,6 @@ function nv_flora.get_small_plant_meta(seed, index)
     end
     r.max_plant_height = 2
     r.max_plant_depth = 2
+    r.thumbnail = small_thumbnail
     return r
 end

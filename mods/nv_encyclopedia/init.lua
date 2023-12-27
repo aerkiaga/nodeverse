@@ -7,6 +7,39 @@ in the order they were visited by that player. Format is:
 ]]
 nv_encyclopedia.players = {}
 
+local function get_planet_formspec(player, planet)
+    local name = player:get_player_name()
+    local r = ""
+    local flora = nv_flora.get_planet_flora(planet)
+    local x = 1
+    local y = 1
+    for n, plant in ipairs(flora) do
+        r = r .. string.format(
+            [[
+                image[%d,%d;1.8,1.8;%s]
+            ]],
+            x,
+            y,
+            plant.thumbnail(planet, plant.custom)
+        )
+        x = x + 2
+        if x > 10 then
+            x = 1
+            y = y + 2
+        end
+    end
+    return string.format(
+        [[
+	        scrollbaroptions[min=0;max=%d;smallstep=1;largestep=8]
+	        scrollbar[13.7,0;0.3,8;vertical;encycloscroll;0]
+            scroll_container[0,0;14,8;encycloscroll;vertical;1]
+        ]],
+        y - 4
+    ) .. r .. [[
+        scroll_container_end[]
+    ]]
+end
+
 local function get_base_formspec(player)
     local name = player:get_player_name()
     local r = ""
@@ -39,13 +72,23 @@ local function get_base_formspec(player)
             if discovered then
                 n_discovered = n_discovered + 1
             end
-            pl = pl .. string.format(
-                [[
-                    image[%d,%d;1.8,1.8;%s]
-                ]],
-                x,
-                y + 1,
-                discovered and nv_universe.create_planet_image(pseed) or "nv_circle.png^[colorize:#444444:255"
+            pl = pl .. (
+                discovered and string.format(
+                    [[
+                        image_button[%d,%d;1.8,1.8;%s;planet%d;]
+                    ]],
+                    x,
+                    y + 1,
+                    nv_universe.create_planet_image(pseed),
+                    pseed
+                ) or string.format(
+                    [[
+                        image[%d,%d;1.8,1.8;%s]
+                    ]],
+                    x,
+                    y + 1,
+                    "nv_circle.png^[colorize:#444444:255"
+                )
             )
             x = x + 2
         end
@@ -103,6 +146,11 @@ minetest.register_on_joinplayer(joinplayer_callback)
 
 local function player_receive_fields_callback(player, fields)
 	for field, value in pairs(fields) do
+	    if string.sub(field, 1, 6) == "planet" then
+			local selected_planet = tonumber(string.sub(field, 7, -1))
+			local formspec = get_planet_formspec(player, selected_planet)
+			nv_gui.show_formspec(player, formspec)
+		end
 	end
 end
 

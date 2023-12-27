@@ -3,6 +3,8 @@ NV Flora implements large flora for Nodeverse.
 
 Included files:
     nodetypes.lua       Node definitions and registration
+    thumbnail.lua       Utility functions to build a thumbnail for each plant
+    other               Each file contains definitions for one kind of plant
 
  # INDEX
 ]]--
@@ -10,6 +12,7 @@ Included files:
 nv_flora = {}
 
 dofile(minetest.get_modpath("nv_flora") .. "/nodetypes.lua")
+dofile(minetest.get_modpath("nv_flora") .. "/thumbnail.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/small_plants.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/tall_grasses.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/cave_plants.lua")
@@ -98,10 +101,13 @@ local function plant_handler(seed)
             side = plant_meta.side,
             order = plant_meta.order,
             callback = plant_meta.callback,
+            thumbnail = plant_meta.thumbnail or nv_flora.get_default_thumbnail,
             custom = plant_meta
         })
     end
     return r
 end
+
+nv_flora.get_planet_flora = plant_handler
 
 nv_planetgen.register_structure_handler(plant_handler)
