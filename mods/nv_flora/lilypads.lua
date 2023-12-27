@@ -28,6 +28,10 @@ local function lilypad_callback(
             or node_name == "nv_planetgen:snow" then
                 A[i] = custom.node
                 A2[i] = 1 + color_index * 8
+                nv_planetgen.set_meta(
+                    {x=x, y=y, z=z},
+                    {fields={seed=tostring(planet.seed), index=tostring(custom.index)}}
+                )
             end
         end
     end
@@ -53,6 +57,7 @@ function nv_flora.get_lilypad_meta(seed, index)
     local colors = get_planet_plant_colors(seed)
     -- General
     r.density = 1/(G:next(3, 6)^2)
+    r.index = index
     r.seed = 765473 + index
     r.side = 1
     r.order = 100

@@ -16,6 +16,10 @@ local function cave_plant_callback(
         or A[i] == minetest.CONTENT_AIR) then
             A[i] = custom.node
             A2[i] = yrot + color_index * 32
+            nv_planetgen.set_meta(
+                {x=x, y=y, z=z},
+                {fields={seed=tostring(planet.seed), index=tostring(custom.index)}}
+            )
             grounded = false
         else
             grounded = not (A[i] == nil
@@ -50,6 +54,7 @@ function nv_flora.get_cave_plant_meta(seed, index)
     else
         r.density = 1/(G:next(5, 12)^2)
     end
+    r.index = index
     r.seed = 5646457 + index
     r.side = 1
     r.order = 100

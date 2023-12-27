@@ -43,6 +43,10 @@ local function grass_callback(
             else
                 A2[i] = yrot + color_index * 32
             end
+            nv_planetgen.set_meta(
+                {x=x, y=y, z=z},
+                {fields={seed=tostring(planet.seed), index=tostring(custom.index)}}
+            )
         end
     end
 end
@@ -86,6 +90,7 @@ function nv_flora.get_tall_grass_meta(seed, index)
     else
         r.density = 1/(G:next(10, 16)^2)
     end
+    r.index = index
     r.seed = 638262 + index
     r.side = 1
     r.order = 100

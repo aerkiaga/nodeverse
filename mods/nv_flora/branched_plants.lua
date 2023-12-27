@@ -63,6 +63,12 @@ local function branched_callback(
             A[i] = custom.node
             local yrot = (node.x + 103*node.y + 3049*node.z)%4
             A2[i] = yrot + custom.color * 4
+            if ground_buffer ~= nil then
+                nv_planetgen.set_meta(
+                    {x=node.x, y=node.y, z=node.z},
+                    {fields={seed=tostring(planet.seed), index=tostring(custom.index)}}
+                )
+            end
         end
     end
 end
@@ -118,6 +124,7 @@ function nv_flora.get_branched_plant_meta(seed, index)
     local colors = get_planet_plant_colors(seed)
     -- General
     r.density = 1/(G:next(5, 10)^2)
+    r.index = index
     r.seed = 6583 + index
     r.order = 100
     r.callback = branched_callback

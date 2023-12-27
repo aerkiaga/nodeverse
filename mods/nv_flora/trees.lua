@@ -30,6 +30,12 @@ local function tree_callback(
                 or minetest.registered_nodes[minetest.get_name_from_content_id(A[i])].buildable_to then
                     A[i] = custom.stem_node
                     A2[i] = yrot + custom.stem_color * 4
+                    if ground_buffer ~= nil then
+                        nv_planetgen.set_meta(
+                            {x=x, y=y, z=z},
+                            {fields={seed=tostring(planet.seed), index=tostring(custom.index)}}
+                        )
+                    end
                 end
             end
         end
@@ -65,6 +71,12 @@ local function tree_callback(
                         else
                             A2[i] = yrot + custom.leaves_color * 4
                         end
+                        if ground_buffer ~= nil then
+                            nv_planetgen.set_meta(
+                                {x=cur_x, y=cur_y, z=cur_z},
+                                {fields={seed=tostring(planet.seed), index=tostring(custom.index)}}
+                            )
+                        end
                     end
                     if A[i] == custom.leaves_node
                     and length < custom.branch_length
@@ -72,6 +84,12 @@ local function tree_callback(
                     and (custom.row_count == 1 or m ~= custom.row_count) then
                         A[i] = custom.stem_node
                         A2[i] = yrot + custom.stem_color * 4
+                        if ground_buffer ~= nil then
+                            nv_planetgen.set_meta(
+                                {x=cur_x, y=cur_y, z=cur_z},
+                                {fields={seed=tostring(planet.seed), index=tostring(custom.index)}}
+                            )
+                        end
                     end
                 end
                 length = length + math.sqrt(delta_x^2 + delta_y^2 + delta_z^2) / 2
@@ -147,6 +165,7 @@ function nv_flora.get_tree_meta(seed, index)
     else
         r.density = 1/(G:next(4, 10)^2)
     end
+    r.index = index
     r.seed = 638262 + index
     r.order = 100
     r.callback = tree_callback

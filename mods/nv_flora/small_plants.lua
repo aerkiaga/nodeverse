@@ -68,8 +68,8 @@ function nv_flora.get_small_plant_meta(seed, index)
     else
         r.density = 1/(G:next(8, 12)^2)
     end
-    r.seed = 5646457 + index
     r.index = index
+    r.seed = 5646457 + index
     r.side = 1
     r.order = 100
     r.callback = small_callback
