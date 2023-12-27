@@ -8,6 +8,8 @@ in the order they were visited by that player. Format is:
 ]]
 nv_encyclopedia.players = {}
 
+dofile(minetest.get_modpath("nv_encyclopedia") .. "/storage.lua")
+
 local function get_planet_formspec(player, planet)
     local name = player:get_player_name()
     local r = ""
@@ -145,6 +147,7 @@ local function visit_planet_callback(player, planet)
         flora = {},
     })
     nv_gui.set_inventory_formspec(player, "encyclopedia", get_base_formspec(player))
+    nv_encyclopedia.store_player_state(player)
 end
 
 nv_universe.register_on_visit_planet(visit_planet_callback)
@@ -168,15 +171,25 @@ local function dig_plant_callback(player, planet, index)
         table.insert(nv_encyclopedia.players[name], found)
     end
     found.flora[index] = true
+    nv_encyclopedia.store_player_state(player)
 end
 
 nv_flora.register_on_dig_plant(dig_plant_callback)
 
 local function joinplayer_callback(player, last_login)
+    if last_login ~= nil then
+        nv_encyclopedia.load_player_state(player)
+    end
 	nv_gui.set_inventory_formspec(player, "encyclopedia", get_base_formspec(player))
 end
 
 minetest.register_on_joinplayer(joinplayer_callback)
+
+local function leaveplayer_callback(player, timed_out)
+    nv_encyclopedia.store_player_state(player)
+end
+
+minetest.register_on_leaveplayer(leaveplayer_callback)
 
 local function player_receive_fields_callback(player, fields)
 	for field, value in pairs(fields) do
