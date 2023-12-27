@@ -27,7 +27,7 @@ local function postprocess_formspec(formspec, selected_tab)
     names = string.sub(names, 1, #names - 1)
     return string.format(
 		[[
-			formspec_version[2]
+			formspec_version[3]
 			size[14,8]
 			tabheader[0,0;tabh;%s;%d;false;false]
 			%s

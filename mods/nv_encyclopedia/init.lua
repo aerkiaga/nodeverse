@@ -32,28 +32,36 @@ local function get_base_formspec(player)
     for n=#systems,1,-1 do
         local pl = ""
         local x = 1
-        for m, pseed in ipairs(nv_universe.get_ordered_planets_in_system(systems[n].seed)) do
+        local n_discovered = 0
+        local all_planets = nv_universe.get_ordered_planets_in_system(systems[n].seed)
+        for m, pseed in ipairs(all_planets) do
+            local discovered = systems[n].planets[pseed]
+            if discovered then
+                n_discovered = n_discovered + 1
+            end
             pl = pl .. string.format(
                 [[
-                    animated_image[%d,%d;1.8,1.8;image;%s;1;0]
+                    image[%d,%d;1.8,1.8;%s]
                 ]],
                 x,
                 y + 1,
-                systems[n].planets[pseed] and nv_universe.create_planet_image(pseed) or "nv_circle.png^[colorize:#444444:255"
+                discovered and nv_universe.create_planet_image(pseed) or "nv_circle.png^[colorize:#444444:255"
             )
             x = x + 2
         end
         r = r .. string.format(
             [[
-                textarea[0,%d;4,1;;%s;]
+                textarea[0,%d;8,1;;%s;]
                 %s
             ]],
             y,
             string.format(
                 [[
-                    System %X
+                    Planetary system %X  -  %d / %d visited
                 ]],
-                systems[n].seed
+                systems[n].seed,
+                n_discovered,
+                #all_planets
             ),
             pl
         )
