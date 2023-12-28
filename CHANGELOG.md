@@ -1,4 +1,8 @@
 # Changelog
+## [0.4.1] - 24-12-2023
+### Fixed
+ - Erratic jumps after landing a ship for the second time.
+
 ## [0.4.0] - 28-12-2023
 This is a major release; it breaks compatibility with existing worlds and adds
 many new features to the game. Most fixes and small changes made during its
