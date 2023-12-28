@@ -1,5 +1,5 @@
 # Changelog
-## [0.4.1] - 24-12-2023
+## [0.4.1] - 28-12-2023
 ### Fixed
  - Erratic jumps after landing a ship for the second time.
 
