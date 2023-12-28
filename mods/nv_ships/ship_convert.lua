@@ -182,7 +182,7 @@ function nv_ships.remove_ship_entity(player)
 end
 
 function nv_ships.rotate_ship_nodes(ship, facing)
-    nv_ships.poll_ship_pos(ship)
+    --nv_ships.poll_ship_pos(ship)
     local function get_apply_rotation(rot)
         if rot == 0 then
             return function (x_rel, z_rel)
