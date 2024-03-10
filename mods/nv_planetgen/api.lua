@@ -168,3 +168,5 @@ Here, add random texture rotation around Y axis to dummy stone block
 nv_planetgen.color_multiplier = {}
 
 nv_planetgen.register_all_nodes()
+minetest.safe_file_write(minetest.get_worldpath() .. "/nv_planetgen.random_yrot_nodes", minetest.serialize(nv_planetgen.random_yrot_nodes))
+minetest.safe_file_write(minetest.get_worldpath() .. "/nv_planetgen.color_multiplier", minetest.serialize(nv_planetgen.color_multiplier))
