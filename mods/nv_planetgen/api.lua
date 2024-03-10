@@ -27,14 +27,14 @@ and the same region on a planet with some seed. Entry format is:
 ]]--
 nv_planetgen.planet_mappings = {}
 local planet_mappings = nv_planetgen.planet_mappings
-minetest.set_mapgen_setting("nv_planetgen.planet_mappings", minetest.serialize(planet_mappings))
+minetest.safe_file_write(minetest.get_worldpath() .. "/nv_planetgen.planet_mappings", minetest.serialize(planet_mappings))
 
 --[[
 Maps planet IDs (keys) to actual planet metadata tables (values).
 ]]--
 nv_planetgen.planet_dictionary = {}
 local planet_dictionary = nv_planetgen.planet_dictionary
-minetest.set_mapgen_setting("nv_planetgen.planet_dictionary", minetest.serialize(planet_dictionary))
+minetest.safe_file_write(minetest.get_worldpath() .. "/nv_planetgen.planet_dictionary", minetest.serialize(planet_dictionary))
 
 function nv_planetgen.clear_planet_mapping_area(mapping)
     local minp = {x=mapping.minp.x, y=mapping.minp.y, z=mapping.minp.z}
@@ -48,7 +48,7 @@ local function planet_from_mapping(mapping)
         planet = generate_planet_metadata(mapping.seed)
         nv_planetgen.choose_planet_nodes_and_colors(planet)
         planet_dictionary[mapping.seed] = planet
-        minetest.set_mapgen_setting("nv_planetgen.planet_dictionary", minetest.serialize(planet_dictionary))
+        minetest.safe_file_write(minetest.get_worldpath() .. "/nv_planetgen.planet_dictionary", minetest.serialize(planet_dictionary))
         planet.seed = mapping.seed
         planet.num_mappings = 1
     else
@@ -61,7 +61,7 @@ end
 function nv_planetgen.add_planet_mapping(mapping)
     table.insert(planet_mappings, mapping)
     planet_from_mapping(mapping) -- Memoize and pass to mapgen env
-    minetest.set_mapgen_setting("nv_planetgen.planet_mappings", minetest.serialize(planet_mappings))
+    minetest.safe_file_write(minetest.get_worldpath() .. "/nv_planetgen.planet_mappings", minetest.serialize(planet_mappings))
     return #planet_mappings
 end
 
@@ -72,9 +72,9 @@ function nv_planetgen.remove_planet_mapping(index)
     planet.num_mappings = planet.num_mappings - 1
     if planet.num_mappings == 0 then
         planet_dictionary[planet_mappings[index].seed] = nil
-        minetest.set_mapgen_setting("nv_planetgen.planet_dictionary", minetest.serialize(planet_dictionary))
+        minetest.safe_file_write(minetest.get_worldpath() .. "/nv_planetgen.planet_dictionary", minetest.serialize(planet_dictionary))
     end
-    minetest.set_mapgen_setting("nv_planetgen.planet_mappings", minetest.serialize(planet_mappings))
+    minetest.safe_file_write(minetest.get_worldpath() .. "/nv_planetgen.planet_mappings", minetest.serialize(planet_mappings))
     table.remove(planet_mappings, index)
 end
 

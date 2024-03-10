@@ -1,5 +1,7 @@
 local function post_processing_callback(minp, maxp, area, offset, A, A1, A2, mapping, planet, ground_buffer)
-    local players_list = minetest.deserialize(minetest.get_mapgen_setting("nv_ships.players_list"))
+    local f = io.open(minetest.get_worldpath() .. "/nv_ships.players_list", "rt")
+    local players_list = minetest.deserialize(f:read())
+    f:close()
     for name, player_data in pairs(players_list) do
         for index, ship in ipairs(player_data.ships) do
             --nv_ships.poll_ship_pos(ship)

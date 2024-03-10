@@ -29,7 +29,7 @@ A table of players, indexed by name. Each value contains the following fields:
     sound       Handle to the ship sound currently playing
 ]]--
 nv_ships.players_list = {}
-minetest.set_mapgen_setting("nv_ships.players_list", minetest.serialize(nv_ships.players_list))
+minetest.safe_file_write(minetest.get_worldpath() .. "/nv_ships.players_list", minetest.serialize(nv_ships.players_list))
 
 --[[
 Ship format:

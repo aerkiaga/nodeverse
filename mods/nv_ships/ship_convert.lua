@@ -171,7 +171,7 @@ function nv_ships.ship_to_entity(ship, player, remove)
     end
     ship.state = "entity"
     ship.pos = nil
-    minetest.set_mapgen_setting("nv_ships.players_list", minetest.serialize(nv_ships.players_list))
+    minetest.safe_file_write(minetest.get_worldpath() .. "/nv_ships.players_list", minetest.serialize(nv_ships.players_list))
     return ship
 end
 
@@ -341,5 +341,5 @@ function nv_ships.ship_to_node(ship, player, pos)
     if player then
         nv_ships.remove_ship_entity(player)
     end
-    minetest.set_mapgen_setting("nv_ships.players_list", minetest.serialize(nv_ships.players_list))
+    minetest.safe_file_write(minetest.get_worldpath() .. "/nv_ships.players_list", minetest.serialize(nv_ships.players_list))
 end
