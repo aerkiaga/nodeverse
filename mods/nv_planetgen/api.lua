@@ -79,39 +79,6 @@ function nv_planetgen.remove_planet_mapping(index)
 end
 
 --[[
-Contains a list of all node metadata to add in the next emerge. Entry format is:
-    pos         node position
-    meta        metadata, as table
-]]--
-local meta_nodes = {}
-
--- API
-function nv_planetgen.set_meta(pos, meta)
-    table.insert(meta_nodes, {
-        pos = pos,
-        meta = meta,
-    })
-end
-
-local registered_structures = {}
-local function register_structure(seed, def)
-    registered_structures[seed] = registered_structures[seed] or {}
-    for n, structure in ipairs(registered_structures[seed]) do
-        if structure.order > def.order then
-            table.insert(registered_structures[seed], n, def)
-            break
-        end
-    end
-    table.insert(registered_structures[seed], def)
-end
-
-local structure_handlers = {}
--- The callback will get a seed and must return a list of structures
-function nv_planetgen.register_structure_handler(callback)
-    table.insert(structure_handlers, callback)
-end
-
---[[
 # INITIALIZATION
 ]]--
 

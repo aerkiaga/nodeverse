@@ -102,3 +102,124 @@ function generate_planet_metadata(seed)
 end
 
 nv_planetgen.generate_planet_metadata = generate_planet_metadata
+
+local function fnExtractBits(n, lower, num)
+    return math.floor(n / (2^lower)) % (2^num)
+end
+
+local function fnBitsDistribution(n, lower, num, max)
+    return math.floor(max * fnExtractBits(n, lower, num) / ((2^num) - 1))
+end
+
+local function fnLighten(n, m)
+    return 255 - math.floor((255 - n) / m)
+end
+
+-- Matches 'fnColorStone' in 'textures/palettes/generate.scm'
+local function fnColorStone(n)
+    n = n - 1
+    local r = fnBitsDistribution(n, 0, 2, 192)
+    local g = fnBitsDistribution(n, 2, 1, r)
+    local b = fnBitsDistribution(n, 3, 1, g)
+    return {r=fnLighten(r, 4), g=fnLighten(g, 4), b=fnLighten(b, 4)}
+end
+
+-- Matches 'fnColorWaterRandom' in 'textures/palettes/generate.scm'
+local function fnColorWaterRandom(n)
+    local r = fnBitsDistribution(n, 0, 2, 192)
+    local g = fnBitsDistribution(n, 2, 2, 255)
+    local b = fnBitsDistribution(n, 4, 1, 255)
+    return {r=fnLighten(r, 2), g=fnLighten(g, 2), b=fnLighten(b, 2)}
+end
+
+-- Matches 'fnColorWaterNormal' in 'textures/palettes/generate.scm'
+local function fnColorWaterNormal(n)
+    local r = fnBitsDistribution(n, 0, 1, 64)
+    local g = fnBitsDistribution(n, 1, 2, 192)
+    local b = 255
+    return {r=fnLighten(r, 2), g=fnLighten(g, 2), b=fnLighten(b, 2)}
+end
+
+-- 32 colors
+-- Matches 'fnColorWater' in 'textures/palettes/generate.scm'
+function fnColorWater(n)
+    n = n - 1 -- make 0-based
+    if n < 24 then
+        return fnColorWaterRandom(n)
+    else
+        return fnColorWaterNormal(n)
+    end
+end
+
+-- Matches 'fnColorGrassRandom' in 'textures/palettes/generate.scm'
+local function fnColorGrassRandom(n)
+    local r = fnBitsDistribution(n, 0, 2, 255)
+    local g = fnBitsDistribution(n, 2, 2, 255)
+    local b = fnBitsDistribution(n, 4, 1, 255)
+    return {r=fnLighten(r, 1.7), g=fnLighten(g, 1.7), b=fnLighten(b, 1.7)}
+end
+
+-- Matches 'fnColorGrassNormal' in 'textures/palettes/generate.scm'
+local function fnColorGrassNormal(n)
+    local g = 128 + fnBitsDistribution(n, 0, 1, 127)
+    local r = fnBitsDistribution(n, 1, 2, g - 64)
+    local b = fnBitsDistribution(n, 3, 1, g - 128)
+    return {r=fnLighten(r, 1.7), g=fnLighten(g, 1.7), b=fnLighten(b, 1.7)}
+end
+
+-- 48 colors
+-- Matches 'fnColorGrass' in 'textures/palettes/generate.scm'
+function fnColorGrass(n)
+    n = n - 1 -- make 0-based
+    if n < 32 then
+        return fnColorGrassRandom(n)
+    else
+        return fnColorGrassNormal(n)
+    end
+end
+
+function nv_planetgen.choose_planet_nodes_and_colors(planet)
+    local G = PcgRandom(planet.seed, planet.seed)
+    local stone_color = G:next(1, 16)
+    planet.raw_colors.stone = fnColorStone(stone_color)
+    planet.node_types.dust = minetest.get_content_id("nv_planetgen:dust" .. math.floor((stone_color - 1) / 8 + 1))
+    planet.color_dictionary[planet.node_types.dust] = (stone_color - 1) % 8
+    planet.node_types.sediment = minetest.get_content_id("nv_planetgen:sediment" .. math.floor((stone_color - 1) / 8 + 1))
+    planet.color_dictionary[planet.node_types.sediment] = (stone_color - 1) % 8
+    planet.node_types.gravel = minetest.get_content_id("nv_planetgen:gravel" .. math.floor((stone_color - 1) / 8 + 1))
+    planet.color_dictionary[planet.node_types.gravel] = (stone_color - 1) % 8
+    planet.node_types.stone = minetest.get_content_id("nv_planetgen:stone")
+    planet.color_dictionary[planet.node_types.stone] = stone_color - 1
+    if planet.atmosphere == "freezing" then
+        planet.node_types.liquid = minetest.get_content_id("nv_planetgen:hydrocarbon")
+        planet.raw_colors.liquid = {r = 113, g = 113, b = 113}
+    elseif planet.atmosphere == "scorching" then
+        planet.node_types.liquid = minetest.get_content_id("nv_planetgen:lava")
+        planet.raw_colors.liquid = {r = 255, g = 169, b = 0}
+    elseif gen_true_with_probability(G, planet.terrestriality + 0.18) then
+        local water_color = G:next(1, 24)
+        planet.node_types.liquid = minetest.get_content_id("nv_planetgen:water" .. water_color)
+        planet.raw_colors.liquid = fnColorWater(water_color)
+    else
+        local water_color = G:next(25, 32)
+        planet.node_types.liquid = minetest.get_content_id("nv_planetgen:water" .. water_color)
+        planet.raw_colors.liquid = fnColorWater(water_color)
+    end
+    planet.node_types.snow = minetest.get_content_id("nv_planetgen:snow")
+    planet.node_types.ice = minetest.get_content_id("nv_planetgen:ice")
+    local grass_color
+    if gen_true_with_probability(G, 1/2) then
+        grass_color = G:next(1, 32)
+    else
+        grass_color = G:next(33, 48)
+    end
+    planet.node_types.grass_soil = minetest.get_content_id("nv_planetgen:grass_soil" .. stone_color)
+    planet.color_dictionary[planet.node_types.grass_soil] = grass_color - 1
+    planet.raw_colors.grass = fnColorGrass(grass_color)
+    planet.node_types.grass = minetest.get_content_id("nv_planetgen:grass" .. math.floor((grass_color - 1) / 8 + 1))
+    planet.color_dictionary[planet.node_types.grass] = (grass_color - 1) % 8
+    planet.node_types.dry_grass = minetest.get_content_id("nv_planetgen:dry_grass" .. math.floor((grass_color - 1) / 8 + 1))
+    planet.color_dictionary[planet.node_types.dry_grass] = (grass_color - 1) % 8
+    planet.node_types.tall_grass = minetest.get_content_id("nv_planetgen:tall_grass" .. math.floor((grass_color - 1) / 8 + 1))
+    planet.color_dictionary[planet.node_types.tall_grass] = (grass_color - 1) % 8
+end

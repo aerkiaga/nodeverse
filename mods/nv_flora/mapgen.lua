@@ -1,14 +1,3 @@
---[[
-NV Flora implements large flora for Nodeverse.
-
-Included files:
-    nodetypes.lua       Node definitions and registration
-    thumbnail.lua       Utility functions to build a thumbnail for each plant
-    other               Each file contains definitions for one kind of plant
-
- # INDEX
-]]--
-
 nv_flora = {}
 
 dofile(minetest.get_modpath("nv_flora") .. "/thumbnail.lua")
@@ -19,11 +8,10 @@ dofile(minetest.get_modpath("nv_flora") .. "/trees.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/branched_plants.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/vines.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/lilypads.lua")
-dofile(minetest.get_modpath("nv_flora") .. "/nodetypes.lua")
 
-if minetest.register_mapgen_script then
-    minetest.register_mapgen_script(minetest.get_modpath("nv_flora") .. "/mapgen.lua")
-end
+local f = io.open(minetest.get_worldpath() .. "/nv_flora.node_types", "rt")
+nv_flora.node_types = minetest.deserialize(f:read())
+f:close()
 
 function get_planet_plant_colors(seed)
     local G = PcgRandom(seed, seed)
@@ -123,3 +111,5 @@ local function plant_handler(seed)
 end
 
 nv_flora.get_planet_flora = plant_handler
+
+nv_planetgen.register_structure_handler(plant_handler)

@@ -38,12 +38,17 @@ Structure format:
     custom      custom data to pass to the callback function
 ]]--
 
+local registered_structures = {}
+nv_planetgen.registered_structures = registered_structures
+local structure_handlers = {}
+nv_planetgen.structure_handlers = structure_handlers
+
 local function get_registered_structures(seed)
     registered_structures[seed] = {}
     for _, callback in ipairs(structure_handlers) do
         local structures = callback(seed)
         for _, structure in ipairs(structures) do
-            register_structure(seed, structure)
+            nv_planetgen.register_structure(seed, structure)
         end
     end
 end
@@ -55,9 +60,6 @@ end
 function nv_planetgen.pass_structures(
     minp_abs, maxp_abs, area, offset, A, A1, A2, mapping, planet, ground_buffer
 )
-    return
-    -- TODO: implement
-    --[[
     local seed = mapping.seed
     if registered_structures[seed] == nil then
         get_registered_structures(seed)
@@ -94,5 +96,5 @@ function nv_planetgen.pass_structures(
                 end
             end
         end
-    end]]--
+    end
 end
