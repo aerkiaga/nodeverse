@@ -41,7 +41,7 @@ about their current status. Unallocated layers are nil. Format is:
     in_space    whether the layer represents outer space
     planet      the mapgen seed for the planet the layer is on/around
     n_players   number of players currently inhabiting the layer
-    areas       list of generated areas, tables with 'minp' and 'maxp'
+    mapping     mapping index in `nv_planetgen`
 ]]
 local layers = {}
 nv_universe.layers = layers
@@ -61,10 +61,9 @@ nv_universe.planets = planets
 
 -- Unloads an entire layer, forcing it to be re-generated later and freeing it
 function nv_universe.free_layer(layer)
-    for i, area in ipairs(layers[layer].areas) do
-        minetest.delete_area(area.minp, area.maxp)
-    end
-    layers[layer].areas = {}
+    nv_planetgen.clear_planet_mapping_area(layers[layer].mapping)
+    nv_planetgen.remove_planet_mapping(layers[layer].mapping)
+    layers[layer].mapping = nil
     local seed = layers[layer].planet
     planets[seed][layers[layer].is_space and "space" or "planet"] = nil
     if next(planets[seed]) == nil then
@@ -107,11 +106,18 @@ function nv_universe.try_allocate_planet(seed)
             planets[seed] = {}
         end
         planets[seed].planet = layer
+        local mapping = nv_planetgen.add_planet_mapping({
+            minp = {x = -32768, y = layer_limits[layer].min, z = -32768},
+            maxp = {x = 32767, y = layer_limits[layer].max, z = 32767},
+            offset = {x = 0, y = -math.floor((layer_limits[layer].min + layer_limits[layer].max) / 2), z = 0},
+            seed = seed,
+            walled = false,
+        })
         layers[layer] = {
             in_space = false,
             planet = seed,
             n_players = 0,
-            areas = {}
+            mapping = mapping
         }
         nv_universe.store_global_state()
         return layer
@@ -135,7 +141,7 @@ function nv_universe.try_allocate_space(seed)
             in_space = true,
             planet = seed,
             n_players = 0,
-            areas = {}
+            mapping = nil
         }
         nv_universe.store_global_state()
         return layer
@@ -298,7 +304,7 @@ function nv_universe.register_post_processing(fn)
     table.insert(post_processing, fn)
 end
 
-local function new_area_callback(minp, maxp, area, A, A1, A2)
+--[[local function new_area_callback(minp, maxp, area, A, A1, A2)
     local min, max, offset, layer = nil
     for i, v in ipairs(layer_limits) do
         if minp.y <= v.max and maxp.y >= v.min then
@@ -331,6 +337,6 @@ local function new_area_callback(minp, maxp, area, A, A1, A2)
         fn(planet_mapping, area, A, A1, A2)
     end
     table.insert(layers[layer].areas, {minp=minp, maxp=maxp})
-end
+end]]--
 
-nv_planetgen.register_on_not_generated(new_area_callback)
+--nv_planetgen.register_on_not_generated(new_area_callback)

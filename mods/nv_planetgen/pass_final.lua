@@ -13,6 +13,10 @@ and correct colors.
 function nv_planetgen.pass_final(
     minp_abs, maxp_abs, area, offset, A, A1, A2, mapping, planet, ground_buffer
 )
+    return
+    -- TODO: implement
+end
+function unused()
     local minpx, minpy, minpz = minp_abs.x, minp_abs.y, minp_abs.z
     local maxpx, maxpy, maxpz = maxp_abs.x, maxp_abs.y, maxp_abs.z
 

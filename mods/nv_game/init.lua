@@ -10,9 +10,6 @@ on other NV mods.
 
 dofile(minetest.get_modpath("nv_game") .. "/nodetypes.lua")
 
--- Remove default starting planet
-nv_planetgen.remove_planet_mapping(1)
-
 --[[
  # SHIPS SETUP
 ]]
