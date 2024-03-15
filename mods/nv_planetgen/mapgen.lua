@@ -237,17 +237,8 @@ local function mapgen_callback(VM, minp, maxp, blockseed)
 end
 
 function nv_planetgen.refresh_meta()
-    return
-    -- TODO: implement using gennotify
-    --[[for n, entry in ipairs(meta_nodes) do
-        local meta = minetest.get_meta(entry.pos)
-        local tab = meta:to_table()
-        for k, v in pairs(entry.meta.fields) do
-            tab.fields[k] = v
-        end
-        meta:from_table(tab)
-    end
-    meta_nodes = {}]]--
+    minetest.save_gen_notify("nv_planetgen:meta_nodes", meta_nodes)
+    meta_nodes = {}
 end
 
 --[[

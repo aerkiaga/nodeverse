@@ -88,6 +88,22 @@ function nv_planetgen.remove_planet_mapping(index)
     table.remove(planet_mappings, index)
 end
 
+local function mapgen_callback(minp, maxp, blockseed)
+    local GN = minetest.get_mapgen_object("gennotify")
+    local meta_nodes = GN["custom"]["nv_planetgen:meta_nodes"]
+    for n, entry in ipairs(meta_nodes) do
+        local meta = minetest.get_meta(entry.pos)
+        local tab = meta:to_table()
+        for k, v in pairs(entry.meta.fields) do
+            tab.fields[k] = v
+        end
+        meta:from_table(tab)
+    end
+end
+
+minetest.register_on_generated(mapgen_callback)
+minetest.set_gen_notify({custom = true}, {}, {"nv_planetgen:meta_nodes"})
+
 --[[
 # INITIALIZATION
 ]]--
