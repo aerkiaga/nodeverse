@@ -1,4 +1,8 @@
 # Changelog
+## [0.5.0] - unreleased
+### Changed
+ - Reworked cave generation once again, making them larger and less homogeneously distributed.
+
 ## [0.4.2] - unreleased
 ### Performance
  - Added support for the new async mapgen API in Minetest 5.9, with fallback for older versions.
