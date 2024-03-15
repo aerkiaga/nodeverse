@@ -109,18 +109,8 @@ function nv_universe.load_global_state()
                     nv_universe.layers[index][key] = (value == "true")
                 elseif key == "planet" or key == "n_players" then
                     nv_universe.layers[index][key] = tonumber(value)
-                elseif key == "areas" then
-                    local n_areas = math.floor(#value / 18)
-                    nv_universe.layers[index][key] = {}
-                    for n=1,n_areas-1,1 do
-                        local minp_str = value:sub(1+n*18,9+n*18)
-                        local maxp_str = value:sub(10+n*18,18+n*18)
-                        local new_area = {
-                            minp = decode_vs18(minp_str),
-                            maxp = decode_vs18(minp_str)
-                        }
-                        table.insert(nv_universe.layers[index][key], new_area)
-                    end
+                elseif key == "mapping" then
+                    nv_universe.layers[index][key] = tonumber(value)
                 end
             elseif name:sub(1, 1) == "p" then
                 nv_universe.planets[index] = nv_universe.planets[index] or {}
@@ -173,16 +163,9 @@ function nv_universe.store_global_state()
     local meta = global_meta
     for index, value in pairs(nv_universe.layers) do
         for key, val in pairs(value) do
-            if key == "areas" then
+            if key == "mapping" then
                 local array = {}
-                for _, area in ipairs(val) do
-                    encode_s18(array, area.minp.x)
-                    encode_s18(array, area.minp.y)
-                    encode_s18(array, area.minp.z)
-                    encode_s18(array, area.maxp.x)
-                    encode_s18(array, area.maxp.y)
-                    encode_s18(array, area.maxp.z)
-                end
+                encode_s18(array, val)
                 written_table[string.format("nv_universe:l%d_%s", index, key)] = table.concat(array)
             else
                 written_table[string.format("nv_universe:l%d_%s", index, key)] = tostring(val)

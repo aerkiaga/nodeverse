@@ -27,6 +27,11 @@ and the same region on a planet with some seed. Entry format is:
 ]]--
 nv_planetgen.planet_mappings = {}
 local planet_mappings = nv_planetgen.planet_mappings
+local f = io.open(minetest.get_worldpath() .. "/nv_planetgen.planet_mappings", "rt")
+if f then
+    planet_mappings = minetest.deserialize(f:read())
+    f:close()
+end
 minetest.safe_file_write(minetest.get_worldpath() .. "/nv_planetgen.planet_mappings", minetest.serialize(planet_mappings))
 
 --[[
@@ -34,6 +39,11 @@ Maps planet IDs (keys) to actual planet metadata tables (values).
 ]]--
 nv_planetgen.planet_dictionary = {}
 local planet_dictionary = nv_planetgen.planet_dictionary
+f = io.open(minetest.get_worldpath() .. "/nv_planetgen.planet_dictionary", "rt")
+if f then
+    planet_dictionary = minetest.deserialize(f:read())
+    f:close()
+end
 minetest.safe_file_write(minetest.get_worldpath() .. "/nv_planetgen.planet_dictionary", minetest.serialize(planet_dictionary))
 
 function nv_planetgen.clear_planet_mapping_area(mapping)
