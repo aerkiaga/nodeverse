@@ -34,7 +34,7 @@ local function caves_init_def_threshold_buffer()
                 local x_wall = y_wall or x_rel == 0 or x_rel == 15
                 local x_near_wall = y_near_wall or x_rel < 4 or x_rel > 11
                 if x_wall then
-                    buffer[k] = 0.7
+                    buffer[k] = 0.5
                 elseif x_near_wall then
                     buffer[k] = 0.2
                 else
@@ -100,6 +100,8 @@ local function caves_gen_block(
     local is_ground = false
     if block_minp.y + 16 > ground_level then
         is_ground = true
+    elseif block_minp.y + 16 < ground_level - 32 then
+        return
     end
 
     -- Delete a fixed proportion of side openings, depending on planet and depth
@@ -112,8 +114,13 @@ local function caves_gen_block(
     S. Wilke 1983 "Bond percolation threshold in the simple cubic lattice"
     ]]--
     local caveness = planet.caveness
-    if is_ground then caveness = caveness / 16
-    elseif block_minp.y < -16*10 then caveness = 0
+    if is_ground then caveness = caveness / 4
+    end
+    local val = (tonumber(string.sub(minetest.sha1(minp_abs.x/32 .. minp_abs.z/20), 0, 5), 16) % 6483) / 6483
+    if val < caveness then
+        caveness = 1
+    else
+        caveness = 0
     end
     for n=1, 6 do
         local n2 = ((n - 1) % 3) + 1

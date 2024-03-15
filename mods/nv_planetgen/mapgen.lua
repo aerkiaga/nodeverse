@@ -54,7 +54,7 @@ function nv_planetgen.generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping
         minp, maxp, area, offset, A, planet
     )
 
-    if planet.caveness > 2^(-3) then
+    if planet.caveness > 2^(-5) then
         local new_minp = minp
         local new_maxp = maxp
         if mapping.walled then
