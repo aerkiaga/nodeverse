@@ -8,6 +8,7 @@ then by Y, then by Z, then by X. Each leaf node only contains 'true'.
 ]]--
 
 nv_universe.dug = {}
+minetest.safe_file_write(minetest.get_worldpath() .. "/nv_universe.dug", minetest.serialize(nv_universe.dug))
 
 function nv_universe.mark_dug_node(in_space, planet, x, y, z)
     if nv_universe.dug[in_space] == nil then
@@ -29,6 +30,7 @@ function nv_universe.mark_dug_node(in_space, planet, x, y, z)
     if cur[x] == nil then
         cur[x] = true
     end
+    minetest.safe_file_write(minetest.get_worldpath() .. "/nv_universe.dug", minetest.serialize(nv_universe.dug))
 end
 
 function nv_universe.sRGB_to_string(sRGB)

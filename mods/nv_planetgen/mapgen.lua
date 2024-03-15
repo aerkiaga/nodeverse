@@ -1,9 +1,8 @@
 --[[
-This is the main file for the map generator.
+This is the main file for the map generator. It should be run in a mapgen environment.
 Included files:
     util.lua            Probability distribution and math functions
     meta.lua            Generates global characteristics of a planet from a seed
-    nodetypes.lua       Registers custom nodes for a new planet
     pass_elevation.lua  First pass: terrain elevation and layers, oceans
     pass_caves.lua      Second pass: caves
     pass_structures.lua Third pass: trees and other structures
@@ -14,86 +13,36 @@ Included files:
     INITIALIZATION
 --]]
 
--- Namespace for all the API functions
-nv_planetgen = {}
+if minetest.save_gen_notify then
+    nv_planetgen = {}
+end
 
 dofile(minetest.get_modpath("nv_planetgen") .. "/util.lua")
 dofile(minetest.get_modpath("nv_planetgen") .. "/meta.lua")
-dofile(minetest.get_modpath("nv_planetgen") .. "/nodetypes.lua")
 dofile(minetest.get_modpath("nv_planetgen") .. "/pass_elevation.lua")
 dofile(minetest.get_modpath("nv_planetgen") .. "/pass_caves.lua")
 dofile(minetest.get_modpath("nv_planetgen") .. "/pass_structures.lua")
 dofile(minetest.get_modpath("nv_planetgen") .. "/pass_final.lua")
 
---[[
-Contains a list of all current mappings between chunk coordinate rectangles
-and the same region on a planet with some seed. Entry format is:
-    minp        starting x, y and z node coordinates
-    maxp        ending x, y and z node coordinates
-    offset      world position P will map to planet coordinates P + offset
-    seed        planet seed; each seed represents a unique planet
-    walled      (optional) builds stone walls around the mapped area
-]]--
-nv_planetgen.planet_mappings = {}
-local planet_mappings = nv_planetgen.planet_mappings
-
---[[
-Maps planet IDs (keys) to actual planet metadata tables (values).
-]]--
-nv_planetgen.planet_dictionary = {}
-local planet_dictionary = nv_planetgen.planet_dictionary
-
-local function clear_planet_mapping_area(mapping)
-    local minp = {x=mapping.minp.x, y=mapping.minp.y, z=mapping.minp.z}
-    local maxp = {x=mapping.maxp.x, y=mapping.maxp.y, z=mapping.maxp.z}
-    minetest.delete_area(minp, maxp)
-end
-
-local function planet_from_mapping(mapping)
-    local planet = planet_dictionary[mapping.seed]
-    if planet == nil then
-        planet = generate_planet_metadata(mapping.seed)
-        nv_planetgen.choose_planet_nodes_and_colors(planet)
-        planet_dictionary[mapping.seed] = planet
-        planet.seed = mapping.seed
-        planet.num_mappings = 1
-    else
-        planet.num_mappings = planet.num_mappings + 1
-    end
-    return planet
-end
-
--- API
-function nv_planetgen.add_planet_mapping(mapping)
-    table.insert(planet_mappings, mapping)
-    return #planet_mappings
-end
-
--- API
-function nv_planetgen.remove_planet_mapping(index)
-    local mapping = planet_mappings[index]
-    local planet = planet_from_mapping(mapping)
-    planet.num_mappings = planet.num_mappings - 1
-    if planet.num_mappings == 0 then
-        planet_dictionary[planet_mappings[index].seed] = nil
-    end
-    table.remove(planet_mappings, index)
-end
-
 local generator_dirty_flag = false
 
--- API
 function nv_planetgen.set_dirty_flag()
     generator_dirty_flag = true
 end
 
--- API
 local post_processing = {}
 function nv_planetgen.register_post_processing(callback)
     table.insert(post_processing, callback)
 end
 
--- API
+local function planet_from_mapping(mapping)
+    local f = io.open(minetest.get_worldpath() .. "/nv_planetgen.planet_dictionary", "rt")
+    local planet_dictionary = minetest.deserialize(f:read())
+    f:close()
+    local planet = planet_dictionary[mapping.seed]
+    return planet
+end
+
 function nv_planetgen.generate_planet_chunk(minp, maxp, area, A, A1, A2, mapping)
     local max = math.max
     local min = math.min
@@ -201,11 +150,24 @@ local function split_not_generated_boxes(not_generated_boxes, minp, maxp)
     return r
 end
 
-local on_not_generated_callback = nil
+local registered_structures = nv_planetgen.registered_structures
 
 -- API
-function nv_planetgen.register_on_not_generated(callback)
-    on_not_generated_callback = callback
+function nv_planetgen.register_structure(seed, def)
+    registered_structures[seed] = registered_structures[seed] or {}
+    for n, structure in ipairs(registered_structures[seed]) do
+        if structure.order > def.order then
+            table.insert(registered_structures[seed], n, def)
+            break
+        end
+    end
+    table.insert(registered_structures[seed], def)
+end
+
+local structure_handlers = nv_planetgen.structure_handlers
+-- The callback will get a seed and must return a list of structures
+function nv_planetgen.register_structure_handler(callback)
+    table.insert(structure_handlers, callback)
 end
 
 --[[
@@ -229,10 +191,10 @@ end
 
 local A, A1, A2 = nil, nil, nil
 
-local function mapgen_callback(minp, maxp, blockseed)
+local function mapgen_callback(VM, minp, maxp, blockseed)
     local max = math.max
     local min = math.min
-    local VM, emin, emax = minetest.get_mapgen_object("voxelmanip")
+    local emin, emax = VM:get_emerged_area()
     local area = VoxelArea:new{MinEdge=emin, MaxEdge=emax}
     if A == nil then
         A = VM:get_data()
@@ -247,6 +209,9 @@ local function mapgen_callback(minp, maxp, blockseed)
     local not_generated_boxes = {{minp = minp, maxp = maxp}}
 
     -- Find mapping(s) for the generated region
+    local f = io.open(minetest.get_worldpath() .. "/nv_planetgen.planet_mappings", "rt")
+    local planet_mappings = minetest.deserialize(f:read())
+    f:close()
     for key, mapping in pairs(planet_mappings) do
         local commonmin = {
             x=max(minp.x, mapping.minp.x),
@@ -263,30 +228,37 @@ local function mapgen_callback(minp, maxp, blockseed)
             not_generated_boxes = split_not_generated_boxes(not_generated_boxes, commonmin, commonmax)
         end
     end
-    if on_not_generated_callback ~= nil then
-        for index, box in ipairs(not_generated_boxes) do
-            on_not_generated_callback(box.minp, box.maxp, area, A, A1, A2)
-        end
-    end
     if generator_dirty_flag then
         generator_dirty_flag = false
         VM:set_data(A)
         VM:set_light_data(A1)
         VM:set_param2_data(A2)
         VM:calc_lighting()
-        VM:write_to_map()
+        if not minetest.save_gen_notify then
+            VM:write_to_map()
+        end
     end
     nv_planetgen.refresh_meta()
 end
 
+-- TODO: eventually remove this and bump min required MT version to 5.9
+local function legacy_mapgen_callback(minp, maxp, blockseed)
+    local VM = minetest.get_mapgen_object("voxelmanip")
+    mapgen_callback(VM, minp, maxp, blockseed)
+end
+
 function nv_planetgen.refresh_meta()
-    for n, entry in ipairs(meta_nodes) do
-        local meta = minetest.get_meta(entry.pos)
-        local tab = meta:to_table()
-        for k, v in pairs(entry.meta.fields) do
-            tab.fields[k] = v
+    if minetest.save_gen_notify then
+        minetest.save_gen_notify("nv_planetgen:meta_nodes", meta_nodes)
+    else
+        for n, entry in ipairs(meta_nodes) do
+            local meta = minetest.get_meta(entry.pos)
+            local tab = meta:to_table()
+            for k, v in pairs(entry.meta.fields) do
+                tab.fields[k] = v
+            end
+            meta:from_table(tab)
         end
-        meta:from_table(tab)
     end
     meta_nodes = {}
 end
@@ -295,60 +267,8 @@ end
 # INITIALIZATION
 ]]--
 
-minetest.register_on_generated(mapgen_callback)
-
-nv_planetgen.register_on_not_generated(nil)
-
--- Nodes defined only to avoid errors from mapgens
-
-minetest.register_node('nv_planetgen:stone', {
-    drawtype = "normal",
-    visual_scale = 1.0,
-    tiles = {
-        "nv_stone.png"
-    },
-    paramtype2 = "facedir",
-    place_param2 = 8,
-})
-minetest.register_alias('mapgen_stone', 'nv_planetgen:stone')
-
-minetest.register_node('nv_planetgen:water_source', {
-    drawtype = "liquid",
-    visual_scale = 1.0,
-    tiles = {
-        "nv_water.png"
-    },
-    paramtype2 = "facedir",
-    place_param2 = 8,
-})
-minetest.register_alias('mapgen_water_source', 'nv_planetgen:water_source')
-
---[[
-Dictionary, maps node IDs to random texture rotation modulo.
-See 'pass_final.lua'. Sensible values are:
-    nil     No entry, random rotation disabled
-    1       Effectively equivalent to 'nil'
-    2       Rotate some blocks 90 deg around +Y vector
-    4       Rotate all blocks a random multiple of 90 deg around +Y vector
-    24      Rotate all blocks randomly around all axes
-Here, add random texture rotation around Y axis to dummy stone block
-]]--
-
-nv_planetgen.random_yrot_nodes = {
-    [minetest.get_content_id('nv_planetgen:stone')] = 4
-}
-
---[[
-Dictionary, maps node IDs to color param2 multiplier.
-See 'pass_final.lua'. Sensible values are:
-    nil     No entry, equivalent to 1
-    1       Useful for param2 = 'color'
-    4       Useful for param2 = 'color4dir'
-    8       Useful for param2 = 'colorwallmounted'
-    32      Useful for param2 = 'colorfacedir' or 'colordegrotate'
-Here, add random texture rotation around Y axis to dummy stone block
-]]--
-
-nv_planetgen.color_multiplier = {}
-
-nv_planetgen.register_all_nodes()
+if minetest.save_gen_notify then
+    minetest.register_on_generated(mapgen_callback)
+else
+    minetest.register_on_generated(legacy_mapgen_callback)
+end

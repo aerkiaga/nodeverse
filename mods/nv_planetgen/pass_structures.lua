@@ -39,29 +39,16 @@ Structure format:
 ]]--
 
 local registered_structures = {}
-local function register_structure(seed, def)
-    registered_structures[seed] = registered_structures[seed] or {}
-    for n, structure in ipairs(registered_structures[seed]) do
-        if structure.order > def.order then
-            table.insert(registered_structures[seed], n, def)
-            break
-        end
-    end
-    table.insert(registered_structures[seed], def)
-end
-
+nv_planetgen.registered_structures = registered_structures
 local structure_handlers = {}
--- The callback will get a seed and must return a list of structures
-function nv_planetgen.register_structure_handler(callback)
-    table.insert(structure_handlers, callback)
-end
+nv_planetgen.structure_handlers = structure_handlers
 
 local function get_registered_structures(seed)
     registered_structures[seed] = {}
     for _, callback in ipairs(structure_handlers) do
         local structures = callback(seed)
         for _, structure in ipairs(structures) do
-            register_structure(seed, structure)
+            nv_planetgen.register_structure(seed, structure)
         end
     end
 end

@@ -717,3 +717,4 @@ function nv_flora.register_all_nodes()
 end
 
 nv_flora.register_all_nodes()
+minetest.safe_file_write(minetest.get_worldpath() .. "/nv_flora.node_types", minetest.serialize(nv_flora.node_types))

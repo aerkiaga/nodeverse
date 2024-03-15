@@ -27,6 +27,13 @@ function nv_planetgen.pass_final(
     local offset_x, offset_y, offset_z = offset.x, offset.y, offset.z
 
     local G = PcgRandom(5683749)
+    
+    local f = io.open(minetest.get_worldpath() .. "/nv_planetgen.random_yrot_nodes", "rt")
+    local random_yrot_nodes = minetest.deserialize(f:read())
+    f:close()
+    f = io.open(minetest.get_worldpath() .. "/nv_planetgen.color_multiplier", "rt")
+    local color_multiplier = minetest.deserialize(f:read())
+    f:close()
 
     local base = area.MinEdge
     local extent = area:getExtent()
@@ -61,7 +68,7 @@ function nv_planetgen.pass_final(
                         end
 
                         -- Apply random texture rotation to all supported nodes
-                        local rot = nv_planetgen.random_yrot_nodes[A[i]]
+                        local rot = random_yrot_nodes[A[i]]
                         local param2 = A2[i]
                         if rot ~= nil then
                             param2 = G:next() % rot
@@ -73,7 +80,7 @@ function nv_planetgen.pass_final(
                         -- Apply palette color to all supported nodes
                         local color = planet.color_dictionary[A[i]]
                         if color ~= nil then
-                            local multiplier = nv_planetgen.color_multiplier[A[i]] or 1
+                            local multiplier = color_multiplier[A[i]] or 1
                             color = color * multiplier
                             param2 = param2 + color
                         end

@@ -10,7 +10,6 @@ such, you should perform the same changes in that file.
  # INDEX
     NODE TYPES
     REGISTRATION
-    VARIANT SELECTION
 ]]
 
 nv_planetgen.color_multiplier = {}
@@ -788,54 +787,4 @@ function nv_planetgen.register_all_nodes()
     register_liquid_nodes()
     register_icy_nodes()
     register_base_floral_nodes()
-end
-
---[[
- # VARIANT SELECTION
-]]
-
-function nv_planetgen.choose_planet_nodes_and_colors(planet)
-    local G = PcgRandom(planet.seed, planet.seed)
-    local stone_color = G:next(1, 16)
-    planet.raw_colors.stone = fnColorStone(stone_color)
-    planet.node_types.dust = minetest.get_content_id("nv_planetgen:dust" .. math.floor((stone_color - 1) / 8 + 1))
-    planet.color_dictionary[planet.node_types.dust] = (stone_color - 1) % 8
-    planet.node_types.sediment = minetest.get_content_id("nv_planetgen:sediment" .. math.floor((stone_color - 1) / 8 + 1))
-    planet.color_dictionary[planet.node_types.sediment] = (stone_color - 1) % 8
-    planet.node_types.gravel = minetest.get_content_id("nv_planetgen:gravel" .. math.floor((stone_color - 1) / 8 + 1))
-    planet.color_dictionary[planet.node_types.gravel] = (stone_color - 1) % 8
-    planet.node_types.stone = minetest.get_content_id("nv_planetgen:stone")
-    planet.color_dictionary[planet.node_types.stone] = stone_color - 1
-    if planet.atmosphere == "freezing" then
-        planet.node_types.liquid = minetest.get_content_id("nv_planetgen:hydrocarbon")
-        planet.raw_colors.liquid = {r = 113, g = 113, b = 113}
-    elseif planet.atmosphere == "scorching" then
-        planet.node_types.liquid = minetest.get_content_id("nv_planetgen:lava")
-        planet.raw_colors.liquid = {r = 255, g = 169, b = 0}
-    elseif gen_true_with_probability(G, planet.terrestriality + 0.18) then
-        local water_color = G:next(1, 24)
-        planet.node_types.liquid = minetest.get_content_id("nv_planetgen:water" .. water_color)
-        planet.raw_colors.liquid = fnColorWater(water_color)
-    else
-        local water_color = G:next(25, 32)
-        planet.node_types.liquid = minetest.get_content_id("nv_planetgen:water" .. water_color)
-        planet.raw_colors.liquid = fnColorWater(water_color)
-    end
-    planet.node_types.snow = minetest.get_content_id("nv_planetgen:snow")
-    planet.node_types.ice = minetest.get_content_id("nv_planetgen:ice")
-    local grass_color
-    if gen_true_with_probability(G, 1/2) then
-        grass_color = G:next(1, 32)
-    else
-        grass_color = G:next(33, 48)
-    end
-    planet.node_types.grass_soil = minetest.get_content_id("nv_planetgen:grass_soil" .. stone_color)
-    planet.color_dictionary[planet.node_types.grass_soil] = grass_color - 1
-    planet.raw_colors.grass = fnColorGrass(grass_color)
-    planet.node_types.grass = minetest.get_content_id("nv_planetgen:grass" .. math.floor((grass_color - 1) / 8 + 1))
-    planet.color_dictionary[planet.node_types.grass] = (grass_color - 1) % 8
-    planet.node_types.dry_grass = minetest.get_content_id("nv_planetgen:dry_grass" .. math.floor((grass_color - 1) / 8 + 1))
-    planet.color_dictionary[planet.node_types.dry_grass] = (grass_color - 1) % 8
-    planet.node_types.tall_grass = minetest.get_content_id("nv_planetgen:tall_grass" .. math.floor((grass_color - 1) / 8 + 1))
-    planet.color_dictionary[planet.node_types.tall_grass] = (grass_color - 1) % 8
 end
