@@ -13,7 +13,9 @@ Included files:
     INITIALIZATION
 --]]
 
-nv_planetgen = {}
+if minetest.save_gen_notify then
+    nv_planetgen = {}
+end
 
 dofile(minetest.get_modpath("nv_planetgen") .. "/util.lua")
 dofile(minetest.get_modpath("nv_planetgen") .. "/meta.lua")
@@ -232,12 +234,32 @@ local function mapgen_callback(VM, minp, maxp, blockseed)
         VM:set_light_data(A1)
         VM:set_param2_data(A2)
         VM:calc_lighting()
+        if not minetest.save_gen_notify then
+            VM:write_to_map()
+        end
     end
     nv_planetgen.refresh_meta()
 end
 
+-- TODO: eventually remove this and bump min required MT version to 5.9
+local function legacy_mapgen_callback(minp, maxp, blockseed)
+    local VM = minetest.get_mapgen_object("voxelmanip")
+    mapgen_callback(VM, minp, maxp, blockseed)
+end
+
 function nv_planetgen.refresh_meta()
-    minetest.save_gen_notify("nv_planetgen:meta_nodes", meta_nodes)
+    if minetest.save_gen_notify then
+        minetest.save_gen_notify("nv_planetgen:meta_nodes", meta_nodes)
+    else
+        for n, entry in ipairs(meta_nodes) do
+            local meta = minetest.get_meta(entry.pos)
+            local tab = meta:to_table()
+            for k, v in pairs(entry.meta.fields) do
+                tab.fields[k] = v
+            end
+            meta:from_table(tab)
+        end
+    end
     meta_nodes = {}
 end
 
@@ -245,4 +267,8 @@ end
 # INITIALIZATION
 ]]--
 
-minetest.register_on_generated(mapgen_callback)
+if minetest.save_gen_notify then
+    minetest.register_on_generated(mapgen_callback)
+else
+    minetest.register_on_generated(legacy_mapgen_callback)
+end

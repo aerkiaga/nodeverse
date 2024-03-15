@@ -21,6 +21,8 @@ a list of all tags in order.
 dofile(minetest.get_modpath("nv_planetgen") .. "/api.lua")
 if minetest.register_mapgen_script then
     minetest.register_mapgen_script(minetest.get_modpath("nv_planetgen") .. "/mapgen.lua")
+else
+    dofile(minetest.get_modpath("nv_planetgen") .. "/mapgen.lua")
 end
 
 --[[

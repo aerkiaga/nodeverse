@@ -101,8 +101,10 @@ local function mapgen_callback(minp, maxp, blockseed)
     end
 end
 
-minetest.register_on_generated(mapgen_callback)
-minetest.set_gen_notify({custom = true}, {}, {"nv_planetgen:meta_nodes"})
+if minetest.register_mapgen_script then
+    minetest.register_on_generated(mapgen_callback)
+    minetest.set_gen_notify({custom = true}, {}, {"nv_planetgen:meta_nodes"})
+end
 
 --[[
 # INITIALIZATION

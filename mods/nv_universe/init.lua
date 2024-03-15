@@ -38,6 +38,8 @@ dofile(minetest.get_modpath("nv_universe") .. "/menu.lua")
 dofile(minetest.get_modpath("nv_universe") .. "/storage.lua")
 if minetest.register_mapgen_script then
     minetest.register_mapgen_script(minetest.get_modpath("nv_universe") .. "/mapgen.lua")
+else
+    dofile(minetest.get_modpath("nv_universe") .. "/mapgen.lua")
 end
 
 --[[

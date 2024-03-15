@@ -1,4 +1,6 @@
-nv_flora = {}
+if minetest.save_gen_notify then
+    nv_flora = {}
+end
 
 dofile(minetest.get_modpath("nv_flora") .. "/thumbnail.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/small_plants.lua")

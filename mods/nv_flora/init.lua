@@ -23,6 +23,8 @@ dofile(minetest.get_modpath("nv_flora") .. "/nodetypes.lua")
 
 if minetest.register_mapgen_script then
     minetest.register_mapgen_script(minetest.get_modpath("nv_flora") .. "/mapgen.lua")
+else
+    dofile(minetest.get_modpath("nv_flora") .. "/mapgen.lua")
 end
 
 function get_planet_plant_colors(seed)
