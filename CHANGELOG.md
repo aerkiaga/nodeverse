@@ -1,4 +1,8 @@
 # Changelog
+## [0.4.2] - unreleased
+### Performance
+ - Added support for the new async mapgen API in Minetest 5.9, with fallback for older versions.
+
 ## [0.4.1] - 28-12-2023
 ### Fixed
  - Erratic jumps after landing a ship for the second time.
