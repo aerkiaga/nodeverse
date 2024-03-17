@@ -59,8 +59,8 @@ Caves: %s
             meta.rockiness < 4 and "none" or (
             meta.rockiness < 5 and "scarce" or "common"),
             
-            meta.caveness < 0.2 and "scarce" or (
-            meta.caveness < 0.5 and "common" or "very common")
+            meta.caveness < 0.05 and "scarce" or (
+            meta.caveness < 0.3 and "common" or "very common")
         )
     ) y = y + 4
     local n_total, n_found = #flora, 0

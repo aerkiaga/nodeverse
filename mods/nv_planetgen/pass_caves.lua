@@ -103,6 +103,10 @@ local function caves_gen_block(
     elseif block_minp.y + 16 < ground_level - 32 then
         return
     end
+    local is_bottom = false
+    if block_minp.y + 16 < ground_level - 16 then
+        is_bottom = true
+    end
 
     -- Delete a fixed proportion of side openings, depending on planet and depth
     -- The less openings, the less connected and large the caves will be
@@ -143,7 +147,7 @@ local function caves_gen_block(
     local G = PcgRandom(planet.seed, minp_abs.x + 6587 * minp_abs.z)
     local is_waterlogged = false
     if planet.atmosphere ~= "vacuum" and not is_ground
-    and not sides[5] and gen_linear(G, 0, 1) < planet.cave_wetness then
+    and is_bottom and gen_linear(G, 0, 1) < planet.cave_wetness then
         is_waterlogged = true
     end
 
