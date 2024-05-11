@@ -37,7 +37,7 @@ local function ore_handler(seed)
     local G = PcgRandom(seed, seed)
     local meta = generate_planet_metadata(seed)
     local ore_count = 0
-    ore_count = G:next(7, 20)
+    ore_count = G:next(15, 50)
     local r = {}
     for index=1,ore_count,1 do
         local ore_meta = get_ore_meta(seed, index)

@@ -50,7 +50,7 @@ function nv_ores.get_large_vein_meta(seed, index)
     local G = PcgRandom(seed, index)
     local meta = generate_planet_metadata(seed)
     -- General
-    r.density = 1/G:next(1, 4)
+    r.density = 1/G:next(1, 2)
     r.index = index
     r.seed = 78954378 + index
     r.side = G:next(5, 12)
@@ -64,7 +64,16 @@ function nv_ores.get_large_vein_meta(seed, index)
         hematite = 100,
         magnetite = 100,
         goethite = 50,
-        limonite = 50
+        limonite = 50,
+        -- Aluminium ores
+        gibbsite = 150,
+        boehmite = 70,
+        diaspore = 70,
+        -- Calcium ores
+        calcite = 70,
+        aragonite = 50,
+        -- Sodium ores
+        halite = 80,
     })
     r.node = nv_ores.node_types[r.node]
     return r

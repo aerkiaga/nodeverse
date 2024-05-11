@@ -160,6 +160,210 @@ local function register_ores()
             groups = {cracky = 1},
         }, 4
     )
+    
+    -- GIBBSITE
+    -- Al(OH)3
+    register_node(
+        "gibbsite", {
+            drawtype = "normal",
+            visual_scale = 1.0,
+            tiles = {
+                "nv_gibbsite.png",
+                "nv_gibbsite.png^[transformR180",
+                "nv_gibbsite.png^[transformR180",
+                "nv_gibbsite.png^[transformR90",
+                "nv_gibbsite.png",
+                "nv_gibbsite.png^[transformR90"
+            },
+            overlay_tiles = {
+                "",
+                "",
+                {name = "nv_ore_overlay.png"},
+                {name = "nv_ore_overlay.png^[transformFX"},
+                {name = "nv_ore_overlay.png^[transformFX"},
+                {name = "nv_ore_overlay.png"}
+            },
+            use_texture_alpha = "blend",
+            paramtype = "light",
+            paramtype2 = "facedir",
+            place_param2 = 0,
+            sunlight_propagates = false,
+            walkable = true,
+            buildable_to = false,
+            drop = "nv_ores:aluminium_hydroxide",
+            groups = {cracky = 3},
+        }, 4
+    )
+    
+    -- BOEHMITE
+    -- Al(OH) gamma
+    register_node(
+        "boehmite", {
+            drawtype = "normal",
+            visual_scale = 1.0,
+            tiles = {
+                "nv_boehmite.png",
+                "nv_boehmite.png^[transformR180",
+                "nv_boehmite.png^[transformR180",
+                "nv_boehmite.png^[transformR90",
+                "nv_boehmite.png",
+                "nv_boehmite.png^[transformR90"
+            },
+            overlay_tiles = {
+                "",
+                "",
+                {name = "nv_ore_overlay.png"},
+                {name = "nv_ore_overlay.png^[transformFX"},
+                {name = "nv_ore_overlay.png^[transformFX"},
+                {name = "nv_ore_overlay.png"}
+            },
+            use_texture_alpha = "blend",
+            paramtype = "light",
+            paramtype2 = "facedir",
+            place_param2 = 0,
+            sunlight_propagates = false,
+            walkable = true,
+            buildable_to = false,
+            drop = "nv_ores:aluminium_hydroxide",
+            groups = {cracky = 3},
+        }, 4
+    )
+    
+    -- DIASPORE
+    -- Al(OH) alpha
+    register_node(
+        "diaspore", {
+            drawtype = "normal",
+            visual_scale = 1.0,
+            tiles = {
+                "nv_diaspore_top.png",
+                "nv_diaspore.png^[transformR180",
+                "nv_diaspore.png^[transformR180",
+                "nv_diaspore.png^[transformFX",
+                "nv_diaspore.png",
+                "nv_diaspore.png"
+            },
+            overlay_tiles = {
+                "",
+                "",
+                {name = "nv_ore_overlay.png"},
+                {name = "nv_ore_overlay.png^[transformFX"},
+                {name = "nv_ore_overlay.png^[transformFX"},
+                {name = "nv_ore_overlay.png"}
+            },
+            use_texture_alpha = "blend",
+            paramtype = "light",
+            paramtype2 = "facedir",
+            place_param2 = 0,
+            sunlight_propagates = false,
+            walkable = true,
+            buildable_to = false,
+            drop = "nv_ores:aluminium_hydroxide",
+            groups = {cracky = 1},
+        }, 4
+    )
+    
+    -- CALCITE
+    -- CaCO3
+    register_node(
+        "calcite", {
+            drawtype = "normal",
+            visual_scale = 1.0,
+            tiles = {
+                "nv_calcite.png",
+                "nv_calcite.png^[transformR180",
+                "nv_calcite.png^[transformR180",
+                "nv_calcite.png^[transformR90",
+                "nv_calcite.png",
+                "nv_calcite.png^[transformR90"
+            },
+            overlay_tiles = {
+                "",
+                "",
+                {name = "nv_ore_overlay.png"},
+                {name = "nv_ore_overlay.png^[transformFX"},
+                {name = "nv_ore_overlay.png^[transformFX"},
+                {name = "nv_ore_overlay.png"}
+            },
+            use_texture_alpha = "blend",
+            paramtype = "light",
+            paramtype2 = "facedir",
+            place_param2 = 0,
+            sunlight_propagates = false,
+            walkable = true,
+            buildable_to = false,
+            drop = "nv_ores:calcium_carbonate",
+            groups = {cracky = 3},
+        }, 4
+    )
+    
+    -- ARAGONITE
+    -- CaCO3
+    register_node(
+        "aragonite", {
+            drawtype = "normal",
+            visual_scale = 1.0,
+            tiles = {
+                "nv_aragonite.png",
+                "nv_aragonite.png^[transformR180",
+                "nv_aragonite.png^[transformR180",
+                "nv_aragonite.png^[transformR90",
+                "nv_aragonite.png",
+                "nv_aragonite.png^[transformR90"
+            },
+            overlay_tiles = {
+                "",
+                "",
+                {name = "nv_ore_overlay.png"},
+                {name = "nv_ore_overlay.png^[transformFX"},
+                {name = "nv_ore_overlay.png^[transformFX"},
+                {name = "nv_ore_overlay.png"}
+            },
+            use_texture_alpha = "blend",
+            paramtype = "light",
+            paramtype2 = "facedir",
+            place_param2 = 0,
+            sunlight_propagates = false,
+            walkable = true,
+            buildable_to = false,
+            drop = "nv_ores:calcium_carbonate",
+            groups = {cracky = 2},
+        }, 4
+    )
+    
+    -- HALITE
+    -- NaCl
+    register_node(
+        "halite", {
+            drawtype = "normal",
+            visual_scale = 1.0,
+            tiles = {
+                "nv_halite.png",
+                "nv_halite.png^[transformR180",
+                "nv_halite.png^[transformR180",
+                "nv_halite.png^[transformR90",
+                "nv_halite.png",
+                "nv_halite.png^[transformR90"
+            },
+            overlay_tiles = {
+                "",
+                "",
+                {name = "nv_ore_overlay.png"},
+                {name = "nv_ore_overlay.png^[transformFX"},
+                {name = "nv_ore_overlay.png^[transformFX"},
+                {name = "nv_ore_overlay.png"}
+            },
+            use_texture_alpha = "blend",
+            paramtype = "light",
+            paramtype2 = "facedir",
+            place_param2 = 0,
+            sunlight_propagates = false,
+            walkable = true,
+            buildable_to = false,
+            drop = "nv_ores:sodium_chloride",
+            groups = {cracky = 3},
+        }, 4
+    )
 end
 
 --[[
