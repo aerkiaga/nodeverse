@@ -19,9 +19,21 @@ end
 
 --[[
  # NODE TYPES
-Allocated: 1
-1  .... ores
+Allocated: 10
+4  .... iron ores
 1           hematite
+1           magnetite
+1           goethite
+1           limonite
+3  .... aluminium ores
+1           gibbsite
+1           boehmite
+1           diaspore
+2  .... calcium ores
+1           calcite
+1           aragonite
+1  .... sodium ores
+1           halite
 ]]--
 
 local function register_ores()
@@ -59,7 +71,7 @@ local function register_ores()
         }, 4
     )
     
-    -- HEMATITE
+    -- MAGNETITE
     -- Fe3O4
     register_node(
         "magnetite", {
