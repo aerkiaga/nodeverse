@@ -92,6 +92,74 @@ local function register_ores()
             groups = {crumbly = 2},
         }, 4
     )
+    
+    -- GOETHITE
+    -- FeO(OH)
+    register_node(
+        "goethite", {
+            drawtype = "normal",
+            visual_scale = 1.0,
+            tiles = {
+                "nv_goethite_top.png",
+                "nv_goethite.png^[transformR180",
+                "nv_goethite.png^[transformR180",
+                "nv_goethite.png^[transformFX",
+                "nv_goethite.png",
+                "nv_goethite_top.png"
+            },
+            overlay_tiles = {
+                "",
+                "",
+                {name = "nv_ore_overlay.png"},
+                {name = "nv_ore_overlay.png^[transformFX"},
+                {name = "nv_ore_overlay.png^[transformFX"},
+                {name = "nv_ore_overlay.png"}
+            },
+            use_texture_alpha = "blend",
+            paramtype = "light",
+            paramtype2 = "facedir",
+            place_param2 = 0,
+            sunlight_propagates = false,
+            walkable = true,
+            buildable_to = false,
+            drop = "",
+            groups = {crumbly = 2},
+        }, 4
+    )
+    
+    -- GOETHITE
+    -- FeO(OH)·nH2O
+    register_node(
+        "limonite", {
+            drawtype = "normal",
+            visual_scale = 1.0,
+            tiles = {
+                "nv_limonite.png",
+                "nv_limonite.png^[transformR180",
+                "nv_limonite.png^[transformR180",
+                "nv_limonite.png^[transformR90",
+                "nv_limonite.png",
+                "nv_limonite.png^[transformR90"
+            },
+            overlay_tiles = {
+                "",
+                "",
+                {name = "nv_ore_overlay.png"},
+                {name = "nv_ore_overlay.png^[transformFX"},
+                {name = "nv_ore_overlay.png^[transformFX"},
+                {name = "nv_ore_overlay.png"}
+            },
+            use_texture_alpha = "blend",
+            paramtype = "light",
+            paramtype2 = "facedir",
+            place_param2 = 0,
+            sunlight_propagates = false,
+            walkable = true,
+            buildable_to = false,
+            drop = "",
+            groups = {crumbly = 2},
+        }, 4
+    )
 end
 
 --[[
