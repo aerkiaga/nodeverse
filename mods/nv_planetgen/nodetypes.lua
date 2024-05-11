@@ -186,7 +186,7 @@ local function register_base_nodes()
                     name = "nv_step_dust", gain = 0.2, pitch = 1
                 }
             },
-            drop = "",
+            drop = "nv_planetgen:crude_silicate",
             groups = {crumbly = 1},
         } end
     )
@@ -218,7 +218,7 @@ local function register_base_nodes()
                     name = "nv_step_sediment", gain = 0.07, pitch = 1
                 }
             },
-            drop = "",
+            drop = "nv_planetgen:crude_silicate",
             groups = {crumbly = 2},
         } end
     )
@@ -249,7 +249,7 @@ local function register_base_nodes()
                     name = "nv_step_gravel", gain = 0.3, pitch = 1
                 }
             },
-            drop = "",
+            drop = "nv_planetgen:crude_silicate",
             groups = {crumbly = 1},
         } end
     )
@@ -280,7 +280,7 @@ local function register_base_nodes()
                     name = "nv_step_stone", gain = 0.4, pitch = 1
                 }
             },
-            drop = "",
+            drop = "nv_planetgen:crude_silicate",
             groups = {cracky = 1},
             nv_vineable = true,
         } end

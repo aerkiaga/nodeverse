@@ -4,6 +4,7 @@ Included files:
     util.lua            Probability distribution and math functions
     meta.lua            Generates global characteristics of a planet from a seed
     nodetypes.lua       Registers custom nodes for a new planet
+    itemtypes.lua       Registers drops from nodes
 
  # INDEX
     INITIALIZATION
@@ -15,6 +16,7 @@ nv_planetgen = {}
 dofile(minetest.get_modpath("nv_planetgen") .. "/util.lua")
 dofile(minetest.get_modpath("nv_planetgen") .. "/meta.lua")
 dofile(minetest.get_modpath("nv_planetgen") .. "/nodetypes.lua")
+dofile(minetest.get_modpath("nv_planetgen") .. "/itemtypes.lua")
 
 --[[
 Contains a list of all current mappings between chunk coordinate rectangles

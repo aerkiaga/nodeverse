@@ -49,7 +49,7 @@ function nv_ores.get_large_vein_meta(seed, index)
     local G = PcgRandom(seed, index)
     local meta = generate_planet_metadata(seed)
     -- General
-    r.density = 1/2
+    r.density = 1/G:next(1, 4)
     r.index = index
     r.seed = 78954378 + index
     r.side = 10
