@@ -39,6 +39,15 @@ local function register_ores()
                 "nv_hematite.png",
                 "nv_hematite.png^[transformR90"
             },
+            overlay_tiles = {
+                "",
+                "",
+                {name = "nv_ore_overlay.png"},
+                {name = "nv_ore_overlay.png^[transformFX"},
+                {name = "nv_ore_overlay.png^[transformFX"},
+                {name = "nv_ore_overlay.png"}
+            },
+            use_texture_alpha = "blend",
             paramtype = "light",
             paramtype2 = "facedir",
             place_param2 = 0,
