@@ -58,6 +58,40 @@ local function register_ores()
             groups = {crumbly = 2},
         }, 4
     )
+    
+    -- HEMATITE
+    -- Fe3O4
+    register_node(
+        "magnetite", {
+            drawtype = "normal",
+            visual_scale = 1.0,
+            tiles = {
+                "nv_magnetite.png",
+                "nv_magnetite.png^[transformR180",
+                "nv_magnetite.png^[transformR180",
+                "nv_magnetite.png^[transformR90",
+                "nv_magnetite.png",
+                "nv_magnetite.png^[transformR90"
+            },
+            overlay_tiles = {
+                "",
+                "",
+                {name = "nv_ore_overlay.png"},
+                {name = "nv_ore_overlay.png^[transformFX"},
+                {name = "nv_ore_overlay.png^[transformFX"},
+                {name = "nv_ore_overlay.png"}
+            },
+            use_texture_alpha = "blend",
+            paramtype = "light",
+            paramtype2 = "facedir",
+            place_param2 = 0,
+            sunlight_propagates = false,
+            walkable = true,
+            buildable_to = false,
+            drop = "",
+            groups = {crumbly = 2},
+        }, 4
+    )
 end
 
 --[[

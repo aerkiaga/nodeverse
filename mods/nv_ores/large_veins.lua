@@ -58,6 +58,10 @@ function nv_ores.get_large_vein_meta(seed, index)
     -- Large vein-specific
     r.min_height = G:next(0, 150) - 100
     r.max_height = r.min_height + G:next(20, 50)
-    r.node = nv_ores.node_types.hematite
+    r.node = gen_weighted(G, {
+        hematite = 100,
+        magnetite = 100
+    })
+    r.node = nv_ores.node_types[r.node]
     return r
 end

@@ -37,7 +37,7 @@ local function ore_handler(seed)
     local ore_count = 0
     if meta.life == "dead" then
         ore_count = G:next(10, 15)
-    elseif meta.life == "lush" then
+    else
         ore_count = G:next(5, 10)
     end
     local r = {}
