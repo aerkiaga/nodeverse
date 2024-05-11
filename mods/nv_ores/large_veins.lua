@@ -10,13 +10,14 @@ local function large_vein_callback(
     if minp.y > height - mapping.offset.y + 1 or maxp.y < height - mapping.offset.y - 1 then
         return
     end
+    local size = custom.side / 3
     local y = height - mapping.offset.y
     for z=minp.z,maxp.z,1 do
         for x=minp.x,maxp.x,1 do
             local distance = math.hypot(x - origin.x - 5, z - origin.z - 5)
             local G2 = PcgRandom(x, z)
             local v = G2:next(0, 100) / 100
-            if distance - v < 3 then
+            if distance - v < size then
                 local i = area:index(x, y, z)
                 local node_name = minetest.get_name_from_content_id(A[i])
                 if node_name == "nv_planetgen:stone" then
@@ -24,7 +25,7 @@ local function large_vein_callback(
                     A2[i] = G2:next(0, 255) % 4
                 end
             end
-            if distance < 3 and v > 0.9 and y < maxp.y then
+            if distance < size and v > 0.9 and y < maxp.y then
                 local i = area:index(x, y + 1, z)
                 local node_name = minetest.get_name_from_content_id(A[i])
                 if node_name == "nv_planetgen:stone" then
@@ -32,7 +33,7 @@ local function large_vein_callback(
                     A2[i] = G2:next(0, 255) % 4
                 end
             end
-            if distance < 3 and v < 0.1 and y > minp.y then
+            if distance < size and v < 0.1 and y > minp.y then
                 local i = area:index(x, y - 1, z)
                 local node_name = minetest.get_name_from_content_id(A[i])
                 if node_name == "nv_planetgen:stone" then
@@ -52,7 +53,7 @@ function nv_ores.get_large_vein_meta(seed, index)
     r.density = 1/G:next(1, 4)
     r.index = index
     r.seed = 78954378 + index
-    r.side = 10
+    r.side = G:next(5, 12)
     r.order = 100
     r.callback = large_vein_callback
     -- Large vein-specific

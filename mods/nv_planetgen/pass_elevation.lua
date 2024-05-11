@@ -136,25 +136,13 @@ local function elevation_compute_cover_layer(G, y, ground_comp, planet)
     return gen_weighted(G, options)
 end
 
-local function cliff_transfer_function_derivative(ground, cliff_elevation, planet)
-    local cliff_multiplier = math.cos((cliff_elevation - planet.cliff_altitude_offset) * 2 * math.pi / planet.cliff_altitude_period)
-    local cliff_multiplier_derivative = -math.sin((cliff_elevation - planet.cliff_altitude_offset) * 2 * math.pi / planet.cliff_altitude_period)
-    if cliff_multiplier < 0 then
-        cliff_multiplier = 0
-    end
-    local cliff_height = planet.cliff_height * cliff_multiplier
-    local cliff_steepness = planet.cliff_steepness * cliff_multiplier
-    return 1/(math.pow(cliff_steepness * (ground - cliff_elevation), 2) + 1) * cliff_multiplier_derivative * cliff_height / 2
-end
-
 local function elevation_gen_node_column(
     x_abs, minp_abs_y, maxp_abs_y, z_abs, area, offset, G, ground, ground_comp, planet, A
 )
-    local steepness = cliff_transfer_function_derivative(ground, ground_comp.cliff_elevation, planet)
     for y_abs=minp_abs_y, maxp_abs_y do
         local y = y_abs + offset.y
         local i = area:index(x_abs, y_abs, z_abs)
-        if y < math.floor(ground) - 3 * math.min(1, 0.0002/math.abs(steepness)) - planet.rockiness*ground_comp.terrain_roughness then
+        if y < math.floor(ground) - 1 - planet.rockiness*ground_comp.terrain_roughness then
             A[i] = planet.node_types.stone -- Deep layer/rocks
         elseif y < math.floor(ground) then
             A[i] = planet.node_types.gravel -- Intermediate layer
