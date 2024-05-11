@@ -55,7 +55,7 @@ local function register_ores()
             walkable = true,
             buildable_to = false,
             drop = "nv_ores:iron_oxide",
-            groups = {crumbly = 2},
+            groups = {cracky = 1},
         }, 4
     )
     
@@ -89,7 +89,7 @@ local function register_ores()
             walkable = true,
             buildable_to = false,
             drop = "nv_ores:iron_oxide",
-            groups = {crumbly = 2},
+            groups = {cracky = 1},
         }, 4
     )
     
@@ -123,11 +123,11 @@ local function register_ores()
             walkable = true,
             buildable_to = false,
             drop = "nv_ores:iron_oxide",
-            groups = {crumbly = 2},
+            groups = {cracky = 1},
         }, 4
     )
     
-    -- GOETHITE
+    -- LIMONITE
     -- FeO(OH)·nH2O
     register_node(
         "limonite", {
@@ -157,7 +157,7 @@ local function register_ores()
             walkable = true,
             buildable_to = false,
             drop = "nv_ores:iron_oxide",
-            groups = {crumbly = 2},
+            groups = {cracky = 1},
         }, 4
     )
 end
