@@ -3,6 +3,7 @@ NV Ores implements ores and stones for Nodeverse.
 
 Included files:
     nodetypes.lua       Node definitions and registration
+    itemtypes.lua       Dropped items are defined here
     other               Each file contains definitions for one kind of geological structure
 
  # INDEX
@@ -10,8 +11,9 @@ Included files:
 
 nv_ores = {}
 
-dofile(minetest.get_modpath("nv_ores") .. "/large_veins.lua")
 dofile(minetest.get_modpath("nv_ores") .. "/nodetypes.lua")
+dofile(minetest.get_modpath("nv_ores") .. "/itemtypes.lua")
+dofile(minetest.get_modpath("nv_ores") .. "/large_veins.lua")
 
 if minetest.register_mapgen_script then
     minetest.register_mapgen_script(minetest.get_modpath("nv_ores") .. "/mapgen.lua")

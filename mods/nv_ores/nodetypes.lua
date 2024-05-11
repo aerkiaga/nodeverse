@@ -54,7 +54,7 @@ local function register_ores()
             sunlight_propagates = false,
             walkable = true,
             buildable_to = false,
-            drop = "",
+            drop = "nv_ores:iron_oxide",
             groups = {crumbly = 2},
         }, 4
     )
@@ -88,7 +88,7 @@ local function register_ores()
             sunlight_propagates = false,
             walkable = true,
             buildable_to = false,
-            drop = "",
+            drop = "nv_ores:iron_oxide",
             groups = {crumbly = 2},
         }, 4
     )
@@ -122,7 +122,7 @@ local function register_ores()
             sunlight_propagates = false,
             walkable = true,
             buildable_to = false,
-            drop = "",
+            drop = "nv_ores:iron_oxide",
             groups = {crumbly = 2},
         }, 4
     )
@@ -156,7 +156,7 @@ local function register_ores()
             sunlight_propagates = false,
             walkable = true,
             buildable_to = false,
-            drop = "",
+            drop = "nv_ores:iron_oxide",
             groups = {crumbly = 2},
         }, 4
     )
