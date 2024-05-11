@@ -2,6 +2,7 @@
 ## [0.5.0] - unreleased
 ### Changed
  - Reworked cave generation once again, making them larger and less homogeneously distributed.
+ - Tweaked cliffs so they expose more stone.
 
 ## [0.4.2] - unreleased
 ### Performance
