@@ -3,7 +3,7 @@
 ### Added
  - Mod `nv_ores`.
  - 10 new nodes.
- - 4 new items.
+ - 5 new items.
 
 ### Changed
  - Reworked cave generation once again, making them larger and less homogeneously distributed.
