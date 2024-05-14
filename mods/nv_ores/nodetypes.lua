@@ -19,21 +19,25 @@ end
 
 --[[
  # NODE TYPES
-Allocated: 10
-4  .... iron ores
+Allocated: 11
+10 .... large vein ores
+4         iron ores
 1           hematite
 1           magnetite
 1           goethite
 1           limonite
-3  .... aluminium ores
+3         aluminium ores
 1           gibbsite
 1           boehmite
 1           diaspore
-2  .... calcium ores
+2         calcium ores
 1           calcite
 1           aragonite
-1  .... sodium ores
+1         sodium ores
 1           halite
+1  .... surface deposit ores
+1           sulfur
+
 ]]--
 
 local function register_ores()
@@ -378,6 +382,33 @@ local function register_ores()
     )
 end
 
+local function register_surface_ores()
+    -- SULFUR
+    -- S
+    register_node(
+        "sulfur", {
+            drawtype = "normal",
+            visual_scale = 1.0,
+            tiles = {
+                "nv_sulfur.png",
+                "nv_sulfur.png^[transformR180",
+                "nv_sulfur.png^[transformR180",
+                "nv_sulfur.png^[transformR90",
+                "nv_sulfur.png",
+                "nv_sulfur.png^[transformR90"
+            },
+            paramtype = "light",
+            paramtype2 = "facedir",
+            place_param2 = 0,
+            sunlight_propagates = false,
+            walkable = true,
+            buildable_to = false,
+            drop = "nv_ores:sulfur_pieces",
+            groups = {cracky = 3},
+        }, 4
+    )
+end
+
 --[[
  # REGISTRATION
 ]]
@@ -385,6 +416,7 @@ end
 nv_ores.node_types = {}
 function nv_ores.register_all_nodes()
     register_ores()
+    register_surface_ores()
 end
 
 nv_ores.register_all_nodes()

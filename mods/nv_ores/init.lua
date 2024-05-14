@@ -14,6 +14,7 @@ nv_ores = {}
 dofile(minetest.get_modpath("nv_ores") .. "/nodetypes.lua")
 dofile(minetest.get_modpath("nv_ores") .. "/itemtypes.lua")
 dofile(minetest.get_modpath("nv_ores") .. "/large_veins.lua")
+dofile(minetest.get_modpath("nv_ores") .. "/surface_deposits.lua")
 
 if minetest.register_mapgen_script then
     minetest.register_mapgen_script(minetest.get_modpath("nv_ores") .. "/mapgen.lua")
@@ -48,6 +49,17 @@ local function ore_handler(seed)
             order = ore_meta.order,
             callback = ore_meta.callback,
             custom = ore_meta
+        })
+    end
+    if meta.atmosphere == "scorching" then
+        local deposit_meta = nv_ores.get_surface_deposit_meta(seed, 0)
+        table.insert(r, {
+            density = deposit_meta.density,
+            seed = deposit_meta.seed,
+            side = deposit_meta.side,
+            order = deposit_meta.order,
+            callback = deposit_meta.callback,
+            custom = deposit_meta
         })
     end
     return r
