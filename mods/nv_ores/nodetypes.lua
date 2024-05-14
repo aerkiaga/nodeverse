@@ -37,6 +37,7 @@ Allocated: 11
 1           halite
 1  .... surface deposit ores
 1           sulfur
+1           solid_ammonia
 
 ]]--
 
@@ -404,6 +405,31 @@ local function register_surface_ores()
             walkable = true,
             buildable_to = false,
             drop = "nv_ores:sulfur_pieces",
+            groups = {cracky = 3},
+        }, 4
+    )
+    
+    -- SOLID AMMONIA
+    -- NH3
+    register_node(
+        "solid_ammonia", {
+            drawtype = "normal",
+            visual_scale = 1.0,
+            tiles = {
+                "nv_solid_ammonia.png",
+                "nv_solid_ammonia.png^[transformR180",
+                "nv_solid_ammonia.png^[transformR180",
+                "nv_solid_ammonia.png^[transformR90",
+                "nv_solid_ammonia.png",
+                "nv_solid_ammonia.png^[transformR90"
+            },
+            paramtype = "light",
+            paramtype2 = "facedir",
+            place_param2 = 0,
+            sunlight_propagates = false,
+            walkable = true,
+            buildable_to = false,
+            drop = "",
             groups = {cracky = 3},
         }, 4
     )

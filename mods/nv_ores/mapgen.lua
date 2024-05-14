@@ -38,7 +38,7 @@ local function ore_handler(seed)
             custom = ore_meta
         })
     end
-    if meta.atmosphere == "scorching" then
+    if meta.atmosphere == "scorching" or meta.atmosphere == "freezing" then
         local deposit_meta = nv_ores.get_surface_deposit_meta(seed, 0)
         table.insert(r, {
             density = deposit_meta.density,

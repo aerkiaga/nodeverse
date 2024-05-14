@@ -15,6 +15,7 @@ local function surface_deposit_callback(
         for x=minp.x,maxp.x,1 do
             local distance = math.hypot(x - origin.x - 5, z - origin.z - 5)
             local G2 = PcgRandom(x, z)
+            ground = math.floor(nv_planetgen.get_ground_level(planet, x, z))
             for y=math.max(ground - 3 - mapping.offset.y, minp.y),math.min(ground + custom.height - mapping.offset.y, maxp.y) do
                 local v = G2:next(0, 100) / 100
                 local level_size = size * (1 - (y - ground + mapping.offset.y) / custom.height)
@@ -36,7 +37,7 @@ function nv_ores.get_surface_deposit_meta(seed, index)
     local G = PcgRandom(seed, index)
     local meta = generate_planet_metadata(seed)
     -- General
-    r.density = 1/(G:next(1, 4)^2)
+    r.density = 1/(G:next(4, 15)^2)
     r.index = index
     r.seed = 76578567 + index
     r.side = G:next(2, 9)
@@ -46,6 +47,8 @@ function nv_ores.get_surface_deposit_meta(seed, index)
     r.height = G:next(1, 7)
     if meta.atmosphere == "scorching" then
         r.node = nv_ores.node_types.sulfur
+    elseif meta.atmosphere == "freezing" then
+        r.node = nv_ores.node_types.solid_ammonia
     end
     return r
 end
