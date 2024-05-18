@@ -36,12 +36,11 @@ local function get_craft_formspec(player)
                 item_count = tonumber(string.sub(item, index + 1))
                 item_name = string.sub(item, 1, index - 1)
             end
-            local image = minetest.registered_items[item_name].inventory_image
             r = r .. string.format([[
-                image[1,%g;1,1;%s;]
+                item_image[1,%g;1,1;%s]
             ]],
                 y,
-                image
+                item_name
             )
             local color = "#ffffff"
             if not inv:contains_item("main", item) then
@@ -68,12 +67,11 @@ local function get_craft_formspec(player)
             item_count = tonumber(string.sub(item, index + 1))
             item = string.sub(item, 1, index - 1)
         end
-        local image = minetest.registered_items[item].inventory_image
         r = r .. string.format([[
-            image[9,%g;1,1;%s;]
+            item_image[9,%g;1,1;%s]
         ]],
             y,
-            image
+            item
         )
         if item_count > 1 then
             r = r .. string.format([[
@@ -83,7 +81,7 @@ local function get_craft_formspec(player)
                 tostring(item_count)
             )
         end
-        y = y + 2
+        y = y + 1.5
     end
     return string.format(
         [[
@@ -144,11 +142,3 @@ local function player_receive_fields_callback(player, fields)
 end
 
 nv_gui.register_tab("inventory", "Inventory", player_receive_fields_callback)
-
-nv_inventory.register_manual_recipe({
-    output = "nv_ships:hull_plate1",
-    type = "shapeless",
-    recipe = {
-        "nv_planetgen:crude_silicate 4",
-    },
-})
