@@ -7,12 +7,12 @@ function nv_inventory.register_manual_recipe(recipe)
     minetest.register_craft(recipe)
 end
 
-local function get_craft_formspec(player)
+function nv_inventory.get_craft_formspec(player, recipes)
     local name = player:get_player_name()
     local r = ""
     local y = 1
     local inv = minetest.get_inventory({type = "player", name = name})
-    for m, recipe in ipairs(nv_inventory.manual_recipes) do
+    for m, recipe in ipairs(recipes) do
         local doable = true
         for n, item in ipairs(recipe.recipe) do
             if not inv:contains_item("main", item) then
@@ -92,8 +92,12 @@ local function get_craft_formspec(player)
         y - 4
     ) .. r .. [[
         scroll_container_end[]
-        button[1,6.5;2,1;back;Back]
+        button[1,6.5;2,1;exit;Exit]
     ]]
+end
+
+local function get_manual_craft_formspec(player)
+    return nv_inventory.get_craft_formspec(player, nv_inventory.manual_recipes)
 end
 
 local function get_base_formspec(player)
@@ -122,9 +126,9 @@ local function player_receive_fields_callback(player, fields)
     local name = player:get_player_name()
 	for field, value in pairs(fields) do
 	    if field == "craft" then
-			local formspec = get_craft_formspec(player)
+			local formspec = get_manual_craft_formspec(player)
 			nv_gui.show_formspec(player, formspec)
-		elseif field == "back" then
+		elseif field == "exit" then
 			local formspec = get_base_formspec(player)
 			nv_gui.show_formspec(player, formspec)
 	    elseif string.sub(field, 1, 6) == "recipe" then
@@ -135,7 +139,7 @@ local function player_receive_fields_callback(player, fields)
 	            inv:remove_item("main", item)
 	        end
 	        inv:add_item("craftresult", recipe.output)
-	        local formspec = get_craft_formspec(player)
+	        local formspec = get_manual_craft_formspec(player)
 			nv_gui.show_formspec(player, formspec)
 		end
 	end

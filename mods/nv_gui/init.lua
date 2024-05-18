@@ -19,6 +19,11 @@ local global_tabs = {}
 
 local name_to_tab = {}
 
+--[[
+A dictionary of non-inventory formspec callbacks
+]]--
+local other_callbacks = {}
+
 local function postprocess_formspec(formspec, selected_tab)
     local names = ""
     for n, def in ipairs(global_tabs) do
@@ -38,6 +43,17 @@ local function postprocess_formspec(formspec, selected_tab)
     )
 end
 
+local function postprocess_formspec_raw(formspec)
+    return string.format(
+		[[
+			formspec_version[3]
+			size[14,8]
+			%s
+		]],
+		formspec
+    )
+end
+
 function nv_gui.register_tab(name, text, callback)
     table.insert(global_tabs, {
         name = name,
@@ -45,6 +61,10 @@ function nv_gui.register_tab(name, text, callback)
         callback = callback,
     })
     name_to_tab[name] = #global_tabs
+end
+
+function nv_gui.register_callback(name, callback)
+    other_callbacks[name] = callback
 end
 
 function nv_gui.set_inventory_formspec(player, tabname, formspec)
@@ -61,11 +81,17 @@ function nv_gui.set_inventory_formspec(player, tabname, formspec)
     end
 end
 
-function nv_gui.show_formspec(player, formspec)
+function nv_gui.show_formspec(player, formspec, formspec_name)
     local name = player:get_player_name()
     local current = player_tabs[name].current
     formspec = postprocess_formspec(formspec, current)
-    minetest.show_formspec(player:get_player_name(), "", formspec)
+    minetest.show_formspec(player:get_player_name(), formspec_name or "", formspec)
+end
+
+function nv_gui.show_formspec_raw(player, formspec, formspec_name)
+    local name = player:get_player_name()
+    formspec = postprocess_formspec_raw(formspec)
+    minetest.show_formspec(player:get_player_name(), formspec_name or "", formspec)
 end
 
 local function player_receive_fields_callback(player, formname, fields)
@@ -82,6 +108,11 @@ local function player_receive_fields_callback(player, formname, fields)
 	    end
 	    local tab = player_tabs[name].current
 	    global_tabs[tab].callback(player, fields)
+	else
+	    local callback = other_callbacks[formname]
+	    if callback then
+	        callback(player, fields)
+	    end
 	end
 	return true
 end

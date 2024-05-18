@@ -27,6 +27,12 @@ minetest.register_craftitem("nv_ores:aluminium_hydroxide", {
     inventory_image = "nv_aluminium_hydroxide.png",
 })
 
+minetest.register_craftitem("nv_ores:aluminium_oxide", {
+    description = "Aluminium oxide",
+    short_description = "Aluminium oxide",
+    inventory_image = "nv_aluminium_oxide.png",
+})
+
 minetest.register_craftitem("nv_ores:calcium_carbonate", {
     description = "Calcium carbonate",
     short_description = "Calcium carbonate",

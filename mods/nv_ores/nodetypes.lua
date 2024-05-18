@@ -433,34 +433,6 @@ local function register_surface_ores()
             groups = {cracky = 3},
         }, 4
     )
-    
-    register_node(
-        "furnace1", {
-            drawtype = "mesh",
-            visual_scale = 1.0,
-            tiles = {
-                "nv_furnace1.png"
-            },
-            mesh = "nv_furnace1.obj",
-            paramtype = "light",
-            paramtype2 = "facedir",
-            place_param2 = 0,
-            sunlight_propagates = true,
-            walkable = true,
-            buildable_to = false,
-            groups = {cracky = 1},
-            description = "Furnace Mk 1",
-            short_description = "Furnace Mk 1",
-        }, 4
-    )
-    
-    nv_inventory.register_manual_recipe({
-        output = "nv_ores:furnace1",
-        type = "shapeless",
-        recipe = {
-            "nv_planetgen:crude_silicate 4",
-        },
-    })
 end
 
 --[[
