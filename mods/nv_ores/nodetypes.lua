@@ -560,7 +560,7 @@ local function register_ores()
     -- MoO3
     register_node(
         "molybdite", {
-            drawtype = "glasslike",
+            drawtype = "normal",
             visual_scale = 1.0,
             tiles = {
                 "nv_molybdite.png",
