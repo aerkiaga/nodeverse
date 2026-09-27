@@ -471,35 +471,6 @@ minetest.register_node(
 )
 
 minetest.register_node(
-    "nv_crafting:lamp_yellow", {
-        drawtype = "mesh",
-        visual_scale = 1.0,
-        tiles = {
-            "nv_lamp_yellow.png"
-        },
-        mesh = "nv_lamp.obj",
-        selection_box = {
-            type = "fixed",
-            fixed = {-0.125, -0.5, -0.125, 0.125, 0.125, 0.125}
-        },
-        collision_box = {
-            type = "fixed",
-            fixed = {-0.125, -0.5, -0.125, 0.125, 0.125, 0.125}
-        },
-        paramtype = "light",
-        paramtype2 = "facedir",
-        place_param2 = 0,
-        light_source = 16,
-        sunlight_propagates = true,
-        walkable = false,
-        buildable_to = false,
-        groups = {choppy = 2},
-        description = "Yellow lamp",
-        short_description = "Yellow lamp",
-    }
-)
-
-minetest.register_node(
     "nv_crafting:lamp_white", {
         drawtype = "mesh",
         visual_scale = 1.0,
@@ -529,6 +500,35 @@ minetest.register_node(
 )
 
 minetest.register_node(
+    "nv_crafting:lamp_yellow", {
+        drawtype = "mesh",
+        visual_scale = 1.0,
+        tiles = {
+            "nv_lamp_yellow.png"
+        },
+        mesh = "nv_lamp.obj",
+        selection_box = {
+            type = "fixed",
+            fixed = {-0.125, -0.5, -0.125, 0.125, 0.125, 0.125}
+        },
+        collision_box = {
+            type = "fixed",
+            fixed = {-0.125, -0.5, -0.125, 0.125, 0.125, 0.125}
+        },
+        paramtype = "light",
+        paramtype2 = "facedir",
+        place_param2 = 0,
+        light_source = 16,
+        sunlight_propagates = true,
+        walkable = false,
+        buildable_to = false,
+        groups = {choppy = 2},
+        description = "Yellow lamp",
+        short_description = "Yellow lamp",
+    }
+)
+
+minetest.register_node(
     "nv_crafting:lamp_red", {
         drawtype = "mesh",
         visual_scale = 1.0,
@@ -554,6 +554,93 @@ minetest.register_node(
         groups = {choppy = 2},
         description = "Red lamp",
         short_description = "Red lamp",
+    }
+)
+
+minetest.register_node(
+    "nv_crafting:lamp_purple", {
+        drawtype = "mesh",
+        visual_scale = 1.0,
+        tiles = {
+            "nv_lamp_purple.png"
+        },
+        mesh = "nv_lamp.obj",
+        selection_box = {
+            type = "fixed",
+            fixed = {-0.125, -0.5, -0.125, 0.125, 0.125, 0.125}
+        },
+        collision_box = {
+            type = "fixed",
+            fixed = {-0.125, -0.5, -0.125, 0.125, 0.125, 0.125}
+        },
+        paramtype = "light",
+        paramtype2 = "facedir",
+        place_param2 = 0,
+        light_source = 16,
+        sunlight_propagates = true,
+        walkable = false,
+        buildable_to = false,
+        groups = {choppy = 2},
+        description = "Purple lamp",
+        short_description = "Purple lamp",
+    }
+)
+
+minetest.register_node(
+    "nv_crafting:lamp_blue", {
+        drawtype = "mesh",
+        visual_scale = 1.0,
+        tiles = {
+            "nv_lamp_blue.png"
+        },
+        mesh = "nv_lamp.obj",
+        selection_box = {
+            type = "fixed",
+            fixed = {-0.125, -0.5, -0.125, 0.125, 0.125, 0.125}
+        },
+        collision_box = {
+            type = "fixed",
+            fixed = {-0.125, -0.5, -0.125, 0.125, 0.125, 0.125}
+        },
+        paramtype = "light",
+        paramtype2 = "facedir",
+        place_param2 = 0,
+        light_source = 16,
+        sunlight_propagates = true,
+        walkable = false,
+        buildable_to = false,
+        groups = {choppy = 2},
+        description = "Blue lamp",
+        short_description = "Blue lamp",
+    }
+)
+
+minetest.register_node(
+    "nv_crafting:lamp_green", {
+        drawtype = "mesh",
+        visual_scale = 1.0,
+        tiles = {
+            "nv_lamp_green.png"
+        },
+        mesh = "nv_lamp.obj",
+        selection_box = {
+            type = "fixed",
+            fixed = {-0.125, -0.5, -0.125, 0.125, 0.125, 0.125}
+        },
+        collision_box = {
+            type = "fixed",
+            fixed = {-0.125, -0.5, -0.125, 0.125, 0.125, 0.125}
+        },
+        paramtype = "light",
+        paramtype2 = "facedir",
+        place_param2 = 0,
+        light_source = 16,
+        sunlight_propagates = true,
+        walkable = false,
+        buildable_to = false,
+        groups = {choppy = 2},
+        description = "Green lamp",
+        short_description = "Green lamp",
     }
 )
 
@@ -1084,15 +1171,6 @@ if nv_planetgen then
         })
         
         nv_crafting.register_anvil_recipe({
-            output = "nv_crafting:lamp_yellow",
-            type = "shapeless",
-            recipe = {
-                "nv_crafting:lamp 1",
-                "nv_ores:sodium_chloride 1",
-            },
-        })
-        
-        nv_crafting.register_anvil_recipe({
             output = "nv_crafting:lamp_white",
             type = "shapeless",
             recipe = {
@@ -1102,11 +1180,47 @@ if nv_planetgen then
         })
         
         nv_crafting.register_anvil_recipe({
+            output = "nv_crafting:lamp_yellow",
+            type = "shapeless",
+            recipe = {
+                "nv_crafting:lamp 1",
+                "nv_ores:sodium_chloride 1",
+            },
+        })
+        
+        nv_crafting.register_anvil_recipe({
             output = "nv_crafting:lamp_red",
             type = "shapeless",
             recipe = {
                 "nv_crafting:lamp 1",
                 "nv_ores:lithium_oxide 1",
+            },
+        })
+        
+        nv_crafting.register_anvil_recipe({
+            output = "nv_crafting:lamp_purple",
+            type = "shapeless",
+            recipe = {
+                "nv_crafting:lamp 1",
+                "nv_ores:potassium_nitrate 1",
+            },
+        })
+        
+        nv_crafting.register_anvil_recipe({
+            output = "nv_crafting:lamp_blue",
+            type = "shapeless",
+            recipe = {
+                "nv_crafting:lamp 1",
+                "nv_ores:sulfur_pieces 1",
+            },
+        })
+        
+        nv_crafting.register_anvil_recipe({
+            output = "nv_crafting:lamp_green",
+            type = "shapeless",
+            recipe = {
+                "nv_crafting:lamp 1",
+                "nv_ores:molybdenum_oxide 1",
             },
         })
         
