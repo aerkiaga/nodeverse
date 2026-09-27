@@ -529,6 +529,35 @@ minetest.register_node(
 )
 
 minetest.register_node(
+    "nv_crafting:lamp_red", {
+        drawtype = "mesh",
+        visual_scale = 1.0,
+        tiles = {
+            "nv_lamp_red.png"
+        },
+        mesh = "nv_lamp.obj",
+        selection_box = {
+            type = "fixed",
+            fixed = {-0.125, -0.5, -0.125, 0.125, 0.125, 0.125}
+        },
+        collision_box = {
+            type = "fixed",
+            fixed = {-0.125, -0.5, -0.125, 0.125, 0.125, 0.125}
+        },
+        paramtype = "light",
+        paramtype2 = "facedir",
+        place_param2 = 0,
+        light_source = 16,
+        sunlight_propagates = true,
+        walkable = false,
+        buildable_to = false,
+        groups = {choppy = 2},
+        description = "Red lamp",
+        short_description = "Red lamp",
+    }
+)
+
+minetest.register_node(
     "nv_crafting:anvil", {
         drawtype = "mesh",
         visual_scale = 1.0,
@@ -1069,6 +1098,15 @@ if nv_planetgen then
             recipe = {
                 "nv_crafting:lamp 1",
                 "nv_crafting:magnesium 1",
+            },
+        })
+        
+        nv_crafting.register_anvil_recipe({
+            output = "nv_crafting:lamp_red",
+            type = "shapeless",
+            recipe = {
+                "nv_crafting:lamp 1",
+                "nv_ores:lithium_oxide 1",
             },
         })
         
