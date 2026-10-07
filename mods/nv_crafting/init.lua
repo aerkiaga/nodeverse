@@ -359,6 +359,35 @@ minetest.register_node(
 )
 
 minetest.register_node(
+    "nv_crafting:yellow_brick", {
+        drawtype = "normal",
+        visual_scale = 1.0,
+        tiles = {
+            "nv_yellow_brick.png",
+            "nv_yellow_brick.png",
+            "nv_yellow_brick.png",
+            "nv_yellow_brick.png",
+            "nv_yellow_brick.png",
+            "nv_yellow_brick.png",
+        },
+        paramtype = "light",
+        paramtype2 = "facedir",
+        place_param2 = 0,
+        sounds = {
+            footstep = {
+                name = "nv_step_stone", gain = 0.4, pitch = 1
+            }
+        },
+        sunlight_propagates = false,
+        walkable = true,
+        buildable_to = false,
+        groups = {cracky = 1},
+        description = "Yellow brick",
+        short_description = "Yellow brick",
+    }
+)
+
+minetest.register_node(
     "nv_crafting:concrete", {
         drawtype = "normal",
         visual_scale = 1.0,
@@ -1137,6 +1166,15 @@ if nv_planetgen then
             recipe = {
                 "nv_crafting:aluminium_oxide 1",
                 "nv_crafting:cobalt_oxide 1",
+            },
+        })
+        
+        nv_inventory.register_manual_recipe({
+            output = "nv_crafting:yellow_brick 2",
+            type = "shapeless",
+            recipe = {
+                "nv_crafting:aluminium_oxide 1",
+                "nv_ores:molybdenum_oxide 1",
             },
         })
         

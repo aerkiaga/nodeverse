@@ -6,7 +6,7 @@ many new features to the game. Most fixes and small changes made during its
 development have been ported to the 0.5.x versions.
 
 ### Added
- - 8 new nodes.
+ - 9 new nodes.
  - 8 new items.
  - Pickaxes, for digging stone and ores faster.
 
