@@ -1029,6 +1029,30 @@ minetest.register_tool("nv_crafting:pickaxe", {
     },
 })
 
+minetest.register_craftitem("nv_crafting:silicon", {
+    description = "Silicon",
+    short_description = "Silicon",
+    inventory_image = "nv_silicon.png",
+})
+
+minetest.register_tool("nv_crafting:silicon_pickaxe", {
+    description = "Silicon pickaxe",
+    short_description = "Silicon pickaxe",
+    inventory_image = "nv_silicon_pickaxe.png",
+    tool_capabilities = {
+        full_punch_interval = 0.9,
+        max_drop_level = 0,
+        groupcaps = {
+            crumbly={maxlevel=1, times={[1]=1.30, [2]=0.80, [3]=0.50}},
+            cracky={maxlevel=1, times={[1]=2.50*0.2, [2]=2.00*0.2, [3]=1.50*0.2}},
+            snappy={maxlevel=1, times={[1]=0.60, [2]=0.40, [3]=0.20}},
+            choppy={maxlevel=1, times={[1]=2.10, [2]=1.80, [3]=1.20}},
+            oddly_breakable_by_hand={maxlevel=1, times={[1]=0, [2]=0, [3]=0}},
+        },
+        damage_groups = {fleshy=1},
+    },
+})
+
 if nv_planetgen then
     nv_inventory.register_manual_recipe({
         output = "nv_crafting:silicate_sand",
@@ -1223,6 +1247,15 @@ if nv_planetgen then
                 type = "shapeless",
                 recipe = {
                     "nv_crafting:iron 2",
+                    "nv_flora:polymer_planks 1",
+                },
+            })
+            
+            nv_crafting.register_anvil_recipe({
+                output = "nv_crafting:silicon_pickaxe",
+                type = "shapeless",
+                recipe = {
+                    "nv_crafting:silicon 2",
                     "nv_flora:polymer_planks 1",
                 },
             })
@@ -1422,14 +1455,24 @@ if nv_planetgen then
         })
         
         nv_inventory.register_manual_recipe({
-                output = "nv_crafting:furnace3",
-                type = "shapeless",
-                recipe = {
-                    "nv_crafting:concrete 4",
-                    "nv_ores:magnesium_hydroxide 2",
-                    "nv_crafting:molybdenum 2",
-                    "nv_crafting:battery 1",
-                },
-            })
+            output = "nv_crafting:furnace3",
+            type = "shapeless",
+            recipe = {
+                "nv_crafting:concrete 4",
+                "nv_ores:magnesium_hydroxide 2",
+                "nv_crafting:molybdenum 2",
+                "nv_crafting:battery 1",
+            },
+        })
+        
+        nv_crafting.register_furnace_recipe({
+            output = "nv_crafting:silicon",
+            type = "shapeless",
+            recipe = {
+                "nv_planetgen:crude_silicate 2",
+                "nv_ores:carbon 1",
+            },
+            level = 3,
+        })
     end
 end

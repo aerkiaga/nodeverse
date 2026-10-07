@@ -7,7 +7,7 @@ development have been ported to the 0.5.x versions.
 
 ### Added
  - 9 new nodes.
- - 8 new items.
+ - 10 new items.
  - Pickaxes, for digging stone and ores faster.
 
 ## [0.5.1] - 26-09-2026
