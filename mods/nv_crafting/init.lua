@@ -982,6 +982,24 @@ minetest.register_craftitem("nv_crafting:molybdenum", {
     inventory_image = "nv_molybdenum.png",
 })
 
+minetest.register_tool("nv_crafting:pickaxe", {
+    description = "Pickaxe",
+    short_description = "Pickaxe",
+    inventory_image = "nv_pickaxe.png",
+    tool_capabilities = {
+        full_punch_interval = 0.9,
+        max_drop_level = 0,
+        groupcaps = {
+            crumbly={maxlevel=1, times={[1]=1.30, [2]=0.80, [3]=0.50}},
+            cracky={maxlevel=1, times={[1]=2.50*0.5, [2]=2.00*0.5, [3]=1.50*0.5}},
+            snappy={maxlevel=1, times={[1]=0.60, [2]=0.40, [3]=0.20}},
+            choppy={maxlevel=1, times={[1]=2.10, [2]=1.80, [3]=1.20}},
+            oddly_breakable_by_hand={maxlevel=1, times={[1]=0, [2]=0, [3]=0}},
+        },
+        damage_groups = {fleshy=1},
+    },
+})
+
 if nv_planetgen then
     nv_inventory.register_manual_recipe({
         output = "nv_crafting:silicate_sand",
@@ -1153,20 +1171,31 @@ if nv_planetgen then
             level = 2,
         })
         
+        nv_inventory.register_manual_recipe({
+            output = "nv_crafting:anvil",
+            type = "shapeless",
+            recipe = {
+                "nv_crafting:iron 4",
+            },
+        })
+        
+        if nv_flora then
+            nv_crafting.register_anvil_recipe({
+                output = "nv_crafting:pickaxe",
+                type = "shapeless",
+                recipe = {
+                    "nv_crafting:iron 2",
+                    "nv_flora:polymer_planks 1",
+                },
+            })
+        end
+        
         nv_crafting.register_anvil_recipe({
             output = "nv_crafting:lamp",
             type = "shapeless",
             recipe = {
                 "nv_crafting:iron 1",
                 "nv_crafting:basic_fuel 1",
-            },
-        })
-        
-        nv_inventory.register_manual_recipe({
-            output = "nv_crafting:anvil",
-            type = "shapeless",
-            recipe = {
-                "nv_crafting:iron 4",
             },
         })
         
