@@ -31,12 +31,24 @@ dofile(minetest.get_modpath("nv_fauna") .. "/creatures.lua")
 function start_walking_animation(creature)
     local t = 0
     for _, v in ipairs(creature.leg_entities) do
-        core.after(t, function()
-            if v:is_valid() then
-                v:play_animation(1)
-            end
-        end)
+        if v:is_valid() then
+            v:play_animation(1, {
+                start_frame = t,
+            })
+        else
+            creature.body_entity:remove()
+        end
         t = t + 0.2
+    end
+end
+
+function stop_walking_animation(creature)
+    for _, v in ipairs(creature.leg_entities) do
+        if v:is_valid() then
+            v:stop_animation()
+        else
+            creature.body_entity:remove()
+        end
     end
 end
 
@@ -45,18 +57,66 @@ function spawn_entity(pos, planet_seed)
     
     local pf = {}
     for k, v in ipairs(planet_fauna) do
-        table.insert(pf, k, v.freq)
+        pf[k] = v.freq
     end
     local G = PcgRandom(planet_seed * os.clock())
     local index = gen_weighted(G, pf)
-    local creature = planet_fauna[index]
+    local descriptor = planet_fauna[index]
     
-    local creature = nv_fauna.spawn_creature(pos, creature)
+    local creature = nv_fauna.spawn_creature(pos, descriptor)
     if nv_fauna.planets[planet_seed] == nil then
         nv_fauna.planets[planet_seed] = {}
     end
-    table.insert(nv_fauna.planets[planet_seed], #nv_fauna.planets[planet_seed], creature)
-    start_walking_animation(creature)
+    creature.pos = pos
+    creature.descriptor = descriptor
+    creature.seed = planet_seed
+    table.insert(nv_fauna.planets[planet_seed], creature)
+end
+
+function respawn_entity(creature)
+    creature.body_entity:remove()
+    local creature2 = nv_fauna.spawn_creature(creature.pos, creature.descriptor)
+    creature2.pos = creature.pos
+    creature2.descriptor = creature.descriptor
+    creature2.seed = creature.seed
+    local creatures = nv_fauna.planets[creature.seed]
+    for i, creat in pairs(creatures) do
+        if creat == creature then
+            creatures[i] = creature2
+        end
+    end
+end
+
+function wander_entity(creature)
+    local G = PcgRandom(os.clock() * 1000 + creature.pos.x + creature.pos.z)
+    local x = creature.pos.x + G:next(-1, 1)
+    local z = creature.pos.z + G:next(-1, 1)
+    local floor = false
+    for y = creature.pos.y - 2, creature.pos.y + 2, 1 do
+        local pos = {x = x, y = y, z = z}
+        local node = core.get_node(pos)
+        local def = core.registered_nodes[node.name]
+        if def.walkable then
+            floor = true
+        elseif floor then
+            local new_pos = {x = x, y = y - 0.5, z = z}
+            local dist = {x = new_pos.x - creature.pos.x, y = new_pos.y - creature.pos.y, z = new_pos.z - creature.pos.z}
+            local t = 1.0
+            local vel = {x = dist.x / t, y = dist.y / t, z = dist.z / t}
+            creature.body_entity:add_velocity(vel)
+            creature.body_entity:set_rotation({x = 0, y = math.atan2(vel.z, vel.x), z = 0})
+            creature.pos = new_pos
+            start_walking_animation(creature)
+            core.after(1, function()
+                local mvel = {x = -vel.x, y = -vel.y, z = -vel.z}
+                creature.body_entity:add_velocity(mvel)
+                local new_pos2 = {x = new_pos.x, y = new_pos.y + creature.height, z = new_pos.z}
+                creature.body_entity:move_to(new_pos2, true)
+                stop_walking_animation(creature)
+            end)
+            break
+        end
+    end
 end
 
 core.register_on_generated(function(minp, maxp, blockseed)
@@ -65,7 +125,7 @@ core.register_on_generated(function(minp, maxp, blockseed)
     if universal and not universal.on_space then
         local seed = universal.planet
         local G = PcgRandom(seed)
-        local density = 0.00001 * G:next(1, 10)
+        local density = 0.000001 * G:next(1, 10)
         local G = PcgRandom(blockseed)
         for x = minp.x, maxp.x, 1 do
             for z = minp.z, maxp.z, 1 do
@@ -89,3 +149,13 @@ core.register_on_generated(function(minp, maxp, blockseed)
     end
 end)
 
+core.register_globalstep(function(dtime)
+    local G = PcgRandom(os.clock() * 1000)
+    for seed, creatures in pairs(nv_fauna.planets) do
+        for i, creature in pairs(creatures) do
+            if G:next(0, 99) == 0 then
+                wander_entity(creature)
+            end
+        end
+    end
+end)

@@ -130,11 +130,11 @@ function compute_leg_height(legs)
         angle = angle + legs.angles[i]
         local leg_length = nv_fauna.hinges[legs.hinges[i]][1]
         local leg_length2 = nv_fauna.hinges[legs.hinges[i]][4]
-        local total_length = leg_length + leg_length2
+        local total_length = leg_length + leg_length2 / 2
         local total_height = total_length * math.sin(angle * math.pi / 180)
         height = height + total_height
     end
-    return height
+    return height + nv_fauna.hinges[legs.hinges[#legs.hinges]][4] / 2
 end
 
 function nv_fauna.spawn_creature(pos, creature)
@@ -153,6 +153,7 @@ function nv_fauna.spawn_creature(pos, creature)
     local creature = {
         body_entity = body_entity,
         leg_entities = leg_entities,
+        height = height,
     }
     return creature
 end
