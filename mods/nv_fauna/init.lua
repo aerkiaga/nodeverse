@@ -13,6 +13,8 @@ function get_planet_fauna(planet_seed)
         local leg_segments = G:next(1, 3)
         local leg_angle = 90 - G:next(0, 2) * G:next(0, 2) * G:next(0, 2) * G:next(1, 2) * G:next(1, 2) * G:next(1, 2)
         local less_legs = G:next(2, 3)
+        local has_neck = (G:next(0, 1) == 1)
+        local has_tail = (G:next(0, 1) == 1)
         local fauna = {
             freq = freq,
             seed = seed,
@@ -20,6 +22,8 @@ function get_planet_fauna(planet_seed)
             leg_segments = leg_segments,
             leg_angle = leg_angle,
             less_legs = less_legs,
+            has_neck = has_neck,
+            has_tail = has_tail,
         }
         table.insert(r, #r + 1, fauna)
     end

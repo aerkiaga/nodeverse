@@ -74,7 +74,34 @@ function gen_leg_count(body_hinge, legs)
     end
 end
 
-function create_leg(legs, body_pos, suffix)
+function gen_color(seed)
+    local G = PcgRandom(seed)
+    local r = G:next(0, 255)
+    local g = G:next(0, 255)
+    local b = G:next(0, 255)
+    return {r=r, g=g, b=b}
+end
+
+function clamp_u8(x)
+    if x < 0 then return 0 end
+    if x > 255 then return 255 end
+    return x
+end
+
+function mod_color(color)
+    local G = PcgRandom(color.r * 75834 + color.g * 6381 + color.b * 3)
+    local range = 2^G:next(4, 7)
+    local r = clamp_u8(color.r + G:next(-range, range))
+    local g = clamp_u8(color.g + G:next(-range, range))
+    local b = clamp_u8(color.b + G:next(-range, range))
+    return {r=r, g=g, b=b}
+end
+
+function color_to_mod(color)
+    return string.format("^[colorize:#%02x%02x%02x:90", color.r, color.g, color.b)
+end
+
+function create_leg(legs, body_pos, suffix, leg_color)
     local leg_entity = core.add_entity(body_pos, string.format("nv_fauna:hinge%d%s", legs.hinges[1], suffix))
     local prev_entity = leg_entity
     for i = 2, #legs.hinges do
@@ -83,38 +110,40 @@ function create_leg(legs, body_pos, suffix)
         local attach_x = 0
         local attach_len = next_length * math.cos(legs.angles[i] * math.pi / 180)
         local attach_height = next_length * math.sin(legs.angles[i] * math.pi / 180)
+        local hinge_color = mod_color(leg_color)
         
         local hinge_entity = core.add_entity(body_pos, string.format("nv_fauna:hinge%d%s", legs.hinges[i], suffix))
         core.after(0, function(he, pe)
             he:set_attach(pe, "LeafSwinging", {x=attach_x + attach_len, y=-attach_height, z=0}, {x=0, y=0, z=-legs.angles[i]}, false)
         end, hinge_entity, prev_entity)
-        hinge_entity:set_texture_mod("^[colorize:#aabbcc:90")
+        hinge_entity:set_texture_mod(color_to_mod(hinge_color))
         prev_entity = hinge_entity
     end
-    leg_entity:set_texture_mod("^[colorize:#001122:90")
+    leg_entity:set_texture_mod(color_to_mod(leg_color))
     return leg_entity
 end
 
-function add_legs(body_entity, body_hinge, legs, leg_count, body_pos)
+function add_legs(body_entity, body_hinge, legs, leg_count, body_pos, body_color)
     local body_width = nv_fauna.hinges[body_hinge][3]
     local body_length = nv_fauna.hinges[body_hinge][1]
     local leg_width = nv_fauna.hinges[legs.hinges[1]][3]
     local leg_length = nv_fauna.hinges[legs.hinges[1]][1]
     local leg_entities = {}
     
+    local leg_color = mod_color(body_color)
     for leg_i = 0, leg_count - 1 do
-        local attach_x = (body_length - leg_width) * leg_i / leg_count + leg_width / 2
+        local attach_x = (body_length - leg_width) * 0.8 * leg_i / leg_count + leg_width / 2
         local attach_z = body_width / 2
         local attach_len = leg_length * math.cos(legs.angles[1] * math.pi / 180)
         local attach_height = leg_length * math.sin(legs.angles[1] * math.pi / 180)
         
-        local leg_entity = create_leg(legs, body_pos, "")
+        local leg_entity = create_leg(legs, body_pos, "", leg_color)
         core.after(0, function()
             leg_entity:set_attach(body_entity, "", {x=-attach_x, y=-attach_height, z=-attach_z - attach_len}, {x=-90, y=90 - legs.angles[1], z=-90}, false)
         end)
         table.insert(leg_entities, #leg_entities + 1, leg_entity)
         
-        local leg_entity2 = create_leg(legs, body_pos, "_r")
+        local leg_entity2 = create_leg(legs, body_pos, "_r", leg_color)
         core.after(0, function()
             leg_entity2:set_attach(body_entity, "", {x=-attach_x, y=-attach_height, z=attach_z + attach_len}, {x=90, y=-90 + legs.angles[1], z=-90}, false)
         end)
@@ -137,8 +166,47 @@ function compute_leg_height(legs)
     return height + nv_fauna.hinges[legs.hinges[#legs.hinges]][4] / 2
 end
 
+function add_neck(body_entity, body_hinge, body_pos, body_color)
+    local G = PcgRandom(body_color.r * 6546 + body_color.g * 4563 + body_color.b * 2134)
+    local neck_hinge = 1
+    if body_hinge > 1 then
+        neck_hinge = G:next(G:next(1, body_hinge - 1), body_hinge - 1)
+    end
+    local neck_len = nv_fauna.hinges[neck_hinge][1]
+    local neck_angle = G:next(0, 90)
+    local attach_len = neck_len * math.cos(neck_angle * math.pi / 180)
+    local attach_height = neck_len * math.sin(neck_angle * math.pi / 180)
+    local neck_color = body_color
+    
+    local neck_entity = core.add_entity(body_pos, string.format("nv_fauna:hinge%d", neck_hinge))
+    core.after(0, function()
+        neck_entity:set_attach(body_entity, "LeafSwinging", {x=attach_len, y=attach_height, z=0}, {x=0, y=0, z=neck_angle}, false)
+    end)
+    neck_entity:set_texture_mod(color_to_mod(neck_color))
+end
+
+function add_tail(body_entity, body_hinge, body_pos, body_color)
+    local G = PcgRandom(body_color.r * 566 + body_color.g * 4567 + body_color.b * 5321)
+    local tail_hinge = 1
+    if body_hinge > 1 then
+        tail_hinge = G:next(G:next(1, body_hinge - 1), body_hinge - 1)
+    end
+    local tail_len = nv_fauna.hinges[tail_hinge][1]
+    local tail_angle = G:next(0, 30)
+    local attach_len = tail_len * math.cos(tail_angle * math.pi / 180)
+    local attach_height = tail_len * math.sin(tail_angle * math.pi / 180)
+    local tail_color = mod_color(mod_color(body_color))
+    
+    local tail_entity = core.add_entity(body_pos, string.format("nv_fauna:hinge%d", tail_hinge))
+    core.after(0, function()
+        tail_entity:set_attach(body_entity, "LeafFixed", {x=-attach_len, y=-attach_height, z=0}, {x=0, y=0, z=tail_angle + 180}, false)
+    end)
+    tail_entity:set_texture_mod(color_to_mod(tail_color))
+end
+
 function nv_fauna.spawn_creature(pos, creature)
     local body_hinge = math.floor(creature.size * #nv_fauna.hinges + 1)
+    local body_color = gen_color(creature.seed)
     local legs = gen_legs(creature, body_hinge)
     local leg_count = gen_leg_count(body_hinge, legs)
     if math.floor(leg_count / creature.less_legs) > 1 then
@@ -149,7 +217,14 @@ function nv_fauna.spawn_creature(pos, creature)
     local body_pos = {x = pos.x, y = pos.y + height, z = pos.z}
     
     local body_entity = core.add_entity(body_pos, string.format("nv_fauna:hinge%d", body_hinge))
-    local leg_entities = add_legs(body_entity, body_hinge, legs, leg_count, body_pos)
+    body_entity:set_texture_mod(color_to_mod(body_color))
+    local leg_entities = add_legs(body_entity, body_hinge, legs, leg_count, body_pos, body_color)
+    if creature.has_neck then
+        add_neck(body_entity, body_hinge, body_pos, body_color)
+    end
+    if creature.has_tail then
+        add_tail(body_entity, body_hinge, body_pos, body_color)
+    end
     local creature = {
         body_entity = body_entity,
         leg_entities = leg_entities,
