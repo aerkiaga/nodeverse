@@ -1,0 +1,257 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "generate.py"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "HingeScene",
+      "nodes": [
+        3
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "LeafFixed",
+      "mesh": 0,
+      "translation": [
+        -6.25,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "LeafSwinging",
+      "mesh": 1,
+      "translation": [
+        6.25,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "Hinge",
+      "children": [
+        1
+      ]
+    },
+    {
+      "name": "HingeRoot",
+      "children": [
+        0,
+        2
+      ]
+    }
+  ],
+  "meshes": [
+    {
+      "name": "LeafMesh",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1
+          },
+          "indices": 2
+        }
+      ]
+    },
+    {
+      "name": "LeafMesh2",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 3,
+            "NORMAL": 4
+          },
+          "indices": 5
+        }
+      ]
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 24,
+      "type": "VEC3",
+      "min": [
+        -7.5,
+        -2.5,
+        -2.5
+      ],
+      "max": [
+        7.5,
+        2.5,
+        2.5
+      ]
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 24,
+      "type": "VEC3",
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "max": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5123,
+      "count": 36,
+      "type": "SCALAR",
+      "min": [
+        0
+      ],
+      "max": [
+        23
+      ]
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5126,
+      "count": 24,
+      "type": "VEC3",
+      "min": [
+        -5.0,
+        -1.0,
+        -1.0
+      ],
+      "max": [
+        5.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "bufferView": 4,
+      "componentType": 5126,
+      "count": 24,
+      "type": "VEC3",
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "max": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "bufferView": 5,
+      "componentType": 5123,
+      "count": 36,
+      "type": "SCALAR",
+      "min": [
+        0
+      ],
+      "max": [
+        23
+      ]
+    },
+    {
+      "bufferView": 6,
+      "componentType": 5126,
+      "count": 4,
+      "type": "SCALAR",
+      "min": [
+        0.0
+      ],
+      "max": [
+        2.25
+      ]
+    },
+    {
+      "bufferView": 7,
+      "componentType": 5126,
+      "count": 4,
+      "type": "VEC4"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 288,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 288,
+      "byteLength": 288,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 576,
+      "byteLength": 72,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 648,
+      "byteLength": 288,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 936,
+      "byteLength": 288,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 1224,
+      "byteLength": 72,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 1296,
+      "byteLength": 16
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 1312,
+      "byteLength": 64
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 1376,
+      "uri": "data:application/octet-stream;base64,AADwwAAAIMAAACBAAADwQAAAIMAAACBAAADwQAAAIEAAACBAAADwwAAAIEAAACBAAADwwAAAIMAAACDAAADwwAAAIEAAACDAAADwQAAAIEAAACDAAADwQAAAIMAAACDAAADwQAAAIMAAACDAAADwQAAAIEAAACDAAADwQAAAIEAAACBAAADwQAAAIMAAACBAAADwwAAAIMAAACDAAADwwAAAIMAAACBAAADwwAAAIEAAACBAAADwwAAAIEAAACDAAADwwAAAIEAAACDAAADwwAAAIEAAACBAAADwQAAAIEAAACBAAADwQAAAIEAAACDAAADwwAAAIMAAACDAAADwQAAAIMAAACDAAADwQAAAIMAAACBAAADwwAAAIMAAACBAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAABAAIAAAACAAMABAAFAAYABAAGAAcACAAJAAoACAAKAAsADAANAA4ADAAOAA8AEAARABIAEAASABMAFAAVABYAFAAWABcAAACgwAAAgL8AAIA/AACgQAAAgL8AAIA/AACgQAAAgD8AAIA/AACgwAAAgD8AAIA/AACgwAAAgL8AAIC/AACgwAAAgD8AAIC/AACgQAAAgD8AAIC/AACgQAAAgL8AAIC/AACgQAAAgL8AAIC/AACgQAAAgD8AAIC/AACgQAAAgD8AAIA/AACgQAAAgL8AAIA/AACgwAAAgL8AAIC/AACgwAAAgL8AAIA/AACgwAAAgD8AAIA/AACgwAAAgD8AAIC/AACgwAAAgD8AAIC/AACgwAAAgD8AAIA/AACgQAAAgD8AAIA/AACgQAAAgD8AAIC/AACgwAAAgL8AAIC/AACgQAAAgL8AAIC/AACgQAAAgL8AAIA/AACgwAAAgL8AAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAABAAIAAAACAAMABAAFAAYABAAGAAcACAAJAAoACAAKAAsADAANAA4ADAAOAA8AEAARABIAEAASABMAFAAVABYAFAAWABcAAAAAAAAAQD8AAMA/AAAQQAAAAAAAAACAAAAAAAAAgD8AAAAAzeZUvv2mvz5eg2w/AAAAAMk/0L4AAAAAAACAPwAAAAAAAACAAAAAAAAAgD8="
+    }
+  ],
+  "animations": [
+    {
+      "name": "HingeOpenClose",
+      "samplers": [
+        {
+          "input": 6,
+          "output": 7,
+          "interpolation": "LINEAR"
+        }
+      ],
+      "channels": [
+        {
+          "sampler": 0,
+          "target": {
+            "node": 2,
+            "path": "rotation"
+          }
+        }
+      ]
+    }
+  ]
+}
