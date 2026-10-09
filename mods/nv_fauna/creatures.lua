@@ -85,7 +85,7 @@ function create_leg(legs, body_pos, suffix)
         local attach_height = next_length * math.sin(legs.angles[i] * math.pi / 180)
         
         local hinge_entity = core.add_entity(body_pos, string.format("nv_fauna:hinge%d%s", legs.hinges[i], suffix))
-        core.after(0.1, function(he, pe)
+        core.after(0, function(he, pe)
             he:set_attach(pe, "LeafSwinging", {x=attach_x + attach_len, y=-attach_height, z=0}, {x=0, y=0, z=-legs.angles[i]}, false)
         end, hinge_entity, prev_entity)
         hinge_entity:set_texture_mod("^[colorize:#aabbcc:90")
@@ -103,19 +103,19 @@ function add_legs(body_entity, body_hinge, legs, leg_count, body_pos)
     local leg_entities = {}
     
     for leg_i = 0, leg_count - 1 do
-        local attach_x = (body_length - leg_width) * leg_i / (leg_count + 1) + leg_width / 2
+        local attach_x = (body_length - leg_width) * leg_i / leg_count + leg_width / 2
         local attach_z = body_width / 2
         local attach_len = leg_length * math.cos(legs.angles[1] * math.pi / 180)
         local attach_height = leg_length * math.sin(legs.angles[1] * math.pi / 180)
         
         local leg_entity = create_leg(legs, body_pos, "")
-        core.after(0.1, function()
+        core.after(0, function()
             leg_entity:set_attach(body_entity, "", {x=-attach_x, y=-attach_height, z=-attach_z - attach_len}, {x=-90, y=90 - legs.angles[1], z=-90}, false)
         end)
         table.insert(leg_entities, #leg_entities + 1, leg_entity)
         
         local leg_entity2 = create_leg(legs, body_pos, "_r")
-        core.after(0.1, function()
+        core.after(0, function()
             leg_entity2:set_attach(body_entity, "", {x=-attach_x, y=-attach_height, z=attach_z + attach_len}, {x=90, y=-90 + legs.angles[1], z=-90}, false)
         end)
         table.insert(leg_entities, #leg_entities + 1, leg_entity2)
@@ -127,12 +127,12 @@ function compute_leg_height(legs)
     local angle = 0
     local height = 0
     for i = 1, #legs.angles do
+        angle = angle + legs.angles[i]
         local leg_length = nv_fauna.hinges[legs.hinges[i]][1]
         local leg_length2 = nv_fauna.hinges[legs.hinges[i]][4]
         local total_length = leg_length + leg_length2
         local total_height = total_length * math.sin(angle * math.pi / 180)
         height = height + total_height
-        angle = angle + legs.angles[i]
     end
     return height
 end
@@ -146,7 +146,7 @@ function nv_fauna.spawn_creature(pos, creature)
     end
 
     local height = compute_leg_height(legs) / 10
-    local body_pos = {x = pos.x, y = pos.y + height + 0.5, z = pos.z}
+    local body_pos = {x = pos.x, y = pos.y + height, z = pos.z}
     
     local body_entity = core.add_entity(body_pos, string.format("nv_fauna:hinge%d", body_hinge))
     local leg_entities = add_legs(body_entity, body_hinge, legs, leg_count, body_pos)
