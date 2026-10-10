@@ -6,8 +6,10 @@ many new features to the game. Most fixes and small changes made during its
 development have been ported to the 0.5.x versions.
 
 ### Added
+ - Mod `nv_fauna`.
  - 9 new nodes.
  - 10 new items.
+ - Procedurally generated living creatures.
  - Pickaxes, for digging stone and ores faster.
 
 ## [0.5.1] - 26-09-2026
@@ -34,8 +36,8 @@ many new features to the game.
  - Tweaked cliffs so they expose more stone.
 
 ### Fixed
-- Invalid file mode errors in latest Luanti versions.
-- Fatal error in Perlin noise generation.
+ - Invalid file mode errors in latest Luanti versions.
+ - Fatal error in Perlin noise generation.
 
 ### Performance
  - Added support for the new async mapgen API in Minetest 5.9, with fallback for older versions.
