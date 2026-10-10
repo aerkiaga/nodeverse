@@ -1,4 +1,5 @@
 nv_fauna.hinges = {
+    {1.0, 1.0, 1.0, 1.0, 1.0, 1.0,},
     {3.0, 1.0, 1.0, 1.0, 1.0, 1.0,},
     {4.0, 2.0, 2.0, 1.0, 1.0, 1.0,},
     {6.0, 2.5, 2.5, 4.0, 1.0, 1.0,},
@@ -90,7 +91,7 @@ end
 
 function mod_color(color)
     local G = PcgRandom(color.r * 75834 + color.g * 6381 + color.b * 3)
-    local range = 2^G:next(4, 7)
+    local range = 2^G:next(5, 7)
     local r = clamp_u8(color.r + G:next(-range, range))
     local g = clamp_u8(color.g + G:next(-range, range))
     local b = clamp_u8(color.b + G:next(-range, range))
@@ -183,6 +184,7 @@ function add_neck(body_entity, body_hinge, body_pos, body_color)
         neck_entity:set_attach(body_entity, "LeafSwinging", {x=attach_len, y=attach_height, z=0}, {x=0, y=0, z=neck_angle}, false)
     end)
     neck_entity:set_texture_mod(color_to_mod(neck_color))
+    return neck_entity, neck_angle, neck_hinge
 end
 
 function add_tail(body_entity, body_hinge, body_pos, body_color)
@@ -204,6 +206,114 @@ function add_tail(body_entity, body_hinge, body_pos, body_color)
     tail_entity:set_texture_mod(color_to_mod(tail_color))
 end
 
+function decorate_body(body_entity, body_hinge, body_pos, body_color)
+    local G = PcgRandom(body_color.r * 6531 + body_color.g * 656 + body_color.b * 11)
+    -- Spikes
+    if body_hinge >= 7 then
+        local spike_count = G:next(0, 4)
+        local spike_hinge = G:next(3, G:next(3, body_hinge - 1))
+        local spike_length = nv_fauna.hinges[spike_hinge][1]
+        local spike_width = nv_fauna.hinges[spike_hinge][3]
+        local body_length = nv_fauna.hinges[body_hinge][1]
+        local body_height = nv_fauna.hinges[body_hinge][2]
+        local body_width = nv_fauna.hinges[body_hinge][3]
+        for spike_i = 1, spike_count, 1 do
+            local attach_x = (body_length - spike_width) * 0.8 * spike_i / spike_count + spike_width / 2
+            local attach_y = body_height / 2 + spike_length / 2
+            local attach_z = body_width / 4
+            local spike_color = mod_color(mod_color(body_color))
+            
+            local spike_entity = core.add_entity(body_pos, string.format("nv_fauna:hinge%d", spike_hinge))
+            core.after(0, function()
+                spike_entity:set_attach(body_entity, "", {x=-attach_x, y=attach_y, z=attach_z}, {x=-90, y=0, z=90}, false)
+            end)
+            spike_entity:set_texture_mod(color_to_mod(spike_color))
+            
+            local spike_entity2 = core.add_entity(body_pos, string.format("nv_fauna:hinge%d", spike_hinge))
+            core.after(0, function()
+                spike_entity2:set_attach(body_entity, "", {x=-attach_x, y=attach_y, z=-attach_z}, {x=90, y=0, z=90}, false)
+            end)
+            spike_entity2:set_texture_mod(color_to_mod(spike_color))
+        end
+    end
+end
+
+function decorate_head(head_entity, head_angle, head_hinge, body_pos, body_color)
+    local G = PcgRandom(body_color.r * 6531 + body_color.g * 656 + body_color.b * 11)
+    -- Eyes
+    if head_hinge >= 2 then
+        local head_length = nv_fauna.hinges[head_hinge][4]
+        local head_height = nv_fauna.hinges[head_hinge][5]
+        local head_width = nv_fauna.hinges[head_hinge][6]
+        local attach_x = head_length / 2
+        local attach_y = head_height / 2
+        local attach_z = head_width / 4
+        local eye_color = gen_color(head_angle)
+        
+        local eye_entity = core.add_entity(body_pos, "nv_fauna:hinge1")
+        core.after(0, function()
+            eye_entity:set_attach(head_entity, "LeafSwinging", {x=attach_x, y=attach_y, z=attach_z}, {x=0, y=0, z=90 - head_angle}, false)
+        end)
+        eye_entity:set_texture_mod(color_to_mod(eye_color))
+        
+        local eye_entity2 = core.add_entity(body_pos, "nv_fauna:hinge1")
+        core.after(0, function()
+            eye_entity2:set_attach(head_entity, "LeafSwinging", {x=attach_x, y=attach_y, z=-attach_z}, {x=0, y=0, z=90 - head_angle}, false)
+        end)
+        eye_entity2:set_texture_mod(color_to_mod(eye_color))
+    end
+    
+    -- Antennae
+    if head_hinge >= 3 and head_angle % 2 >= 1 then
+        local head_length = nv_fauna.hinges[head_hinge][4]
+        local head_height = nv_fauna.hinges[head_hinge][5]
+        local head_width = nv_fauna.hinges[head_hinge][6]
+        local attach_x = head_length / 4
+        local attach_y = head_height
+        local attach_z = head_width / 4
+        local antenna_color = mod_color(mod_color(mod_color(body_color)))
+        
+        local antenna_entity = core.add_entity(body_pos, "nv_fauna:hinge2")
+        core.after(0, function()
+            antenna_entity:set_attach(head_entity, "LeafSwinging", {x=attach_x, y=attach_y, z=attach_z}, {x=0, y=0, z=90 - head_angle}, false)
+        end)
+        antenna_entity:set_texture_mod(color_to_mod(antenna_color))
+        
+        local antenna_entity2 = core.add_entity(body_pos, "nv_fauna:hinge2")
+        core.after(0, function()
+            antenna_entity2:set_attach(head_entity, "LeafSwinging", {x=attach_x, y=attach_y, z=-attach_z}, {x=0, y=0, z=90 - head_angle}, false)
+        end)
+        antenna_entity2:set_texture_mod(color_to_mod(antenna_color))
+    end
+    
+    -- Mouthpieces
+    if head_hinge >= 3 and head_angle % 3 >= 1 then
+        local mouth_hinge = G:next(1, head_hinge - 1)
+        local head_length = nv_fauna.hinges[head_hinge][4]
+        local head_height = nv_fauna.hinges[head_hinge][5]
+        local head_width = nv_fauna.hinges[head_hinge][6]
+        local mouth_length = nv_fauna.hinges[mouth_hinge][1]
+        local mouth_angle = G:next(0, 45)
+        local attach_x = head_length / 2
+        local attach_len = mouth_length / 2 * math.sin(mouth_angle * math.pi / 180)
+        local attach_y = 0
+        local attach_z = head_width / 4
+        local mouth_color = mod_color(mod_color(mod_color(body_color)))
+        
+        local mouth_entity = core.add_entity(body_pos, "nv_fauna:hinge2")
+        core.after(0, function()
+            mouth_entity:set_attach(head_entity, "LeafSwinging", {x=attach_x + attach_len, y=attach_y, z=attach_z}, {x=90, y=mouth_angle, z=0}, false)
+        end)
+        mouth_entity:set_texture_mod(color_to_mod(mouth_color))
+        
+        local mouth_entity2 = core.add_entity(body_pos, "nv_fauna:hinge2")
+        core.after(0, function()
+            mouth_entity2:set_attach(head_entity, "LeafSwinging", {x=attach_x + attach_len, y=attach_y, z=-attach_z}, {x=-90, y=-mouth_angle, z=0}, false)
+        end)
+        mouth_entity2:set_texture_mod(color_to_mod(mouth_color))
+    end
+end
+
 function nv_fauna.spawn_creature(pos, creature)
     local body_hinge = math.floor(creature.size * #nv_fauna.hinges + 1)
     local body_color = gen_color(creature.seed)
@@ -217,11 +327,16 @@ function nv_fauna.spawn_creature(pos, creature)
     local body_pos = {x = pos.x, y = pos.y + height, z = pos.z}
     
     local body_entity = core.add_entity(body_pos, string.format("nv_fauna:hinge%d", body_hinge))
+    local head_entity = body_entity
+    local head_hinge = body_hinge
+    local head_angle = 0
     body_entity:set_texture_mod(color_to_mod(body_color))
+    decorate_body(body_entity, body_hinge, body_pos, body_color)
     local leg_entities = add_legs(body_entity, body_hinge, legs, leg_count, body_pos, body_color)
     if creature.has_neck then
-        add_neck(body_entity, body_hinge, body_pos, body_color)
+        head_entity, head_angle, head_hinge = add_neck(body_entity, body_hinge, body_pos, body_color)
     end
+    decorate_head(head_entity, head_angle, head_hinge, body_pos, body_color)
     if creature.has_tail then
         add_tail(body_entity, body_hinge, body_pos, body_color)
     end
