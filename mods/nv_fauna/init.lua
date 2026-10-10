@@ -63,6 +63,20 @@ function stop_walking_animation(creature)
     end
 end
 
+function spawn_entity_raw(pos, index, planet_seed)
+    local planet_fauna = get_planet_fauna(planet_seed)
+    local descriptor = planet_fauna[index]
+    local creature = nv_fauna.spawn_creature(pos, descriptor)
+    if nv_fauna.planets[planet_seed] == nil then
+        nv_fauna.planets[planet_seed] = {}
+    end
+    creature.pos = pos
+    creature.descriptor = descriptor
+    creature.seed = planet_seed
+    creature.index = index
+    table.insert(nv_fauna.planets[planet_seed], creature)
+end
+
 function spawn_entity(pos, planet_seed)
     local planet_fauna = get_planet_fauna(planet_seed)
     
@@ -72,30 +86,7 @@ function spawn_entity(pos, planet_seed)
     end
     local G = PcgRandom(planet_seed * os.clock())
     local index = gen_weighted(G, pf)
-    local descriptor = planet_fauna[index]
-    
-    local creature = nv_fauna.spawn_creature(pos, descriptor)
-    if nv_fauna.planets[planet_seed] == nil then
-        nv_fauna.planets[planet_seed] = {}
-    end
-    creature.pos = pos
-    creature.descriptor = descriptor
-    creature.seed = planet_seed
-    table.insert(nv_fauna.planets[planet_seed], creature)
-end
-
-function respawn_entity(creature)
-    creature.body_entity:remove()
-    local creature2 = nv_fauna.spawn_creature(creature.pos, creature.descriptor)
-    creature2.pos = creature.pos
-    creature2.descriptor = creature.descriptor
-    creature2.seed = creature.seed
-    local creatures = nv_fauna.planets[creature.seed]
-    for i, creat in pairs(creatures) do
-        if creat == creature then
-            creatures[i] = creature2
-        end
-    end
+    spawn_entity_raw(pos, index, planet_seed)
 end
 
 function wander_entity(creature)
@@ -126,6 +117,42 @@ function wander_entity(creature)
                 stop_walking_animation(creature)
             end)
             break
+        end
+    end
+end
+
+function save_creatures()
+    local planets = {}
+    for seed, creatures in pairs(nv_fauna.planets) do
+        planets[seed] = {}
+        for i, creature in pairs(creatures) do
+            local creat = {
+                pos = creature.pos,
+                index = creature.index,
+                seed = creature.seed,
+            }
+            planets[seed][i] = creat
+        end
+    end
+    minetest.safe_file_write(minetest.get_worldpath() .. "/nv_fauna.creatures", minetest.serialize(planets))
+end
+
+function wipe_creatures()
+    for seed, creatures in pairs(nv_fauna.planets) do
+        for i, creature in pairs(creatures) do
+            creature.body_entity:remove()
+        end
+    end
+    nv_fauna.planets = {}
+end
+
+function restore_creatures()
+    local f = io.open(minetest.get_worldpath() .. "/nv_fauna.creatures", "r")
+    if not f then return end
+    local planets = minetest.deserialize(f:read())
+    for seed, creatures in pairs(planets) do
+        for i, creature in pairs(creatures) do
+            spawn_entity_raw(creature.pos, creature.index, creature.seed)
         end
     end
 end
@@ -175,4 +202,13 @@ core.register_globalstep(function(dtime)
             end
         end
     end
+end)
+
+core.after(0, function()
+    restore_creatures()
+end)
+
+core.register_on_shutdown(function()
+    save_creatures()
+    wipe_creatures()
 end)
