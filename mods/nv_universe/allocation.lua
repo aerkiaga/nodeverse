@@ -231,7 +231,7 @@ Format is:
 ]]
 function nv_universe.get_universal_coordinates(y_abs)
     for n, limit in ipairs(layer_limits) do
-        if y_abs >= limit.min and y_abs <= limit.max then
+        if y_abs >= limit.min and y_abs <= limit.max and layers[n] then
             return {
                 in_space = layers[n].in_space,
                 planet = layers[n].planet,
