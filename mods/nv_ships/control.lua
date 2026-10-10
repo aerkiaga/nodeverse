@@ -120,6 +120,8 @@ local function set_flying_state(ship, player)
     }, false)
 end
 
+nv_ships.set_flying_state = set_flying_state
+
 function nv_ships.is_landed_callback(ship, player)
     -- Player has landed or has not lifted off yet
     local vel = player:get_velocity()

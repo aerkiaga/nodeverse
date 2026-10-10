@@ -225,6 +225,9 @@ local function newplayer_callback(player)
     end
 	nv_gui.set_inventory_formspec(player, "universe", formspec)
 	nv_universe.store_player_state(player)
+	core.after(1.0, function()
+	    send_into_planet(player)
+	end)
 end
 
 minetest.register_on_newplayer(newplayer_callback)

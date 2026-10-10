@@ -162,3 +162,15 @@ minetest.register_chatcommand("debug", {
         nv_ships.load_player_state(player)
     end
 })
+
+minetest.register_on_newplayer(function(player)
+	core.after(2.0, function()
+	    local name = player:get_player_name()
+	    local ships = nv_ships.players_list[name]
+	    local current_ship = ships.cur_ship
+        if current_ship.state == "entity" then
+            nv_ships.ship_to_entity(current_ship, player, false)
+            nv_ships.set_flying_state(current_ship, player)
+        end
+	end)
+end)
