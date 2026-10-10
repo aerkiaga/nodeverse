@@ -269,7 +269,7 @@ function decorate_head(head_entity, head_angle, head_hinge, body_pos, body_color
         local head_height = nv_fauna.hinges[head_hinge][5]
         local head_width = nv_fauna.hinges[head_hinge][6]
         local attach_x = head_length / 4
-        local attach_y = head_height
+        local attach_y = head_height / 2
         local attach_z = head_width / 4
         local antenna_color = mod_color(mod_color(mod_color(body_color)))
         
@@ -295,20 +295,20 @@ function decorate_head(head_entity, head_angle, head_hinge, body_pos, body_color
         local mouth_length = nv_fauna.hinges[mouth_hinge][1]
         local mouth_angle = G:next(0, 45)
         local attach_x = head_length / 2
-        local attach_len = mouth_length / 2 * math.sin(mouth_angle * math.pi / 180)
+        local attach_len = mouth_length * math.sin(mouth_angle * math.pi / 180) * math.cos(head_angle * math.pi / 180)
         local attach_y = 0
         local attach_z = head_width / 4
         local mouth_color = mod_color(mod_color(mod_color(body_color)))
         
         local mouth_entity = core.add_entity(body_pos, "nv_fauna:hinge2")
         core.after(0, function()
-            mouth_entity:set_attach(head_entity, "LeafSwinging", {x=attach_x + attach_len, y=attach_y, z=attach_z}, {x=90, y=mouth_angle, z=0}, false)
+            mouth_entity:set_attach(head_entity, "LeafSwinging", {x=attach_x + attach_len, y=attach_y, z=attach_z}, {x=90, y=mouth_angle, z=-head_angle}, false)
         end)
         mouth_entity:set_texture_mod(color_to_mod(mouth_color))
         
         local mouth_entity2 = core.add_entity(body_pos, "nv_fauna:hinge2")
         core.after(0, function()
-            mouth_entity2:set_attach(head_entity, "LeafSwinging", {x=attach_x + attach_len, y=attach_y, z=-attach_z}, {x=-90, y=-mouth_angle, z=0}, false)
+            mouth_entity2:set_attach(head_entity, "LeafSwinging", {x=attach_x + attach_len, y=attach_y, z=-attach_z}, {x=-90, y=-mouth_angle, z=-head_angle}, false)
         end)
         mouth_entity2:set_texture_mod(color_to_mod(mouth_color))
     end

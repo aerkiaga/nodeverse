@@ -139,7 +139,7 @@ core.register_on_generated(function(minp, maxp, blockseed)
                         local node = core.get_node(pos)
                         local def = core.registered_nodes[node.name]
                         if not def.walkable then
-                            if y == minp.y then
+                            if y == minp.y or def.drawtype == "liquid" then
                                 break
                             end
                             local pos2 = {x = x, y = y - 0.5, z = z}
