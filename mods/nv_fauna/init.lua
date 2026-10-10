@@ -5,7 +5,14 @@ nv_fauna.planets = {}
 function get_planet_fauna(planet_seed)
     local r = {}
     local G = PcgRandom(planet_seed)
-    local count = G:next(1, 5)
+    local meta = nv_planetgen.generate_planet_metadata(planet_seed)
+    local count = 0
+    if meta.life == "normal" then
+        count = G:next(1, 3)
+    elseif meta.life == "lush" then
+        count = G:next(3, 7)
+    end
+    if count == 0 then return r end
     for i = 1, count do
         local freq = G:next(1, 4) * G:next(1, 4)
         local seed = G:next()
@@ -129,7 +136,13 @@ core.register_on_generated(function(minp, maxp, blockseed)
     if universal and not universal.on_space then
         local seed = universal.planet
         local G = PcgRandom(seed)
-        local density = 0.000001 * G:next(1, 10)
+        local meta = nv_planetgen.generate_planet_metadata(seed)
+        local density = 0
+        if meta.life == "normal" then
+            density = 0.000001 * G:next(1, 3)
+        elseif meta.life == "lush" then
+            density = 0.000001 * G:next(5, 15)
+        end
         local G = PcgRandom(blockseed)
         for x = minp.x, maxp.x, 1 do
             for z = minp.z, maxp.z, 1 do
