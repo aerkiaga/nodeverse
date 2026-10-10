@@ -55,6 +55,9 @@ function gen_legs(creature, body_hinge)
         if hinge >= 2 then
             hinge = G:next(G:next(1, hinge - 1), hinge - 1)
         end
+        if body_hinge - hinge > 4 then
+            hinge = body_hinge - 4
+        end
         hinges[i] = hinge
     end
     
@@ -170,7 +173,9 @@ end
 function add_neck(body_entity, body_hinge, body_pos, body_color)
     local G = PcgRandom(body_color.r * 6546 + body_color.g * 4563 + body_color.b * 2134)
     local neck_hinge = 1
-    if body_hinge > 1 then
+    if body_hinge > 4 then
+        neck_hinge = G:next(body_hinge - 3, body_hinge - 1)
+    elseif body_hinge > 1 then
         neck_hinge = G:next(G:next(1, body_hinge - 1), body_hinge - 1)
     end
     local neck_len = nv_fauna.hinges[neck_hinge][1]
@@ -264,7 +269,7 @@ function decorate_head(head_entity, head_angle, head_hinge, body_pos, body_color
     end
     
     -- Antennae
-    if head_hinge >= 3 and head_angle % 2 >= 1 then
+    if head_hinge >= 3 and G:next(0, 1) > 0 then
         local head_length = nv_fauna.hinges[head_hinge][4]
         local head_height = nv_fauna.hinges[head_hinge][5]
         local head_width = nv_fauna.hinges[head_hinge][6]
@@ -287,8 +292,8 @@ function decorate_head(head_entity, head_angle, head_hinge, body_pos, body_color
     end
     
     -- Mouthpieces
-    if head_hinge >= 3 and head_angle % 3 >= 1 then
-        local mouth_hinge = G:next(1, head_hinge - 1)
+    if head_hinge >= 4 and G:next(0, 2) > 0 then
+        local mouth_hinge = head_hinge - 3
         local head_length = nv_fauna.hinges[head_hinge][4]
         local head_height = nv_fauna.hinges[head_hinge][5]
         local head_width = nv_fauna.hinges[head_hinge][6]
@@ -300,13 +305,13 @@ function decorate_head(head_entity, head_angle, head_hinge, body_pos, body_color
         local attach_z = head_width / 4
         local mouth_color = mod_color(mod_color(mod_color(body_color)))
         
-        local mouth_entity = core.add_entity(body_pos, "nv_fauna:hinge2")
+        local mouth_entity = core.add_entity(body_pos, string.format("nv_fauna:hinge%d", mouth_hinge))
         core.after(0, function()
             mouth_entity:set_attach(head_entity, "LeafSwinging", {x=attach_x + attach_len, y=attach_y, z=attach_z}, {x=90, y=mouth_angle, z=-head_angle}, false)
         end)
         mouth_entity:set_texture_mod(color_to_mod(mouth_color))
         
-        local mouth_entity2 = core.add_entity(body_pos, "nv_fauna:hinge2")
+        local mouth_entity2 = core.add_entity(body_pos, string.format("nv_fauna:hinge%d", mouth_hinge))
         core.after(0, function()
             mouth_entity2:set_attach(head_entity, "LeafSwinging", {x=attach_x + attach_len, y=attach_y, z=-attach_z}, {x=-90, y=-mouth_angle, z=-head_angle}, false)
         end)
