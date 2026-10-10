@@ -7,7 +7,11 @@ many new features to the game.
  - 4 new node.
  - 7 new items.
 
-## [0.5.1] - unreleased
+## [0.5.2] - 10-10-2026
+### Fixed
+- Player getting stranded in space with no ship after first login.
+
+## [0.5.1] - 26-09-2026
 ### Fixed
 - Bottle recipe.
 
