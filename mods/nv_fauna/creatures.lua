@@ -226,7 +226,7 @@ function decorate_body(body_entity, body_hinge, body_pos, body_color)
             local attach_x = (body_length - spike_width) * 0.8 * spike_i / spike_count + spike_width / 2
             local attach_y = body_height / 2 + spike_length / 2
             local attach_z = body_width / 4
-            local spike_color = mod_color(mod_color(body_color))
+            local spike_color = body_color
             
             local spike_entity = core.add_entity(body_pos, string.format("nv_fauna:hinge%d", spike_hinge))
             core.after(0, function()

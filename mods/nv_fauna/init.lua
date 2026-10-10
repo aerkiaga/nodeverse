@@ -146,6 +146,26 @@ function wipe_creatures()
     nv_fauna.planets = {}
 end
 
+function cleanup_entities()
+    entities = {}
+    for id, entity in pairs(core.objects_by_guid) do
+        if not entity:get_attach() and not entity:is_player() then
+            entities[id] = entity
+        end
+    end
+    for seed, creatures in pairs(nv_fauna.planets) do
+        for i, creature in pairs(creatures) do
+            local guid = creature.body_entity:get_guid()
+            if guid then
+                entities[guid] = nil
+            end
+        end
+    end
+    for id, entity in pairs(entities) do
+        entity:remove()
+    end
+end
+
 function restore_creatures()
     local f = io.open(minetest.get_worldpath() .. "/nv_fauna.creatures", "r")
     if not f then return end
@@ -155,6 +175,9 @@ function restore_creatures()
             spawn_entity_raw(creature.pos, creature.index, creature.seed)
         end
     end
+    core.after(1, function()
+        cleanup_entities()
+    end)
 end
 
 core.register_on_generated(function(minp, maxp, blockseed)
@@ -191,6 +214,9 @@ core.register_on_generated(function(minp, maxp, blockseed)
             end
         end
     end
+    core.after(1, function()
+        cleanup_entities()
+    end)
 end)
 
 core.register_globalstep(function(dtime)
