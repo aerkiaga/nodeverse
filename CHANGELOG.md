@@ -12,6 +12,10 @@ development have been ported to the 0.5.x versions.
  - Procedurally generated living creatures.
  - Pickaxes, for digging stone and ores faster.
 
+## [0.5.2] - 10-10-2026
+### Fixed
+- Player getting stranded in space with no ship after first login.
+
 ## [0.5.1] - 26-09-2026
 ### Fixed
 - Bottle recipe.
