@@ -8,7 +8,7 @@ end
 
 level_cache = {}
 
-local function get_furnace_formspec(player, level)
+function nv_crafting.get_furnace_formspec(player, level)
     if level then
         level_cache[player:get_player_name()] = level
     else
@@ -37,7 +37,7 @@ local function furnace_receive_fields_callback(player, fields)
 	            inv:remove_item("main", item)
 	        end
 	        inv:add_item("craftresult", recipe.output)
-	        local formspec = get_furnace_formspec(player)
+	        local formspec = nv_crafting.get_furnace_formspec(player)
 			nv_gui.show_formspec_raw(player, formspec, "furnace")
 		end
 	end
@@ -51,7 +51,7 @@ function nv_crafting.register_anvil_recipe(recipe)
     table.insert(nv_crafting.anvil_recipes, recipe)
 end
 
-local function get_anvil_formspec(player)
+function nv_crafting.get_anvil_formspec(player)
     local base_formspec = nv_inventory.get_craft_formspec(player, nv_crafting.anvil_recipes)
     return base_formspec
 end
@@ -77,7 +77,7 @@ end
 
 nv_gui.register_callback("anvil", anvil_receive_fields_callback)
 
-local function start_explosion(pos, radius)
+function nv_crafting.start_explosion(pos, radius)
     local start_pos = vector.add(pos, {x = -radius, y = -radius, z = -radius})
     local end_pos = vector.add(pos, {x = radius, y = radius, z = radius})
     local vm = core.get_voxel_manip()

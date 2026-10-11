@@ -46,7 +46,7 @@ local function ocean_grass_thumbnail(seed, custom)
         [nv_flora.node_types.thick_tube] = "nv_thick_tube.png",
         [nv_flora.node_types.thin_tubes] = "nv_thin_tubes.png",
     }
-    local height = 4
+    local height = 3
     local r = ""
     for n=1,height,1 do
         local color = custom.color

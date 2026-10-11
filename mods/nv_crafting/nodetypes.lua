@@ -23,7 +23,7 @@ minetest.register_node(
         groups = {cracky = 1, falling_node = 1},
         on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
             nv_gui.show_formspec_raw(clicker,
-                get_furnace_formspec(clicker, 1),
+                nv_crafting.get_furnace_formspec(clicker, 1),
                 "furnace"
             )
         end,
@@ -57,7 +57,7 @@ minetest.register_node(
         groups = {cracky = 1},
         on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
             nv_gui.show_formspec_raw(clicker,
-                get_furnace_formspec(clicker, 2),
+                nv_crafting.get_furnace_formspec(clicker, 2),
                 "furnace"
             )
         end,
@@ -91,7 +91,7 @@ minetest.register_node(
         groups = {cracky = 1},
         on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
             nv_gui.show_formspec_raw(clicker,
-                get_furnace_formspec(clicker, 3),
+                nv_crafting.get_furnace_formspec(clicker, 3),
                 "furnace"
             )
         end,
@@ -585,7 +585,7 @@ minetest.register_node(
         groups = {choppy = 1},
         on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
             nv_gui.show_formspec_raw(clicker,
-                get_anvil_formspec(clicker),
+                nv_crafting.get_anvil_formspec(clicker),
                 "anvil"
             )
         end,
@@ -786,7 +786,7 @@ minetest.register_node(
             })
         end,
         on_timer = function(pos, elapsed, node, timeout)
-            start_explosion(pos, 4)
+            nv_crafting.start_explosion(pos, 4)
         end,
         description = "Explosive",
         short_description = "Explosive",
