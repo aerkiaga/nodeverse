@@ -147,7 +147,7 @@ function wipe_creatures()
 end
 
 function cleanup_entities()
-    entities = {}
+    local entities = {}
     for id, entity in pairs(core.objects_by_guid) do
         if not entity:get_attach() and not entity:is_player() then
             entities[id] = entity

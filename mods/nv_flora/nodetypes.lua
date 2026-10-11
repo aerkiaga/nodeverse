@@ -421,6 +421,70 @@ local function register_tall_grasses()
     end
 end
 
+local function register_ocean_grasses()
+    nv_flora.node_types.thick_tube = {}
+    -- THICK TUBE
+    -- Thick living tube on the ocean floor, like a sponge
+    -- 48 grass colors as palette
+    register_color_variants(
+        "thick_tube", 1,
+        function (x) return {r = 0, g = 0, b = 0} end,
+        function (n, color) return {
+            drawtype = "normal",
+            tiles = {
+                "nv_thick_tube_top.png",
+                "nv_thick_tube_top.png",
+                "nv_thick_tube.png^[transformFY",
+                "nv_thick_tube.png^[transformFY",
+                "nv_thick_tube.png",
+                "nv_thick_tube.png"
+            },
+            palette = "nv_palette_grass.png",
+            paramtype = "light",
+            paramtype2 = "color4dir",
+            place_param2 = 0,
+            sunlight_propagates = false,
+            walkable = true,
+            buildable_to = false,
+            drop = "nv_flora:polymer_planks 1",
+            after_dig_node = default_dig_callback,
+            groups = {choppy = 2},
+        } end
+    )
+    nv_flora.node_types.thick_tube = minetest.get_content_id("nv_flora:thick_tube")
+    
+    nv_flora.node_types.thin_tubes = {}
+    -- THIN TUBES
+    -- Cluster of thin living tubes on the ocean floor
+    -- 48 grass colors as palette
+    register_color_variants(
+        "thin_tubes", 1,
+        function (x) return {r = 0, g = 0, b = 0} end,
+        function (n, color) return {
+            drawtype = "normal",
+            tiles = {
+                "nv_thin_tubes_top.png",
+                "nv_thin_tubes_top.png",
+                "nv_thin_tubes.png^[transformFY",
+                "nv_thin_tubes.png^[transformFY",
+                "nv_thin_tubes.png",
+                "nv_thin_tubes.png"
+            },
+            palette = "nv_palette_grass.png",
+            paramtype = "light",
+            paramtype2 = "color4dir",
+            place_param2 = 0,
+            sunlight_propagates = false,
+            walkable = true,
+            buildable_to = false,
+            drop = "nv_flora:polymer_planks 1",
+            after_dig_node = default_dig_callback,
+            groups = {choppy = 2},
+        } end
+    )
+    nv_flora.node_types.thin_tubes = minetest.get_content_id("nv_flora:thin_tubes")
+end
+
 local function register_stems()
     nv_flora.node_types.veiny_stem = {}
     -- VEINY STEM
@@ -711,6 +775,7 @@ function nv_flora.register_all_nodes()
     register_small_plants()
     register_small_mushrooms()
     register_tall_grasses()
+    register_ocean_grasses()
     register_stems()
     register_leaves()
     register_miscellaneous()

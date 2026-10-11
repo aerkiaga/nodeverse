@@ -14,6 +14,7 @@ nv_flora = {}
 dofile(minetest.get_modpath("nv_flora") .. "/thumbnail.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/small_plants.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/tall_grasses.lua")
+dofile(minetest.get_modpath("nv_flora") .. "/ocean_grasses.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/cave_plants.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/trees.lua")
 dofile(minetest.get_modpath("nv_flora") .. "/branched_plants.lua")
@@ -59,6 +60,7 @@ local function get_plant_meta(seed, index)
                 small_plant = 30,
                 cave_plant = 30,
                 tall_grass = 20,
+                ocean_grass = 20,
                 tree = 25,
                 vine = 7,
                 lilypad = meta.has_oceans and 7 or 0
@@ -69,6 +71,7 @@ local function get_plant_meta(seed, index)
             small_plant = 30,
             cave_plant = 20,
             tall_grass = 20,
+            ocean_grass = 20,
             tree = 20,
             branched_plant = 30
         })
@@ -84,6 +87,7 @@ local function get_plant_meta(seed, index)
             small_plant = 40,
             cave_plant = 20,
             tall_grass = 15,
+            ocean_grass = 10,
             tree = 40
         })
     end
@@ -91,6 +95,7 @@ local function get_plant_meta(seed, index)
         small_plant = nv_flora.get_small_plant_meta,
         cave_plant = nv_flora.get_cave_plant_meta,
         tall_grass = nv_flora.get_tall_grass_meta,
+        ocean_grass = nv_flora.get_ocean_grass_meta,
         tree = nv_flora.get_tree_meta,
         vine = nv_flora.get_vine_meta,
         lilypad = nv_flora.get_lilypad_meta,
@@ -107,7 +112,7 @@ local function plant_handler(seed)
     if meta.life == "normal" then
         plant_count = G:next(12, 20)
     elseif meta.life == "lush" then
-        plant_count = G:next(25, 45)
+        plant_count = G:next(30, 45)
     end
     local r = {}
     for index=1,plant_count,1 do

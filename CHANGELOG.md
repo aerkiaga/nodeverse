@@ -7,10 +7,11 @@ development have been ported to the 0.5.x versions.
 
 ### Added
  - Mod `nv_fauna`.
- - 9 new nodes.
+ - 11 new nodes.
  - 10 new items.
  - Procedurally generated living creatures.
  - Pickaxes, for digging stone and ores faster.
+ - New flora on the ocean floor.
 
 ## [0.5.2] - 10-10-2026
 ### Fixed
